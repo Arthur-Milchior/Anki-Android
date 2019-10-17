@@ -132,7 +132,7 @@ public class Reviewer extends AbstractFlashcardViewer {
         try {
             String[] title = {""};
             if (colIsOpen()) {
-                title = getCol().getDecks().current().getString("name").split("::");
+                title = getCol().getDecks().current().getString_("name").split("::");
             } else {
                 Timber.e("Could not set title in reviewer because collection closed");
             }
