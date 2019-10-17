@@ -40,13 +40,13 @@ public class Note implements Cloneable {
 
     private long mId;
     private String mGuId;
-    private JSONObject mModel;
+    private JSONObject_ mModel;
     private long mMid;
     private List<String> mTags;
     private String[] mFields;
     private int mFlags;
     private String mData;
-    private Map<String, Pair<Integer, JSONObject>> mFMap;
+    private Map<String, Pair<Integer, JSONObject_>> mFMap;
     private long mScm;
     private int mUsn;
     private long mMod;
@@ -58,12 +58,12 @@ public class Note implements Cloneable {
     }
 
 
-    public Note(Collection col, JSONObject model) {
+    public Note(Collection col, JSONObject_ model) {
         this(col, model, null);
     }
 
 
-    public Note(Collection col, JSONObject model, Long id) {
+    public Note(Collection col, JSONObject_ model, Long id) {
         assert !(model != null && id != null);
         mCol = col;
         if (id != null) {
@@ -74,9 +74,9 @@ public class Note implements Cloneable {
             mGuId = Utils.guid64();
             mModel = model;
             try {
-                mMid = model.getLong("id");
+                mMid = model.getLong_("id");
                 mTags = new ArrayList<>();
-                mFields = new String[model.getJSONArray("flds").length()];
+                mFields = new String[model.getJSONArray_("flds").length()];
                 Arrays.fill(mFields, "");
             } catch (JSONException e) {
                 throw new RuntimeException(e);
@@ -178,7 +178,7 @@ public class Note implements Cloneable {
     }
 
 
-    public JSONObject model() {
+    public JSONObject_ model() {
         return mModel;
     }
 
