@@ -111,7 +111,7 @@ public class Stats {
             title = AnkiDroidApp.getInstance().getResources().getString(R.string.card_browser_all_decks);
         } else {
             try {
-                title = mCol.getDecks().get(mDeckId).getString("name");
+                title = mCol.getDecks().get(mDeckId).getString_("name");
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -1232,12 +1232,12 @@ public class Stats {
         if (deckId == ALL_DECKS_ID) {
             // All decks
             ArrayList<Long> ids = new ArrayList<>();
-            for (JSONObject d : col.getDecks().all()) {
-                try {
-                    ids.add(d.getLong("id"));
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
+            try {
+                for (JSONObject_ d : col.getDecks().all()) {
+                    ids.add(d.getLong_("id"));
                 }
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
             }
             return Utils.ids2str(Utils.arrayList2array(ids));
         } else {
