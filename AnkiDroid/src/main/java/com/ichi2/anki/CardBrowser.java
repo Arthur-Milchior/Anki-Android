@@ -95,7 +95,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
     private List<Map<String, String>> mCards;
     private HashMap<String, String> mDeckNames;
-    private ArrayList<JSONObject> mDropDownDecks;
+    private ArrayList<JSONObject_> mDropDownDecks;
     private ListView mCardsListView;
     private SearchView mSearchView;
     private MultiColumnListAdapter mCardsAdapter;
@@ -193,12 +193,12 @@ public class CardBrowser extends NavigationDrawerActivity implements
                 mOrderAsc = false;
                 try {
                     if (mOrder == 0) {
-                        getCol().getConf().put("sortType", fSortTypes[1]);
+                        getCol().getConf().put_("sortType", fSortTypes[1]);
                         AnkiDroidApp.getSharedPrefs(getBaseContext()).edit()
                                 .putBoolean("cardBrowserNoSorting", true)
                                 .commit();
                     } else {
-                        getCol().getConf().put("sortType", fSortTypes[mOrder]);
+                        getCol().getConf().put_("sortType", fSortTypes[mOrder]);
                         AnkiDroidApp.getSharedPrefs(getBaseContext()).edit()
                                 .putBoolean("cardBrowserNoSorting", false)
                                 .commit();
@@ -207,7 +207,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
                     if (fSortTypes[mOrder].equals("noteFld")) {
                         mOrderAsc = true;
                     }
-                    getCol().getConf().put("sortBackwards", mOrderAsc);
+                    getCol().getConf().put_("sortBackwards", mOrderAsc);
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
@@ -215,7 +215,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             } else if (which != CARD_ORDER_NONE) {
                 mOrderAsc = !mOrderAsc;
                 try {
-                    getCol().getConf().put("sortBackwards", mOrderAsc);
+                    getCol().getConf().put_("sortBackwards", mOrderAsc);
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
@@ -283,7 +283,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
         @Override
         public void onSelection(String searchName) {
             Timber.d("OnSelection using search named: %s", searchName);
-            JSONObject savedFiltersObj = getCol().getConf().optJSONObject("savedFilters");
+            JSONObject_ savedFiltersObj = getCol().getConf().optJSONObject_("savedFilters");
             Timber.d("SavedFilters are %s", savedFiltersObj.toString());
             if (savedFiltersObj != null) {
                 mSearchTerms = savedFiltersObj.optString(searchName);
@@ -298,16 +298,15 @@ public class CardBrowser extends NavigationDrawerActivity implements
         public void onRemoveSearch(String searchName) {
             Timber.d("OnRemoveSelection using search named: %s", searchName);
             try {
-                JSONObject savedFiltersObj = getCol().getConf().optJSONObject("savedFilters");
+                JSONObject_ savedFiltersObj = getCol().getConf().optJSONObject_("savedFilters");
                 if (savedFiltersObj != null && savedFiltersObj.has(searchName)) {
                     savedFiltersObj.remove(searchName);
-                    getCol().getConf().put("savedFilters", savedFiltersObj);
+                    getCol().getConf().put_("savedFilters", savedFiltersObj);
                     getCol().flush();
                     if (savedFiltersObj.length() == 0) {
                         mMySearchesItem.setVisible(false);
                     }
                 }
-
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -321,28 +320,28 @@ public class CardBrowser extends NavigationDrawerActivity implements
                 return;
             }
             try {
-                JSONObject savedFiltersObj = getCol().getConf().optJSONObject("savedFilters");
+                JSONObject_ savedFiltersObj = getCol().getConf().optJSONObject_("savedFilters");
                 boolean should_save = false;
                 if (savedFiltersObj == null) {
-                    savedFiltersObj = new JSONObject();
-                    savedFiltersObj.put(searchName, searchTerms);
+                    savedFiltersObj = new JSONObject_();
+                    savedFiltersObj.put_(searchName, searchTerms);
                     should_save = true;
                 } else if (!savedFiltersObj.has(searchName)) {
-                    savedFiltersObj.put(searchName, searchTerms);
+                    savedFiltersObj.put_(searchName, searchTerms);
                     should_save = true;
                 } else {
                     UIUtils.showThemedToast(CardBrowser.this,
                             getString(R.string.card_browser_list_my_searches_new_search_error_dup), true);
                 }
                 if (should_save) {
-                    getCol().getConf().put("savedFilters", savedFiltersObj);
+                    getCol().getConf().put_("savedFilters", savedFiltersObj);
                     getCol().flush();
                     mSearchView.setQuery("", false);
                     mMySearchesItem.setVisible(true);
                 }
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
         }
     };
 
@@ -367,7 +366,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
     private void changeDeck(int selectedDeck) {
         long[] ids = getSelectedCardIds();
         try {
-            mNewDid = mDropDownDecks.get(selectedDeck).getLong("id");
+            mNewDid = mDropDownDecks.get(selectedDeck).getLong_("id");
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -454,10 +453,9 @@ public class CardBrowser extends NavigationDrawerActivity implements
             }
         });
         mActionBarSpinner.setVisibility(View.VISIBLE);
-
         try {
             mOrder = CARD_ORDER_NONE;
-            String colOrder = getCol().getConf().getString("sortType");
+            String colOrder = getCol().getConf().getString_("sortType");
             for (int c = 0; c < fSortTypes.length; ++c) {
                 if (fSortTypes[c].equals(colOrder)) {
                     mOrder = c;
@@ -471,9 +469,9 @@ public class CardBrowser extends NavigationDrawerActivity implements
             // default to descending for non-text fields
             if (fSortTypes[mOrder].equals("noteFld")) {
                 mOrderAsc = !mOrderAsc;
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
         }
 
         mCards = new ArrayList<>();
@@ -661,7 +659,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             mSaveSearchItem = menu.findItem(R.id.action_save_search);
             mSaveSearchItem.setVisible(false); //the searchview's query always starts empty.
             mMySearchesItem = menu.findItem(R.id.action_list_my_searches);
-            JSONObject savedFiltersObj = getCol().getConf().optJSONObject("savedFilters");
+            JSONObject_ savedFiltersObj = getCol().getConf().optJSONObject_("savedFilters");
             mMySearchesItem.setVisible(savedFiltersObj != null && savedFiltersObj.length() > 0);
             mSearchItem = menu.findItem(R.id.action_search);
             mSearchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
@@ -799,7 +797,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             }
 
             case R.id.action_list_my_searches: {
-                JSONObject savedFiltersObj = getCol().getConf().optJSONObject("savedFilters");
+                JSONObject_ savedFiltersObj = getCol().getConf().optJSONObject_("savedFilters");
                 HashMap<String, String> savedFilters = new HashMap<>();
                 if (savedFiltersObj != null) {
                     Iterator<String> it = savedFiltersObj.keys();
@@ -868,7 +866,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
                 builderSingle.setTitle(getString(R.string.move_all_to_deck));
 
                 final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.dropdown_deck_item);
-                for (JSONObject deck : mDropDownDecks) {
+                for (JSONObject_ deck : mDropDownDecks) {
                     try {
                         arrayAdapter.add(deck.getString("name"));
                     } catch (JSONException e) {
@@ -1090,12 +1088,12 @@ public class CardBrowser extends NavigationDrawerActivity implements
             mRestrictOnDeck = "";
             saveLastDeckId(ALL_DECKS_ID);
         } else {
-            JSONObject deck = mDropDownDecks.get(position - 1);
+            JSONObject_ deck = mDropDownDecks.get(position - 1);
             try {
-                mRestrictOnDeck = "deck:\"" + deck.getString("name") + "\" ";
-                saveLastDeckId(deck.getLong("id"));
+                mRestrictOnDeck = "deck:\"" + deck.getString_("name") + "\" ";
+                saveLastDeckId(deck.getLong_("id"));
             } catch (JSONException e) {
-                throw new RuntimeException();
+                throw new RuntimeException(e);
             }
         }
         searchCards();
@@ -1172,13 +1170,13 @@ public class CardBrowser extends NavigationDrawerActivity implements
     // Iterates the drop down decks, and selects the one matching the given id
     private boolean selectDeckById(@NonNull Long deckId) {
         for (int dropDownDeckIdx = 0; dropDownDeckIdx < mDropDownDecks.size(); dropDownDeckIdx++) {
-            try {
-                if (mDropDownDecks.get(dropDownDeckIdx).getLong("id") == deckId) {
+            try{
+                if (mDropDownDecks.get(dropDownDeckIdx).getLong_("id") == deckId) {
                     selectDropDownItem(dropDownDeckIdx + 1);
                     return true;
                 }
             } catch (JSONException e) {
-                throw new RuntimeException();
+                throw new RuntimeException(e);
             }
         }
         return false;
@@ -1222,7 +1220,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             // update deck
             String deckName;
             try {
-                deckName = getCol().getDecks().get(c.getDid()).getString("name");
+                deckName = getCol().getDecks().get(c.getDid()).getString_("name");
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -1316,12 +1314,12 @@ public class CardBrowser extends NavigationDrawerActivity implements
         // database
         item.put("answer", formatQA(a));
         item.put("card", c.template().optString("name"));
-        // item.put("changed",strftime("%Y-%m-%d", localtime(c.getMod())));
-        // item.put("created",strftime("%Y-%m-%d", localtime(c.note().getId()/1000)));
-        // item.put("due",getDueString(c));
-        // item.put("ease","");
-        // item.put("edited",strftime("%Y-%m-%d", localtime(c.note().getMod())));
-        // item.put("interval","");
+        // item.put_("changed",strftime("%Y-%m-%d", localtime(c.getMod())));
+        // item.put_("created",strftime("%Y-%m-%d", localtime(c.note().getId()/1000)));
+        // item.put_("due",getDueString(c));
+        // item.put_("ease","");
+        // item.put_("edited",strftime("%Y-%m-%d", localtime(c.note().getMod())));
+        // item.put_("interval","");
         item.put("lapses", Integer.toString(c.getLapses()));
         item.put("note", c.model().optString("name"));
         item.put("question", formatQA(q));
