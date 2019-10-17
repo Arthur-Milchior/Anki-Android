@@ -960,8 +960,8 @@ public class DeckPicker extends NavigationDrawerActivity implements
             if (previous < 20600123) {
                 try {
                     Models models = getCol().getModels();
-                    for (JSONObject m : models.all()) {
-                        String css = m.getString("css");
+                    for (JSONObject_ m : models.all()) {
+                        String css = m.getString_("css");
                         if (css.contains("font-familiy")) {
                             m.put("css", css.replace("font-familiy", "font-family"));
                             models.save(m);
@@ -1703,10 +1703,10 @@ public class DeckPicker extends NavigationDrawerActivity implements
         } else if (did != null) {
             // filename not explicitly specified, but a deck has been specified so use deck name
             try {
-                exportPath = new File(exportDir, getCol().getDecks().get(did).getString("name").replaceAll("\\W+", "_") + ".apkg");
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
+                exportPath = new File(exportDir, getCol().getDecks().get(did).getString_("name").replaceAll("\\W+", "_") + ".apkg");
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
         } else if (!includeSched) {
             // full export without scheduling is assumed to be shared with someone else -- use "All Decks.apkg"
             exportPath = new File(exportDir, "All Decks.apkg");
@@ -2034,7 +2034,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
     public void exportDeck(long did) {
         String msg;
         try {
-            msg = getResources().getString(R.string.confirm_apkg_export_deck, getCol().getDecks().get(did).get("name"));
+            msg = getResources().getString(R.string.confirm_apkg_export_deck, getCol().getDecks().get(did).get_("name"));
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
