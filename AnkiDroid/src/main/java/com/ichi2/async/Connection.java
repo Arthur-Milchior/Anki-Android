@@ -227,7 +227,7 @@ public class Connection extends BaseAsyncTask<Connection.Payload, Object, Connec
             Timber.d("doInBackgroundLogin - response from server: %d, (%s)", data.returnType, ret.getStatusLine().getReasonPhrase());
             if (data.returnType == 200) {
                 try {
-                    JSONObject jo = (new JSONObject(server.stream2String(ret.getEntity().getContent())));
+                    JSONObject_ jo = (new JSONObject_(server.stream2String(ret.getEntity().getContent())));
                     hostkey = jo.getString("key");
                     valid = (hostkey != null) && (hostkey.length() > 0);
                 } catch (JSONException e) {
