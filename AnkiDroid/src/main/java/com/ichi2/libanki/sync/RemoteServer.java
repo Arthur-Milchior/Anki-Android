@@ -44,7 +44,7 @@ public class RemoteServer extends HttpSyncer {
     public org.apache.http.HttpResponse hostKey(String user, String pw) throws UnknownHttpResponseException {
         try {
             mPostVars = new HashMap<>();
-            JSONObject jo = new JSONObject();
+            JSONObject_ jo = new JSONObject_();
             jo.put("u", user);
             jo.put("p", pw);
             return super.req("hostKey", super.getInputStream(Utils.jsonToString(jo)));
@@ -60,9 +60,9 @@ public class RemoteServer extends HttpSyncer {
             mPostVars = new HashMap<>();
             mPostVars.put("k", mHKey);
             mPostVars.put("s", mSKey);
-            JSONObject jo = new JSONObject();
-            jo.put("v", Consts.SYNC_VER);
-            jo.put("cv",
+            JSONObject_ jo = new JSONObject_();
+            jo.put_("v", Consts.SYNC_VER);
+            jo.put_("cv",
                     String.format(Locale.US, "ankidroid,%s,%s", VersionUtils.getPkgVersionName(), Utils.platDesc()));
             return super.req("meta", super.getInputStream(Utils.jsonToString(jo)));
         } catch (JSONException e) {
@@ -72,47 +72,47 @@ public class RemoteServer extends HttpSyncer {
 
 
     @Override
-    public JSONObject applyChanges(JSONObject kw) throws UnknownHttpResponseException {
+    public JSONObject_ applyChanges(JSONObject_ kw) throws UnknownHttpResponseException {
         return parseDict(_run("applyChanges", kw));
     }
 
 
     @Override
-    public JSONObject start(JSONObject kw) throws UnknownHttpResponseException {
+    public JSONObject_ start(JSONObject_ kw) throws UnknownHttpResponseException {
         return parseDict(_run("start", kw));
     }
 
 
     @Override
-    public JSONObject chunk() throws UnknownHttpResponseException {
-        JSONObject co = new JSONObject();
+    public JSONObject_ chunk() throws UnknownHttpResponseException {
+        JSONObject_ co = new JSONObject_();
         return parseDict(_run("chunk", co));
     }
 
 
     @Override
-    public void applyChunk(JSONObject sech) throws UnknownHttpResponseException {
+    public void applyChunk(JSONObject_ sech) throws UnknownHttpResponseException {
         _run("applyChunk", sech);
     }
 
 
     @Override
-    public JSONObject sanityCheck2(JSONObject client) throws UnknownHttpResponseException {
+    public JSONObject_ sanityCheck2(JSONObject_ client) throws UnknownHttpResponseException {
         return parseDict(_run("sanityCheck2", client));
     }
 
     @Override
     public long finish() throws UnknownHttpResponseException {
-        return parseLong(_run("finish", new JSONObject()));
+        return parseLong(_run("finish", new JSONObject_()));
     }
 
     @Override
     public void abort() throws UnknownHttpResponseException {
-        _run("abort", new JSONObject());
+        _run("abort", new JSONObject_());
     }
 
     /** Python has dynamic type deduction, but we don't, so return String **/
-    private String _run(String cmd, JSONObject data) throws UnknownHttpResponseException {
+    private String _run(String cmd, JSONObject_ data) throws UnknownHttpResponseException {
         org.apache.http.HttpResponse ret = super.req(cmd, super.getInputStream(Utils.jsonToString(data)));
         try {
             return super.stream2String(ret.getEntity().getContent());
@@ -122,12 +122,12 @@ public class RemoteServer extends HttpSyncer {
     }
 
     /** Note: these conversion helpers aren't needed in libanki as type deduction occurs automatically there **/
-    private JSONObject parseDict(String s) {
+    private JSONObject_ parseDict(String s) {
         try {
             if (!s.equalsIgnoreCase("null") && s.length() != 0) {
-                return new JSONObject(s);
+                return new JSONObject_(s);
             } else {
-                return new JSONObject();
+                return new JSONObject_();
             }
         } catch (JSONException e) {
             throw new RuntimeException(e);
