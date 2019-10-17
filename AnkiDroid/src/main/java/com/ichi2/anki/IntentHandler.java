@@ -42,7 +42,7 @@ public class IntentHandler extends Activity {
                 AnkiActivity.finishActivityWithFade(this);
             } else {
                 // Don't import the file if it didn't load properly or doesn't have apkg extension
-                //Themes.showThemedToast(this, getResources().getString(R.string.import_log_no_apkg), true);
+                //Themes.showThemedToast(this, getResources().getString_(R.string.import_log_no_apkg), true);
                 ImportUtils.showImportUnsuccessfulDialog(this, errorMessage, true);
             }
         } else if ("com.ichi2.anki.DO_SYNC".equals(action)) {
