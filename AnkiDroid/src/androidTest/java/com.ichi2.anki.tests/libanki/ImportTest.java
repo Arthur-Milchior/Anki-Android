@@ -29,7 +29,6 @@ import com.ichi2.libanki.importer.Anki2Importer;
 import com.ichi2.libanki.importer.AnkiPackageImporter;
 import com.ichi2.libanki.importer.Importer;
 
-import org.json.JSONException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;

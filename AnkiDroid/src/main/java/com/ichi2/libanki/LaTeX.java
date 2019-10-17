@@ -22,7 +22,6 @@ import com.ichi2.libanki.hooks.Hook;
 import com.ichi2.libanki.hooks.Hooks;
 import com.ichi2.utils.JSONObject_;
 
-import org.json.JSONObject;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

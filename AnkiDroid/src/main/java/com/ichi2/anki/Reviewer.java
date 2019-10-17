@@ -47,7 +47,6 @@ import com.ichi2.libanki.Collection.DismissType;
 import com.ichi2.themes.Themes;
 import com.ichi2.widget.WidgetStatus;
 
-import org.json.JSONException;
 
 import java.lang.ref.WeakReference;
 import java.util.List;

@@ -23,8 +23,6 @@ import android.util.Pair;
 
 import com.ichi2.utils.JSONObject_;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;

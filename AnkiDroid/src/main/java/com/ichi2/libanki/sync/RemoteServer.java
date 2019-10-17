@@ -24,8 +24,8 @@ import com.ichi2.libanki.Utils;
 import com.ichi2.utils.JSONObject_;
 import com.ichi2.utils.VersionUtils;
 
+
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;

@@ -51,9 +51,8 @@ import com.ichi2.ui.SlidingTabLayout;
 import com.ichi2.utils.JSONArray_;
 import com.ichi2.utils.JSONObject_;
 
-import org.json.JSONArray;
+
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;

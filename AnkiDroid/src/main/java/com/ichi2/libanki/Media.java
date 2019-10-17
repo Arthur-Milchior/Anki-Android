@@ -28,9 +28,6 @@ import com.ichi2.libanki.template.Template;
 import com.ichi2.utils.JSONArray_;
 import com.ichi2.utils.JSONObject_;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

@@ -32,8 +32,6 @@ import com.ichi2.utils.JSONObject_;
 import com.ichi2.utils.VersionUtils;
 
 import org.apache.commons.httpclient.contrib.ssl.EasySSLSocketFactory;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

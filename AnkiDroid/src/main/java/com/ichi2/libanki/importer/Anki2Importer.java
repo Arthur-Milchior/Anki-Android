@@ -29,8 +29,6 @@ import com.ichi2.libanki.Storage;
 import com.ichi2.libanki.Utils;
 import com.ichi2.utils.JSONObject_;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;

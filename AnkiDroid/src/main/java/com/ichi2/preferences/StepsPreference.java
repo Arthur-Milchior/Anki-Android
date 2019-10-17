@@ -27,8 +27,8 @@ import com.ichi2.anki.R;
 import com.ichi2.anki.UIUtils;
 import com.ichi2.utils.JSONArray_;
 
-import org.json.JSONArray;
 import org.json.JSONException;
+
 
 public class StepsPreference extends EditTextPreference {
 
