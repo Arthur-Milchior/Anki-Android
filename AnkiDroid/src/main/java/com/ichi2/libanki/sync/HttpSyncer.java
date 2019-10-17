@@ -128,7 +128,7 @@ public class HttpSyncer {
     }
 
 
-    private org.apache.http.HttpResponse req(String method, InputStream fobj, int comp, JSONObject registerData) throws UnknownHttpResponseException {
+    private org.apache.http.HttpResponse req(String method, InputStream fobj, int comp, JSONObject_ registerData) throws UnknownHttpResponseException {
         File tmpFileBuffer = null;
         try {
             String bdry = "--" + BOUNDARY;
@@ -178,8 +178,8 @@ public class HttpSyncer {
             // connection headers
             String url = Consts.SYNC_BASE;
             if ("register".equals(method)) {
-                url = url + "account/signup" + "?username=" + registerData.getString("u") + "&password="
-                        + registerData.getString("p");
+                url = url + "account/signup" + "?username=" + registerData.getString_("u") + "&password="
+                        + registerData.getString_("p");
             } else if (method.startsWith("upgrade")) {
                 url = url + method;
             } else {
@@ -218,7 +218,7 @@ public class HttpSyncer {
                 Timber.e(e, "SSLException while building HttpClient");
                 throw new RuntimeException("SSLException while building HttpClient");
             }
-        } catch (UnsupportedEncodingException | JSONException e) {
+        } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             Timber.e(e, "BasicHttpSyncer.sync: IOException");
@@ -300,17 +300,17 @@ public class HttpSyncer {
     }
 
 
-    public JSONObject applyChanges(JSONObject kw) throws UnknownHttpResponseException {
+    public JSONObject_ applyChanges(JSONObject_ kw) throws UnknownHttpResponseException {
         return null;
     }
 
 
-    public JSONObject start(JSONObject kw) throws UnknownHttpResponseException {
+    public JSONObject_ start(JSONObject_ kw) throws UnknownHttpResponseException {
         return null;
     }
 
 
-    public JSONObject chunk() throws UnknownHttpResponseException {
+    public JSONObject_ chunk() throws UnknownHttpResponseException {
         return null;
     }
 
@@ -339,12 +339,12 @@ public class HttpSyncer {
     }
 
 
-    public JSONObject sanityCheck2(JSONObject client) throws UnknownHttpResponseException {
+    public JSONObject_ sanityCheck2(JSONObject_ client) throws UnknownHttpResponseException {
         return null;
     }
 
 
-    public void applyChunk(JSONObject sech) throws UnknownHttpResponseException {
+    public void applyChunk(JSONObject_ sech) throws UnknownHttpResponseException {
         // do nothing
     }
 
