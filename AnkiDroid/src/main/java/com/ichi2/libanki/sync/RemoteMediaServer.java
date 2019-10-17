@@ -70,35 +70,35 @@ public class RemoteMediaServer extends HttpSyncer {
     }
 
 
-    public JSONObject begin() throws UnknownHttpResponseException, MediaSyncException {
+    public JSONObject_ begin() throws UnknownHttpResponseException, MediaSyncException {
         try {
             mPostVars = new HashMap<>();
             mPostVars.put("k", mHKey);
             mPostVars.put("v",
                     String.format(Locale.US, "ankidroid,%s,%s", VersionUtils.getPkgVersionName(), Utils.platDesc()));
 
-            org.apache.http.HttpResponse resp = super.req("begin", super.getInputStream(Utils.jsonToString(new JSONObject())));
-            JSONObject jresp = new JSONObject(super.stream2String(resp.getEntity().getContent()));
-            JSONObject ret = _dataOnly(jresp, JSONObject.class);
-            mSKey = ret.getString("sk");
+            org.apache.http.HttpResponse resp = super.req("begin", super.getInputStream(Utils.jsonToString(new JSONObject_())));
+            JSONObject_ jresp = new JSONObject_(super.stream2String(resp.getEntity().getContent()));
+            JSONObject_ ret = _dataOnly(jresp, JSONObject_.class);
+            mSKey = ret.getString_("sk");
             return ret;
-        } catch (JSONException | IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
 
     // args: lastUsn
-    public JSONArray mediaChanges(int lastUsn) throws UnknownHttpResponseException, MediaSyncException {
+    public JSONArray_ mediaChanges(int lastUsn) throws UnknownHttpResponseException, MediaSyncException {
         try {
             mPostVars = new HashMap<>();
             mPostVars.put("sk", mSKey);
 
             org.apache.http.HttpResponse resp = super.req("mediaChanges",
-                    super.getInputStream(Utils.jsonToString(new JSONObject().put("lastUsn", lastUsn))));
-            JSONObject jresp = new JSONObject(super.stream2String(resp.getEntity().getContent()));
-            return _dataOnly(jresp, JSONArray.class);
-        } catch (JSONException | IOException e) {
+                    super.getInputStream(Utils.jsonToString(new JSONObject_().put_("lastUsn", lastUsn))));
+            JSONObject_ jresp = new JSONObject_(super.stream2String(resp.getEntity().getContent()));
+            return _dataOnly(jresp, JSONArray_.class);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -114,13 +114,11 @@ public class RemoteMediaServer extends HttpSyncer {
         try {
             org.apache.http.HttpResponse resp;
             resp = super.req("downloadFiles",
-                    super.getInputStream(Utils.jsonToString(new JSONObject().put("files", new JSONArray(top)))));
+                    super.getInputStream(Utils.jsonToString(new JSONObject_().put_("files", new JSONArray_(top)))));
             String zipPath = mCol.getPath().replaceFirst("collection\\.anki2$", "tmpSyncFromServer.zip");
             // retrieve contents and save to file on disk:
             super.writeToFile(resp.getEntity().getContent(), zipPath);
             return new ZipFile(new File(zipPath), ZipFile.OPEN_READ | ZipFile.OPEN_DELETE);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             Timber.e(e, "Failed to download requested media files");
             throw new RuntimeException(e);
@@ -128,13 +126,13 @@ public class RemoteMediaServer extends HttpSyncer {
     }
 
 
-    public JSONArray uploadChanges(File zip) throws UnknownHttpResponseException, MediaSyncException {
+    public JSONArray_ uploadChanges(File zip) throws UnknownHttpResponseException, MediaSyncException {
         try {
             // no compression, as we compress the zip file instead
             org.apache.http.HttpResponse resp = super.req("uploadChanges", new FileInputStream(zip), 0);
-            JSONObject jresp = new JSONObject(super.stream2String(resp.getEntity().getContent()));
-            return _dataOnly(jresp, JSONArray.class);
-        } catch (JSONException | IOException e) {
+            JSONObject_ jresp = new JSONObject_(super.stream2String(resp.getEntity().getContent()));
+            return _dataOnly(jresp, JSONArray_.class);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -144,10 +142,10 @@ public class RemoteMediaServer extends HttpSyncer {
     public String mediaSanity(int lcnt) throws UnknownHttpResponseException, MediaSyncException {
         try {
             org.apache.http.HttpResponse resp = super.req("mediaSanity",
-                    super.getInputStream(Utils.jsonToString(new JSONObject().put("local", lcnt))));
-            JSONObject jresp = new JSONObject(super.stream2String(resp.getEntity().getContent()));
+                    super.getInputStream(Utils.jsonToString(new JSONObject_().put_("local", lcnt))));
+            JSONObject_ jresp = new JSONObject_(super.stream2String(resp.getEntity().getContent()));
             return _dataOnly(jresp, String.class);
-        } catch (JSONException | IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -168,19 +166,19 @@ public class RemoteMediaServer extends HttpSyncer {
      *         returnType.
      */
     @SuppressWarnings("unchecked")
-    private <T> T _dataOnly(JSONObject resp, Class<T> returnType) throws MediaSyncException {
+    private <T> T _dataOnly(JSONObject_ resp, Class<T> returnType) throws MediaSyncException {
         try {
             if (!TextUtils.isEmpty(resp.optString("err"))) {
-                String err = resp.getString("err");
+                String err = resp.getString_("err");
                 mCol.log("error returned: " + err);
                 throw new MediaSyncException("SyncError:" + err);
             }
             if (returnType == String.class) {
-                return (T) resp.getString("data");
-            } else if (returnType == JSONObject.class) {
-                return (T) resp.getJSONObject("data");
-            } else if (returnType == JSONArray.class) {
-                return (T) resp.getJSONArray("data");
+                return (T) resp.getString_("data");
+            } else if (returnType == JSONObject_.class) {
+                return (T) resp.getJSONObject_("data");
+            } else if (returnType == JSONArray_.class) {
+                return (T) resp.getJSONArray_("data");
             }
             throw new RuntimeException("Did not specify a valid type for the 'data' element in resopnse");
         } catch (JSONException e) {
