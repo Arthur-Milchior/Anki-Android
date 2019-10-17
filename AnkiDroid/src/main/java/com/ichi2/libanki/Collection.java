@@ -34,6 +34,8 @@ import com.ichi2.async.DeckTask;
 import com.ichi2.compat.CompatHelper;
 import com.ichi2.libanki.hooks.Hooks;
 import com.ichi2.libanki.template.Template;
+import com.ichi2.utils.JSONArray_;
+import com.ichi2.utils.JSONObject_;
 import com.ichi2.utils.VersionUtils;
 
 import org.json.JSONArray;

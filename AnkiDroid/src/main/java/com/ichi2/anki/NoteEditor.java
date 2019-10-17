@@ -76,6 +76,8 @@ import com.ichi2.libanki.Utils;
 import com.ichi2.themes.StyledProgressDialog;
 import com.ichi2.themes.Themes;
 import com.ichi2.anki.widgets.PopupMenuWithIcons;
+import com.ichi2.utils.JSONArray_;
+import com.ichi2.utils.JSONObject_;
 import com.ichi2.widget.WidgetStatus;
 
 import org.json.JSONArray;

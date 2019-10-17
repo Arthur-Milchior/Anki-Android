@@ -21,6 +21,8 @@ import android.content.Context;
 import com.ichi2.anki.R;
 import com.ichi2.anki.exception.ImportExportException;
 import com.ichi2.compat.CompatHelper;
+import com.ichi2.utils.JSONArray_;
+import com.ichi2.utils.JSONObject_;
 
 import org.json.JSONArray;
 import org.json.JSONException;

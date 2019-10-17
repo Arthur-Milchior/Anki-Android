@@ -25,6 +25,8 @@ import android.text.TextUtils;
 import android.util.Pair;
 
 import com.ichi2.libanki.template.Template;
+import com.ichi2.utils.JSONArray_;
+import com.ichi2.utils.JSONObject_;
 
 import org.json.JSONArray;
 import org.json.JSONException;

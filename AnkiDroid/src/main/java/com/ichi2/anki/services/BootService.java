@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 
 import com.ichi2.anki.CollectionHelper;
 import com.ichi2.libanki.Collection;
+import com.ichi2.utils.JSONObject_;
 
 import org.json.JSONException;
 import org.json.JSONObject;

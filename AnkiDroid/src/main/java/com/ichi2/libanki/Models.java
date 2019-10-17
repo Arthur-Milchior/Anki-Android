@@ -24,6 +24,9 @@ import android.database.Cursor;
 import android.util.Pair;
 
 import com.ichi2.anki.exception.ConfirmModSchemaException;
+import com.ichi2.utils.JSONArray_;
+import com.ichi2.utils.JSONObject_;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

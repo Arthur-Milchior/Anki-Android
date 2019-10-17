@@ -72,6 +72,7 @@ import com.ichi2.libanki.Note;
 import com.ichi2.libanki.Utils;
 import com.ichi2.themes.Themes;
 import com.ichi2.upgrade.Upgrade;
+import com.ichi2.utils.JSONObject_;
 import com.ichi2.widget.WidgetStatus;
 
 import org.json.JSONException;

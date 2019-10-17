@@ -49,6 +49,8 @@ import com.ichi2.libanki.Models;
 import com.ichi2.libanki.Note;
 import com.ichi2.libanki.Sched;
 import com.ichi2.libanki.Utils;
+import com.ichi2.utils.JSONArray_;
+import com.ichi2.utils.JSONObject_;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -28,6 +28,8 @@ import com.ichi2.anki.multimediacard.fields.TextField;
 import com.ichi2.anki.multimediacard.impl.MultimediaEditableNote;
 import com.ichi2.libanki.Collection;
 import com.ichi2.libanki.Note;
+import com.ichi2.utils.JSONArray_;
+import com.ichi2.utils.JSONObject_;
 
 import org.json.JSONArray;
 import org.json.JSONException;

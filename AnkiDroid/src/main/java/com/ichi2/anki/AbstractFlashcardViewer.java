@@ -90,6 +90,8 @@ import com.ichi2.libanki.template.Template;
 import com.ichi2.themes.HtmlColors;
 import com.ichi2.themes.Themes;
 import com.ichi2.utils.DiffEngine;
+import com.ichi2.utils.JSONArray_;
+import com.ichi2.utils.JSONObject_;
 
 import org.json.JSONArray;
 import org.json.JSONException;

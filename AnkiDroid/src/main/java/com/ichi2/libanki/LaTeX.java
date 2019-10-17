@@ -20,6 +20,7 @@ package com.ichi2.libanki;
 
 import com.ichi2.libanki.hooks.Hook;
 import com.ichi2.libanki.hooks.Hooks;
+import com.ichi2.utils.JSONObject_;
 
 import org.json.JSONObject;
 

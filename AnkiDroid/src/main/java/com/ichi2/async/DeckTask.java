@@ -40,6 +40,7 @@ import com.ichi2.libanki.Sched;
 import com.ichi2.libanki.Storage;
 import com.ichi2.libanki.Utils;
 import com.ichi2.libanki.importer.AnkiPackageImporter;
+import com.ichi2.utils.JSONObject_;
 
 import org.json.JSONException;
 import org.json.JSONObject;

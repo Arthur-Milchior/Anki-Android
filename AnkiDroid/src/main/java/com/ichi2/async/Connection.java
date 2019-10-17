@@ -39,6 +39,7 @@ import com.ichi2.libanki.sync.MediaSyncer;
 import com.ichi2.libanki.sync.RemoteMediaServer;
 import com.ichi2.libanki.sync.RemoteServer;
 import com.ichi2.libanki.sync.Syncer;
+import com.ichi2.utils.JSONObject_;
 
 import org.json.JSONException;
 import org.json.JSONObject;

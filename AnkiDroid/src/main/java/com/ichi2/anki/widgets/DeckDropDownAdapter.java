@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.ichi2.anki.R;
+import com.ichi2.utils.JSONObject_;
 
 import org.json.JSONException;
 import org.json.JSONObject;

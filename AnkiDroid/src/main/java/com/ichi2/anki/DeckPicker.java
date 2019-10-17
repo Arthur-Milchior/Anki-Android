@@ -103,6 +103,7 @@ import com.ichi2.libanki.Utils;
 import com.ichi2.libanki.importer.AnkiPackageImporter;
 import com.ichi2.themes.StyledProgressDialog;
 import com.ichi2.utils.ImportUtils;
+import com.ichi2.utils.JSONObject_;
 import com.ichi2.utils.VersionUtils;
 import com.ichi2.widget.WidgetStatus;
 

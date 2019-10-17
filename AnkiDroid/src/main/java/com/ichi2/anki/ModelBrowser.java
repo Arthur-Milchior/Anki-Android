@@ -47,6 +47,7 @@ import com.ichi2.async.DeckTask;
 import com.ichi2.async.DeckTask.TaskData;
 import com.ichi2.libanki.Collection;
 import com.ichi2.libanki.Models;
+import com.ichi2.utils.JSONObject_;
 import com.ichi2.widget.WidgetStatus;
 
 import org.json.JSONException;

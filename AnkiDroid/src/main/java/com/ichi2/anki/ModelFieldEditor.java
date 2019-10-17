@@ -35,6 +35,8 @@ import com.ichi2.anki.exception.ConfirmModSchemaException;
 import com.ichi2.async.DeckTask;
 import com.ichi2.libanki.Collection;
 import com.ichi2.themes.StyledProgressDialog;
+import com.ichi2.utils.JSONArray_;
+import com.ichi2.utils.JSONObject_;
 import com.ichi2.widget.WidgetStatus;
 
 import org.json.JSONArray;
