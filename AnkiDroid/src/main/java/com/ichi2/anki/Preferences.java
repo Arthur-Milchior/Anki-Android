@@ -371,25 +371,25 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
             Collection col = getCol();
             if (col != null) {
                 try {
-                    JSONObject conf = col.getConf();
+                    JSONObject_ conf = col.getConf();
                     switch (pref.getKey()) {
                         case "showEstimates":
-                            ((CheckBoxPreference)pref).setChecked(conf.getBoolean("estTimes"));
+                            ((CheckBoxPreference)pref).setChecked(conf.getBoolean_("estTimes"));
                             break;
                         case "showProgress":
-                            ((CheckBoxPreference)pref).setChecked(conf.getBoolean("dueCounts"));
+                            ((CheckBoxPreference)pref).setChecked(conf.getBoolean_("dueCounts"));
                             break;
                         case "learnCutoff":
-                            ((NumberRangePreference)pref).setValue(conf.getInt("collapseTime") / 60);
+                            ((NumberRangePreference)pref).setValue(conf.getInt_("collapseTime") / 60);
                             break;
                         case "timeLimit":
-                            ((NumberRangePreference)pref).setValue(conf.getInt("timeLim") / 60);
+                            ((NumberRangePreference)pref).setValue(conf.getInt_("timeLim") / 60);
                             break;
                         case "useCurrent":
                             ((ListPreference)pref).setValueIndex(conf.optBoolean("addToCur", true) ? 0 : 1);
                             break;
                         case "newSpread":
-                            ((ListPreference)pref).setValueIndex(conf.getInt("newSpread"));
+                            ((ListPreference)pref).setValueIndex(conf.getInt_("newSpread"));
                             break;
                         case "dayOffset":
                             Calendar calendar = new GregorianCalendar();
@@ -400,7 +400,7 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
                         case "schedVer":
                             ((CheckBoxPreference)pref).setChecked(conf.optInt("schedVer", 1) == 2);
                     }
-                } catch (JSONException | NumberFormatException e) {
+                } catch (NumberFormatException e) {
                     throw new RuntimeException();
                 }
             } else {
@@ -466,27 +466,27 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
                     }
                     break;
                 case "showProgress":
-                    getCol().getConf().put("dueCounts", ((CheckBoxPreference) pref).isChecked());
+                    getCol().getConf().put_("dueCounts", ((CheckBoxPreference) pref).isChecked());
                     getCol().setMod();
                     break;
                 case "showEstimates":
-                    getCol().getConf().put("estTimes", ((CheckBoxPreference) pref).isChecked());
+                    getCol().getConf().put_("estTimes", ((CheckBoxPreference) pref).isChecked());
                     getCol().setMod();
                     break;
                 case "newSpread":
-                    getCol().getConf().put("newSpread", Integer.parseInt(((ListPreference) pref).getValue()));
+                    getCol().getConf().put_("newSpread", Integer.parseInt(((ListPreference) pref).getValue()));
                     getCol().setMod();
                     break;
                 case "timeLimit":
-                    getCol().getConf().put("timeLim", ((NumberRangePreference) pref).getValue() * 60);
+                    getCol().getConf().put_("timeLim", ((NumberRangePreference) pref).getValue() * 60);
                     getCol().setMod();
                     break;
                 case "learnCutoff":
-                    getCol().getConf().put("collapseTime", ((NumberRangePreference) pref).getValue() * 60);
+                    getCol().getConf().put_("collapseTime", ((NumberRangePreference) pref).getValue() * 60);
                     getCol().setMod();
                     break;
                 case "useCurrent":
-                    getCol().getConf().put("addToCur", ((ListPreference) pref).getValue().equals("0"));
+                    getCol().getConf().put_("addToCur", ((ListPreference) pref).getValue().equals("0"));
                     getCol().setMod();
                     break;
                 case "dayOffset": {
@@ -607,7 +607,7 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
             updateSummary(pref);
         } catch (BadTokenException e) {
             Timber.e(e, "Preferences: BadTokenException on showDialog");
-        } catch (NumberFormatException | JSONException e) {
+        } catch (NumberFormatException e) {
             throw new RuntimeException();
         }
     }
