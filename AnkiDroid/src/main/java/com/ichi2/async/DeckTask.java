@@ -1156,7 +1156,7 @@ public class DeckTask extends BaseAsyncTask<DeckTask.TaskData, DeckTask.TaskData
         Timber.d("doInBackgroundReorder");
         Collection col = CollectionHelper.getInstance().getCol(mContext);
         Object[] data = params[0].getObjArray();
-        JSONObject conf = (JSONObject) data[0];
+        JSONObject_ conf = (JSONObject_) data[0];
         col.getSched().resortConf(conf);
         return new TaskData(true);
     }
@@ -1166,10 +1166,10 @@ public class DeckTask extends BaseAsyncTask<DeckTask.TaskData, DeckTask.TaskData
         Timber.d("doInBackgroundConfChange");
         Collection col = CollectionHelper.getInstance().getCol(mContext);
         Object[] data = params[0].getObjArray();
-        JSONObject deck = (JSONObject) data[0];
-        JSONObject conf = (JSONObject) data[1];
+        JSONObject_ deck = (JSONObject_) data[0];
+        JSONObject_ conf = (JSONObject_) data[1];
         try {
-            long newConfId = conf.getLong("id");
+            long newConfId = conf.getLong_("id");
             // If new config has a different sorting order, reorder the cards
             int oldOrder = col.getDecks().getConf(deck.getLong("conf")).getJSONObject("new").getInt("order");
             int newOrder = col.getDecks().getConf(newConfId).getJSONObject("new").getInt("order");
@@ -1196,7 +1196,7 @@ public class DeckTask extends BaseAsyncTask<DeckTask.TaskData, DeckTask.TaskData
         Timber.d("doInBackgroundConfReset");
         Collection col = CollectionHelper.getInstance().getCol(mContext);
         Object[] data = params[0].getObjArray();
-        JSONObject conf = (JSONObject) data[0];
+        JSONObject_ conf = (JSONObject_) data[0];
         col.getDecks().restoreToDefault(conf);
         col.save();
         return new TaskData(true);
@@ -1207,17 +1207,17 @@ public class DeckTask extends BaseAsyncTask<DeckTask.TaskData, DeckTask.TaskData
         Timber.d("doInBackgroundConfRemove");
         Collection col = CollectionHelper.getInstance().getCol(mContext);
         Object[] data = params[0].getObjArray();
-        JSONObject conf = (JSONObject) data[0];
+        JSONObject_ conf = (JSONObject_) data[0];
         try {
             // Note: We do the actual removing of the options group in the main thread so that we 
             // can ask the user to confirm if they're happy to do a full sync, and just do the resorting here
 
             // When a conf is deleted, all decks using it revert to the default conf.
             // Cards must be reordered according to the default conf.
-            int order = conf.getJSONObject("new").getInt("order");
-            int defaultOrder = col.getDecks().getConf(1).getJSONObject("new").getInt("order");
+            int order = conf.getJSONObject_("new").getInt_("order");
+            int defaultOrder = col.getDecks().getConf(1).getJSONObject_("new").getInt_("order");
             if (order != defaultOrder) {
-                conf.getJSONObject("new").put("order", defaultOrder);
+                conf.getJSONObject_("new").put("order", defaultOrder);
                 col.getSched().resortConf(conf);
             }
             col.save();
@@ -1232,12 +1232,12 @@ public class DeckTask extends BaseAsyncTask<DeckTask.TaskData, DeckTask.TaskData
         Timber.d("doInBackgroundConfSetSubdecks");
         Collection col = CollectionHelper.getInstance().getCol(mContext);
         Object[] data = params[0].getObjArray();
-        JSONObject deck = (JSONObject) data[0];
-        JSONObject conf = (JSONObject) data[1];
+        JSONObject_ deck = (JSONObject_) data[0];
+        JSONObject_ conf = (JSONObject_) data[1];
         try {
             TreeMap<String, Long> children = col.getDecks().children(deck.getLong("id"));
             for (Map.Entry<String, Long> entry : children.entrySet()) {
-                JSONObject child = col.getDecks().get(entry.getValue());
+                JSONObject_ child = col.getDecks().get(entry.getValue());
                 if (child.getInt("dyn") == 1) {
                     continue;
                 }
@@ -1274,8 +1274,8 @@ public class DeckTask extends BaseAsyncTask<DeckTask.TaskData, DeckTask.TaskData
         Timber.d("doInBackgroundAddTemplate");
         Collection col = CollectionHelper.getInstance().getCol(mContext);
         Object [] args = params[0].getObjArray();
-        JSONObject model = (JSONObject) args[0];
-        JSONObject template = (JSONObject) args[1];
+        JSONObject_ model = (JSONObject_) args[0];
+        JSONObject_ template = (JSONObject_) args[1];
         // add the new template
         try {
             col.getModels().addTemplate(model, template);
@@ -1294,8 +1294,8 @@ public class DeckTask extends BaseAsyncTask<DeckTask.TaskData, DeckTask.TaskData
         Timber.d("doInBackgroundRemoveTemplate");
         Collection col = CollectionHelper.getInstance().getCol(mContext);
         Object [] args = params[0].getObjArray();
-        JSONObject model = (JSONObject) args[0];
-        JSONObject template = (JSONObject) args[1];
+        JSONObject_ model = (JSONObject_) args[0];
+        JSONObject_ template = (JSONObject_) args[1];
         try {
             boolean success = col.getModels().remTemplate(model, template);
             if (! success) {
@@ -1316,7 +1316,7 @@ public class DeckTask extends BaseAsyncTask<DeckTask.TaskData, DeckTask.TaskData
         Timber.d("doInBackgroundSaveModel");
         Collection col = CollectionHelper.getInstance().getCol(mContext);
         Object [] args = params[0].getObjArray();
-        JSONObject model = (JSONObject) args[0];
+        JSONObject_ model = (JSONObject_) args[0];
         col.getModels().save(model, true);
         col.reset();
         col.save();
@@ -1329,19 +1329,19 @@ public class DeckTask extends BaseAsyncTask<DeckTask.TaskData, DeckTask.TaskData
      * Returns an ArrayList of all models alphabetically ordered and the number of notes
      * associated with each model.
      *
-     * @return {ArrayList<JSONObject> models, ArrayList<Integer> cardCount}
+     * @return {ArrayList<JSONObject_> models, ArrayList<Integer> cardCount}
      */
     private TaskData doInBackgroundCountModels(TaskData... params){
         Timber.d("doInBackgroundLoadModels");
         Collection col = CollectionHelper.getInstance().getCol(mContext);
 
-        ArrayList<JSONObject> models = col.getModels().all();
+        ArrayList<JSONObject_> models = col.getModels().all();
         ArrayList<Integer> cardCount = new ArrayList<>();
-        Collections.sort(models, new Comparator<JSONObject>() {
+        Collections.sort(models, new Comparator<JSONObject_>() {
             @Override
-            public int compare(JSONObject a, JSONObject b) {
+            public int compare(JSONObject_ a, JSONObject_ b) {
                 try {
-                    return a.getString("name").compareTo(b.getString("name"));
+                    return a.getString_("name").compareTo(b.getString_("name"));
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
@@ -1349,7 +1349,7 @@ public class DeckTask extends BaseAsyncTask<DeckTask.TaskData, DeckTask.TaskData
         });
 
         try{
-            for (JSONObject n : models) {
+            for (JSONObject_ n : models) {
                 long modID = n.getLong("id");
                 cardCount.add(col.getModels().nids(col.getModels().get(modID)).size());
             }
@@ -1390,8 +1390,8 @@ public class DeckTask extends BaseAsyncTask<DeckTask.TaskData, DeckTask.TaskData
         Timber.d("doInBackGroundDeleteField");
         Object[] objects = params[0].getObjArray();
 
-        JSONObject model = (JSONObject) objects[0];
-        JSONObject field = (JSONObject) objects[1];
+        JSONObject_ model = (JSONObject_) objects[0];
+        JSONObject_ field = (JSONObject_) objects[1];
 
 
         Collection col = CollectionHelper.getInstance().getCol(mContext);
@@ -1412,8 +1412,8 @@ public class DeckTask extends BaseAsyncTask<DeckTask.TaskData, DeckTask.TaskData
         Timber.d("doInBackgroundRepositionField");
         Object[] objects = params[0].getObjArray();
 
-        JSONObject model = (JSONObject) objects[0];
-        JSONObject field = (JSONObject) objects[1];
+        JSONObject_ model = (JSONObject_) objects[0];
+        JSONObject_ field = (JSONObject_) objects[1];
         int index = (Integer) objects[2];
 
 
@@ -1435,7 +1435,7 @@ public class DeckTask extends BaseAsyncTask<DeckTask.TaskData, DeckTask.TaskData
         Timber.d("doInBackgroundRepositionField");
         Object[] objects = params[0].getObjArray();
 
-        JSONObject model = (JSONObject) objects[0];
+        JSONObject_ model = (JSONObject_) objects[0];
         String fieldName = (String) objects[1];
 
         Collection col = CollectionHelper.getInstance().getCol(mContext);
@@ -1457,7 +1457,7 @@ public class DeckTask extends BaseAsyncTask<DeckTask.TaskData, DeckTask.TaskData
             Timber.d("doInBackgroundChangeSortField");
             Object[] objects = params[0].getObjArray();
 
-            JSONObject model = (JSONObject) objects[0];
+            JSONObject_ model = (JSONObject_) objects[0];
             int idx = (int) objects[1];
 
             Collection col = CollectionHelper.getInstance().getCol(mContext);
