@@ -42,29 +42,29 @@ public class BootService extends BroadcastReceiver {
     private void scheduleDeckReminder(Context context) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         try {
-            for (JSONObject deck : CollectionHelper.getInstance().getCol(context).getDecks().all()) {
+            for (JSONObject_ deck : CollectionHelper.getInstance().getCol(context).getDecks().all()) {
                 Collection col = CollectionHelper.getInstance().getCol(context);
-                if (col.getDecks().isDyn(deck.getLong("id"))) {
+                if (col.getDecks().isDyn(deck.getLong_("id"))) {
                     continue;
                 }
-                final long deckConfigurationId = deck.getLong("conf");
-                final JSONObject deckConfiguration = col.getDecks().getConf(deckConfigurationId);
+                final long deckConfigurationId = deck.getLong_("conf");
+                final JSONObject_ deckConfiguration = col.getDecks().getConf(deckConfigurationId);
 
                 if (deckConfiguration.has("reminder")) {
-                    final JSONObject reminder = deckConfiguration.getJSONObject("reminder");
+                    final JSONObject_ reminder = deckConfiguration.getJSONObject_("reminder");
 
-                    if (reminder.getBoolean("enabled")) {
+                    if (reminder.getBoolean_("enabled")) {
                         final PendingIntent reminderIntent = PendingIntent.getBroadcast(
                                 context,
-                                (int) deck.getLong("id"),
+                                (int) deck.getLong_("id"),
                                 new Intent(context, ReminderService.class).putExtra(ReminderService.EXTRA_DECK_ID,
-                                        deck.getLong("id")),
+                                        deck.getLong_("id")),
                                 0
                         );
                         final Calendar calendar = Calendar.getInstance();
 
-                        calendar.set(Calendar.HOUR_OF_DAY, reminder.getJSONArray("time").getInt(0));
-                        calendar.set(Calendar.MINUTE, reminder.getJSONArray("time").getInt(1));
+                        calendar.set(Calendar.HOUR_OF_DAY, reminder.getJSONArray_("time").getInt_(0));
+                        calendar.set(Calendar.MINUTE, reminder.getJSONArray_("time").getInt_(1));
                         calendar.set(Calendar.SECOND, 0);
 
                         alarmManager.setRepeating(
