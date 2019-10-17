@@ -307,6 +307,8 @@ public class Finder {
                     s.add(_findDeck(val));
                 } else if ("mid".equals(cmd)) {
                     s.add(_findMid(val));
+                } else if ("did".equals(cmd)) {
+                    s.add(_findDid(val));
                 } else if ("nid".equals(cmd)) {
                     s.add(_findNids(val));
                 } else if ("cid".equals(cmd)) {
@@ -576,6 +578,14 @@ public class Finder {
             return null;
         }
         return "n.mid = " + val;
+    }
+
+
+    private String _findDid(String val) {
+        if (fMidPattern.matcher(val).find()) {
+            return null;
+        }
+        return "c.did = " + val;
     }
 
 
