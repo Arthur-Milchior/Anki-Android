@@ -105,7 +105,7 @@ public class ContentProviderTest {
         mCreatedNotes = new ArrayList<>();
         final Collection col = CollectionHelper.getInstance().getCol(InstrumentationRegistry.getInstrumentation().getTargetContext());
         // Add a new basic model that we use for testing purposes (existing models could potentially be corrupted)
-        JSONObject model = Models.addBasicModel(col, BASIC_MODEL_NAME);
+        JSONObject_ model = Models.addBasicModel(col, BASIC_MODEL_NAME);
         mModelId = model.getLong("id");
         ArrayList<String> flds = col.getModels().fieldNames(model);
         // Use the names of the fields as test values for the notes which will be added
@@ -168,7 +168,7 @@ public class ContentProviderTest {
 
 
     private void removeAllModelsByName(Collection col, String name) throws Exception {
-        JSONObject testModel = col.getModels().byName(name);
+        JSONObject_ testModel = col.getModels().byName(name);
         while (testModel != null) {
             col.getModels().rem(testModel);
             testModel = col.getModels().byName(name);
@@ -196,7 +196,7 @@ public class ContentProviderTest {
         addedNote.load();
         assertTrue("Check that fields were set correctly", Arrays.equals(addedNote.getFields(), TEST_NOTE_FIELDS));
         assertEquals("Check that tag was set correctly", TEST_TAG, addedNote.getTags().get(0));
-        int expectedNumCards = col.getModels().get(mModelId).getJSONArray("tmpls").length();
+        int expectedNumCards = col.getModels().get(mModelId).getJSONArray_("tmpls").length();
         assertEquals("Check that correct number of cards generated", expectedNumCards, addedNote.cards().size());
         // Now delete the note
         cr.delete(newNoteUri, null, null);
@@ -217,12 +217,12 @@ public class ContentProviderTest {
         final ContentResolver cr = InstrumentationRegistry.getInstrumentation().getTargetContext().getContentResolver();
         Collection col = CollectionHelper.getInstance().getCol(InstrumentationRegistry.getInstrumentation().getTargetContext());
         // Add a new basic model that we use for testing purposes (existing models could potentially be corrupted)
-        JSONObject model = Models.addBasicModel(col, BASIC_MODEL_NAME);
+        JSONObject_ model = Models.addBasicModel(col, BASIC_MODEL_NAME);
         long modelId = model.getLong("id");
         // Add the note
         Uri modelUri = ContentUris.withAppendedId(FlashCardsContract.Model.CONTENT_URI, modelId);
         int testIndex = TEST_MODEL_CARDS.length - 1; // choose the last one because not the same as the basic model template
-        int expectedOrd = model.getJSONArray("tmpls").length();
+        int expectedOrd = model.getJSONArray_("tmpls").length();
         ContentValues cv = new ContentValues();
         cv.put(FlashCardsContract.CardTemplate.NAME, TEST_MODEL_CARDS[testIndex]);
         cv.put(FlashCardsContract.CardTemplate.QUESTION_FORMAT, TEST_MODEL_QFMT[testIndex]);
@@ -234,8 +234,8 @@ public class ContentProviderTest {
         col = reopenCol();  // test that the changes are physically saved to the DB
         assertNotNull("Check template uri", templateUri);
         assertEquals("Check template uri ord", expectedOrd, ContentUris.parseId(templateUri));
-        JSONObject template = col.getModels().get(modelId).getJSONArray("tmpls").getJSONObject(expectedOrd);
-        assertEquals("Check template JSONObject ord", expectedOrd, template.getInt("ord"));
+        JSONObject_ template = col.getModels().get(modelId).getJSONArray_("tmpls").getJSONObject_(expectedOrd);
+        assertEquals("Check template JSONObject_ ord", expectedOrd, template.getInt("ord"));
         assertEquals("Check template name", TEST_MODEL_CARDS[testIndex], template.getString("name"));
         assertEquals("Check qfmt", TEST_MODEL_QFMT[testIndex], template.getString("qfmt"));
         assertEquals("Check afmt", TEST_MODEL_AFMT[testIndex], template.getString("afmt"));
@@ -252,9 +252,9 @@ public class ContentProviderTest {
         // Get required objects for test
         final ContentResolver cr = InstrumentationRegistry.getInstrumentation().getTargetContext().getContentResolver();
         Collection col = CollectionHelper.getInstance().getCol(InstrumentationRegistry.getInstrumentation().getTargetContext());
-        JSONObject model = Models.addBasicModel(col, BASIC_MODEL_NAME);
+        JSONObject_ model = Models.addBasicModel(col, BASIC_MODEL_NAME);
         long modelId = model.getLong("id");
-        JSONArray initialFldsArr = model.getJSONArray("flds");
+        JSONArray_ initialFldsArr = model.getJSONArray_("flds");
         int initialFieldCount = initialFldsArr.length();
         Uri noteTypeUri = ContentUris.withAppendedId(FlashCardsContract.Model.CONTENT_URI, modelId);
         ContentValues insertFieldValues = new ContentValues();
@@ -267,9 +267,9 @@ public class ContentProviderTest {
         // Test the field is as expected
         long fieldId = ContentUris.parseId(fieldUri);
         assertEquals("Check field id", initialFieldCount, fieldId);
-        JSONArray fldsArr = model.getJSONArray("flds");
+        JSONArray_ fldsArr = model.getJSONArray_("flds");
         assertEquals("Check fields length", initialFieldCount + 1, fldsArr.length());
-        assertEquals("Check last field name", TEST_FIELD_NAME, fldsArr.getJSONObject(fldsArr.length() - 1).optString("name", ""));
+        assertEquals("Check last field name", TEST_FIELD_NAME, fldsArr.getJSONObject_(fldsArr.length() - 1).optString("name", ""));
         col.getModels().rem(model);
     }
 
@@ -419,20 +419,20 @@ public class ContentProviderTest {
         long mid = Long.parseLong(modelUri.getLastPathSegment());
         Collection col = reopenCol();
         try {
-            JSONObject model = col.getModels().get(mid);
+            JSONObject_ model = col.getModels().get(mid);
             assertEquals("Check model name", TEST_MODEL_NAME, model.getString("name"));
-            assertEquals("Check templates length", TEST_MODEL_CARDS.length, model.getJSONArray("tmpls").length());
-            assertEquals("Check field length", TEST_MODEL_FIELDS.length, model.getJSONArray("flds").length());
-            JSONArray flds = model.getJSONArray("flds");
+            assertEquals("Check templates length", TEST_MODEL_CARDS.length, model.getJSONArray_("tmpls").length());
+            assertEquals("Check field length", TEST_MODEL_FIELDS.length, model.getJSONArray_("flds").length());
+            JSONArray_ flds = model.getJSONArray_("flds");
             for (int i = 0; i < flds.length(); i++) {
-                assertEquals("Check name of fields", TEST_MODEL_FIELDS[i], flds.getJSONObject(i).getString("name"));
+                assertEquals("Check name of fields", TEST_MODEL_FIELDS[i], flds.getJSONObject_(i).getString("name"));
             }
             // Test updating the model CSS (to test updating MODELS_ID Uri)
             cv = new ContentValues();
             cv.put(FlashCardsContract.Model.CSS, TEST_MODEL_CSS);
             assertTrue(cr.update(modelUri, cv, null, null) > 0);
             col = reopenCol();
-            assertEquals("Check css", TEST_MODEL_CSS, col.getModels().get(mid).getString("css"));
+            assertEquals("Check css", TEST_MODEL_CSS, col.getModels().get(mid).getString_("css"));
             // Update each of the templates in model (to test updating MODELS_ID_TEMPLATES_ID Uri)
             for (int i = 0; i < TEST_MODEL_CARDS.length; i++) {
                 cv = new ContentValues();
@@ -444,7 +444,7 @@ public class ContentProviderTest {
                 Uri tmplUri = Uri.withAppendedPath(Uri.withAppendedPath(modelUri, "templates"), Integer.toString(i));
                 assertTrue("Update rows", cr.update(tmplUri, cv, null, null) > 0);
                 col = reopenCol();
-                JSONObject template = col.getModels().get(mid).getJSONArray("tmpls").getJSONObject(i);
+                JSONObject_ template = col.getModels().get(mid).getJSONArray_("tmpls").getJSONObject_(i);
                 assertEquals("Check template name", TEST_MODEL_CARDS[i], template.getString("name"));
                 assertEquals("Check qfmt", TEST_MODEL_QFMT[i], template.getString("qfmt"));
                 assertEquals("Check afmt", TEST_MODEL_AFMT[i], template.getString("afmt"));
@@ -662,7 +662,7 @@ public class ContentProviderTest {
                 long deckID = decksCursor.getLong(decksCursor.getColumnIndex(FlashCardsContract.Deck.DECK_ID));
                 String deckName = decksCursor.getString(decksCursor.getColumnIndex(FlashCardsContract.Deck.DECK_NAME));
 
-                JSONObject deck = decks.get(deckID);
+                JSONObject_ deck = decks.get(deckID);
                 assertNotNull("Check that the deck we received actually exists", deck);
                 assertEquals("Check that the received deck has the correct name", deck.getString("name"), deckName);
             }
@@ -689,7 +689,7 @@ public class ContentProviderTest {
                 long returnedDeckID = decksCursor.getLong(decksCursor.getColumnIndex(FlashCardsContract.Deck.DECK_ID));
                 String returnedDeckName = decksCursor.getString(decksCursor.getColumnIndex(FlashCardsContract.Deck.DECK_NAME));
 
-                JSONObject realDeck = col.getDecks().get(deckId);
+                JSONObject_ realDeck = col.getDecks().get(deckId);
                 assertEquals("Check that received deck ID equals real deck ID", deckId, returnedDeckID);
                 assertEquals("Check that received deck name equals real deck name", realDeck.getString("name"), returnedDeckName);
             }
