@@ -89,7 +89,7 @@ public class DeckPickerContextMenu extends AnalyticsDialogFragment {
     }
 
     /**
-     * Retrieve the list of ids to put in the context menu list
+     * Retrieve the list of ids to put_ in the context menu list
      * @return the ids of which values to show
      */
     private int[] getListIds() {
