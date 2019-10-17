@@ -156,8 +156,8 @@ class AnkiExporter extends Exporter {
         }
         // models - start with zero
         Timber.d("Copy models");
-        for (JSONObject m : mSrc.getModels().all()) {
-            if (mids.contains(m.getLong("id"))) {
+        for (JSONObject_ m : mSrc.getModels().all()) {
+            if (mids.contains(m.getLong_("id"))) {
                 dst.getModels().update(m);
             }
         }
@@ -170,17 +170,17 @@ class AnkiExporter extends Exporter {
                 dids.add(x);
             }
         }
-        JSONObject dconfs = new JSONObject();
-        for (JSONObject d : mSrc.getDecks().all()) {
-            if (d.getString("id").equals("1")) {
+        JSONObject_ dconfs = new JSONObject_();
+        for (JSONObject_ d : mSrc.getDecks().all()) {
+            if (d.getString_("id").equals("1")) {
                 continue;
             }
-            if (mDid != null && !dids.contains(d.getLong("id"))) {
+            if (mDid != null && !dids.contains(d.getLong_("id"))) {
                 continue;
             }
-            if (d.getInt("dyn") != 1 && d.getLong("conf") != 1L) {
+            if (d.getInt_("dyn") != 1 && d.getLong_("conf") != 1L) {
                 if (mIncludeSched) {
-                    dconfs.put(Long.toString(d.getLong("conf")), true);
+                    dconfs.put(Long.toString(d.getLong_("conf")), true);
                 }
             }
             if (!mIncludeSched) {
@@ -191,14 +191,14 @@ class AnkiExporter extends Exporter {
         }
         // copy used deck confs
         Timber.d("Copy deck options");
-        for (JSONObject dc : mSrc.getDecks().allConf()) {
-            if (dconfs.has(dc.getString("id"))) {
+        for (JSONObject_ dc : mSrc.getDecks().allConf()) {
+            if (dconfs.has(dc.getString_("id"))) {
                 dst.getDecks().updateConf(dc);
             }
         }
         // find used media
         Timber.d("Find used media");
-        JSONObject media = new JSONObject();
+        JSONObject_ media = new JSONObject_();
         mMediaDir = mSrc.getMedia().dir();
         if (mIncludeMedia) {
             ArrayList<Long> mid = mSrc.getDb().queryColumn(Long.class, "select mid from notes where id in " + strnids,
@@ -225,10 +225,10 @@ class AnkiExporter extends Exporter {
                 }
             }
         }
-        JSONArray keys = media.names();
+        JSONArray_ keys = media.names();
         if (keys != null) {
             for (int i = 0; i < keys.length(); i++) {
-                mMediaFiles.add(keys.getString(i));
+                mMediaFiles.add(keys.getString_(i));
             }
         }
         Timber.d("Cleanup");
@@ -249,21 +249,21 @@ class AnkiExporter extends Exporter {
      * @return
      * @throws JSONException
      */
-    private boolean _modelHasMedia(JSONObject model, String fname) throws JSONException {
+    private boolean _modelHasMedia(JSONObject_ model, String fname) throws JSONException {
         // Don't crash if the model is null
         if (model == null) {
             Timber.w("_modelHasMedia given null model");
             return true;
         }
         // First check the styling
-        if (model.getString("css").contains(fname)) {
+        if (model.getString_("css").contains(fname)) {
             return true;
         }
         // If not there then check the templates
-        JSONArray tmpls = model.getJSONArray("tmpls");
+        JSONArray_ tmpls = model.getJSONArray("tmpls");
         for (int idx = 0; idx < tmpls.length(); idx++) {
-            JSONObject tmpl = tmpls.getJSONObject(idx);
-            if (tmpl.getString("qfmt").contains(fname) || tmpl.getString("afmt").contains(fname)) {
+            JSONObject_ tmpl = tmpls.getJSONObject(idx);
+            if (tmpl.getString_("qfmt").contains(fname) || tmpl.getString_("afmt").contains(fname)) {
                 return true;
             }
         }
@@ -316,7 +316,7 @@ public final class AnkiPackageExporter extends AnkiExporter {
         // open a zip file
         ZipFile z = new ZipFile(path);
         // if all decks and scheduling included, full export
-        JSONObject media;
+        JSONObject_ media;
         if (mIncludeSched && mDid == null) {
             media = exportVerbatim(z, context);
         } else {
@@ -329,7 +329,7 @@ public final class AnkiPackageExporter extends AnkiExporter {
     }
 
 
-    private JSONObject exportVerbatim(ZipFile z, Context context) throws IOException {
+    private JSONObject_ exportVerbatim(ZipFile z, Context context) throws IOException {
         // close our deck & write it into the zip file, and reopen
         mCount = mCol.cardCount();
         mCol.close();
@@ -342,7 +342,7 @@ public final class AnkiPackageExporter extends AnkiExporter {
 
         mCol.reopen();
         // copy all media
-        JSONObject media = new JSONObject();
+        JSONObject_ media = new JSONObject_();
         if (!mIncludeMedia) {
             return media;
         }
@@ -364,7 +364,7 @@ public final class AnkiPackageExporter extends AnkiExporter {
     }
 
 
-    private JSONObject exportFiltered(ZipFile z, String path, Context context) throws IOException, JSONException, ImportExportException {
+    private JSONObject_ exportFiltered(ZipFile z, String path, Context context) throws IOException, JSONException, ImportExportException {
         // export into the anki2 file
         String colfile = path.replace(".apkg", ".anki2");
 
@@ -376,7 +376,7 @@ public final class AnkiPackageExporter extends AnkiExporter {
         z.write(colfile, "collection.anki2");
         // and media
         prepareMedia();
-        JSONObject media = new JSONObject();
+        JSONObject_ media = new JSONObject_();
         File mdir = new File(mCol.getMedia().dir());
         if (mdir.exists() && mdir.isDirectory()) {
             int c = 0;
@@ -389,7 +389,7 @@ public final class AnkiPackageExporter extends AnkiExporter {
                     media.put(Integer.toString(c), file);
                     c++;
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
         }
