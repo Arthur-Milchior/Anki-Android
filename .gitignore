@@ -54,3 +54,4 @@ tools/crowdin_key.txt
 # Testing / quality remnants
 AnkiDroid/ACRA-INSTALLATION
 .codacy.json
+*#
