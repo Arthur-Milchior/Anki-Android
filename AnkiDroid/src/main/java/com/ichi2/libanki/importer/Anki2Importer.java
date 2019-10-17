@@ -244,7 +244,7 @@ public class Anki2Importer extends Importer {
                                 dirty.add((Long) note[0]);
                             } else {
                                 dupesIgnored.add(String.format("%s: %s",
-                                        mCol.getModels().get(oldMid).getString("name"),
+                                        mCol.getModels().get(oldMid).getString_("name"),
                                         ((String) note[6]).replace("\u001f", ",")));
                                 mIgnoredGuids.put((String) note[GUID], true);
                             }
@@ -253,13 +253,11 @@ public class Anki2Importer extends Importer {
                 }
                 i++;
                 if (total != 0 && (!largeCollection || i % onePercent == 0)) {
-                    // Calls to publishProgress are reasonably expensive due to res.getString()
+                    // Calls to publishProgress are reasonably expensive due to res.getString_()
                     publishProgress(i * 100 / total, 0, 0);
                 }
             }
             publishProgress(100, 0, 0);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
         } finally {
             if (cur != null) {
                 cur.close();
@@ -346,28 +344,28 @@ public class Anki2Importer extends Importer {
                 return mModelMap.get(srcMid);
             }
             long mid = srcMid;
-            JSONObject srcModel = mSrc.getModels().get(srcMid);
+            JSONObject_ srcModel = mSrc.getModels().get(srcMid);
             String srcScm = mSrc.getModels().scmhash(srcModel);
             while (true) {
                 // missing from target col?
                 if (!mDst.getModels().have(mid)) {
                     // copy it over
-                    JSONObject model = new JSONObject(Utils.jsonToString(srcModel));
-                    model.put("id", mid);
-                    model.put("mod", Utils.intTime());
-                    model.put("usn", mCol.usn());
+                    JSONObject_ model = new JSONObject_(Utils.jsonToString(srcModel));
+                    model.put_("id", mid);
+                    model.put_("mod", Utils.intTime());
+                    model.put_("usn", mCol.usn());
                     mDst.getModels().update(model);
                     break;
                 }
                 // there's an existing model; do the schemas match?
-                JSONObject dstModel = mDst.getModels().get(mid);
+                JSONObject_ dstModel = mDst.getModels().get(mid);
                 String dstScm = mDst.getModels().scmhash(dstModel);
                 if (srcScm.equals(dstScm)) {
                     // they do; we can reuse this mid
-                    JSONObject model = new JSONObject(Utils.jsonToString(srcModel));
-                    model.put("id", mid);
-                    model.put("mod", Utils.intTime());
-                    model.put("usn", mCol.usn());
+                    JSONObject_ model = new JSONObject_(Utils.jsonToString(srcModel));
+                    model.put_("id", mid);
+                    model.put_("mod", Utils.intTime());
+                    model.put_("usn", mCol.usn());
                     mDst.getModels().update(model);
                     break;
                 }
@@ -396,8 +394,8 @@ public class Anki2Importer extends Importer {
                 return mDecks.get(did);
             }
             // get the name in src
-            JSONObject g = mSrc.getDecks().get(did);
-            String name = g.getString("name");
+            JSONObject_ g = mSrc.getDecks().get(did);
+            String name = g.getString_("name");
             // if there's a prefix, replace the top level deck
             if (!TextUtils.isEmpty(mDeckPrefix)) {
                 List<String> parts = Arrays.asList(name.split("::", -1));
@@ -421,17 +419,17 @@ public class Anki2Importer extends Importer {
             // create in local
             long newid = mDst.getDecks().id(name);
             // pull conf over
-            if (g.has("conf") && g.getLong("conf") != 1) {
-                JSONObject conf = mSrc.getDecks().getConf(g.getLong("conf"));
+            if (g.has("conf") && g.getLong_("conf") != 1) {
+                JSONObject_ conf = mSrc.getDecks().getConf(g.getLong_("conf"));
                 mDst.getDecks().save(conf);
                 mDst.getDecks().updateConf(conf);
-                JSONObject g2 = mDst.getDecks().get(newid);
-                g2.put("conf", g.getLong("conf"));
+                JSONObject_ g2 = mDst.getDecks().get(newid);
+                g2.put_("conf", g.getLong_("conf"));
                 mDst.getDecks().save(g2);
             }
             // save desc
-            JSONObject deck = mDst.getDecks().get(newid);
-            deck.put("desc", g.getString("desc"));
+            JSONObject_ deck = mDst.getDecks().get(newid);
+            deck.put_("desc", g.getString_("desc"));
             mDst.getDecks().save(deck);
             // add to deck map and return
             mDecks.put(did, newid);
@@ -707,7 +705,7 @@ public class Anki2Importer extends Importer {
                 mCol.getSched().maybeRandomizeDeck(did);
             }
             // make sure new position is correct
-            mDst.getConf().put("nextPos", mDst.getDb().queryLongScalar(
+            mDst.getConf().put_("nextPos", mDst.getDb().queryLongScalar(
                     "select max(due)+1 from cards where type = 0"));
             mDst.save();
         } catch (JSONException e) {
