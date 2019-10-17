@@ -416,8 +416,8 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
             if (mLoadWithDeckOptions) {
                 mLoadWithDeckOptions = false;
                 try {
-                    JSONObject deck = getCol().getDecks().current();
-                    if (deck.getInt("dyn") != 0 && deck.has("empty")) {
+                    JSONObject_ deck = getCol().getDecks().current();
+                    if (deck.getInt_("dyn") != 0 && deck.has("empty")) {
                         deck.remove("empty");
                     }
                 } catch (JSONException e) {
@@ -530,10 +530,10 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
                     initAllContentViews();
                     // Set the deck name
                     String fullName;
-                    JSONObject deck = getCol().getDecks().current();
+                    JSONObject_ deck = getCol().getDecks().current();
                     try {
                         // Main deck name
-                        fullName = deck.getString("name");
+                        fullName = deck.getString_("name");
                         String[] name = fullName.split("::");
                         StringBuilder nameBuilder = new StringBuilder();
                         if (name.length > 0) {
@@ -549,7 +549,6 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
                             nameBuilder.append("\n").append(name[name.length - 1]);
                         }
                         mTextDeckName.setText(nameBuilder.toString());
-
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
                     }
