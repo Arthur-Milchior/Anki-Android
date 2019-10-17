@@ -92,7 +92,7 @@ public class Collection {
     private boolean mDty;
     private int mUsn;
     private long mLs;
-    private JSONObject mConf;
+    private JSONObject_ mConf;
     // END: SQL table columns
 
     private LinkedList<Object[]> mUndo;
@@ -174,7 +174,7 @@ public class Collection {
         _loadScheduler();
         if (!mConf.optBoolean("newBury", false)) {
             try {
-                mConf.put("newBury", true);
+                mConf.put_("newBury", true);
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -230,7 +230,7 @@ public class Collection {
             v2Sched.moveToV2();
         }
         try {
-            mConf.put("schedVer", ver);
+            mConf.put_("schedVer", ver);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -261,7 +261,7 @@ public class Collection {
             mUsn = cursor.getInt(4);
             mLs = cursor.getLong(5);
             try {
-                mConf = new JSONObject(cursor.getString(6));
+                mConf = new JSONObject_(cursor.getString(6));
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -539,7 +539,7 @@ public class Collection {
             id = 1;
         }
         try {
-            mConf.put(type, id + 1);
+            mConf.put_(type, id + 1);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -601,7 +601,7 @@ public class Collection {
      * @param m The model to use for the new note
      * @return The new note
      */
-    public Note newNote(JSONObject m) {
+    public Note newNote(JSONObject_ m) {
         return new Note(this, m);
     }
 
@@ -611,7 +611,7 @@ public class Collection {
      */
     public int addNote(Note note) {
         // check we have card models available, then save
-        ArrayList<JSONObject> cms = findTemplates(note);
+        ArrayList<JSONObject_> cms = findTemplates(note);
         if (cms.size() == 0) {
             return 0;
         }
@@ -620,7 +620,7 @@ public class Collection {
         int due = nextID("pos");
         // add cards
         int ncards = 0;
-        for (JSONObject template : cms) {
+        for (JSONObject_ template : cms) {
             _newCard(note, template, due);
             ncards += 1;
         }
@@ -662,30 +662,30 @@ public class Collection {
     /**
      * @return (active), non-empty templates.
      */
-    public ArrayList<JSONObject> findTemplates(Note note) {
-        JSONObject model = note.model();
+    public ArrayList<JSONObject_> findTemplates(Note note) {
+        JSONObject_ model = note.model();
         ArrayList<Integer> avail = mModels.availOrds(model, Utils.joinFields(note.getFields()));
         return _tmplsFromOrds(model, avail);
     }
 
 
-    private ArrayList<JSONObject> _tmplsFromOrds(JSONObject model, ArrayList<Integer> avail) {
-        ArrayList<JSONObject> ok = new ArrayList<>();
-        JSONArray tmpls;
+    private ArrayList<JSONObject_> _tmplsFromOrds(JSONObject_ model, ArrayList<Integer> avail) {
+        ArrayList<JSONObject_> ok = new ArrayList<>();
+        JSONArray_ tmpls;
         try {
-            if (model.getInt("type") == Consts.MODEL_STD) {
-                tmpls = model.getJSONArray("tmpls");
+            if (model.getInt_("type") == Consts.MODEL_STD) {
+                tmpls = model.getJSONArray_("tmpls");
                 for (int i = 0; i < tmpls.length(); i++) {
-                    JSONObject t = tmpls.getJSONObject(i);
-                    if (avail.contains(t.getInt("ord"))) {
+                    JSONObject_ t = tmpls.getJSONObject_(i);
+                    if (avail.contains(t.getInt_("ord"))) {
                         ok.add(t);
                     }
                 }
             } else {
                 // cloze - generate temporary templates from first
                 for (int ord : avail) {
-                    JSONObject t = new JSONObject(model.getJSONArray("tmpls").getString(0));
-                    t.put("ord", ord);
+                    JSONObject_ t = new JSONObject_(model.getJSONArray_("tmpls").getString_(0));
+                    t.put_("ord", ord);
                     ok.add(t);
                 }
             }
@@ -750,16 +750,16 @@ public class Collection {
         try {
             cur = mDb.getDatabase().query("SELECT id, mid, flds FROM notes WHERE id IN " + snids, null);
             while (cur.moveToNext()) {
-                JSONObject model = mModels.get(cur.getLong(1));
+                JSONObject_ model = mModels.get(cur.getLong(1));
                 ArrayList<Integer> avail = mModels.availOrds(model, cur.getString(2));
                 long nid = cur.getLong(0);
                 long did = dids.get(nid);
                 if (did == 0) {
-                    did = model.getLong("did");
+                    did = model.getLong_("did");
                 }
                 // add any missing cards
-                for (JSONObject t : _tmplsFromOrds(model, avail)) {
-                    int tord = t.getInt("ord");
+                for (JSONObject_ t : _tmplsFromOrds(model, avail)) {
+                    int tord = t.getInt_("ord");
                     boolean doHave = have.containsKey(nid) && have.get(nid).containsKey(tord);
                     if (!doHave) {
                         // check deck is not a cram deck
@@ -776,7 +776,7 @@ public class Collection {
                             did = 1;
                         }
                         // if the deck doesn't exist, use default instead
-                        did = mDecks.get(did).getLong("id");
+                        did = mDecks.get(did).getLong_("id");
                         // we'd like to use the same due# as sibling cards, but we can't retrieve that quickly, so we
                         // give it a new id instead
                         data.add(new Object[] { ts, nid, did, tord, now, usn, nextID("pos") });
@@ -794,6 +794,7 @@ public class Collection {
             }
         } catch (JSONException e) {
             throw new RuntimeException(e);
+        }
         } finally {
             if (cur != null && !cur.isClosed()) {
                 cur.close();
@@ -814,7 +815,7 @@ public class Collection {
      * @return list of cards
 	 */
 	public List<Card> previewCards(Note note, int type) {
-	    ArrayList<JSONObject> cms = null;
+	    ArrayList<JSONObject_> cms = null;
 	    if (type == 0) {
 	        cms = findTemplates(note);
 	    } else if (type == 1) {
@@ -824,20 +825,20 @@ public class Collection {
 	        }
 	    } else {
 	        cms = new ArrayList<>();
-	        try {
-                JSONArray ja = note.model().getJSONArray("tmpls");
-                for (int i = 0; i < ja.length(); ++i) {
-                    cms.add(ja.getJSONObject(i));
+                try {
+                 JSONArray_ ja = note.model().getJSONArray_("tmpls");
+                 for (int i = 0; i < ja.length(); ++i) {
+                    cms.add(ja.getJSONObject_(i));
                 }
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-	    }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        }
 	    if (cms.isEmpty()) {
 	        return new ArrayList<>();
 	    }
 	    List<Card> cards = new ArrayList<>();
-	    for (JSONObject template : cms) {
+	    for (JSONObject_ template : cms) {
 	        cards.add(_newCard(note, template, 1, false));
 	    }
 	    return cards;
@@ -849,18 +850,18 @@ public class Collection {
     /**
      * Create a new card.
      */
-    private Card _newCard(Note note, JSONObject template, int due) {
+    private Card _newCard(Note note, JSONObject_ template, int due) {
         return _newCard(note, template, due, true);
     }
 
 
-    private Card _newCard(Note note, JSONObject template, int due, boolean flush) {
+    private Card _newCard(Note note, JSONObject_ template, int due, boolean flush) {
         Card card = new Card(this);
         card.setNid(note.getId());
         try {
-            card.setOrd(template.getInt("ord"));
+            card.setOrd(template.getInt_("ord"));
         } catch (JSONException e) {
-            new RuntimeException(e);
+            throw new RuntimeException(e);
         }
         // Use template did (deck override) if valid, otherwise model did
         long did = template.optLong("did", 0);
@@ -871,12 +872,12 @@ public class Collection {
         }
         try {
             // if invalid did, use default instead
-            JSONObject deck = mDecks.get(card.getDid());
-            if (deck.getInt("dyn") == 1) {
-            	// must not be a filtered deck
-            	card.setDid(1);
+            JSONObject_ deck = mDecks.get(card.getDid());
+            if (deck.getInt_("dyn") == 1) {
+                // must not be a filtered deck
+                card.setDid(1);
             } else {
-                card.setDid(deck.getLong("id"));
+                card.setDid(deck.getLong_("id"));
             }
         } catch (JSONException e) {
             throw new RuntimeException(e);
@@ -890,10 +891,10 @@ public class Collection {
 
 
     public int _dueForDid(long did, int due) {
-        JSONObject conf = mDecks.confForDid(did);
+        JSONObject_ conf = mDecks.confForDid(did);
         // in order due?
         try {
-            if (conf.getJSONObject("new").getInt("order") == Consts.NEW_CARDS_DUE) {
+            if (conf.getJSONObject_("new").getInt_("order") == Consts.NEW_CARDS_DUE) {
                 return due;
             } else {
                 // random mode; seed with note ts so all cards of this note get
@@ -957,7 +958,7 @@ public class Collection {
 
     public List<Long> emptyCids() {
         List<Long> rem = new ArrayList<>();
-        for (JSONObject m : getModels().all()) {
+        for (JSONObject_ m : getModels().all()) {
             rem.addAll(genCards(getModels().nids(m)));
         }
         return rem;
@@ -1012,7 +1013,7 @@ public class Collection {
         ArrayList<Object[]> r = new ArrayList<>();
         for (Object[] o : _fieldData(snids)) {
             String[] fields = Utils.splitFields((String) o[2]);
-            JSONObject model = mModels.get((Long) o[1]);
+            JSONObject_ model = mModels.get((Long) o[1]);
             if (model == null) {
                 // note point to invalid model
                 continue;
@@ -1067,32 +1068,32 @@ public class Collection {
         // unpack fields and create dict
         String[] flist = Utils.splitFields((String) data[6]);
         Map<String, String> fields = new HashMap<>();
-        JSONObject model = mModels.get((Long) data[2]);
-        Map<String, Pair<Integer, JSONObject>> fmap = mModels.fieldMap(model);
+        JSONObject_ model = mModels.get((Long) data[2]);
+        Map<String, Pair<Integer, JSONObject_>> fmap = mModels.fieldMap(model);
         for (String name : fmap.keySet()) {
             fields.put(name, flist[fmap.get(name).first]);
         }
         try {
             int cardNum = ((Integer) data[4]) + 1;
             fields.put("Tags", ((String) data[5]).trim());
-            fields.put("Type", (String) model.get("name"));
+            fields.put("Type", (String) model.get_("name"));
             fields.put("Deck", mDecks.name((Long) data[3]));
             String[] parents = fields.get("Deck").split("::", -1);
             fields.put("Subdeck", parents[parents.length-1]);
             fields.put("CardFlag", _flagNameFromCardFlags((Integer) data[7]));
-            JSONObject template;
-            if (model.getInt("type") == Consts.MODEL_STD) {
-                template = model.getJSONArray("tmpls").getJSONObject((Integer) data[4]);
+            JSONObject_ template;
+            if (model.getInt_("type") == Consts.MODEL_STD) {
+                template = model.getJSONArray_("tmpls").getJSONObject_((Integer) data[4]);
             } else {
-                template = model.getJSONArray("tmpls").getJSONObject(0);
+                template = model.getJSONArray_("tmpls").getJSONObject_(0);
             }
-            fields.put("Card", template.getString("name"));
+            fields.put("Card", template.getString_("name"));
             fields.put(String.format(Locale.US, "c%d", cardNum), "1");
             // render q & a
             HashMap<String, String> d = new HashMap<>();
             d.put("id", Long.toString((Long) data[0]));
-            qfmt = TextUtils.isEmpty(qfmt) ? template.getString("qfmt") : qfmt;
-            afmt = TextUtils.isEmpty(afmt) ? template.getString("afmt") : afmt;
+            qfmt = TextUtils.isEmpty(qfmt) ? template.getString_("qfmt") : qfmt;
+            afmt = TextUtils.isEmpty(afmt) ? template.getString_("afmt") : afmt;
             for (Pair<String, String> p : new Pair[]{new Pair<>("q", qfmt), new Pair<>("a", afmt)}) {
                 String type = p.first;
                 String format = p.second;
@@ -1103,13 +1104,13 @@ public class Collection {
                     format = fClozePatternA.matcher(format).replaceAll(String.format(Locale.US, "{{$1ca-%d:", cardNum));
                     format = fClozeTagStart.matcher(format).replaceAll(String.format(Locale.US, "<%%ca:%d:", cardNum));
                     // the following line differs from libanki // TODO: why?
-                    fields.put("FrontSide", d.get("q")); // fields.put("FrontSide", mMedia.stripAudio(d.get("q")));
+                    fields.put("FrontSide", d.get("q")); // fields.put_("FrontSide", mMedia.stripAudio(d.get("q")));
                 }
                 fields = (Map<String, String>) Hooks.runFilter("mungeFields", fields, model, data, this);
                 String html = new Template(format, fields).render();
                 d.put(type, (String) Hooks.runFilter("mungeQA", html, type, fields, model, data, this));
                 // empty cloze?
-                if ("q".equals(type) && model.getInt("type") == Consts.MODEL_CLOZE) {
+                if ("q".equals(type) && model.getInt_("type") == Consts.MODEL_CLOZE) {
                     if (getModels()._availClozeOrds(model, (String) data[6], false).size() == 0) {
                         String link = String.format("<a href=%s#cloze>%s</a>", Consts.HELP_SITE, "help");
                         d.put("q", mContext.getString(R.string.empty_cloze_warning, link));
@@ -1228,7 +1229,7 @@ public class Collection {
 
     public void setTimeLimit(long seconds) {
         try {
-            mConf.put("timeLim", seconds);
+            mConf.put_("timeLim", seconds);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -1238,7 +1239,7 @@ public class Collection {
     public long getTimeLimit() {
         long timebox = 0;
         try {
-            timebox = mConf.getLong("timeLim");
+            timebox = mConf.getLong_("timeLim");
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -1255,13 +1256,13 @@ public class Collection {
     /* Return (elapsedTime, reps) if timebox reached, or null. */
     public Long[] timeboxReached() {
         try {
-            if (mConf.getLong("timeLim") == 0) {
+            if (mConf.getLong_("timeLim") == 0) {
                 // timeboxing disabled
                 return null;
             }
             double elapsed = Utils.now() - mStartTime;
-            if (elapsed > mConf.getLong("timeLim")) {
-                return new Long[] { mConf.getLong("timeLim"), (long) (mSched.getReps() - mStartReps) };
+            if (elapsed > mConf.getLong_("timeLim")) {
+                return new Long[] { mConf.getLong_("timeLim"), (long) (mSched.getReps() - mStartReps) };
             }
         } catch (JSONException e) {
             throw new RuntimeException(e);
@@ -1526,22 +1527,22 @@ public class Collection {
         }
         try {
             // invalid ords
-            for (JSONObject m : mModels.all()) {
+            for (JSONObject_ m : mModels.all()) {
                 // ignore clozes
-                if (m.getInt("type") != Consts.MODEL_STD) {
+                if (m.getInt_("type") != Consts.MODEL_STD) {
                     continue;
                 }
                 // Make a list of valid ords for this model
-                JSONArray tmpls = m.getJSONArray("tmpls");
+                JSONArray_ tmpls = m.getJSONArray_("tmpls");
                 int[] ords = new int[tmpls.length()];
                 for (int t = 0; t < tmpls.length(); t++) {
-                    ords[t] = tmpls.getJSONObject(t).getInt("ord");
+                    ords[t] = tmpls.getJSONObject_(t).getInt_("ord");
                 }
 
                 boolean badOrd = mDb.queryScalar(String.format(Locale.US,
                         "select 1 from cards where ord not in %s and nid in ( " +
                         "select id from notes where mid = %d) limit 1",
-                        Utils.ids2str(ords), m.getLong("id"))) > 0;
+                        Utils.ids2str(ords), m.getLong_("id"))) > 0;
                 if (badOrd) {
                     return false;
                 }
@@ -1578,18 +1579,18 @@ public class Collection {
 	                _remNotes(Utils.arrayList2array(ids));
                 }
                 // for each model
-                for (JSONObject m : mModels.all()) {
+                for (JSONObject_ m : mModels.all()) {
                     // cards with invalid ordinal
                     fixIntegrityProgress(progressCallback, currentTask++, totalTasks);
-                    if (m.getInt("type") == Consts.MODEL_STD) {
+                    if (m.getInt_("type") == Consts.MODEL_STD) {
                         ArrayList<Integer> ords = new ArrayList<>();
-                        JSONArray tmpls = m.getJSONArray("tmpls");
+                        JSONArray_ tmpls = m.getJSONArray_("tmpls");
                         for (int t = 0; t < tmpls.length(); t++) {
-                            ords.add(tmpls.getJSONObject(t).getInt("ord"));
+                            ords.add(tmpls.getJSONObject_(t).getInt_("ord"));
                         }
                         ids = mDb.queryColumn(Long.class,
                                 "SELECT id FROM cards WHERE ord NOT IN " + Utils.ids2str(ords) + " AND nid IN ( " +
-                                "SELECT id FROM notes WHERE mid = " + m.getLong("id") + ")", 0);
+                                "SELECT id FROM notes WHERE mid = " + m.getLong_("id") + ")", 0);
                         if (ids.size() > 0) {
                             problems.add("Deleted " + ids.size() + " card(s) with missing template.");
                             remCards(Utils.arrayList2array(ids));
@@ -1600,7 +1601,7 @@ public class Collection {
                     Cursor cur = null;
                     try {
                         fixIntegrityProgress(progressCallback, currentTask++, totalTasks);
-                        cur = mDb.getDatabase().query("select id, flds from notes where mid = " + m.getLong("id"), null);
+                        cur = mDb.getDatabase().query("select id, flds from notes where mid = " + m.getLong_("id"), null);
                         while (cur.moveToNext()) {
                             String flds = cur.getString(1);
                             long id = cur.getLong(0);
@@ -1610,7 +1611,7 @@ public class Collection {
                                     fldsCount++;
                                 }
                             }
-                            if (fldsCount + 1 != m.getJSONArray("flds").length()) {
+                            if (fldsCount + 1 != m.getJSONArray_("flds").length()) {
                                 ids.add(id);
                             }
                         }
@@ -1671,7 +1672,7 @@ public class Collection {
                 fixIntegrityProgress(progressCallback, currentTask++, totalTasks);
                 mTags.registerNotes();
                 // field cache
-                for (JSONObject m : mModels.all()) {
+                for (JSONObject_ m : mModels.all()) {
                     fixIntegrityProgress(progressCallback, currentTask++, totalTasks);
                     updateFieldCache(Utils.arrayList2array(mModels.nids(m)));
                 }
@@ -1680,7 +1681,7 @@ public class Collection {
                 mDb.execute("UPDATE cards SET due = 1000000, mod = " + Utils.intTime() + ", usn = " + usn()
                         + " WHERE due > 1000000 AND type = 0");
                 // new card position
-                mConf.put("nextPos", mDb.queryScalar("SELECT max(due) + 1 FROM cards WHERE type = 0"));
+                mConf.put_("nextPos", mDb.queryScalar("SELECT max(due) + 1 FROM cards WHERE type = 0"));
                 // reviews should have a reasonable due #
                 fixIntegrityProgress(progressCallback, currentTask++, totalTasks);
                 ids = mDb.queryColumn(Long.class, "SELECT id FROM cards WHERE queue = 2 AND due > 100000", 0);
@@ -1713,8 +1714,9 @@ public class Collection {
                     problems.add("Indices were missing.");
                     Storage.addIndices(mDb);
                 }
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
             } finally {
                 mDb.getDatabase().endTransaction();
             }
@@ -1853,12 +1855,12 @@ public class Collection {
     	return mModels.validateModel();
     }
 
-    public JSONObject getConf() {
+    public JSONObject_ getConf() {
         return mConf;
     }
 
 
-    public void setConf(JSONObject conf) {
+    public void setConf(JSONObject_ conf) {
         mConf = conf;
     }
 
