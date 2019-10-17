@@ -94,8 +94,8 @@ public class MediaSyncer {
 
             // begin session and check if in sync
             int lastUsn = mCol.getMedia().lastUsn();
-            JSONObject ret = mServer.begin();
-            int srvUsn = ret.getInt("usn");
+            JSONObject_ ret = mServer.begin();
+            int srvUsn = ret.getInt_("usn");
             if ((lastUsn == srvUsn) && !(mCol.getMedia().haveDirty())) {
                 return "noChanges";
             }
@@ -108,27 +108,27 @@ public class MediaSyncer {
                     Timber.i("Sync was cancelled");
                     throw new RuntimeException("UserAbortedSync");
                 }
-                JSONArray data = mServer.mediaChanges(lastUsn);
+                JSONArray_ data = mServer.mediaChanges(lastUsn);
                 mCol.log("mediaChanges resp count: ", data.length());
                 if (data.length() == 0) {
                     break;
                 }
 
                 List<String> need = new ArrayList<>();
-                lastUsn = data.getJSONArray(data.length()-1).getInt(1);
+                lastUsn = data.getJSONArray_(data.length()-1).getInt_(1);
                 for (int i = 0; i < data.length(); i++) {
                     // Allow cancellation (note: media sync has no finish command, so just throw)
                     if (Connection.getIsCancelled()) {
                         Timber.i("Sync was cancelled");
                         throw new RuntimeException("UserAbortedSync");
                     }
-                    String fname = data.getJSONArray(i).getString(0);
-                    int rusn = data.getJSONArray(i).getInt(1);
+                    String fname = data.getJSONArray_(i).getString_(0);
+                    int rusn = data.getJSONArray_(i).getInt_(1);
                     String rsum = null;
-                    if (!data.getJSONArray(i).isNull(2)) {
+                    if (!data.getJSONArray_(i).isNull(2)) {
                         // If `rsum` is a JSON `null` value, `.optString(2)` will
                         // return `"null"` as a string
-                        rsum = data.getJSONArray(i).optString(2);
+                        rsum = data.getJSONArray_(i).optString(2);
                     }
                     Pair<String, Integer> info = mCol.getMedia().syncInfo(fname);
                     String lsum = info.first;
@@ -150,7 +150,7 @@ public class MediaSyncer {
                             mCol.log("have same already");
                         }
                         mCol.getMedia().markClean(Collections.singletonList(fname));
-                        
+
                     } else if (!TextUtils.isEmpty(lsum)) {
                         // deleted remotely
                         if (ldirty == 0) {
@@ -189,9 +189,9 @@ public class MediaSyncer {
                     mCon.publishProgress(String.format(
                             AnkiDroidApp.getAppResources().getString(R.string.sync_media_changes_count), toSend));
 
-                    JSONArray changes = mServer.uploadChanges(zip);
-                    int processedCnt = changes.getInt(0);
-                    int serverLastUsn = changes.getInt(1);
+                    JSONArray_ changes = mServer.uploadChanges(zip);
+                    int processedCnt = changes.getInt_(0);
+                    int serverLastUsn = changes.getInt_(1);
                     mCol.getMedia().markClean(fnames.subList(0, processedCnt));
 
                     mCol.log(String.format(Locale.US,
