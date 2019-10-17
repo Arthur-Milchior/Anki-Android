@@ -508,27 +508,23 @@ public class AdvancedStatistics extends Hook  {
 
             Timber.d("Trying to get deck settings for deck with id=" + did);
 
-            JSONObject conf = decks.confForDid(did);
+            JSONObject_ conf = decks.confForDid(did);
 
             int newPerDay = Settings.getMaxNewPerDay();
             int revPerDay = Settings.getMaxReviewsPerDay();
             int initialFactor = Settings.getInitialFactor();
 
-            try {
-                if (conf.getInt("dyn") == 0) {
-                    revPerDay = conf.getJSONObject("rev").getInt("perDay");
-                    newPerDay = conf.getJSONObject("new").getInt("perDay");
-                    initialFactor = conf.getJSONObject("new").getInt("initialFactor");
+                if (conf.getInt_("dyn") == 0) {
+                    revPerDay = conf.getJSONObject_("rev").getInt_("perDay");
+                    newPerDay = conf.getJSONObject_("new").getInt_("perDay");
+                    initialFactor = conf.getJSONObject_("new").getInt_("initialFactor");
 
                     Timber.d("rev.perDay=" + revPerDay);
                     Timber.d("new.perDay=" + newPerDay);
                     Timber.d("new.initialFactor=" + initialFactor);
                 } else {
-                    Timber.d("dyn=" + conf.getInt("dyn"));
+                    Timber.d("dyn=" + conf.getInt_("dyn"));
                 }
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
 
             return new Deck(did, newPerDay, revPerDay, initialFactor);
         }

@@ -82,8 +82,8 @@ public class RobolectricTest {
     }
 
 
-    protected JSONObject getCurrentDatabaseModelCopy(String modelName) throws JSONException {
+    protected JSONObject_ getCurrentDatabaseModelCopy(String modelName) {
         Models collectionModels = getCol().getModels();
-        return new JSONObject(collectionModels.byName(modelName).toString().trim());
+        return new JSONObject_(collectionModels.byName(modelName).toString().trim());
     }
 }

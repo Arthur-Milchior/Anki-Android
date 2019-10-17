@@ -30,7 +30,7 @@ public class ClozeTest extends RobolectricTest {
         Note f = d.newNote(d.getModels().byName("Cloze"));
 
         try {
-            String name = f.model().getString("name");
+            String name = f.model().getString_("name");
             assertEquals("Cloze", name);
         } catch (JSONException e) {
             fail();
