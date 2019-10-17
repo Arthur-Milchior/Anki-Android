@@ -57,7 +57,7 @@ public class LaTeX {
      * Convert HTML with embedded latex tags to image links.
      * NOTE: _imgLink produces an alphanumeric filename so there is no need to escape the replacement string.
      */
-    public static String mungeQA(String html, Collection col, JSONObject model) {
+    public static String mungeQA(String html, Collection col, JSONObject_ model) {
         StringBuffer sb = new StringBuffer();
         Matcher matcher = sStandardPattern.matcher(html);
         while (matcher.find()) {
@@ -87,7 +87,7 @@ public class LaTeX {
     /**
      * Return an img link for LATEX.
      */
-    private static String _imgLink(String latex, JSONObject model) {
+    private static String _imgLink(String latex, JSONObject_ model) {
         String txt = _latexFromHtml(latex);
 
         String ext = "png";
@@ -112,7 +112,7 @@ public class LaTeX {
     public class LaTeXFilter extends Hook {
         @Override
         public Object runFilter(Object arg, Object... args) {
-            return LaTeX.mungeQA((String) arg, (Collection) args[4], (JSONObject) args[2]);
+            return LaTeX.mungeQA((String) arg, (Collection) args[4], (JSONObject_) args[2]);
         }
     }
 
