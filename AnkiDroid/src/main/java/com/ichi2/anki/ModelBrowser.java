@@ -70,7 +70,7 @@ public class ModelBrowser extends AnkiActivity {
     private int mModelListPosition;
 
     //Used exclusively to display model name
-    private ArrayList<JSONObject> mModels;
+    private ArrayList<JSONObject_> mModels;
     private ArrayList<Integer> mCardCounts;
     private ArrayList<Long> mModelIds;
     private ArrayList<DisplayPair> mModelDisplayList;
@@ -114,7 +114,7 @@ public class ModelBrowser extends AnkiActivity {
                 throw new RuntimeException();
             }
             hideProgressBar();
-            mModels = (ArrayList<JSONObject>) result.getObjArray()[0];
+            mModels = (ArrayList<JSONObject_>) result.getObjArray()[0];
             mCardCounts = (ArrayList<Integer>) result.getObjArray()[1];
 
             fillModelList();
@@ -246,8 +246,8 @@ public class ModelBrowser extends AnkiActivity {
 
         for (int i = 0; i < mModels.size(); i++) {
             try {
-                mModelIds.add(mModels.get(i).getLong("id"));
-                mModelDisplayList.add(new DisplayPair(mModels.get(i).getString("name"), mCardCounts.get(i)));
+                mModelIds.add(mModels.get(i).getLong_("id"));
+                mModelDisplayList.add(new DisplayPair(mModels.get(i).getString_("name"), mCardCounts.get(i)));
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -323,13 +323,9 @@ public class ModelBrowser extends AnkiActivity {
         final int numStdModels = mNewModelLabels.size();
 
         if (mModels != null) {
-            for (JSONObject model : mModels) {
-                try {
-                    mNewModelLabels.add(String.format(clone, model.getString("name")));
-                    mNewModelNames.add(model.getString("name"));
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
+            for (JSONObject_ model : mModels) {
+                    mNewModelLabels.add(String.format(clone, model.getString_("name")));
+                    mNewModelNames.add(model.getString_("name"));
             }
         }
 
@@ -382,7 +378,7 @@ public class ModelBrowser extends AnkiActivity {
     private void addNewNoteType(String modelName, int position) {
         //Temporary workaround - Lack of stdmodels class, so can only handle 4 default English mModels
         //like Ankidroid but unlike desktop Anki
-        JSONObject model;
+        JSONObject_ model;
         try {
             if (modelName.length() > 0) {
                 switch (position) {
@@ -405,14 +401,14 @@ public class ModelBrowser extends AnkiActivity {
                     default:
                         //New model
                         //Model that is being cloned
-                        JSONObject oldModel = new JSONObject(mModels.get(position - 4).toString());
-                        JSONObject newModel = Models.addBasicModel(col);
-                        oldModel.put("id", newModel.get("id"));
+                        JSONObject_ oldModel = new JSONObject_(mModels.get(position - 4).toString());
+                        JSONObject_ newModel = Models.addBasicModel(col);
+                        oldModel.put_("id", newModel.get_("id"));
                         model = oldModel;
                         break;
 
                 }
-                model.put("name", modelName);
+                model.put_("name", modelName);
                 col.getModels().update(model);
                 fullRefresh();
             } else {
@@ -479,7 +475,7 @@ public class ModelBrowser extends AnkiActivity {
         try {
             mModelNameInput = new EditText(this);
             mModelNameInput.setSingleLine(true);
-            mModelNameInput.setText(mModels.get(mModelListPosition).getString("name"));
+            mModelNameInput.setText(mModels.get(mModelListPosition).getString_("name"));
             mModelNameInput.setSelection(mModelNameInput.getText().length());
             new MaterialDialog.Builder(this)
                                 .title(R.string.rename_model)
@@ -487,18 +483,18 @@ public class ModelBrowser extends AnkiActivity {
                                 .negativeText(R.string.dialog_cancel)
                                 .customView(mModelNameInput, true)
                                 .onPositive((dialog, which) -> {
-                                        JSONObject model = mModels.get(mModelListPosition);
+                                        JSONObject_ model = mModels.get(mModelListPosition);
                                         String deckName = mModelNameInput.getText().toString()
                                                 .replaceAll("[\'\"\\n\\r\\[\\]\\(\\)]", "");
                                         getCol().getDecks().id(deckName, false);
                                         if (deckName.length() > 0) {
                                             try {
-                                                model.put("name", deckName);
-                                                col.getModels().update(model);
-                                                mModels.get(mModelListPosition).put("name", deckName);
-                                                mModelDisplayList.set(mModelListPosition,
-                                                        new DisplayPair(mModels.get(mModelListPosition).getString("name"),
-                                                                mCardCounts.get(mModelListPosition)));
+                                            model.put_("name", deckName);
+                                            col.getModels().update(model);
+                                            mModels.get(mModelListPosition).put_("name", deckName);
+                                            mModelDisplayList.set(mModelListPosition,
+                                                    new DisplayPair(mModels.get(mModelListPosition).getString_("name"),
+                                                            mCardCounts.get(mModelListPosition)));
                                             } catch (JSONException e) {
                                                 throw new RuntimeException(e);
                                             }
