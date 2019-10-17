@@ -616,17 +616,17 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
         }
         // loop through fields for a match
         try {
-            JSONArray ja = mCurrentCard.model().getJSONArray("flds");
+            JSONArray_ ja = mCurrentCard.model().getJSONArray_("flds");
             for (int i = 0; i < ja.length(); i++) {
-                String name = (String) (ja.getJSONObject(i).get("name"));
+                String name = (String) (ja.getJSONObject_(i).get_("name"));
                 if (name.equals(fld)) {
                     mTypeCorrect = mCurrentCard.note().getItem(name);
                     if (clozeIdx != 0) {
                         // narrow to cloze
                         mTypeCorrect = contentForCloze(mTypeCorrect, clozeIdx);
                     }
-                    mTypeFont = (String) (ja.getJSONObject(i).get("font"));
-                    mTypeSize = (int) (ja.getJSONObject(i).get("size"));
+                    mTypeFont = (String) (ja.getJSONObject_(i).get_("font"));
+                    mTypeSize = (int) (ja.getJSONObject_(i).get_("size"));
                     break;
                 }
             }
@@ -753,7 +753,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
             }
             matches.add(groupOne);
         }
-        // Now do what the pythonic ", ".join(matches) does in a tricky way
+        // Now do what the pythonic ", ".join_(matches) does in a tricky way
         String prefix = "";
         StringBuilder resultBuilder = new StringBuilder();
         for (String match : matches) {
@@ -1054,7 +1054,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
     protected long getParentDid() {
         long deckID;
         try {
-            deckID = getCol().getDecks().current().getLong("id");
+        deckID = getCol().getDecks().current().getLong_("id");
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -1705,7 +1705,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
         mUseInputTag = preferences.getBoolean("useInputTag", false);
         // On newer Androids, ignore this setting, which should be hidden in the prefs anyway.
         mDisableClipboard = preferences.getString("dictionary", "0").equals("0");
-        // mDeckFilename = preferences.getString("deckFilename", "");
+        // mDeckFilename = preferences.getString_("deckFilename", "");
         mNightMode = preferences.getBoolean("invertedColors", false);
         mPrefFullscreenReview = Integer.parseInt(preferences.getString("fullscreenMode", "0"));
         mCardZoom = preferences.getInt("cardZoom", 100);
@@ -1759,10 +1759,10 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
 
         // These are preferences we pull out of the collection instead of SharedPreferences
         try {
-            mShowNextReviewTime = getCol().getConf().getBoolean("estTimes");
-            mShowRemainingCardCount = getCol().getConf().getBoolean("dueCounts");
+            mShowNextReviewTime = getCol().getConf().getBoolean_("estTimes");
+            mShowRemainingCardCount = getCol().getConf().getBoolean_("dueCounts");
         } catch (JSONException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         } catch (NullPointerException npe) {
             // NPE on collection only happens if the Collection is broken, follow AnkiActivity example
             Intent deckPicker = new Intent(this, DeckPicker.class);
@@ -1813,7 +1813,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
 
         if (actionBar != null) {
             try {
-                String[] title = getCol().getDecks().get(mCurrentCard.getDid()).getString("name").split("::");
+                String[] title = getCol().getDecks().get(mCurrentCard.getDid()).getString_("name").split("::");
                 actionBar.setTitle(title[title.length - 1]);
             } catch (JSONException e) {
                 throw new RuntimeException(e);
@@ -2074,15 +2074,14 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
      */
     public String getAnswerFormat() {
         try {
-            JSONObject model = mCurrentCard.model();
-            JSONObject template;
-            if (model.getInt("type") == Consts.MODEL_STD) {
-                template = model.getJSONArray("tmpls").getJSONObject(mCurrentCard.getOrd());
+            JSONObject_ model = mCurrentCard.model();
+            JSONObject_ template;
+            if (model.getInt_("type") == Consts.MODEL_STD) {
+                template = model.getJSONArray_("tmpls").getJSONObject_(mCurrentCard.getOrd());
             } else {
-                template = model.getJSONArray("tmpls").getJSONObject(0);
+                template = model.getJSONArray_("tmpls").getJSONObject_(0);
             }
-
-            return template.getString("afmt");
+            return template.getString_("afmt");
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -2306,7 +2305,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
      *
      * @return The configuration for the current {@link Card}
      */
-    private JSONObject getConfigForCurrentCard() {
+    private JSONObject_ getConfigForCurrentCard() {
         return getCol().getDecks().confForDid(getDeckIdForCard(mCurrentCard));
     }
 
