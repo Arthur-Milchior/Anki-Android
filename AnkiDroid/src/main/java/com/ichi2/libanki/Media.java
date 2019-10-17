@@ -287,10 +287,10 @@ public class Media {
      */
     public List<String> filesInStr(Long mid, String string, boolean includeRemote) {
         List<String> l = new ArrayList<>();
-        JSONObject model = mCol.getModels().get(mid);
+        JSONObject_ model = mCol.getModels().get(mid);
         List<String> strings = new ArrayList<>();
         try {
-            if (model.getInt("type") == Consts.MODEL_CLOZE && string.contains("{{c")) {
+            if (model.getInt_("type") == Consts.MODEL_CLOZE && string.contains("{{c")) {
                 // if the field has clozes in it, we'll need to expand the
                 // possibilities so we can render latex
                 strings = _expandClozes(string);
@@ -812,8 +812,8 @@ public class Media {
             // meta is a list of (fname, zipname), where zipname of null is a deleted file
             // NOTE: In python, meta is a list of tuples that then gets serialized into json and added
             // to the zip as a string. In our version, we use JSON objects from the start to avoid the
-            // serialization step. Instead of a list of tuples, we use JSONArrays of JSONArrays.
-            JSONArray meta = new JSONArray();
+            // serialization step. Instead of a list of tuples, we use JSONArray_s of JSONArray_s.
+            JSONArray_ meta = new JSONArray_();
             int sz = 0;
             byte buffer[] = new byte[2048];
             cur = mDb.getDatabase().query(
@@ -837,7 +837,7 @@ public class Media {
                         }
                         z.closeEntry();
                         bis.close();
-                        meta.put(new JSONArray().put(normname).put(Integer.toString(c)));
+                        meta.put(new JSONArray_().put(normname).put(Integer.toString(c)));
                         sz += file.length();
                     } catch (FileNotFoundException e) {
                         // A file has been marked as added but no longer exists in the media directory.
@@ -846,7 +846,7 @@ public class Media {
                     }
                 } else {
                     mCol.log("-media zip " + fname);
-                    meta.put(new JSONArray().put(normname).put(""));
+                    meta.put(new JSONArray_().put(normname).put(""));
                 }
                 if (sz >= Consts.SYNC_ZIP_SIZE) {
                     break;
@@ -882,7 +882,7 @@ public class Media {
         try {
             List<Object[]> media = new ArrayList<>();
             // get meta info first
-            JSONObject meta = new JSONObject(Utils.convertStreamToString(z.getInputStream(z.getEntry("_meta"))));
+            JSONObject_ meta = new JSONObject_(Utils.convertStreamToString(z.getInputStream(z.getEntry("_meta"))));
             // then loop through all files
             int cnt = 0;
             for (ZipEntry i : Collections.list(z.entries())) {
@@ -890,7 +890,7 @@ public class Media {
                     // ignore previously-retrieved meta
                     continue;
                 } else {
-                    String name = meta.getString(i.getName());
+                    String name = meta.getString_(i.getName());
                     // normalize name for platform
                     name = Utils.nfcNormalized(name);
                     // save file
