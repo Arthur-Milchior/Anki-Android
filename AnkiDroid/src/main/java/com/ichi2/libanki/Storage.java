@@ -119,23 +119,23 @@ public class Storage {
         try {
             if (ver < 3) {
                 // new deck properties
-                for (JSONObject d : col.getDecks().all()) {
-                    d.put("dyn", 0);
-                    d.put("collapsed", false);
+                for (JSONObject_ d : col.getDecks().all()) {
+                    d.put_("dyn", 0);
+                    d.put_("collapsed", false);
                     col.getDecks().save(d);
                 }
             }
             if (ver < 4) {
                 col.modSchemaNoCheck();
-                ArrayList<JSONObject> clozes = new ArrayList<>();
-                for (JSONObject m : col.getModels().all()) {
-                    if (!m.getJSONArray("tmpls").getJSONObject(0).getString("qfmt").contains("{{cloze:")) {
-                        m.put("type", Consts.MODEL_STD);
+                ArrayList<JSONObject_> clozes = new ArrayList<>();
+                for (JSONObject_ m : col.getModels().all()) {
+                    if (!m.getJSONArray_("tmpls").getJSONObject_(0).getString_("qfmt").contains("{{cloze:")) {
+                        m.put_("type", Consts.MODEL_STD);
                     } else {
                         clozes.add(m);
                     }
                 }
-                for (JSONObject m : clozes) {
+                for (JSONObject_ m : clozes) {
                     try {
                         _upgradeClozeModel(col, m);
                     } catch (ConfirmModSchemaException e) {
@@ -151,17 +151,17 @@ public class Storage {
             }
             if (ver < 6) {
                 col.modSchemaNoCheck();
-                for (JSONObject m : col.getModels().all()) {
-                    m.put("css", new JSONObject(Models.defaultModel).getString("css"));
-                    JSONArray ar = m.getJSONArray("tmpls");
+                for (JSONObject_ m : col.getModels().all()) {
+                    m.put_("css", new JSONObject_(Models.defaultModel).getString_("css"));
+                    JSONArray_ ar = m.getJSONArray_("tmpls");
                     for (int i = 0; i < ar.length(); i++) {
-                        JSONObject t = ar.getJSONObject(i);
+                        JSONObject_ t = ar.getJSONObject_(i);
                         if (!t.has("css")) {
                             continue;
                         }
-                        m.put("css",
-                                m.getString("css") + "\n"
-                                        + t.getString("css").replace(".card ", ".card" + t.getInt("ord") + 1));
+                        m.put_("css",
+                                m.getString_("css") + "\n"
+                                        + t.getString_("css").replace(".card ", ".card" + t.getInt_("ord") + 1));
                         t.remove("css");
                     }
                     col.getModels().save(m);
@@ -187,45 +187,45 @@ public class Storage {
             }
             if (ver < 11) {
                 col.modSchemaNoCheck();
-                for (JSONObject d : col.getDecks().all()) {
-                    if (d.getInt("dyn") != 0) {
-                        int order = d.getInt("order");
+                for (JSONObject_ d : col.getDecks().all()) {
+                    if (d.getInt_("dyn") != 0) {
+                        int order = d.getInt_("order");
                         // failed order was removed
                         if (order >= 5) {
                             order -= 1;
                         }
-                        JSONArray ja = new JSONArray(Arrays.asList(new Object[] { d.getString("search"),
-                                d.getInt("limit"), order }));
-                        d.put("terms", new JSONArray());
-                        d.getJSONArray("terms").put(0, ja);
+                        JSONArray_ ja = new JSONArray_(Arrays.asList(new Object[] { d.getString_("search"),
+                                d.getInt_("limit"), order }));
+                        d.put_("terms", new JSONArray_());
+                        d.getJSONArray_("terms").put_(0, ja);
                         d.remove("search");
                         d.remove("limit");
                         d.remove("order");
-                        d.put("resched", true);
-                        d.put("return", true);
+                        d.put_("resched", true);
+                        d.put_("return", true);
                     } else {
                         if (!d.has("extendNew")) {
-                            d.put("extendNew", 10);
-                            d.put("extendRev", 50);
+                            d.put_("extendNew", 10);
+                            d.put_("extendRev", 50);
                         }
                     }
                     col.getDecks().save(d);
                 }
-                for (JSONObject c : col.getDecks().allConf()) {
-                    JSONObject r = c.getJSONObject("rev");
-                    r.put("ivlFct", r.optDouble("ivlFct", 1));
+                for (JSONObject_ c : col.getDecks().allConf()) {
+                    JSONObject_ r = c.getJSONObject_("rev");
+                    r.put_("ivlFct", r.optDouble("ivlFct", 1));
                     if (r.has("ivlfct")) {
                         r.remove("ivlfct");
                     }
-                    r.put("maxIvl", 36500);
+                    r.put_("maxIvl", 36500);
                     col.getDecks().save(c);
                 }
-                for (JSONObject m : col.getModels().all()) {
-                    JSONArray tmpls = m.getJSONArray("tmpls");
+                for (JSONObject_ m : col.getModels().all()) {
+                    JSONArray_ tmpls = m.getJSONArray_("tmpls");
                     for (int ti = 0; ti < tmpls.length(); ++ti) {
-                        JSONObject t = tmpls.getJSONObject(ti);
-                        t.put("bqfmt", "");
-                        t.put("bafmt", "");
+                        JSONObject_ t = tmpls.getJSONObject_(ti);
+                        t.put_("bqfmt", "");
+                        t.put_("bafmt", "");
                     }
                     col.getModels().save(m);
                 }
@@ -237,30 +237,30 @@ public class Storage {
     }
 
 
-    private static void _upgradeClozeModel(Collection col, JSONObject m) throws ConfirmModSchemaException {
+    private static void _upgradeClozeModel(Collection col, JSONObject_ m) throws ConfirmModSchemaException {
         try {
-            m.put("type", Consts.MODEL_CLOZE);
+            m.put_("type", Consts.MODEL_CLOZE);
             // convert first template
-            JSONObject t = m.getJSONArray("tmpls").getJSONObject(0);
+            JSONObject_ t = m.getJSONArray_("tmpls").getJSONObject_(0);
             for (String type : new String[] { "qfmt", "afmt" }) {
-                t.put(type, t.getString(type).replaceAll("\\{\\{cloze:1:(.+?)\\}\\}", "{{cloze:$1}}"));
+                t.put_(type, t.getString_(type).replaceAll("\\{\\{cloze:1:(.+?)\\}\\}", "{{cloze:$1}}"));
             }
-            t.put("name", "Cloze");
+            t.put_("name", "Cloze");
             // delete non-cloze cards for the model
-            JSONArray ja = m.getJSONArray("tmpls");
-            ArrayList<JSONObject> rem = new ArrayList<>();
+            JSONArray_ ja = m.getJSONArray_("tmpls");
+            ArrayList<JSONObject_> rem = new ArrayList<>();
             for (int i = 1; i < ja.length(); i++) {
-                JSONObject ta = ja.getJSONObject(i);
-                if (!ta.getString("afmt").contains("{{cloze:")) {
+                JSONObject_ ta = ja.getJSONObject_(i);
+                if (!ta.getString_("afmt").contains("{{cloze:")) {
                     rem.add(ta);
                 }
             }
-            for (JSONObject r : rem) {
+            for (JSONObject_ r : rem) {
                 col.getModels().remTemplate(m, r);
             }
-            JSONArray newArray = new JSONArray();
-            newArray.put(ja.get(0));
-            m.put("tmpls", newArray);
+            JSONArray_ newArray = new JSONArray_();
+            newArray.put(ja.get_(0));
+            m.put_("tmpls", newArray);
             col.getModels()._updateTemplOrds(m);
             col.getModels().save(m);
         } catch (JSONException e) {
@@ -328,17 +328,17 @@ public class Storage {
 
     private static void _setColVars(DB db) {
         try {
-            JSONObject g = new JSONObject(Decks.defaultDeck);
-            g.put("id", 1);
-            g.put("name", "Default");
-            g.put("conf", 1);
-            g.put("mod", Utils.intTime());
-            JSONObject gc = new JSONObject(Decks.defaultConf);
-            gc.put("id", 1);
-            JSONObject ag = new JSONObject();
-            ag.put("1", g);
-            JSONObject agc = new JSONObject();
-            agc.put("1", gc);
+            JSONObject_ g = new JSONObject_(Decks.defaultDeck);
+            g.put_("id", 1);
+            g.put_("name", "Default");
+            g.put_("conf", 1);
+            g.put_("mod", Utils.intTime());
+            JSONObject_ gc = new JSONObject_(Decks.defaultConf);
+            gc.put_("id", 1);
+            JSONObject_ ag = new JSONObject_();
+            ag.put_("1", g);
+            JSONObject_ agc = new JSONObject_();
+            agc.put_("1", gc);
             ContentValues values = new ContentValues();
             values.put("conf", Collection.defaultConf);
             values.put("decks", Utils.jsonToString(ag));
