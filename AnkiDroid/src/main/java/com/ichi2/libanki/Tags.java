@@ -45,7 +45,7 @@ tracked, so unused tags can only be removed from the list with a DB check.
 This module manages the tag cache and tags for notes.
 
 This class differs from the python version by keeping the in-memory tag cache as a TreeMap
-instead of a JSONObject. It is much more convenient to work with a TreeMap in Java, but there
+instead of a JSONObject_. It is much more convenient to work with a TreeMap in Java, but there
 may be a performance penalty in doing so (on startup and shutdown).
  */
 @SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes"})
@@ -70,11 +70,11 @@ public class Tags {
 
     public void load(String json) {
         try {
-            JSONObject tags = new JSONObject(json);
+            JSONObject_ tags = new JSONObject_(json);
             Iterator<?> i = tags.keys();
             while (i.hasNext()) {
                 String t = (String) i.next();
-                mTags.put(t, tags.getInt(t));
+                mTags.put(t, tags.getInt_(t));
             }
         } catch (JSONException e) {
             throw new RuntimeException(e);
@@ -85,10 +85,10 @@ public class Tags {
 
     public void flush() {
         if (mChanged) {
-            JSONObject tags = new JSONObject();
+            JSONObject_ tags = new JSONObject_();
             for (Map.Entry<String, Integer> t : mTags.entrySet()) {
                 try {
-                    tags.put(t.getKey(), t.getValue());
+                    tags.put_(t.getKey(), t.getValue());
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
