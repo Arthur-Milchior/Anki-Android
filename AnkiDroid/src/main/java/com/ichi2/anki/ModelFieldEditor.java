@@ -55,8 +55,8 @@ public class ModelFieldEditor extends AnkiActivity {
     private MaterialDialog mProgressDialog;
 
     private Collection mCol;
-    private JSONArray mNoteFields;
-    private JSONObject mMod;
+    private JSONArray_ mNoteFields;
+    private JSONObject_ mMod;
 
     private ModelEditorContextMenu mContextMenu;
     private EditText mFieldNameInput;
@@ -149,10 +149,10 @@ public class ModelFieldEditor extends AnkiActivity {
 
         mFieldLabels = new ArrayList<>();
         try {
-            mNoteFields = mMod.getJSONArray("flds");
+            mNoteFields = mMod.getJSONArray_("flds");
             for (int i = 0; i < mNoteFields.length(); i++) {
-                JSONObject o = mNoteFields.getJSONObject(i);
-                mFieldLabels.add(o.getString("name"));
+                JSONObject_ o = mNoteFields.getJSONObject_(i);
+                mFieldLabels.add(o.getString_("name"));
             }
         } catch (JSONException e) {
             throw new RuntimeException(e);
@@ -257,7 +257,7 @@ public class ModelFieldEditor extends AnkiActivity {
     private void deleteField() {
         try {
             DeckTask.launchDeckTask(DeckTask.TASK_TYPE_DELETE_FIELD, mChangeFieldHandler,
-                    new DeckTask.TaskData(new Object[]{mMod, mNoteFields.getJSONObject(mCurrentPos)}));
+                    new DeckTask.TaskData(new Object[]{mMod, mNoteFields.getJSONObject_(mCurrentPos)}));
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -344,7 +344,7 @@ public class ModelFieldEditor extends AnkiActivity {
                                 mCol.modSchema();
                                 DeckTask.launchDeckTask(DeckTask.TASK_TYPE_REPOSITION_FIELD, mChangeFieldHandler,
                                         new DeckTask.TaskData(new Object[]{mMod,
-                                                mNoteFields.getJSONObject(mCurrentPos), pos - 1}));
+                                                mNoteFields.getJSONObject_(mCurrentPos), pos - 1}));
                             } catch (ConfirmModSchemaException e) {
 
                                 // Handle mod schema confirmation
@@ -357,17 +357,18 @@ public class ModelFieldEditor extends AnkiActivity {
                                         int pos1 = Integer.parseInt(newPosition1);
                                         DeckTask.launchDeckTask(DeckTask.TASK_TYPE_REPOSITION_FIELD,
                                                 mChangeFieldHandler, new DeckTask.TaskData(new Object[]{mMod,
-                                                        mNoteFields.getJSONObject(mCurrentPos), pos1 - 1}));
+                                                        mNoteFields.getJSONObject_(mCurrentPos), pos1 - 1}));
                                         dismissContextMenu();
-                                    } catch (JSONException e1) {
-                                        throw new RuntimeException(e1);
+                                    } catch (JSONException e) {
+                                        throw new RuntimeException(e);
                                     }
                                 };
                                 c.setConfirm(confirm);
                                 c.setCancel(mConfirmDialogCancel);
                                 ModelFieldEditor.this.showDialogFragment(c);
-                            } catch (JSONException e) {
-                                throw new RuntimeException(e);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
                             }
                         }
                     })
@@ -407,12 +408,12 @@ public class ModelFieldEditor extends AnkiActivity {
         try {
             String fieldLabel = mFieldNameInput.getText().toString()
                     .replaceAll("[\'\"\\n\\r\\[\\]\\(\\)]", "");
-            JSONObject field = (JSONObject) mNoteFields.get(mCurrentPos);
+            JSONObject_ field = (JSONObject_) mNoteFields.get_(mCurrentPos);
             mCol.getModels().renameField(mMod, field, fieldLabel);
             mCol.getModels().save();
             fullRefreshList();
         } catch (JSONException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 
