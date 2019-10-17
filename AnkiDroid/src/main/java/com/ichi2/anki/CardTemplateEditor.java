@@ -67,7 +67,7 @@ import timber.log.Timber;
 @SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes"})
 public class CardTemplateEditor extends AnkiActivity {
     private TemplatePagerAdapter mTemplateAdapter;
-    private JSONObject mModelBackup = null;
+    private JSONObject_ mModelBackup = null;
     private ViewPager mViewPager;
     private SlidingTabLayout mSlidingTabLayout;
     private long mModelId;
@@ -94,7 +94,7 @@ public class CardTemplateEditor extends AnkiActivity {
             if (result.getBoolean()) {
                 // Refresh the GUI -- setting the last template as the active tab
                 try {
-                    selectTemplate(getCol().getModels().get(mModelId).getJSONArray("tmpls").length());
+                    selectTemplate(getCol().getModels().get(mModelId).getJSONArray_("tmpls").length());
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
@@ -143,7 +143,7 @@ public class CardTemplateEditor extends AnkiActivity {
             mNoteId = savedInstanceState.getLong("noteId");
             mOrdId = savedInstanceState.getInt("ordId");
             try {
-                mModelBackup = new JSONObject(savedInstanceState.getString("modelBackup"));
+                mModelBackup = new JSONObject_(savedInstanceState.getString("modelBackup"), true);
             } catch (JSONException e) {
                 Timber.e(e, "Malformed model in savedInstanceState");
             }
@@ -242,7 +242,7 @@ public class CardTemplateEditor extends AnkiActivity {
         // Make backup of the model for cancellation purposes
         try {
             if (mModelBackup == null) {
-                mModelBackup = new JSONObject(col.getModels().get(mModelId).toString());
+                mModelBackup = new JSONObject_(col.getModels().get(mModelId).toString());
             }
         } catch (JSONException e) {
             throw new RuntimeException(e);
@@ -257,7 +257,7 @@ public class CardTemplateEditor extends AnkiActivity {
     }
 
     public boolean modelHasChanged() {
-        JSONObject newModel = getCol().getModels().get(mModelId);
+        JSONObject_ newModel = getCol().getModels().get(mModelId);
         return mModelBackup != null && !mModelBackup.toString().equals(newModel.toString());
     }
 
@@ -306,7 +306,7 @@ public class CardTemplateEditor extends AnkiActivity {
      * one of the tabs.
      */
     public class TemplatePagerAdapter extends FragmentPagerAdapter {
-        private JSONObject mModel;
+        private JSONObject_ mModel;
         private long baseId = 0;
 
         public TemplatePagerAdapter(FragmentManager fm) {
@@ -334,7 +334,7 @@ public class CardTemplateEditor extends AnkiActivity {
         @Override
         public int getCount() {
             try {
-                return mModel.getJSONArray("tmpls").length();
+                return mModel.getJSONArray_("tmpls").length();
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -344,7 +344,7 @@ public class CardTemplateEditor extends AnkiActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             try {
-                return mModel.getJSONArray("tmpls").getJSONObject(position).getString("name");
+                return mModel.getJSONArray_("tmpls").getJSONObject_(position).getString_("name");
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -361,7 +361,7 @@ public class CardTemplateEditor extends AnkiActivity {
             baseId += getCount() + n;
         }
 
-        public void setModel(JSONObject model) {
+        public void setModel(JSONObject_ model) {
             mModel = model;
         }
     }
@@ -371,7 +371,7 @@ public class CardTemplateEditor extends AnkiActivity {
         private EditText mFront;
         private EditText mCss;
         private EditText mBack;
-        private JSONObject mModel;
+        private JSONObject_ mModel;
         public static CardTemplateFragment newInstance(int position, long modelId, long noteId) {
             CardTemplateFragment f = new CardTemplateFragment();
             Bundle args = new Bundle();
@@ -390,16 +390,16 @@ public class CardTemplateEditor extends AnkiActivity {
                 // Load template
                 long mid = getArguments().getLong("modelId");
                 mModel = ((AnkiActivity) getActivity()).getCol().getModels().get(mid);
-                final JSONArray tmpls = mModel.getJSONArray("tmpls");
-                final JSONObject template = tmpls.getJSONObject(position);
+                final JSONArray_ tmpls = mModel.getJSONArray_("tmpls");
+                final JSONObject_ template = tmpls.getJSONObject_(position);
                 // Load EditText Views
                 mFront = ((EditText) mainView.findViewById(R.id.front_edit));
                 mCss = ((EditText) mainView.findViewById(R.id.styling_edit));
                 mBack = ((EditText) mainView.findViewById(R.id.back_edit));
                 // Set EditText content
-                mFront.setText(template.getString("qfmt"));
-                mCss.setText(mModel.getString("css"));
-                mBack.setText(template.getString("afmt"));
+                mFront.setText(template.getString_("qfmt"));
+                mCss.setText(mModel.getString_("css"));
+                mBack.setText(template.getString_("afmt"));
                 // Set text change listeners
                 TextWatcher templateEditorWatcher = new TextWatcher() {
                     @Override
@@ -455,7 +455,7 @@ public class CardTemplateEditor extends AnkiActivity {
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
             final Collection col = ((AnkiActivity) getActivity()).getCol();
-            final JSONObject model = getModel();
+            final JSONObject_ model = getModel();
             switch (item.getItemId()) {
                 case R.id.action_add:
                     Timber.i("CardTemplateEditor:: Add template button pressed");
@@ -466,8 +466,8 @@ public class CardTemplateEditor extends AnkiActivity {
                     Resources res = getResources();
                     int position = getArguments().getInt("position");
                     try {
-                        JSONArray tmpls = model.getJSONArray("tmpls");
-                        final JSONObject template = tmpls.getJSONObject(position);
+                        JSONArray_ tmpls = model.getJSONArray_("tmpls");
+                        final JSONObject_ template = tmpls.getJSONObject_(position);
                         // Don't do anything if only one template
                         if (tmpls.length() < 2) {
                             UIUtils.showThemedToast(getActivity(), res.getString(R.string.card_template_editor_cant_delete), false);
@@ -533,7 +533,7 @@ public class CardTemplateEditor extends AnkiActivity {
          */
         private Card getDummyCard() {
             Timber.d("Creating dummy note");
-            JSONObject model = getCol().getModels().get(getArguments().getLong("modelId"));
+            JSONObject_ model = getCol().getModels().get(getArguments().getLong("modelId"));
             Note n =getCol().newNote(model);
             ArrayList<String> fieldNames = getCol().getModels().fieldNames(model);
             for (int i = 0; i < fieldNames.size(); i++) {
@@ -596,7 +596,7 @@ public class CardTemplateEditor extends AnkiActivity {
          * Load the model from the collection
          * @return the model we are editing
          */
-        private JSONObject getModel() {
+        private JSONObject_ getModel() {
             long mid = getArguments().getLong("modelId");
             return ((AnkiActivity) getActivity()).getCol().getModels().get(mid);
         }
@@ -616,7 +616,7 @@ public class CardTemplateEditor extends AnkiActivity {
          * @param model model to remove from
          * @param numAffectedCards number of cards which will be affected
          */
-        private void confirmDeleteCards(final JSONObject tmpl, final JSONObject model,  int numAffectedCards) {
+        private void confirmDeleteCards(final JSONObject_ tmpl, final JSONObject_ model,  int numAffectedCards) {
             ConfirmationDialog d = new ConfirmationDialog();
             Resources res = getResources();
             String msg = String.format(res.getQuantityString(R.plurals.card_template_editor_confirm_delete,
@@ -638,7 +638,7 @@ public class CardTemplateEditor extends AnkiActivity {
          * @param tmpl template to remove
          * @param model model to remove from
          */
-        private void deleteTemplateWithCheck(final JSONObject tmpl, final JSONObject model) {
+        private void deleteTemplateWithCheck(final JSONObject_ tmpl, final JSONObject_ model) {
             try {
                 ((CardTemplateEditor) getActivity()).getCol().modSchema(true);
                 deleteTemplate(tmpl, model);
@@ -661,7 +661,7 @@ public class CardTemplateEditor extends AnkiActivity {
          * @param tmpl template to remove
          * @param model model to remove from
          */
-        private void deleteTemplate(JSONObject tmpl, JSONObject model) {
+        private void deleteTemplate(JSONObject_ tmpl, JSONObject_ model) {
             CardTemplateEditor activity = ((CardTemplateEditor) getActivity());
             activity.getCol().modSchemaNoCheck();
             Object [] args = new Object[] {model, tmpl};
@@ -675,7 +675,7 @@ public class CardTemplateEditor extends AnkiActivity {
          *
          * @param model model to add new template to
          */
-        private void addNewTemplateWithCheck(final JSONObject model) {
+        private void addNewTemplateWithCheck(final JSONObject_ model) {
             try {
                 ((CardTemplateEditor) getActivity()).getCol().modSchema(true);
                 addNewTemplate(model);
@@ -698,20 +698,20 @@ public class CardTemplateEditor extends AnkiActivity {
          * Launch background task to add new template to model
          * @param model model to add new template to
          */
-        private void addNewTemplate(JSONObject model) {
+        private void addNewTemplate(JSONObject_ model) {
             CardTemplateEditor activity = ((CardTemplateEditor) getActivity());
             activity.getCol().modSchemaNoCheck();
             Models mm = activity.getCol().getModels();
             // Build new template
-            JSONObject newTemplate;
             try {
+                JSONObject_ newTemplate;
                 int oldPosition = getArguments().getInt("position");
-                JSONArray templates = model.getJSONArray("tmpls");
-                JSONObject oldTemplate = templates.getJSONObject(oldPosition);
+                JSONArray_ templates = model.getJSONArray_("tmpls");
+                JSONObject_ oldTemplate = templates.getJSONObject_(oldPosition);
                 newTemplate = mm.newTemplate(newCardName(templates));
                 // Set up question & answer formats
-                newTemplate.put("qfmt", oldTemplate.get("qfmt"));
-                newTemplate.put("afmt", oldTemplate.get("afmt"));
+                newTemplate.put_("qfmt", oldTemplate.get_("qfmt"));
+                newTemplate.put_("afmt", oldTemplate.get_("afmt"));
                 // Reverse the front and back if only one template
                 if (templates.length() == 1) {
                     flipQA(newTemplate);
@@ -730,17 +730,17 @@ public class CardTemplateEditor extends AnkiActivity {
          * Flip the question and answer side of the template
          * @param template template to flip
          */
-        private void flipQA (JSONObject template) {
+        private void flipQA (JSONObject_ template) {
             try {
-                String qfmt = template.getString("qfmt");
-                String afmt = template.getString("afmt");
+                String qfmt = template.getString_("qfmt");
+                String afmt = template.getString_("afmt");
                 Matcher m = Pattern.compile("(?s)(.+)<hr id=answer>(.+)").matcher(afmt);
                 if (!m.find()) {
-                    template.put("qfmt", afmt.replace("{{FrontSide}}",""));
+                    template.put_("qfmt", afmt.replace("{{FrontSide}}",""));
                 } else {
-                    template.put("qfmt",m.group(2).trim());
+                    template.put_("qfmt",m.group(2).trim());
                 }
-                template.put("afmt","{{FrontSide}}\n\n<hr id=answer>\n\n" + qfmt);
+                template.put_("afmt","{{FrontSide}}\n\n<hr id=answer>\n\n" + qfmt);
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -751,7 +751,7 @@ public class CardTemplateEditor extends AnkiActivity {
          * @param templates array of templates which is being added to
          * @return name for new template
          */
-        private String newCardName(JSONArray templates) {
+        private String newCardName(JSONArray_ templates) {
             String name;
             // Start by trying to set the name to "Card n" where n is the new num of templates
             int n = templates.length() + 1;
@@ -763,7 +763,7 @@ public class CardTemplateEditor extends AnkiActivity {
                 boolean exists = false;
                 for (int i = 0; i < templates.length(); i++) {
                     try {
-                        exists = exists || name.equals(templates.getJSONObject(i).getString("name"));
+                        exists = exists || name.equals(templates.getJSONObject_(i).getString_("name"));
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
                     }
