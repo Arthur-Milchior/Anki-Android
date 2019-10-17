@@ -283,13 +283,13 @@ public class CardContentProvider extends ContentProvider {
             case MODELS_ID_TEMPLATES: {
                 /* Direct access model templates */
                 Models models = col.getModels();
-                JSONObject currentModel = models.get(getModelIdFromUri(uri, col));
+                JSONObject_ currentModel = models.get(getModelIdFromUri(uri, col));
                 String[] columns = ((projection != null) ? projection : CardTemplate.DEFAULT_PROJECTION);
                 MatrixCursor rv = new MatrixCursor(columns, 1);
                 try {
-                    JSONArray templates = currentModel.getJSONArray("tmpls");
+                    JSONArray_ templates = currentModel.getJSONArray_("tmpls");
                     for (int idx = 0; idx < templates.length(); idx++) {
-                        JSONObject template = templates.getJSONObject(idx);
+                        JSONObject_ template = templates.getJSONObject(idx);
                         addTemplateToCursor(template, currentModel, idx+1, models, rv, columns);
                     }
                 } catch (JSONException e) {
@@ -301,11 +301,11 @@ public class CardContentProvider extends ContentProvider {
                 /* Direct access model template with specific ID */
                 Models models = col.getModels();
                 int ord = Integer.parseInt(uri.getLastPathSegment());
-                JSONObject currentModel = models.get(getModelIdFromUri(uri, col));
+                JSONObject_ currentModel = models.get(getModelIdFromUri(uri, col));
                 String[] columns = ((projection != null) ? projection : CardTemplate.DEFAULT_PROJECTION);
                 MatrixCursor rv = new MatrixCursor(columns, 1);
                 try {
-                    JSONObject template = getTemplateFromUri(uri, col);
+                    JSONObject_ template = getTemplateFromUri(uri, col);
                     addTemplateToCursor(template, currentModel, ord+1, models, rv, columns);
                 } catch (JSONException e) {
                     throw new IllegalArgumentException("Model is malformed", e);
@@ -351,7 +351,7 @@ public class CardContentProvider extends ContentProvider {
 
                     if (currentCard != null) {
                         int buttonCount = col.getSched().answerButtons(currentCard);
-                        JSONArray buttonTexts = new JSONArray();
+                        JSONArray_ buttonTexts = new JSONArray_();
                         for (int i = 0; i < buttonCount; i++) {
                             buttonTexts.put(col.getSched().nextIvlStr(mContext, currentCard, i + 1));
                         }
@@ -398,7 +398,7 @@ public class CardContentProvider extends ContentProvider {
                 String name = col.getDecks().name(id);
                 String[] columns = ((projection != null) ? projection : FlashCardsContract.Deck.DEFAULT_PROJECTION);
                 MatrixCursor rv = new MatrixCursor(columns, 1);
-                JSONArray counts = new JSONArray(Arrays.asList(col.getSched().counts()));
+                JSONArray_ counts = new JSONArray_(Arrays.asList(col.getSched().counts()));
                 addDeckToCursor(id, name, counts,rv, col, columns);
                 return rv;
             }
@@ -408,8 +408,8 @@ public class CardContentProvider extends ContentProvider {
         }
     }
 
-    private JSONArray getDeckCountsFromDueTreeNode(Sched.DeckDueTreeNode deck){
-        JSONArray deckCounts = new JSONArray();
+    private JSONArray_ getDeckCountsFromDueTreeNode(Sched.DeckDueTreeNode deck){
+        JSONArray_ deckCounts = new JSONArray_();
         deckCounts.put(deck.lrnCount);
         deckCounts.put(deck.revCount);
         deckCounts.put(deck.newCount);
@@ -527,7 +527,7 @@ public class CardContentProvider extends ContentProvider {
                 String newLatexPost = values.getAsString(FlashCardsContract.Model.LATEX_POST);
                 String newLatexPre = values.getAsString(FlashCardsContract.Model.LATEX_PRE);
                 // Get the original note JSON
-                JSONObject model = col.getModels().get(getModelIdFromUri(uri, col));
+                JSONObject_ model = col.getModels().get(getModelIdFromUri(uri, col));
                 try {
                     // Update model name and/or css
                     if (newModelName != null) {
@@ -584,9 +584,9 @@ public class CardContentProvider extends ContentProvider {
                 // Update the model
                 try {
                     Integer templateOrd = Integer.parseInt(uri.getLastPathSegment());
-                    JSONObject existingModel = col.getModels().get(getModelIdFromUri(uri, col));
-                    JSONArray templates = existingModel.getJSONArray("tmpls");
-                    JSONObject template = templates.getJSONObject(templateOrd);
+                    JSONObject_ existingModel = col.getModels().get(getModelIdFromUri(uri, col));
+                    JSONArray_ templates = existingModel.getJSONArray_("tmpls");
+                    JSONObject_ template = templates.getJSONObject_(templateOrd);
                     if (name != null) {
                         template.put("name", name);
                         updated++;
@@ -703,7 +703,7 @@ public class CardContentProvider extends ContentProvider {
                 col.remNotes(new long[]{Long.parseLong(uri.getPathSegments().get(1))});
                 return 1;
             case MODELS_ID_EMPTY_CARDS:
-                JSONObject model = col.getModels().get(getModelIdFromUri(uri, col));
+                JSONObject_ model = col.getModels().get(getModelIdFromUri(uri, col));
                 if (model == null) {
                     return -1;
                 }
@@ -766,7 +766,7 @@ public class CardContentProvider extends ContentProvider {
 
         // for caching model information (so we don't have to query for each note)
         long modelId = -1L;
-        JSONObject model = null;
+        JSONObject_ model = null;
 
         col.getDecks().flush(); // is it okay to move this outside the for-loop? Is it needed at all?
         SupportSQLiteDatabase sqldb = col.getDb().getDatabase();
@@ -896,7 +896,7 @@ public class CardContentProvider extends ContentProvider {
                 }
                 // Create a new model
                 Models mm = col.getModels();
-                JSONObject newModel = mm.newModel(modelName);
+                JSONObject_ newModel = mm.newModel(modelName);
                 try {
                     // Add the fields
                     String[] allFields = Utils.splitFields(fieldNames);
@@ -905,7 +905,7 @@ public class CardContentProvider extends ContentProvider {
                     }
                     // Add some empty card templates
                     for (int idx = 0; idx < numCards; idx++) {
-                        JSONObject t = mm.newTemplate("Card " + (idx+1));
+                        JSONObject_ t = mm.newTemplate("Card " + (idx+1));
                         t.put("qfmt",String.format("{{%s}}", allFields[0]));
                         String answerField = allFields[0];
                         if (allFields.length > 1) {
@@ -938,7 +938,7 @@ public class CardContentProvider extends ContentProvider {
                     mm.add(newModel);
                     col.save();
                     // Get the mid and return a URI
-                    String mid = Long.toString(newModel.getLong("id"));
+                    String mid = Long.toString(newModel.getLong_("id"));
                     return Uri.withAppendedPath(FlashCardsContract.Model.CONTENT_URI, mid);
                 } catch (ConfirmModSchemaException e) {
                     // This exception should never be thrown when inserting new models
@@ -954,7 +954,7 @@ public class CardContentProvider extends ContentProvider {
             case MODELS_ID_TEMPLATES: {
                 Models models = col.getModels();
                 Long mid = getModelIdFromUri(uri, col);
-                JSONObject existingModel = models.get(mid);
+                JSONObject_ existingModel = models.get(mid);
                 if (existingModel == null) {
                     throw new IllegalArgumentException("model missing: " + mid);
                 }
@@ -964,7 +964,7 @@ public class CardContentProvider extends ContentProvider {
                 String bqfmt = values.getAsString(CardTemplate.BROWSER_QUESTION_FORMAT);
                 String bafmt = values.getAsString(CardTemplate.BROWSER_ANSWER_FORMAT);
                 try {
-                    JSONObject t = models.newTemplate(name);
+                    JSONObject_ t = models.newTemplate(name);
                     try {
                         t.put("qfmt", qfmt);
                         t.put("afmt", afmt);
@@ -988,7 +988,7 @@ public class CardContentProvider extends ContentProvider {
             case MODELS_ID_FIELDS: {
                 Models models = col.getModels();
                 Long mid = getModelIdFromUri(uri, col);
-                JSONObject existingModel = models.get(mid);
+                JSONObject_ existingModel = models.get(mid);
                 if (existingModel == null) {
                     throw new IllegalArgumentException("model missing: " + mid);
                 }
@@ -996,11 +996,11 @@ public class CardContentProvider extends ContentProvider {
                 if (name == null) {
                     throw new IllegalArgumentException("field name missing for model: " + mid);
                 }
-                JSONObject field = models.newField(name);
+                JSONObject_ field = models.newField(name);
                 try {
                     models.addField(existingModel, field);
                     col.save();
-                    JSONArray ja = existingModel.getJSONArray("flds");
+                    JSONArray_ ja = existingModel.getJSONArray("flds");
                     return ContentUris.withAppendedId(uri, ja.length() - 1);
                 } catch (ConfirmModSchemaException e) {
                     throw new IllegalArgumentException("Unable to insert field: " + name, e);
@@ -1019,7 +1019,7 @@ public class CardContentProvider extends ContentProvider {
                     throw new IllegalArgumentException("Deck name already exists: " + deckName);
                 }
                 did = col.getDecks().id(deckName, true);
-                JSONObject deck = col.getDecks().get(did);
+                JSONObject_ deck = col.getDecks().get(did);
                 if (deck != null) {
                     try {
                         String deckDesc = values.getAsString(FlashCardsContract.Deck.DECK_DESC);
@@ -1071,7 +1071,7 @@ public class CardContentProvider extends ContentProvider {
     }
 
     private void addModelToCursor(Long modelId, Models models, MatrixCursor rv, String[] columns) {
-        JSONObject jsonObject = models.get(modelId);
+        JSONObject_ jsonObject = models.get(modelId);
         MatrixCursor.RowBuilder rb = rv.newRow();
         try {
             for (String column : columns) {
@@ -1080,7 +1080,7 @@ public class CardContentProvider extends ContentProvider {
                 } else if (column.equals(FlashCardsContract.Model.NAME)) {
                     rb.add(jsonObject.getString("name"));
                 } else if (column.equals(FlashCardsContract.Model.FIELD_NAMES)) {
-                    JSONArray flds = jsonObject.getJSONArray("flds");
+                    JSONArray_ flds = jsonObject.getJSONArray_("flds");
                     String[] allFlds = new String[flds.length()];
                     for (int idx = 0; idx < flds.length(); idx++) {
                         allFlds[idx] = flds.getJSONObject(idx).optString("name", "");
@@ -1107,7 +1107,7 @@ public class CardContentProvider extends ContentProvider {
                 }
             }
         } catch (JSONException e) {
-            Timber.e(e, "Error parsing JSONArray");
+            Timber.e(e, "Error parsing JSONArray_");
             throw new IllegalArgumentException("Model " + modelId + " is malformed", e);
         }
     }
@@ -1148,7 +1148,7 @@ public class CardContentProvider extends ContentProvider {
         }
     }
 
-    private void addReviewInfoToCursor(Card currentCard, JSONArray nextReviewTimesJson, int buttonCount,MatrixCursor rv, Collection col, String[] columns) {
+    private void addReviewInfoToCursor(Card currentCard, JSONArray_ nextReviewTimesJson, int buttonCount,MatrixCursor rv, Collection col, String[] columns) {
         MatrixCursor.RowBuilder rb = rv.newRow();
         for (String column : columns) {
             if (column.equals(FlashCardsContract.Card.NOTE_ID)) {
@@ -1160,7 +1160,7 @@ public class CardContentProvider extends ContentProvider {
             } else if (column.equals(FlashCardsContract.ReviewInfo.NEXT_REVIEW_TIMES)) {
                 rb.add(nextReviewTimesJson.toString());
             } else if (column.equals(FlashCardsContract.ReviewInfo.MEDIA_FILES)) {
-                rb.add(new JSONArray(col.getMedia().filesInStr(currentCard.note().getMid(), currentCard.q()+currentCard.a())));
+                rb.add(new JSONArray_(col.getMedia().filesInStr(currentCard.note().getMid(), currentCard.q()+currentCard.a())));
             } else {
                 throw new UnsupportedOperationException("Column \"" + column + "\" is unknown");
             }
@@ -1215,7 +1215,7 @@ public class CardContentProvider extends ContentProvider {
         }
     }
 
-    private void addTemplateToCursor(JSONObject tmpl, JSONObject model, int id, Models models, MatrixCursor rv, String[] columns) {
+    private void addTemplateToCursor(JSONObject_ tmpl, JSONObject_ model, int id, Models models, MatrixCursor rv, String[] columns) {
         try {
             MatrixCursor.RowBuilder rb = rv.newRow();
             for (String column : columns) {
@@ -1236,7 +1236,7 @@ public class CardContentProvider extends ContentProvider {
                 } else if (column.equals(CardTemplate.BROWSER_ANSWER_FORMAT)) {
                     rb.add(tmpl.getString("bafmt"));
                 } else if (column.equals(CardTemplate.CARD_COUNT)) {
-                    rb.add(models.tmplUseCount(model, tmpl.getInt("ord")));
+                    rb.add(models.tmplUseCount(model, tmpl.getInt_("ord")));
                 } else {
                     throw new UnsupportedOperationException("Support for column \"" + column +
                             "\" is not implemented");
@@ -1248,7 +1248,7 @@ public class CardContentProvider extends ContentProvider {
         }
     }
 
-    private void addDeckToCursor(long id, String name, JSONArray deckCounts, MatrixCursor rv, Collection col, String[] columns) {
+    private void addDeckToCursor(long id, String name, JSONArray_ deckCounts, MatrixCursor rv, Collection col, String[] columns) {
         MatrixCursor.RowBuilder rb = rv.newRow();
         for (String column : columns) {
             if (column.equals(FlashCardsContract.Deck.DECK_NAME)) {
@@ -1325,10 +1325,10 @@ public class CardContentProvider extends ContentProvider {
         return id;
     }
 
-    private JSONObject getTemplateFromUri(Uri uri, Collection col) throws JSONException {
-        JSONObject model = col.getModels().get(getModelIdFromUri(uri, col));
+    private JSONObject_ getTemplateFromUri(Uri uri, Collection col) throws JSONException {
+        JSONObject_ model = col.getModels().get(getModelIdFromUri(uri, col));
         Integer ord = Integer.parseInt(uri.getLastPathSegment());
-        return model.getJSONArray("tmpls").getJSONObject(ord);
+        return model.getJSONArray_("tmpls").getJSONObject_(ord);
     }
 
     private void throwSecurityException(String methodName, Uri uri) {
