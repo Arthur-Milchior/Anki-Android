@@ -59,7 +59,7 @@ import timber.log.Timber;
  */
 public class FilteredDeckOptions extends AppCompatPreferenceActivity implements OnSharedPreferenceChangeListener {
 
-    private JSONObject mDeck;
+    private JSONObject_ mDeck;
     private Collection mCol;
     private boolean mAllowCommit = true;
     private boolean mPrefChanged = false;
@@ -91,11 +91,11 @@ public class FilteredDeckOptions extends AppCompatPreferenceActivity implements 
             Timber.d("cacheValues()");
 
             try {
-                JSONArray ar = mDeck.getJSONArray("terms").getJSONArray(0);
-                mValues.put("search", ar.getString(0));
-                mValues.put("limit", ar.getString(1));
-                mValues.put("order", ar.getString(2));
-                JSONArray delays = mDeck.optJSONArray("delays");
+                JSONArray_ ar = mDeck.getJSONArray_("terms").getJSONArray_(0);
+                mValues.put("search", ar.getString_(0));
+                mValues.put("limit", ar.getString_(1));
+                mValues.put("order", ar.getString_(2));
+                JSONArray_ delays = mDeck.optJSONArray_("delays");
                 if (delays != null) {
                     mValues.put("steps", StepsPreference.convertFromJSON(delays));
                     mValues.put("stepsOn", Boolean.toString(true));
@@ -103,7 +103,7 @@ public class FilteredDeckOptions extends AppCompatPreferenceActivity implements 
                     mValues.put("steps", "1 10");
                     mValues.put("stepsOn", Boolean.toString(false));
                 }
-                mValues.put("resched", Boolean.toString(mDeck.getBoolean("resched")));
+                mValues.put("resched", Boolean.toString(mDeck.getBoolean_("resched")));
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -130,47 +130,47 @@ public class FilteredDeckOptions extends AppCompatPreferenceActivity implements 
                     for (Entry<String, Object> entry : mUpdate.valueSet()) {
                         Timber.i("Change value for key '" + entry.getKey() + "': " + entry.getValue());
                         if (entry.getKey().equals("search")) {
-                            JSONArray ar = mDeck.getJSONArray("terms");
-                            ar.getJSONArray(0).put(0, entry.getValue());
-                            mDeck.put("terms", ar);
+                            JSONArray_ ar = mDeck.getJSONArray_("terms");
+                            ar.getJSONArray_(0).put_(0, entry.getValue());
+                            mDeck.put_("terms", ar);
                         } else if (entry.getKey().equals("limit")) {
-                            JSONArray ar = mDeck.getJSONArray("terms");
-                            ar.getJSONArray(0).put(1, entry.getValue());
-                            mDeck.put("terms", ar);
+                            JSONArray_ ar = mDeck.getJSONArray_("terms");
+                            ar.getJSONArray_(0).put_(1, entry.getValue());
+                            mDeck.put_("terms", ar);
                         } else if (entry.getKey().equals("order")) {
-                            JSONArray ar = mDeck.getJSONArray("terms");
-                            ar.getJSONArray(0).put(2, Integer.parseInt((String) entry.getValue()));
-                            mDeck.put("terms", ar);
+                            JSONArray_ ar = mDeck.getJSONArray_("terms");
+                            ar.getJSONArray_(0).put_(2, Integer.parseInt((String) entry.getValue()));
+                            mDeck.put_("terms", ar);
                         } else if (entry.getKey().equals("resched")) {
-                            mDeck.put("resched", entry.getValue());
+                            mDeck.put_("resched", entry.getValue());
                         } else if (entry.getKey().equals("stepsOn")) {
                             boolean on = (Boolean) entry.getValue();
                             if (on) {
-                                JSONArray steps =  StepsPreference.convertToJSON(mValues.get("steps"));
+                                JSONArray_ steps =  StepsPreference.convertToJSON(mValues.get("steps"));
                                 if (steps.length() > 0) {
-                                    mDeck.put("delays", steps);
+                                    mDeck.put_("delays", steps);
                                 }
                             } else {
-                                mDeck.put("delays", JSONObject.NULL);
+                                mDeck.put_("delays", JSONObject_.NULL);
                             }
                         } else if (entry.getKey().equals("steps")) {
-                            mDeck.put("delays", StepsPreference.convertToJSON((String) entry.getValue()));
+                            mDeck.put_("delays", StepsPreference.convertToJSON((String) entry.getValue()));
                         } else if (entry.getKey().equals("preset")) {
                             int i = Integer.parseInt((String) entry.getValue());
                             if (i > 0) {
-                                JSONObject presetValues = new JSONObject(dynExamples[i]);
-                                JSONArray ar = presetValues.names();
+                                JSONObject_ presetValues = new JSONObject_(dynExamples[i]);
+                                JSONArray_ ar = presetValues.names();
                                 for (int j = 0; j < ar.length(); j++) {
-                                    String name = ar.getString(j);
+                                    String name = ar.getString_(j);
                                     if (name.equals("steps")) {
                                         mUpdate.put("stepsOn", true);
                                     }
                                     if (name.equals("resched")) {
-                                        mUpdate.put(name, presetValues.getBoolean(name));
-                                        mValues.put(name, Boolean.toString(presetValues.getBoolean(name)));
+                                        mUpdate.put(name, presetValues.getBoolean_(name));
+                                        mValues.put(name, Boolean.toString(presetValues.getBoolean_(name)));
                                     } else {
-                                        mUpdate.put(name, presetValues.getString(name));
-                                        mValues.put(name, presetValues.getString(name));
+                                        mUpdate.put(name, presetValues.getString_(name));
+                                        mValues.put(name, presetValues.getString_(name));
                                     }
                                 }
                                 mUpdate.put("preset", "0");
@@ -308,7 +308,7 @@ public class FilteredDeckOptions extends AppCompatPreferenceActivity implements 
 
         @Override
         public String getString(String key, String defValue) {
-            Timber.d("getString(key=%s, defValue=%s)", key, defValue);
+            Timber.d("getString_(key=%s, defValue=%s)", key, defValue);
             if (!mValues.containsKey(key)) {
                 return defValue;
             }
@@ -370,7 +370,7 @@ public class FilteredDeckOptions extends AppCompatPreferenceActivity implements 
         registerExternalStorageListener();
 
         try {
-            if (mCol == null || mDeck.getInt("dyn") != 1) {
+            if (mCol == null || mDeck.getInt_("dyn") != 1) {
                 Timber.w("No Collection loaded or deck is not a dyn deck");
                 finish();
                 return;
@@ -385,7 +385,7 @@ public class FilteredDeckOptions extends AppCompatPreferenceActivity implements 
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-        
+
         // Set the activity title to include the name of the deck
         String title = getResources().getString(R.string.deckpreferences_title);
         if (title.contains("XXX")) {
