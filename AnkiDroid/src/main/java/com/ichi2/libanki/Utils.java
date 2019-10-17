@@ -316,7 +316,7 @@ public class Utils {
 
 
     /** Given a list of integers, return a string '(int1,int2,...)'. */
-    public static String ids2str(JSONArray ids) {
+    public static String ids2str(JSONArray_ ids) {
         StringBuilder str = new StringBuilder(512);
         str.append("(");
         if (ids != null) {
@@ -416,20 +416,20 @@ public class Utils {
     }
 
 
-    public static long[] jsonArrayToLongArray(JSONArray jsonArray) throws JSONException {
+    public static long[] jsonArrayToLongArray(JSONArray_ jsonArray) {
         long[] ar = new long[jsonArray.length()];
         for (int i = 0; i < jsonArray.length(); i++) {
-            ar[i] = jsonArray.getLong(i);
+            ar[i] = jsonArray.getLong_(i);
         }
         return ar;
     }
 
 
-    public static Object[] jsonArray2Objects(JSONArray array) {
+    public static Object[] jsonArray2Objects(JSONArray_ array) {
         Object[] o = new Object[array.length()];
         for (int i = 0; i < array.length(); i++) {
             try {
-                o[i] = array.get(i);
+                o[i] = array.get_(i);
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -869,7 +869,7 @@ public class Utils {
      * @return the json serialization of the object
      * @see org.json.JSONObject#toString()
      */
-    public static String jsonToString(JSONObject json) {
+    public static String jsonToString(JSONObject_ json) {
         return json.toString().replaceAll("\\\\/", "/");
     }
 
@@ -883,7 +883,7 @@ public class Utils {
      * @return the json serialization of the object
      * @see org.json.JSONArray#toString()
      */
-    public static String jsonToString(JSONArray json) {
+    public static String jsonToString(JSONArray_ json) {
         return json.toString().replaceAll("\\\\/", "/");
     }
 
