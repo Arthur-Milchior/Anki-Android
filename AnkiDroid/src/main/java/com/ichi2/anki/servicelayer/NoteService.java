@@ -43,16 +43,16 @@ public class NoteService {
      * @param model the model in JSOBObject format
      * @return a new note instance
      */
-    public static MultimediaEditableNote createEmptyNote(JSONObject model) {
+    public static MultimediaEditableNote createEmptyNote(JSONObject_ model) {
         try {
-            JSONArray fieldsArray = model.getJSONArray("flds");
+            JSONArray_ fieldsArray = model.getJSONArray("flds");
             int numOfFields = fieldsArray.length();
             if (numOfFields > 0) {
                 MultimediaEditableNote note = new MultimediaEditableNote();
                 note.setNumFields(numOfFields);
 
                 for (int i = 0; i < numOfFields; i++) {
-                    JSONObject fieldObject = fieldsArray.getJSONObject(i);
+                    JSONObject_ fieldObject = fieldsArray.getJSONObject(i);
                     TextField uiTextField = new TextField();
                     uiTextField.setName(fieldObject.getString("name"));
                     uiTextField.setText(fieldObject.getString("name"));
