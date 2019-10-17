@@ -72,7 +72,7 @@ public class Statistics extends NavigationDrawerActivity implements DeckDropDown
     private ViewPager mViewPager;
     private AnkiStatsTaskHandler mTaskHandler = null;
     private long mDeckId;
-    private ArrayList<JSONObject> mDropDownDecks;
+    private ArrayList<JSONObject_> mDropDownDecks;
     private Spinner mActionBarSpinner;
     private static boolean sIsSubtitle;
 
@@ -222,7 +222,7 @@ public class Statistics extends NavigationDrawerActivity implements DeckDropDown
         if (position == 0) {
             mDeckId = Stats.ALL_DECKS_ID;
         } else {
-            JSONObject deck = mDropDownDecks.get(position - 1);
+            JSONObject_ deck = mDropDownDecks.get(position - 1);
             try {
                 mDeckId = deck.getLong("id");
             } catch (JSONException e) {
@@ -237,13 +237,13 @@ public class Statistics extends NavigationDrawerActivity implements DeckDropDown
     private boolean selectDeckById(long deckId) {
         for (int dropDownDeckIdx = 0; dropDownDeckIdx < mDropDownDecks.size(); dropDownDeckIdx++) {
             try {
-                if (mDropDownDecks.get(dropDownDeckIdx).getLong("id") == deckId) {
+                if (mDropDownDecks.get(dropDownDeckIdx).getLong_("id") == deckId) {
                     selectDropDownItem(dropDownDeckIdx + 1);
                     return true;
                 }
-            } catch (JSONException e) {
-                throw new RuntimeException();
-            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
         }
         return false;
     }
@@ -454,15 +454,15 @@ public class Statistics extends NavigationDrawerActivity implements DeckDropDown
             if (mDeckId != Stats.ALL_DECKS_ID) {
                 try {
                     Collection col = CollectionHelper.getInstance().getCol(getActivity());
-                    List<String> parts = Arrays.asList(col.getDecks().current().getString("name").split("::", -1));
+                    List<String> parts = Arrays.asList(col.getDecks().current().getString_("name").split("::", -1));
                     if (sIsSubtitle) {
                         ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(parts.get(parts.size() - 1));
                     } else {
                         getActivity().setTitle(parts.get(parts.size() - 1));
                     }
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
             } else {
                 if (sIsSubtitle) {
                     ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(R.string.stats_deck_collection);
@@ -614,15 +614,15 @@ public class Statistics extends NavigationDrawerActivity implements DeckDropDown
             mDeckId = ((Statistics) getActivity()).getDeckId();
             if (mDeckId != Stats.ALL_DECKS_ID) {
                 try {
-                    List<String> parts = Arrays.asList(col.getDecks().current().getString("name").split("::"));
+                    List<String> parts = Arrays.asList(col.getDecks().current().getString_("name").split("::"));
                     if (sIsSubtitle) {
                         ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(parts.get(parts.size() - 1));
                     } else {
                         getActivity().setTitle(parts.get(parts.size() - 1));
                     }
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
             } else {
                 if (sIsSubtitle) {
                     ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(R.string.stats_deck_collection);
