@@ -75,7 +75,7 @@ public class ImportTest {
         // add a note that references a sound
         Note n = tmp.newNote();
         n.setItem("Front", "[sound:foo.mp3]");
-        long mid = n.model().getLong("id");
+        long mid = n.model().getLong_("id");
         tmp.addNote(n);
         // add that sound to the media folder
         FileOutputStream os;
@@ -219,7 +219,7 @@ public class ImportTest {
         // the front template should contain the text added in the 2nd package
         Long tcid = dst.findCards("").get(0);
         Note tnote = dst.getCard(tcid).note();
-        assertTrue(dst.findTemplates(tnote).get(0).getString("qfmt").contains("Changed Front Template"));
+        assertTrue(dst.findTemplates(tnote).get(0).getString_("qfmt").contains("Changed Front Template"));
     }
 
     @Test
@@ -292,8 +292,8 @@ public class ImportTest {
 //    public void testCsv2() throws  IOException, ConfirmModSchemaException {
 //        Collection deck = Shared.getEmptyCol(InstrumentationRegistry.getInstrumentation().getTargetContext());
 //        Models mm = deck.getModels();
-//        JSONObject m = mm.current();
-//        JSONObject f = mm.newField("Three");
+//        JSONObject_ m = mm.current();
+//        JSONObject_ f = mm.newField("Three");
 //        mm.addField(m, f);
 //        mm.save(m);
 //        Note n = deck.newNote();
