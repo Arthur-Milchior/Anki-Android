@@ -246,13 +246,9 @@ public class Sched {
                 return 4;
             }
             JSONObject_ conf = _lrnConf(card);
-            try {
                 if (card.getType() == 0 || card.getType() == 1 || conf.getJSONArray_("delays").length() > 1) {
                     return 3;
                 }
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
             return 2;
         } else if (card.getQueue() == 2) {
             return 4;
@@ -266,12 +262,8 @@ public class Sched {
      * Unbury cards.
      */
     public void unburyCards() {
-        try {
             mCol.getConf().put_("lastUnburied", mToday);
             mCol.log(mCol.getDb().queryColumn(Long.class, "select id from cards where queue = -2", 0));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
 
         mCol.getDb().execute("update cards set queue=type where queue = -2");
     }
@@ -305,13 +297,9 @@ public class Sched {
         List<JSONObject_> list = mCol.getDecks().parents(did);
         list.add(mCol.getDecks().get(did));
         for (JSONObject_ g : list) {
-            try {
                 JSONArray_ a = g.getJSONArray_(key);
                 // add
                 a.put_(1, a.getLong_(1) + cnt);
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
             mCol.getDecks().save(g);
         }
     }
@@ -321,7 +309,6 @@ public class Sched {
         JSONObject_ cur = mCol.getDecks().current();
         ArrayList<JSONObject_> decks = new ArrayList<>();
         decks.add(cur);
-        try {
             decks.addAll(mCol.getDecks().parents(cur.getLong_("id")));
             for (long did : mCol.getDecks().children(cur.getLong_("id")).values()) {
                 decks.add(mCol.getDecks().get(did));
@@ -336,9 +323,6 @@ public class Sched {
                 g.put_("revToday", ja);
                 mCol.getDecks().save(g);
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -376,7 +360,9 @@ public class Sched {
                 // and add to running total
                 tot += cnt;
             }
-        } catch (JSONException | IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
             throw new RuntimeException(e);
         }
         return tot;
@@ -397,7 +383,6 @@ public class Sched {
         ArrayList<JSONObject_> decks = mCol.getDecks().allSorted();
         HashMap<String, Integer[]> lims = new HashMap<>();
         ArrayList<DeckDueTreeNode> data = new ArrayList<>();
-        try {
             for (JSONObject_ deck : decks) {
                 // if we've already seen the exact same deck name, remove the
                 // invalid duplicate and reload
@@ -438,9 +423,6 @@ public class Sched {
                 // add deck as a parent
                 lims.put(deck.getString_("name"), new Integer[]{nlim, rlim});
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         return data;
     }
 
@@ -516,14 +498,10 @@ public class Sched {
             // limit the counts to the deck's limits
             JSONObject_ conf = mCol.getDecks().confForDid(did);
             JSONObject_ deck = mCol.getDecks().get(did);
-            try {
                 if (conf.getInt_("dyn") == 0) {
                     rev = Math.max(0, Math.min(rev, conf.getJSONObject_("rev").getInt_("perDay") - deck.getJSONArray_("revToday").getInt_(1)));
                     _new = Math.max(0, Math.min(_new, conf.getJSONObject_("new").getInt_("perDay") - deck.getJSONArray_("newToday").getInt_(1)));
                 }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
             tree.add(new DeckDueTreeNode(head, did, rev, lrn, _new, children));
         }
         return tree;
@@ -660,7 +638,6 @@ public class Sched {
 
 
     private void _updateNewCardRatio() {
-        try {
             if (mCol.getConf().getInt_("newSpread") == Consts.NEW_CARDS_DISTRIBUTE) {
                 if (mNewCount != 0) {
                     mNewCardModulus = (mNewCount + mRevCount) / mNewCount;
@@ -672,9 +649,6 @@ public class Sched {
                 }
             }
             mNewCardModulus = 0;
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -686,11 +660,7 @@ public class Sched {
             return false;
         }
         int spread;
-        try {
             spread = mCol.getConf().getInt_("newSpread");
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         if (spread == Consts.NEW_CARDS_LAST) {
             return false;
         } else if (spread == Consts.NEW_CARDS_FIRST) {
@@ -745,15 +715,11 @@ public class Sched {
 
     /* Limit for deck without parent limits. */
     public int _deckNewLimitSingle(JSONObject_ g) {
-        try {
             if (g.getInt_("dyn") != 0) {
                 return mReportLimit;
             }
             JSONObject_ c = mCol.getDecks().confForDid(g.getLong_("id"));
             return Math.max(0, c.getJSONObject_("new").getInt_("perDay") - g.getJSONArray_("newToday").getInt_(1));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public int totalNewForCurrentDeck() {
@@ -830,11 +796,7 @@ public class Sched {
         if (_fillLrn()) {
             double cutoff = Utils.now();
             if (collapse) {
-                try {
                     cutoff += mCol.getConf().getInt_("collapseTime");
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
             }
             if (mLrnQueue.getFirst()[0] < cutoff) {
                 long id = mLrnQueue.remove()[1];
@@ -931,22 +893,14 @@ public class Sched {
             if (ease == 2) {
                 // decrement real left count and recalculate left today
                 int left = (card.getLeft() % 1000) - 1;
-                try {
                     card.setLeft(_leftToday(conf.getJSONArray_("delays"), left) * 1000 + left);
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
                 // failed
             } else {
                 card.setLeft(_startingLeft(card));
                 boolean resched = _resched(card);
                 if (conf.has("mult") && resched) {
                     // review that's lapsed
-                    try {
                         card.setIvl(Math.max(Math.max(1, (int) (card.getIvl() * conf.getDouble_("mult"))), conf.getInt_("minInt")));
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
                 } else {
                     // new card; no ivl adjustment
                     // pass
@@ -987,7 +941,6 @@ public class Sched {
 
     private int _delayForGrade(JSONObject_ conf, int left) {
         left = left % 1000;
-        try {
             double delay;
             JSONArray_ ja = conf.getJSONArray_("delays");
             int len = ja.length();
@@ -1002,9 +955,6 @@ public class Sched {
                 }
             }
             return (int) (delay * 60.0);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -1048,7 +998,6 @@ public class Sched {
 
 
     private int _startingLeft(Card card) {
-        try {
             JSONObject_ conf;
             if (card.getType() == 2) {
                 conf = _lapseConf(card);
@@ -1058,9 +1007,6 @@ public class Sched {
             int tot = conf.getJSONArray_("delays").length();
             int tod = _leftToday(conf.getJSONArray_("delays"), tot);
             return tot + tod * 1000;
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -1077,11 +1023,7 @@ public class Sched {
         int ok = 0;
         int offset = Math.min(left, delays.length());
         for (int i = 0; i < offset; i++) {
-            try {
                 now += (int) (delays.getDouble_(delays.length() - offset + i) * 60.0);
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
             if (now > mDayCutoff) {
                 break;
             }
@@ -1100,19 +1042,14 @@ public class Sched {
         if (card.getType() == 2) {
             // lapsed card being relearnt
             if (card.getODid() != 0) {
-                try {
                     if (conf.getBoolean_("resched")) {
                         return _dynIvlBoost(card);
                     }
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
             }
             return card.getIvl();
         }
         int ideal;
         JSONArray_ ja;
-        try {
             ja = conf.getJSONArray_("ints");
             if (!early) {
                 // graduate
@@ -1125,9 +1062,6 @@ public class Sched {
             } else {
                 return ideal;
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -1135,11 +1069,7 @@ public class Sched {
     private void _rescheduleNew(Card card, JSONObject_ conf, boolean early) {
         card.setIvl(_graduatingIvl(card, conf, early));
         card.setDue(mToday + card.getIvl());
-        try {
             card.setFactor(conf.getInt_("initialFactor"));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -1197,7 +1127,7 @@ public class Sched {
                     "SELECT count() FROM (SELECT 1 FROM cards WHERE did = " + did
                             + " AND queue = 3 AND due <= " + mToday
                             + " LIMIT " + mReportLimit + ")");
-        } catch (SQLException |JSONException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -1217,15 +1147,11 @@ public class Sched {
 
 
     private int _deckRevLimitSingle(JSONObject_ d) {
-        try {
             if (d.getInt_("dyn") != 0) {
                 return mReportLimit;
             }
             JSONObject_ c = mCol.getDecks().confForDid(d.getLong_("id"));
             return Math.max(0, c.getJSONObject_("rev").getInt_("perDay") - d.getJSONArray_("revToday").getInt_(1));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -1292,7 +1218,6 @@ public class Sched {
                 }
                 if (!mRevQueue.isEmpty()) {
                     // ordering
-                    try {
                         if (mCol.getDecks().get(did).getInt_("dyn") != 0) {
                             // dynamic decks need due order preserved
                             // Note: libanki reverses mRevQueue and returns the last element in _getRevCard().
@@ -1303,9 +1228,6 @@ public class Sched {
                             r.setSeed(mToday);
                             Collections.shuffle(mRevQueue, r);
                         }
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
                     // is the current did empty?
                     if (mRevQueue.size() < lim) {
                         mRevDids.remove();
@@ -1362,7 +1284,6 @@ public class Sched {
 
     private int _rescheduleLapse(Card card) {
         JSONObject_ conf;
-        try {
             conf = _lapseConf(card);
             card.setLastIvl(card.getIvl());
             if (_resched(card)) {
@@ -1403,18 +1324,11 @@ public class Sched {
                 card.setQueue(3);
             }
             return delay;
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
     private int _nextLapseIvl(Card card, JSONObject_ conf) {
-        try {
             return Math.max(conf.getInt_("minInt"), (int)(card.getIvl() * conf.getDouble_("mult")));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -1452,7 +1366,6 @@ public class Sched {
      * Ideal next interval for CARD, given EASE.
      */
     private int _nextRevIvl(Card card, int ease) {
-        try {
             long delay = _daysLate(card);
             int interval = 0;
             JSONObject_ conf = _revConf(card);
@@ -1469,9 +1382,6 @@ public class Sched {
             }
             // interval capped?
             return Math.min(interval, conf.getInt_("maxIvl"));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private int _fuzzedIvl(int ivl) {
@@ -1548,14 +1458,10 @@ public class Sched {
             did = mCol.getDecks().selected();
         }
         JSONObject_ deck = mCol.getDecks().get(did);
-        try {
             if (deck.getInt_("dyn") == 0) {
                 Timber.e("error: deck is not a filtered deck");
                 return null;
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         // move any existing cards back first, then fill
         emptyDyn(did);
         List<Long> ids = _fillDyn(deck);
@@ -1571,7 +1477,6 @@ public class Sched {
     private List<Long> _fillDyn(JSONObject_ deck) {
         JSONArray_ terms;
         List<Long> ids;
-        try {
             terms = deck.getJSONArray_("terms").getJSONArray_(0);
             String search = terms.getString_(0);
             int limit = terms.getInt_(1);
@@ -1588,9 +1493,6 @@ public class Sched {
             // move the cards over
             mCol.log(deck.getLong_("id"), ids);
             _moveToDyn(deck.getLong_("id"), ids);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         return ids;
     }
 
@@ -1694,11 +1596,7 @@ public class Sched {
         double factor = ((card.getFactor() / 1000.0) + 1.2) / 2.0;
         int ivl = Math.max(1, Math.max(card.getIvl(), (int) (elapsed * factor)));
         JSONObject_ conf = _revConf(card);
-        try {
             return Math.min(conf.getInt_("maxIvl"), ivl);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -1709,7 +1607,6 @@ public class Sched {
     /** Leech handler. True if card was a leech. */
     private boolean _checkLeech(Card card, JSONObject_ conf) {
         int lf;
-        try {
             lf = conf.getInt_("leechFails");
             if (lf == 0) {
                 return false;
@@ -1740,9 +1637,6 @@ public class Sched {
                 }
                 return true;
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         return false;
     }
 
@@ -1757,7 +1651,6 @@ public class Sched {
 
 
     private JSONObject_ _newConf(Card card) {
-        try {
             JSONObject_ conf = _cardConf(card);
             // normal deck
             if (card.getODid() == 0) {
@@ -1780,14 +1673,10 @@ public class Sched {
             dict.put_("order", Consts.NEW_CARDS_DUE);
             dict.put_("perDay", mReportLimit);
             return dict;
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
     private JSONObject_ _lapseConf(Card card) {
-        try {
             JSONObject_ conf = _cardConf(card);
             // normal deck
             if (card.getODid() == 0) {
@@ -1809,14 +1698,10 @@ public class Sched {
             dict.put_("delays", delays);
             dict.put_("resched", conf.getBoolean_("resched"));
             return dict;
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
     private JSONObject_ _revConf(Card card) {
-        try {
             JSONObject_ conf = _cardConf(card);
             // normal deck
             if (card.getODid() == 0) {
@@ -1824,9 +1709,6 @@ public class Sched {
             }
             // dynamic deck
             return mCol.getDecks().confForDid(card.getODid()).getJSONObject_("rev");
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -1837,14 +1719,10 @@ public class Sched {
 
     private boolean _resched(Card card) {
         JSONObject_ conf = _cardConf(card);
-        try {
             if (conf.getInt_("dyn") == 0) {
                 return true;
             }
             return conf.getBoolean_("resched");
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -1878,16 +1756,12 @@ public class Sched {
     private void update(JSONObject_ g) {
         for (String t : new String[] { "new", "rev", "lrn", "time" }) {
             String key = t + "Today";
-            try {
                 if (g.getJSONArray_(key).getInt_(0) != mToday) {
                     JSONArray_ ja = new JSONArray_();
                     ja.put(mToday);
                     ja.put(0);
                     g.put_(key, ja);
                 }
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 
@@ -1937,14 +1811,10 @@ public class Sched {
             sb.append("\n\n");
             sb.append("" + context.getString(R.string.sched_has_buried) + now);
         }
-        try {
             if (mHaveCustomStudy && mCol.getDecks().current().getInt_("dyn") == 0) {
                 sb.append("\n\n");
                 sb.append(context.getString(R.string.studyoptions_congrats_custom));
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         return sb.toString();
     }
 
@@ -2000,13 +1870,9 @@ public class Sched {
             return context.getString(R.string.sched_end);
         }
         String s = Utils.timeQuantity(context, ivl);
-        try {
             if (ivl < mCol.getConf().getInt_("collapseTime")) {
                 s = context.getString(R.string.less_than_time, s);
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         return s;
     }
 
@@ -2015,7 +1881,6 @@ public class Sched {
      * Return the next interval for CARD, in seconds.
      */
     public long nextIvl(Card card, int ease) {
-        try {
             if (card.getQueue() == 0 || card.getQueue() == 1 || card.getQueue() == 3) {
                 return _nextLrnIvl(card, ease);
             } else if (ease == 1) {
@@ -2029,9 +1894,6 @@ public class Sched {
                 // review
                 return _nextRevIvl(card, ease) * 86400L;
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -2041,7 +1903,6 @@ public class Sched {
             card.setLeft(_startingLeft(card));
         }
         JSONObject_ conf = _lrnConf(card);
-        try {
             if (ease == 1) {
                 // fail
                 return _delayForGrade(conf, conf.getJSONArray_("delays").length());
@@ -2063,9 +1924,6 @@ public class Sched {
                     return _delayForGrade(conf, left);
                 }
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -2293,7 +2151,6 @@ public class Sched {
 
     public void resortConf(JSONObject_ conf) {
         List<Long> dids = mCol.getDecks().didsForConf(conf);
-        try {
             for (long did : dids) {
                 if (conf.getJSONObject_("new").getLong_("order") == 0) {
                     randomizeCards(did);
@@ -2301,9 +2158,6 @@ public class Sched {
                     orderCards(did);
                 }
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -2320,13 +2174,9 @@ public class Sched {
         }
         JSONObject_ conf = mCol.getDecks().confForDid(did);
         // in order due?
-        try {
             if (conf.getJSONObject_("new").getInt_("order") == Consts.NEW_CARDS_RANDOM) {
                 randomizeCards(did);
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -2492,12 +2342,8 @@ public class Sched {
 
     public boolean leechActionSuspend(Card card) {
         JSONObject_ conf;
-        try {
             conf = _cardConf(card).getJSONObject_("lapse");
             return conf.getInt_("leechAction") == 0;
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
