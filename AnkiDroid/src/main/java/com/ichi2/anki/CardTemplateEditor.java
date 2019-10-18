@@ -93,11 +93,7 @@ public class CardTemplateEditor extends AnkiActivity {
             hideProgressBar();
             if (result.getBoolean()) {
                 // Refresh the GUI -- setting the last template as the active tab
-                try {
                     selectTemplate(getCol().getModels().get(mModelId).getJSONArray_("tmpls").length());
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
             } else if (result.getString() != null && result.getString().equals("removeTemplateFailed")) {
                 // Failed to remove template
                 String message = getResources().getString(R.string.card_template_editor_would_delete_note);
@@ -240,13 +236,9 @@ public class CardTemplateEditor extends AnkiActivity {
             getSupportActionBar().setSubtitle(col.getModels().get(mModelId).optString("name"));
         }
         // Make backup of the model for cancellation purposes
-        try {
             if (mModelBackup == null) {
                 mModelBackup = new JSONObject_(col.getModels().get(mModelId).toString());
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         // Close collection opening dialog if needed
         Timber.i("CardTemplateEditor:: Card template editor successfully started for model id %d", mModelId);
 
@@ -333,21 +325,13 @@ public class CardTemplateEditor extends AnkiActivity {
 
         @Override
         public int getCount() {
-            try {
                 return mModel.getJSONArray_("tmpls").length();
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
         }
 
 
         @Override
         public CharSequence getPageTitle(int position) {
-            try {
                 return mModel.getJSONArray_("tmpls").getJSONObject_(position).getString_("name");
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
         }
 
         /**
@@ -386,7 +370,6 @@ public class CardTemplateEditor extends AnkiActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View mainView = inflater.inflate(R.layout.card_template_editor_item, container, false);
             final int position = getArguments().getInt("position");
-            try {
                 // Load template
                 long mid = getArguments().getLong("modelId");
                 mModel = ((AnkiActivity) getActivity()).getCol().getModels().get(mid);
@@ -424,9 +407,6 @@ public class CardTemplateEditor extends AnkiActivity {
                 mBack.addTextChangedListener(templateEditorWatcher);
                 // Enable menu
                 setHasOptionsMenu(true);
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
             return mainView;
         }
 
@@ -465,7 +445,6 @@ public class CardTemplateEditor extends AnkiActivity {
                     Timber.i("CardTemplateEditor:: Delete template button pressed");
                     Resources res = getResources();
                     int position = getArguments().getInt("position");
-                    try {
                         JSONArray_ tmpls = model.getJSONArray_("tmpls");
                         final JSONObject_ template = tmpls.getJSONObject_(position);
                         // Don't do anything if only one template
@@ -476,9 +455,6 @@ public class CardTemplateEditor extends AnkiActivity {
                         // Show confirmation dialog
                         int numAffectedCards = col.getModels().tmplUseCount(model, position);
                         confirmDeleteCards(template, model, numAffectedCards);
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
                     return true;
                 }
                 case R.id.action_preview: {
@@ -703,7 +679,6 @@ public class CardTemplateEditor extends AnkiActivity {
             activity.getCol().modSchemaNoCheck();
             Models mm = activity.getCol().getModels();
             // Build new template
-            try {
                 JSONObject_ newTemplate;
                 int oldPosition = getArguments().getInt("position");
                 JSONArray_ templates = model.getJSONArray_("tmpls");
@@ -716,9 +691,6 @@ public class CardTemplateEditor extends AnkiActivity {
                 if (templates.length() == 1) {
                     flipQA(newTemplate);
                 }
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
             // Add new template to the current model via AsyncTask
             Object [] args = new Object[] {model, newTemplate};
             DeckTask.launchDeckTask(DeckTask.TASK_TYPE_ADD_TEMPLATE,
@@ -731,7 +703,6 @@ public class CardTemplateEditor extends AnkiActivity {
          * @param template template to flip
          */
         private void flipQA (JSONObject_ template) {
-            try {
                 String qfmt = template.getString_("qfmt");
                 String afmt = template.getString_("afmt");
                 Matcher m = Pattern.compile("(?s)(.+)<hr id=answer>(.+)").matcher(afmt);
@@ -741,9 +712,6 @@ public class CardTemplateEditor extends AnkiActivity {
                     template.put_("qfmt",m.group(2).trim());
                 }
                 template.put_("afmt","{{FrontSide}}\n\n<hr id=answer>\n\n" + qfmt);
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
         }
 
         /**
@@ -762,11 +730,7 @@ public class CardTemplateEditor extends AnkiActivity {
                 // Cycle through all templates checking if new name exists
                 boolean exists = false;
                 for (int i = 0; i < templates.length(); i++) {
-                    try {
                         exists = exists || name.equals(templates.getJSONObject_(i).getString_("name"));
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
                 }
                 if (!exists) {
                     break;
