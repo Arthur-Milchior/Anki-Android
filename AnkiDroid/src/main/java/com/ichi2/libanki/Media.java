@@ -289,13 +289,13 @@ public class Media {
         List<String> l = new ArrayList<>();
         JSONObject_ model = mCol.getModels().get(mid);
         List<String> strings = new ArrayList<>();
-            if (model.getInt_("type") == Consts.MODEL_CLOZE && string.contains("{{c")) {
-                // if the field has clozes in it, we'll need to expand the
-                // possibilities so we can render latex
-                strings = _expandClozes(string);
-            } else {
-                strings.add(string);
-            }
+        if (model.getInt_("type") == Consts.MODEL_CLOZE && string.contains("{{c")) {
+            // if the field has clozes in it, we'll need to expand the
+            // possibilities so we can render latex
+            strings = _expandClozes(string);
+        } else {
+            strings.add(string);
+        }
 
         for (String s : strings) {
             // handle latex
