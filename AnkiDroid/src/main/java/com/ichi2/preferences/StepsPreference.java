@@ -95,14 +95,10 @@ public class StepsPreference extends EditTextPreference {
             return null;
         } else {
             StringBuilder sb = new StringBuilder();
-            try {
                 for (int i = 0; i < ja.length(); i++) {
                     sb.append(ja.getString_(i)).append(" ");
                 }
                 return sb.toString().trim();
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 
@@ -115,13 +111,9 @@ public class StepsPreference extends EditTextPreference {
      */
     public static String convertFromJSON(JSONArray_ a) {
         StringBuilder sb = new StringBuilder();
-        try {
             for (int i = 0; i < a.length(); i++) {
                 sb.append(a.getString_(i)).append(" ");
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         return sb.toString().trim();
     }
 
