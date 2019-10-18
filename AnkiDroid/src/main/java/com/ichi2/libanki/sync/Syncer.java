@@ -260,8 +260,7 @@ public class Syncer {
 
     /** Bundle up small objects. */
     public JSONObject_ changes() {
-        JSONObject_ o = new JSONObject_();
-        try {
+            JSONObject_ o = new JSONObject_();
             o.put_("models", getModels());
             o.put_("decks", getDecks());
             o.put_("tags", getTags());
@@ -269,9 +268,6 @@ public class Syncer {
                 o.put_("conf", getConf());
                 o.put_("crt", mCol.getCrt());
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         return o;
     }
 
@@ -286,7 +282,6 @@ public class Syncer {
 
 
     public void mergeChanges(JSONObject_ lchg, JSONObject_ rchg) {
-        try {
             // then the other objects
             mergeModels(rchg.getJSONArray_("models"));
             mergeDecks(rchg.getJSONArray_("decks"));
@@ -298,9 +293,6 @@ public class Syncer {
             if (rchg.has("crt")) {
                 mCol.setCrt(rchg.getLong_("crt"));
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         prepareToChunk();
     }
 
@@ -500,7 +492,6 @@ public class Syncer {
 
     public JSONObject_ chunk() {
         JSONObject_ buf = new JSONObject_();
-        try {
             buf.put_("done", false);
             int lim = 250;
             List<Integer> colTypes = null;
@@ -549,15 +540,11 @@ public class Syncer {
             if (mTablesLeft.isEmpty()) {
                 buf.put_("done", true);
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         return buf;
     }
 
 
     public void applyChunk(JSONObject_ chunk) {
-        try {
             if (chunk.has("revlog")) {
                 mergeRevlog(chunk.getJSONArray_("revlog"));
             }
@@ -567,9 +554,6 @@ public class Syncer {
             if (chunk.has("notes")) {
                 mergeNotes(chunk.getJSONArray_("notes"));
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }            
     }
 
 
@@ -612,13 +596,9 @@ public class Syncer {
             mCol.getDb().execute("UPDATE graves SET usn=" + mMaxUsn + " WHERE usn=-1");
         }
         JSONObject_ o = new JSONObject_();
-        try {
             o.put_("cards", cards);
             o.put_("notes", notes);
             o.put_("decks", decks);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         return o;
     }
 
@@ -637,7 +617,6 @@ public class Syncer {
         // pretend to be the server so we don't set usn = -1
         boolean wasServer = mCol.getServer();
         mCol.setServer(true);
-        try {
             // notes first, so we don't end up with duplicate graves
             mCol._remNotes(Utils.jsonArrayToLongArray(graves.getJSONArray_("notes")));
             // then cards
@@ -647,9 +626,6 @@ public class Syncer {
             for (int i = 0; i < decks.length(); i++) {
                 mCol.getDecks().rem(decks.getLong_(i), false, false);
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         mCol.setServer(wasServer);
     }
 
@@ -660,7 +636,6 @@ public class Syncer {
 
     private JSONArray_ getModels() {
         JSONArray_ result = new JSONArray_();
-        try {
             if (mCol.getServer()) {
                 for (JSONObject_ m : mCol.getModels().all()) {
                     if (m.getInt_("usn") >= mMinUsn) {
@@ -676,16 +651,12 @@ public class Syncer {
                 }
                 mCol.getModels().save();
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         return result;
     }
 
 
     private void mergeModels(JSONArray_ rchg) {
         for (int i = 0; i < rchg.length(); i++) {
-            try {
                 JSONObject_ r = rchg.getJSONObject_(i);
                 JSONObject_ l;
                 l = mCol.getModels().get(r.getLong_("id"));
@@ -693,9 +664,6 @@ public class Syncer {
                 if (l == null || r.getLong_("mod") > l.getLong_("mod")) {
                     mCol.getModels().update(r);
                 }
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 
@@ -706,7 +674,6 @@ public class Syncer {
 
     private JSONArray_ getDecks() {
         JSONArray_ result = new JSONArray_();
-        try {
             if (mCol.getServer()) {
                 JSONArray_ decks = new JSONArray_();
                 for (JSONObject_ g : mCol.getDecks().all()) {
@@ -741,15 +708,11 @@ public class Syncer {
                 result.put(decks);
                 result.put(dconfs);
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         return result;
     }
 
 
     private void mergeDecks(JSONArray_ rchg) {
-        try {
             JSONArray_ decks = rchg.getJSONArray_(0);
             for (int i = 0; i < decks.length(); i++) {
                 JSONObject_ r = decks.getJSONObject_(i);
@@ -768,9 +731,6 @@ public class Syncer {
                     mCol.getDecks().updateConf(r);
                 }
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -803,11 +763,7 @@ public class Syncer {
     private void mergeTags(JSONArray_ tags) {
         ArrayList<String> list = new ArrayList<>();
         for (int i = 0; i < tags.length(); i++) {
-            try {
                 list.add(tags.getString_(i));
-            } catch (JSONException e) {
-            throw new RuntimeException(e);
-            }
         }
         mCol.getTags().register(list, mMaxUsn);
     }
@@ -832,7 +788,6 @@ public class Syncer {
 
     private ArrayList<Object[]> newerRows(JSONArray_ data, String table, int modIdx) {
         long[] ids = new long[data.length()];
-        try {
             for (int i = 0; i < data.length(); i++) {
                 ids[i] = data.getJSONArray_(i).getLong_(0);
             }
@@ -862,9 +817,6 @@ public class Syncer {
             }
             mCol.log(table, data);
             return update;
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
