@@ -148,15 +148,11 @@ public class ModelFieldEditor extends AnkiActivity {
         mMod = mCol.getModels().get(noteTypeID);
 
         mFieldLabels = new ArrayList<>();
-        try {
             mNoteFields = mMod.getJSONArray_("flds");
             for (int i = 0; i < mNoteFields.length(); i++) {
                 JSONObject_ o = mNoteFields.getJSONObject_(i);
                 mFieldLabels.add(o.getString_("name"));
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -255,12 +251,8 @@ public class ModelFieldEditor extends AnkiActivity {
     }
 
     private void deleteField() {
-        try {
             DeckTask.launchDeckTask(DeckTask.TASK_TYPE_DELETE_FIELD, mChangeFieldHandler,
                     new DeckTask.TaskData(new Object[]{mMod, mNoteFields.getJSONObject_(mCurrentPos)}));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -351,7 +343,6 @@ public class ModelFieldEditor extends AnkiActivity {
                                 ConfirmationDialog c = new ConfirmationDialog();
                                 c.setArgs(getResources().getString(R.string.full_sync_confirmation));
                                 Runnable confirm = () -> {
-                                    try {
                                         mCol.modSchemaNoCheck();
                                         String newPosition1 = mFieldNameInput.getText().toString();
                                         int pos1 = Integer.parseInt(newPosition1);
@@ -359,16 +350,10 @@ public class ModelFieldEditor extends AnkiActivity {
                                                 mChangeFieldHandler, new DeckTask.TaskData(new Object[]{mMod,
                                                         mNoteFields.getJSONObject_(mCurrentPos), pos1 - 1}));
                                         dismissContextMenu();
-                                    } catch (JSONException e) {
-                                        throw new RuntimeException(e);
-                                    }
                                 };
                                 c.setConfirm(confirm);
                                 c.setCancel(mConfirmDialogCancel);
                                 ModelFieldEditor.this.showDialogFragment(c);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
                             }
                         }
                     })
@@ -405,16 +390,12 @@ public class ModelFieldEditor extends AnkiActivity {
      * Renames the current field
      */
     private void renameField() throws ConfirmModSchemaException {
-        try {
             String fieldLabel = mFieldNameInput.getText().toString()
                     .replaceAll("[\'\"\\n\\r\\[\\]\\(\\)]", "");
             JSONObject_ field = (JSONObject_) mNoteFields.get_(mCurrentPos);
             mCol.getModels().renameField(mMod, field, fieldLabel);
             mCol.getModels().save();
             fullRefreshList();
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
