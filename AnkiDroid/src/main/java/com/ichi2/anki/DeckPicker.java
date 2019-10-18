@@ -1702,7 +1702,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
             exportPath = new File(exportDir, filename);
         } else if (did != null) {
             // filename not explicitly specified, but a deck has been specified so use deck name
-                exportPath = new File(exportDir, getCol().getDecks().get(did).getString_("name").replaceAll("\\W+", "_") + ".apkg");
+            exportPath = new File(exportDir, getCol().getDecks().get(did).getString_("name").replaceAll("\\W+", "_") + ".apkg");
         } else if (!includeSched) {
             // full export without scheduling is assumed to be shared with someone else -- use "All Decks.apkg"
             exportPath = new File(exportDir, "All Decks.apkg");
@@ -2029,7 +2029,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
     }
     public void exportDeck(long did) {
         String msg;
-            msg = getResources().getString(R.string.confirm_apkg_export_deck, getCol().getDecks().get(did).get_("name"));
+        msg = getResources().getString(R.string.confirm_apkg_export_deck, getCol().getDecks().get(did).get_("name"));
         showDialogFragment(ExportDialog.newInstance(msg, did));
     }
 
