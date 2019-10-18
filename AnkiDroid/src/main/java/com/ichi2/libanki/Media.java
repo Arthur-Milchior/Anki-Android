@@ -289,7 +289,6 @@ public class Media {
         List<String> l = new ArrayList<>();
         JSONObject_ model = mCol.getModels().get(mid);
         List<String> strings = new ArrayList<>();
-        try {
             if (model.getInt_("type") == Consts.MODEL_CLOZE && string.contains("{{c")) {
                 // if the field has clozes in it, we'll need to expand the
                 // possibilities so we can render latex
@@ -297,9 +296,6 @@ public class Media {
             } else {
                 strings.add(string);
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
 
         for (String s : strings) {
             // handle latex
@@ -906,8 +902,6 @@ public class Media {
                 mDb.executeMany("insert or replace into media values (?,?,?,?)", media);
             }
             return cnt;
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
         } finally {
             z.close();
         }
