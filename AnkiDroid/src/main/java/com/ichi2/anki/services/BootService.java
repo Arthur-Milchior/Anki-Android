@@ -41,7 +41,6 @@ public class BootService extends BroadcastReceiver {
 
     private void scheduleDeckReminder(Context context) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        try {
             for (JSONObject_ deck : CollectionHelper.getInstance().getCol(context).getDecks().all()) {
                 Collection col = CollectionHelper.getInstance().getCol(context);
                 if (col.getDecks().isDyn(deck.getLong_("id"))) {
@@ -76,9 +75,6 @@ public class BootService extends BroadcastReceiver {
                     }
                 }
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static void scheduleNotification(Context context) {
