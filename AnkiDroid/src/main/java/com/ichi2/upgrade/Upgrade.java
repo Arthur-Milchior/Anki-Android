@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 public class Upgrade {
 
-    public static boolean upgradeJSONIfNecessary(Collection col, JSONObject conf, String name, boolean defaultValue) {
+    public static boolean upgradeJSONIfNecessary(Collection col, JSONObject_ conf, String name, boolean defaultValue) {
         boolean val = defaultValue;
         try {
             val = conf.getBoolean(name);
