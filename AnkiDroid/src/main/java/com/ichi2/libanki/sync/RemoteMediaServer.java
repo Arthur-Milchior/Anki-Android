@@ -167,7 +167,6 @@ public class RemoteMediaServer extends HttpSyncer {
      */
     @SuppressWarnings("unchecked")
     private <T> T _dataOnly(JSONObject_ resp, Class<T> returnType) throws MediaSyncException {
-        try {
             if (!TextUtils.isEmpty(resp.optString("err"))) {
                 String err = resp.getString_("err");
                 mCol.log("error returned: " + err);
@@ -181,8 +180,5 @@ public class RemoteMediaServer extends HttpSyncer {
                 return (T) resp.getJSONArray_("data");
             }
             throw new RuntimeException("Did not specify a valid type for the 'data' element in resopnse");
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
