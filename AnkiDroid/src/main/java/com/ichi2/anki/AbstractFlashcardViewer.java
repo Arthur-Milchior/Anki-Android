@@ -615,7 +615,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
             fld = fld.split(":")[1];
         }
         // loop through fields for a match
-        try {
             JSONArray_ ja = mCurrentCard.model().getJSONArray_("flds");
             for (int i = 0; i < ja.length(); i++) {
                 String name = (String) (ja.getJSONObject_(i).get_("name"));
@@ -630,9 +629,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
                     break;
                 }
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         if (mTypeCorrect == null) {
             if (clozeIdx != 0) {
                 mTypeWarning = getResources().getString(R.string.empty_card_warning);
@@ -1053,11 +1049,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
     // Get the did of the parent deck (ignoring any subdecks)
     protected long getParentDid() {
         long deckID;
-        try {
-        deckID = getCol().getDecks().current().getLong_("id");
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
+            deckID = getCol().getDecks().current().getLong_("id");
         return deckID;
     }
 
@@ -1761,8 +1753,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
         try {
             mShowNextReviewTime = getCol().getConf().getBoolean_("estTimes");
             mShowRemainingCardCount = getCol().getConf().getBoolean_("dueCounts");
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
         } catch (NullPointerException npe) {
             // NPE on collection only happens if the Collection is broken, follow AnkiActivity example
             Intent deckPicker = new Intent(this, DeckPicker.class);
@@ -1812,12 +1802,8 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
         int[] counts = mSched.counts(mCurrentCard);
 
         if (actionBar != null) {
-            try {
                 String[] title = getCol().getDecks().get(mCurrentCard.getDid()).getString_("name").split("::");
                 actionBar.setTitle(title[title.length - 1]);
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
             if (mPrefShowETA) {
                 int eta = mSched.eta(counts, false);
                 actionBar.setSubtitle(getResources().getQuantityString(R.plurals.reviewer_window_title, eta, eta));
@@ -2073,7 +2059,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
      * getAnswerFormat returns the answer part of this card's template as entered by user, without any parsing
      */
     public String getAnswerFormat() {
-        try {
             JSONObject_ model = mCurrentCard.model();
             JSONObject_ template;
             if (model.getInt_("type") == Consts.MODEL_STD) {
@@ -2082,9 +2067,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
                 template = model.getJSONArray_("tmpls").getJSONObject_(0);
             }
             return template.getString_("afmt");
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private void addAnswerSounds(String answer) {
