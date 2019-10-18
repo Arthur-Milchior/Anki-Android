@@ -173,11 +173,7 @@ public class Collection {
         mStartTime = 0;
         _loadScheduler();
         if (!mConf.optBoolean("newBury", false)) {
-            try {
                 mConf.put_("newBury", true);
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
             setMod();
         }
     }
@@ -229,11 +225,7 @@ public class Collection {
         } else {
             v2Sched.moveToV2();
         }
-        try {
             mConf.put_("schedVer", ver);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         setMod();
         _loadScheduler();
     }
@@ -260,11 +252,7 @@ public class Collection {
             mDty = cursor.getInt(3) == 1; // No longer used
             mUsn = cursor.getInt(4);
             mLs = cursor.getLong(5);
-            try {
                 mConf = new JSONObject_(cursor.getString(6));
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
             deckConf = cursor.getString(7);
             mTags.load(cursor.getString(8));
         } finally {
@@ -538,11 +526,7 @@ public class Collection {
         } catch (JSONException e) {
             id = 1;
         }
-        try {
             mConf.put_(type, id + 1);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         return id;
     }
 
@@ -672,7 +656,6 @@ public class Collection {
     private ArrayList<JSONObject_> _tmplsFromOrds(JSONObject_ model, ArrayList<Integer> avail) {
         ArrayList<JSONObject_> ok = new ArrayList<>();
         JSONArray_ tmpls;
-        try {
             if (model.getInt_("type") == Consts.MODEL_STD) {
                 tmpls = model.getJSONArray_("tmpls");
                 for (int i = 0; i < tmpls.length(); i++) {
@@ -689,9 +672,6 @@ public class Collection {
                     ok.add(t);
                 }
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         return ok;
     }
 
@@ -792,9 +772,6 @@ public class Collection {
                     }
                 }
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         } finally {
             if (cur != null && !cur.isClosed()) {
                 cur.close();
@@ -825,14 +802,10 @@ public class Collection {
 	        }
 	    } else {
 	        cms = new ArrayList<>();
-                try {
-                 JSONArray_ ja = note.model().getJSONArray_("tmpls");
-                 for (int i = 0; i < ja.length(); ++i) {
+                JSONArray_ ja = note.model().getJSONArray_("tmpls");
+                for (int i = 0; i < ja.length(); ++i) {
                     cms.add(ja.getJSONObject_(i));
                 }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         }
 	    if (cms.isEmpty()) {
 	        return new ArrayList<>();
@@ -858,11 +831,7 @@ public class Collection {
     private Card _newCard(Note note, JSONObject_ template, int due, boolean flush) {
         Card card = new Card(this);
         card.setNid(note.getId());
-        try {
             card.setOrd(template.getInt_("ord"));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         // Use template did (deck override) if valid, otherwise model did
         long did = template.optLong("did", 0);
         if (did > 0 && mDecks.getDecks().containsKey(did)) {
@@ -870,7 +839,6 @@ public class Collection {
         } else {
             card.setDid(note.model().optLong("did", 0));
         }
-        try {
             // if invalid did, use default instead
             JSONObject_ deck = mDecks.get(card.getDid());
             if (deck.getInt_("dyn") == 1) {
@@ -879,9 +847,6 @@ public class Collection {
             } else {
                 card.setDid(deck.getLong_("id"));
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         card.setDue(_dueForDid(card.getDid(), due));
         if (flush) {
             card.flush();
@@ -893,7 +858,6 @@ public class Collection {
     public int _dueForDid(long did, int due) {
         JSONObject_ conf = mDecks.confForDid(did);
         // in order due?
-        try {
             if (conf.getJSONObject_("new").getInt_("order") == Consts.NEW_CARDS_DUE) {
                 return due;
             } else {
@@ -903,9 +867,6 @@ public class Collection {
                 r.setSeed(due);
                 return r.nextInt(Math.max(due, 1000) - 1) + 1;
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -1073,7 +1034,6 @@ public class Collection {
         for (String name : fmap.keySet()) {
             fields.put(name, flist[fmap.get(name).first]);
         }
-        try {
             int cardNum = ((Integer) data[4]) + 1;
             fields.put("Tags", ((String) data[5]).trim());
             fields.put("Type", (String) model.get_("name"));
@@ -1118,9 +1078,6 @@ public class Collection {
                 }
             }
             return d;
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -1228,21 +1185,13 @@ public class Collection {
      */
 
     public void setTimeLimit(long seconds) {
-        try {
             mConf.put_("timeLim", seconds);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
     public long getTimeLimit() {
         long timebox = 0;
-        try {
             timebox = mConf.getLong_("timeLim");
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         return timebox;
     }
 
@@ -1255,7 +1204,6 @@ public class Collection {
 
     /* Return (elapsedTime, reps) if timebox reached, or null. */
     public Long[] timeboxReached() {
-        try {
             if (mConf.getLong_("timeLim") == 0) {
                 // timeboxing disabled
                 return null;
@@ -1264,9 +1212,6 @@ public class Collection {
             if (elapsed > mConf.getLong_("timeLim")) {
                 return new Long[] { mConf.getLong_("timeLim"), (long) (mSched.getReps() - mStartReps) };
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         return null;
     }
 
@@ -1525,7 +1470,6 @@ public class Collection {
         if (badNotes) {
             return false;
         }
-        try {
             // invalid ords
             for (JSONObject_ m : mModels.all()) {
                 // ignore clozes
@@ -1547,9 +1491,6 @@ public class Collection {
                     return false;
                 }
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         return true;
     }
 
@@ -1714,9 +1655,6 @@ public class Collection {
                     problems.add("Indices were missing.");
                     Storage.addIndices(mDb);
                 }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
             } finally {
                 mDb.getDatabase().endTransaction();
             }
