@@ -23,9 +23,9 @@ public final class DeckDropDownAdapter extends BaseAdapter {
     }
 
     private Context context;
-    private ArrayList<JSONObject> decks;
+    private ArrayList<JSONObject_> decks;
 
-    public DeckDropDownAdapter(Context context, ArrayList<JSONObject> decks) {
+    public DeckDropDownAdapter(Context context, ArrayList<JSONObject_> decks) {
         this.context = context;
         this.decks = decks;
     }
@@ -79,12 +79,12 @@ public final class DeckDropDownAdapter extends BaseAdapter {
         if (position == 0) {
             deckNameView.setText(context.getResources().getString(R.string.deck_summary_all_decks));
         } else {
-            JSONObject deck = decks.get(position - 1);
+            JSONObject_ deck = decks.get(position - 1);
             try {
-                String deckName = deck.getString("name");
+                String deckName = deck.getString_("name");
                 deckNameView.setText(deckName);
-            } catch (JSONException ex) {
-                new RuntimeException();
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
             }
         }
         deckCountsView.setText(((SubtitleListener) context).getSubtitleText());
@@ -105,12 +105,12 @@ public final class DeckDropDownAdapter extends BaseAdapter {
         if (position == 0) {
             deckNameView.setText(context.getResources().getString(R.string.deck_summary_all_decks));
         } else {
-            JSONObject deck = decks.get(position - 1);
+            JSONObject_ deck = decks.get(position - 1);
             try {
-                String deckName = deck.getString("name");
+                String deckName = deck.getString_("name");
                 deckNameView.setText(deckName);
-            } catch (JSONException ex) {
-                new RuntimeException();
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
             }
         }
         return convertView;
