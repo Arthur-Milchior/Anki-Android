@@ -41,40 +41,40 @@ public class BootService extends BroadcastReceiver {
 
     private void scheduleDeckReminder(Context context) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            for (JSONObject_ deck : CollectionHelper.getInstance().getCol(context).getDecks().all()) {
-                Collection col = CollectionHelper.getInstance().getCol(context);
-                if (col.getDecks().isDyn(deck.getLong_("id"))) {
-                    continue;
-                }
-                final long deckConfigurationId = deck.getLong_("conf");
-                final JSONObject_ deckConfiguration = col.getDecks().getConf(deckConfigurationId);
+        for (JSONObject_ deck : CollectionHelper.getInstance().getCol(context).getDecks().all()) {
+            Collection col = CollectionHelper.getInstance().getCol(context);
+            if (col.getDecks().isDyn(deck.getLong_("id"))) {
+                continue;
+            }
+            final long deckConfigurationId = deck.getLong_("conf");
+            final JSONObject_ deckConfiguration = col.getDecks().getConf(deckConfigurationId);
 
-                if (deckConfiguration.has("reminder")) {
-                    final JSONObject_ reminder = deckConfiguration.getJSONObject_("reminder");
+            if (deckConfiguration.has("reminder")) {
+                final JSONObject_ reminder = deckConfiguration.getJSONObject_("reminder");
 
-                    if (reminder.getBoolean_("enabled")) {
-                        final PendingIntent reminderIntent = PendingIntent.getBroadcast(
-                                context,
-                                (int) deck.getLong_("id"),
-                                new Intent(context, ReminderService.class).putExtra(ReminderService.EXTRA_DECK_ID,
-                                        deck.getLong_("id")),
-                                0
-                        );
-                        final Calendar calendar = Calendar.getInstance();
+                if (reminder.getBoolean_("enabled")) {
+                    final PendingIntent reminderIntent = PendingIntent.getBroadcast(
+                            context,
+                            (int) deck.getLong_("id"),
+                            new Intent(context, ReminderService.class).putExtra(ReminderService.EXTRA_DECK_ID,
+                                    deck.getLong_("id")),
+                            0
+                    );
+                    final Calendar calendar = Calendar.getInstance();
 
-                        calendar.set(Calendar.HOUR_OF_DAY, reminder.getJSONArray_("time").getInt_(0));
-                        calendar.set(Calendar.MINUTE, reminder.getJSONArray_("time").getInt_(1));
-                        calendar.set(Calendar.SECOND, 0);
+                    calendar.set(Calendar.HOUR_OF_DAY, reminder.getJSONArray_("time").getInt_(0));
+                    calendar.set(Calendar.MINUTE, reminder.getJSONArray_("time").getInt_(1));
+                    calendar.set(Calendar.SECOND, 0);
 
-                        alarmManager.setRepeating(
-                                AlarmManager.RTC_WAKEUP,
-                                calendar.getTimeInMillis(),
-                                AlarmManager.INTERVAL_DAY,
-                                reminderIntent
-                        );
-                    }
+                    alarmManager.setRepeating(
+                            AlarmManager.RTC_WAKEUP,
+                            calendar.getTimeInMillis(),
+                            AlarmManager.INTERVAL_DAY,
+                            reminderIntent
+                    );
                 }
             }
+        }
     }
 
     public static void scheduleNotification(Context context) {
