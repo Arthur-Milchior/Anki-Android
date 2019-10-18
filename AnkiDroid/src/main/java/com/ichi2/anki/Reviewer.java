@@ -129,7 +129,6 @@ public class Reviewer extends AbstractFlashcardViewer {
 
     @Override
     protected void setTitle() {
-        try {
             String[] title = {""};
             if (colIsOpen()) {
                 title = getCol().getDecks().current().getString_("name").split("::");
@@ -138,9 +137,6 @@ public class Reviewer extends AbstractFlashcardViewer {
             }
             getSupportActionBar().setTitle(title[title.length - 1]);
             super.setTitle(title[title.length - 1]);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         getSupportActionBar().setSubtitle("");
     }
 
