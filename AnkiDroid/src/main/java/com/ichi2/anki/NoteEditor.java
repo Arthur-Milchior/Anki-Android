@@ -207,15 +207,15 @@ public class NoteEditor extends AnkiActivity {
                 Note oldNote = mEditorNote.clone();
                 setNote();
                 // Respect "Remember last input when adding" field option.
-                    JSONArray_ flds;
-                    flds = mEditorNote.model().getJSONArray_("flds");
-                    if (oldNote != null) {
-                        for (int fldIdx = 0; fldIdx < flds.length(); fldIdx++) {
-                            if (flds.getJSONObject_(fldIdx).getBoolean_("sticky")) {
-                                mEditFields.get(fldIdx).setText(oldNote.getFields()[fldIdx]);
-                            }
+                JSONArray_ flds;
+                flds = mEditorNote.model().getJSONArray_("flds");
+                if (oldNote != null) {
+                    for (int fldIdx = 0; fldIdx < flds.length(); fldIdx++) {
+                        if (flds.getJSONObject_(fldIdx).getBoolean_("sticky")) {
+                            mEditFields.get(fldIdx).setText(oldNote.getFields()[fldIdx]);
                         }
                     }
+                }
                 UIUtils.showThemedToast(NoteEditor.this,
                         getResources().getQuantityString(R.plurals.factadder_cards_added, count, count), true);
             } else {
@@ -423,10 +423,10 @@ public class NoteEditor extends AnkiActivity {
         final ArrayList<String> modelNames = new ArrayList<>();
         ArrayList<JSONObject_> models = getCol().getModels().all();
         Collections.sort(models, new JSONNameComparator());
-            for (JSONObject_ m : models) {
-                modelNames.add(m.getString_("name"));
-                mAllModelIds.add(m.getLong_("id"));
-            }
+        for (JSONObject_ m : models) {
+            modelNames.add(m.getString_("name"));
+            mAllModelIds.add(m.getLong_("id"));
+        }
 
         ArrayAdapter<String> noteTypeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, modelNames);
         mNoteTypeSpinner.setAdapter(noteTypeAdapter);
@@ -436,9 +436,9 @@ public class NoteEditor extends AnkiActivity {
         // Deck Selector
         TextView deckTextView = (TextView) findViewById(R.id.CardEditorDeckText);
         // If edit mode and more than one card template distinguish between "Deck" and "Card deck"
-            if (!mAddNote && mEditorNote.model().getJSONArray_("tmpls").length()>1) {
-                deckTextView.setText(R.string.CardEditorCardDeck);
-            }
+        if (!mAddNote && mEditorNote.model().getJSONArray_("tmpls").length()>1) {
+            deckTextView.setText(R.string.CardEditorCardDeck);
+        }
         mNoteDeckSpinner = (Spinner) findViewById(R.id.note_deck_spinner);
         mAllDeckIds = new ArrayList<>();
         final ArrayList<String> deckNames = new ArrayList<>();
@@ -446,12 +446,12 @@ public class NoteEditor extends AnkiActivity {
         ArrayList<JSONObject_> decks = getCol().getDecks().all();
         Collections.sort(decks, new JSONNameComparator());
         for (JSONObject_ d : decks) {
-                // add current deck and all other non-filtered decks to deck list
-                long thisDid = d.getLong_("id");
-                if (d.getInt_("dyn") == 0 || (!mAddNote && mCurrentEditedCard != null && mCurrentEditedCard.getDid() == thisDid)) {
-                    deckNames.add(d.getString_("name"));
-                    mAllDeckIds.add(thisDid);
-                }
+            // add current deck and all other non-filtered decks to deck list
+            long thisDid = d.getLong_("id");
+            if (d.getInt_("dyn") == 0 || (!mAddNote && mCurrentEditedCard != null && mCurrentEditedCard.getDid() == thisDid)) {
+                deckNames.add(d.getString_("name"));
+                mAllDeckIds.add(thisDid);
+            }
         }
 
         ArrayAdapter<String> noteDeckAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, deckNames);
@@ -476,7 +476,7 @@ public class NoteEditor extends AnkiActivity {
 
         // Set current note type and deck positions in spinners
         int position;
-            position = mAllModelIds.indexOf(mEditorNote.model().getLong_("id"));
+        position = mAllModelIds.indexOf(mEditorNote.model().getLong_("id"));
         // set selection without firing selectionChanged event
         // nb: setOnItemSelectedListener needs to occur after this
         mNoteTypeSpinner.setSelection(position, false);
@@ -690,16 +690,16 @@ public class NoteEditor extends AnkiActivity {
             for (FieldEditText f : mEditFields) {
                 updateField(f);
             }
-                // Save deck to model
-                mEditorNote.model().put_("did", mCurrentDid);
-                // Save tags to model
-                mEditorNote.setTagsFromStr(tagsAsString(mSelectedTags));
-                JSONArray_ ja = new JSONArray_();
-                for (String t : mSelectedTags) {
-                    ja.put(t);
-                }
-                getCol().getModels().current().put_("tags", ja);
-                getCol().getModels().setChanged();
+            // Save deck to model
+            mEditorNote.model().put_("did", mCurrentDid);
+            // Save tags to model
+            mEditorNote.setTagsFromStr(tagsAsString(mSelectedTags));
+            JSONArray_ ja = new JSONArray_();
+            for (String t : mSelectedTags) {
+                ja.put(t);
+            }
+            getCol().getModels().current().put_("tags", ja);
+            getCol().getModels().setChanged();
             DeckTask.launchDeckTask(DeckTask.TASK_TYPE_ADD_FACT, mSaveFactHandler, new DeckTask.TaskData(mEditorNote));
         } else {
             // Check whether note type has been changed
@@ -988,8 +988,8 @@ public class NoteEditor extends AnkiActivity {
     private void showCardTemplateEditor() {
         Intent intent = new Intent(this, CardTemplateEditor.class);
         // Pass the model ID
-            intent.putExtra("modelId", getCurrentlySelectedModel().getLong_("id"));
-            Timber.d("showCardTemplateEditor() for model %s", intent.getLongExtra("modelId", -1L));
+        intent.putExtra("modelId", getCurrentlySelectedModel().getLong_("id"));
+        Timber.d("showCardTemplateEditor() for model %s", intent.getLongExtra("modelId", -1L));
         // Also pass the note id and ord if not adding new note
         if (!mAddNote) {
             intent.putExtra("noteId", mCurrentEditedCard.note().getId());
@@ -1344,21 +1344,21 @@ public class NoteEditor extends AnkiActivity {
             return;
         }
         if (note == null || mAddNote) {
-                JSONObject_ conf = getCol().getConf();
-                JSONObject_ model = getCol().getModels().current();
-                if (conf.optBoolean("addToCur", true)) {
-                    mCurrentDid = conf.getLong_("curDeck");
-                    if (getCol().getDecks().isDyn(mCurrentDid)) {
-                        /*
-                         * If the deck in mCurrentDid is a filtered (dynamic) deck, then we can't create cards in it,
-                         * and we set mCurrentDid to the Default deck. Otherwise, we keep the number that had been
-                         * selected previously in the activity.
-                         */
-                        mCurrentDid = 1;
-                    }
-                } else {
-                    mCurrentDid = model.getLong_("did");
+            JSONObject_ conf = getCol().getConf();
+            JSONObject_ model = getCol().getModels().current();
+            if (conf.optBoolean("addToCur", true)) {
+                mCurrentDid = conf.getLong_("curDeck");
+                if (getCol().getDecks().isDyn(mCurrentDid)) {
+                    /*
+                     * If the deck in mCurrentDid is a filtered (dynamic) deck, then we can't create cards in it,
+                     * and we set mCurrentDid to the Default deck. Otherwise, we keep the number that had been
+                     * selected previously in the activity.
+                     */
+                    mCurrentDid = 1;
                 }
+            } else {
+                mCurrentDid = model.getLong_("did");
+            }
         } else {
             mCurrentDid = mCurrentEditedCard.getDid();
         }
@@ -1410,27 +1410,27 @@ public class NoteEditor extends AnkiActivity {
     /** Update the list of card templates for current note type */
     private void updateCards(JSONObject_ model) {
         Timber.d("updateCards()");
-            JSONArray_ tmpls = model.getJSONArray_("tmpls");
-            String cardsList = "";
-            // Build comma separated list of card names
-            Timber.d("updateCards() template count is %s", tmpls.length());
-            for (int i = 0; i < tmpls.length(); i++) {
-                String name = tmpls.getJSONObject_(i).optString("name");
-                // If more than one card then make currently selected card underlined
-                if (!mAddNote && tmpls.length() > 1 && model == mEditorNote.model() &&
-                        mCurrentEditedCard.template().optString("name").equals(name)) {
-                    name = "<u>" + name + "</u>";
-                }
-                cardsList += name;
-                if (i < tmpls.length()-1) {
-                    cardsList += ", ";
-                }
+        JSONArray_ tmpls = model.getJSONArray_("tmpls");
+        String cardsList = "";
+        // Build comma separated list of card names
+        Timber.d("updateCards() template count is %s", tmpls.length());
+        for (int i = 0; i < tmpls.length(); i++) {
+            String name = tmpls.getJSONObject_(i).optString("name");
+            // If more than one card then make currently selected card underlined
+            if (!mAddNote && tmpls.length() > 1 && model == mEditorNote.model() &&
+                    mCurrentEditedCard.template().optString("name").equals(name)) {
+                name = "<u>" + name + "</u>";
             }
-            // Make cards list red if the number of cards is being reduced
-            if (!mAddNote && tmpls.length() < mEditorNote.model().getJSONArray_("tmpls").length()) {
-                cardsList = "<font color='red'>" + cardsList + "</font>";
+            cardsList += name;
+            if (i < tmpls.length()-1) {
+                cardsList += ", ";
             }
-            mCardsButton.setText(CompatHelper.getCompat().fromHtml(getResources().getString(R.string.CardEditorCards, cardsList)));
+        }
+        // Make cards list red if the number of cards is being reduced
+        if (!mAddNote && tmpls.length() < mEditorNote.model().getJSONArray_("tmpls").length()) {
+            cardsList = "<font color='red'>" + cardsList + "</font>";
+        }
+        mCardsButton.setText(CompatHelper.getCompat().fromHtml(getResources().getString(R.string.CardEditorCards, cardsList)));
     }
 
 
@@ -1521,8 +1521,8 @@ public class NoteEditor extends AnkiActivity {
         public int compare(JSONObject_ lhs, JSONObject_ rhs) {
             String[] o1;
             String[] o2;
-                o1 = lhs.getString_("name").split("::");
-                o2 = rhs.getString_("name").split("::");
+            o1 = lhs.getString_("name").split("::");
+            o2 = rhs.getString_("name").split("::");
             for (int i = 0; i < Math.min(o1.length, o2.length); i++) {
                 int result = o1[i].compareToIgnoreCase(o2[i]);
                 if (result != 0) {
@@ -1546,18 +1546,18 @@ public class NoteEditor extends AnkiActivity {
             // If a new column was selected then change the key used to map from mCards to the column TextView
             //Timber.i("NoteEditor:: onItemSelected() fired on mNoteTypeSpinner");
             long oldModelId;
-                oldModelId = getCol().getModels().current().getLong_("id");
+            oldModelId = getCol().getModels().current().getLong_("id");
             long newId = mAllModelIds.get(pos);
             if (oldModelId != newId) {
                 JSONObject_ model = getCol().getModels().get(newId);
                 getCol().getModels().setCurrent(model);
                 JSONObject_ cdeck = getCol().getDecks().current();
-                    cdeck.put_("mid", newId);
+                cdeck.put_("mid", newId);
                 getCol().getDecks().save(cdeck);
                 // Update deck
                 if (!getCol().getConf().optBoolean("addToCur", true)) {
-                        mCurrentDid = model.getLong_("did");
-                        updateDeckPosition();
+                    mCurrentDid = model.getLong_("did");
+                    updateDeckPosition();
                 }
                 // Reset edit fields
                 int size = mEditFields.size();
@@ -1583,9 +1583,9 @@ public class NoteEditor extends AnkiActivity {
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
             // Get the current model
             long noteModelId;
-                noteModelId = mCurrentEditedCard.model().getLong_("id");
+            noteModelId = mCurrentEditedCard.model().getLong_("id");
             // Get new model
-            JSONObject_ newModel = getCol().getModels().get(mAllModelIds.get(pos));
+            JSONObject_ newModel = getCol().getModels().get(mAllModelIds.get(pos));            
             // Configure the interface according to whether note type is getting changed or not
             if (mAllModelIds.get(pos) != noteModelId) {
                 // Initialize mapping between fields of old model -> new model
@@ -1595,13 +1595,13 @@ public class NoteEditor extends AnkiActivity {
                 }
                 // Initialize mapping between cards new model -> old model
                 mModelChangeCardMap = new HashMap<>();
-                    for (int i=0; i < newModel.getJSONArray_("tmpls").length() ; i++) {
-                        if (i < mEditorNote.cards().size()) {
-                            mModelChangeCardMap.put(i, i);
-                        } else {
-                            mModelChangeCardMap.put(i, null);
-                        }
+                for (int i=0; i < newModel.getJSONArray_("tmpls").length() ; i++) {
+                    if (i < mEditorNote.cards().size()) {
+                        mModelChangeCardMap.put(i, i);
+                    } else {
+                        mModelChangeCardMap.put(i, null);
                     }
+                }
                 // Update the field text edits based on the default mapping just assigned
                 updateFieldsFromMap(newModel);
                 // Don't let the user change any other values at the same time as changing note type
