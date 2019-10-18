@@ -89,8 +89,6 @@ public class FilteredDeckOptions extends AppCompatPreferenceActivity implements 
 
         protected void cacheValues() {
             Timber.d("cacheValues()");
-
-            try {
                 JSONArray_ ar = mDeck.getJSONArray_("terms").getJSONArray_(0);
                 mValues.put("search", ar.getString_(0));
                 mValues.put("limit", ar.getString_(1));
@@ -104,9 +102,6 @@ public class FilteredDeckOptions extends AppCompatPreferenceActivity implements 
                     mValues.put("stepsOn", Boolean.toString(false));
                 }
                 mValues.put("resched", Boolean.toString(mDeck.getBoolean_("resched")));
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
         }
 
         public class Editor implements SharedPreferences.Editor {
@@ -126,7 +121,6 @@ public class FilteredDeckOptions extends AppCompatPreferenceActivity implements 
             public boolean commit() {
                 Timber.d("commit() changes back to database");
 
-                try {
                     for (Entry<String, Object> entry : mUpdate.valueSet()) {
                         Timber.i("Change value for key '" + entry.getKey() + "': " + entry.getValue());
                         if (entry.getKey().equals("search")) {
@@ -178,9 +172,6 @@ public class FilteredDeckOptions extends AppCompatPreferenceActivity implements 
                             }
                         }
                     }
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
 
                 // save deck
                 try {
@@ -369,7 +360,6 @@ public class FilteredDeckOptions extends AppCompatPreferenceActivity implements 
 
         registerExternalStorageListener();
 
-        try {
             if (mCol == null || mDeck.getInt_("dyn") != 1) {
                 Timber.w("No Collection loaded or deck is not a dyn deck");
                 finish();
@@ -382,10 +372,13 @@ public class FilteredDeckOptions extends AppCompatPreferenceActivity implements 
                 this.buildLists();
                 this.updateSummaries();
             }
+<<<<<<< HEAD
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
 
+=======
+>>>>>>> 81f6ce888... Remove try/catch JSONException from FilteredDeckOptions
         // Set the activity title to include the name of the deck
         String title = getResources().getString(R.string.deckpreferences_title);
         if (title.contains("XXX")) {
