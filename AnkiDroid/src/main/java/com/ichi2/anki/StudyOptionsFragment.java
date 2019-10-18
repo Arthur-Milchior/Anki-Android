@@ -415,14 +415,10 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
         if (requestCode == DECK_OPTIONS) {
             if (mLoadWithDeckOptions) {
                 mLoadWithDeckOptions = false;
-                try {
                     JSONObject_ deck = getCol().getDecks().current();
                     if (deck.getInt_("dyn") != 0 && deck.has("empty")) {
                         deck.remove("empty");
                     }
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
                     mProgressDialog = StyledProgressDialog.show(getActivity(), "",
                             getResources().getString(R.string.rebuild_cram_deck), true);
                     DeckTask.launchDeckTask(DeckTask.TASK_TYPE_REBUILD_CRAM, getDeckTaskListener(true),
@@ -531,7 +527,6 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
                     // Set the deck name
                     String fullName;
                     JSONObject_ deck = getCol().getDecks().current();
-                    try {
                         // Main deck name
                         fullName = deck.getString_("name");
                         String[] name = fullName.split("::");
@@ -549,9 +544,6 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
                             nameBuilder.append("\n").append(name[name.length - 1]);
                         }
                         mTextDeckName.setText(nameBuilder.toString());
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
 
                     // open cram deck option if deck is opened for the first time
                     if (mLoadWithDeckOptions) {
