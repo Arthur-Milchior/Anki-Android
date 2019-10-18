@@ -73,14 +73,10 @@ public class Note implements Cloneable {
             mId = Utils.timestampID(mCol.getDb(), "notes");
             mGuId = Utils.guid64();
             mModel = model;
-            try {
                 mMid = model.getLong_("id");
                 mTags = new ArrayList<>();
                 mFields = new String[model.getJSONArray_("flds").length()];
                 Arrays.fill(mFields, "");
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
             mFlags = 0;
             mData = "";
             mFMap = mCol.getModels().fieldMap(mModel);
