@@ -69,16 +69,12 @@ public class Tags {
 
 
     public void load(String json) {
-        try {
             JSONObject_ tags = new JSONObject_(json);
             Iterator<?> i = tags.keys();
             while (i.hasNext()) {
                 String t = (String) i.next();
                 mTags.put(t, tags.getInt_(t));
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         mChanged = false;
     }
 
@@ -87,11 +83,7 @@ public class Tags {
         if (mChanged) {
             JSONObject_ tags = new JSONObject_();
             for (Map.Entry<String, Integer> t : mTags.entrySet()) {
-                try {
                     tags.put_(t.getKey(), t.getValue());
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
             }
             ContentValues val = new ContentValues();
             val.put("tags", Utils.jsonToString(tags));
