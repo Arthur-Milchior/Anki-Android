@@ -207,7 +207,6 @@ public class NoteEditor extends AnkiActivity {
                 Note oldNote = mEditorNote.clone();
                 setNote();
                 // Respect "Remember last input when adding" field option.
-                try {
                     JSONArray_ flds;
                     flds = mEditorNote.model().getJSONArray_("flds");
                     if (oldNote != null) {
@@ -217,9 +216,6 @@ public class NoteEditor extends AnkiActivity {
                             }
                         }
                     }
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
                 UIUtils.showThemedToast(NoteEditor.this,
                         getResources().getQuantityString(R.plurals.factadder_cards_added, count, count), true);
             } else {
@@ -428,12 +424,8 @@ public class NoteEditor extends AnkiActivity {
         ArrayList<JSONObject_> models = getCol().getModels().all();
         Collections.sort(models, new JSONNameComparator());
             for (JSONObject_ m : models) {
-                try {
-                    modelNames.add(m.getString_("name"));
-                    mAllModelIds.add(m.getLong_("id"));
-                }
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
+                modelNames.add(m.getString_("name"));
+                mAllModelIds.add(m.getLong_("id"));
             }
 
         ArrayAdapter<String> noteTypeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, modelNames);
@@ -444,13 +436,9 @@ public class NoteEditor extends AnkiActivity {
         // Deck Selector
         TextView deckTextView = (TextView) findViewById(R.id.CardEditorDeckText);
         // If edit mode and more than one card template distinguish between "Deck" and "Card deck"
-        try {
             if (!mAddNote && mEditorNote.model().getJSONArray_("tmpls").length()>1) {
                 deckTextView.setText(R.string.CardEditorCardDeck);
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         mNoteDeckSpinner = (Spinner) findViewById(R.id.note_deck_spinner);
         mAllDeckIds = new ArrayList<>();
         final ArrayList<String> deckNames = new ArrayList<>();
@@ -458,16 +446,12 @@ public class NoteEditor extends AnkiActivity {
         ArrayList<JSONObject_> decks = getCol().getDecks().all();
         Collections.sort(decks, new JSONNameComparator());
         for (JSONObject_ d : decks) {
-            try {
                 // add current deck and all other non-filtered decks to deck list
                 long thisDid = d.getLong_("id");
                 if (d.getInt_("dyn") == 0 || (!mAddNote && mCurrentEditedCard != null && mCurrentEditedCard.getDid() == thisDid)) {
                     deckNames.add(d.getString_("name"));
                     mAllDeckIds.add(thisDid);
                 }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         }
 
         ArrayAdapter<String> noteDeckAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, deckNames);
@@ -492,11 +476,7 @@ public class NoteEditor extends AnkiActivity {
 
         // Set current note type and deck positions in spinners
         int position;
-        try {
             position = mAllModelIds.indexOf(mEditorNote.model().getLong_("id"));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         // set selection without firing selectionChanged event
         // nb: setOnItemSelectedListener needs to occur after this
         mNoteTypeSpinner.setSelection(position, false);
@@ -710,7 +690,6 @@ public class NoteEditor extends AnkiActivity {
             for (FieldEditText f : mEditFields) {
                 updateField(f);
             }
-            try {
                 // Save deck to model
                 mEditorNote.model().put_("did", mCurrentDid);
                 // Save tags to model
@@ -721,9 +700,6 @@ public class NoteEditor extends AnkiActivity {
                 }
                 getCol().getModels().current().put_("tags", ja);
                 getCol().getModels().setChanged();
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
             DeckTask.launchDeckTask(DeckTask.TASK_TYPE_ADD_FACT, mSaveFactHandler, new DeckTask.TaskData(mEditorNote));
         } else {
             // Check whether note type has been changed
@@ -1012,12 +988,8 @@ public class NoteEditor extends AnkiActivity {
     private void showCardTemplateEditor() {
         Intent intent = new Intent(this, CardTemplateEditor.class);
         // Pass the model ID
-        try {
             intent.putExtra("modelId", getCurrentlySelectedModel().getLong_("id"));
             Timber.d("showCardTemplateEditor() for model %s", intent.getLongExtra("modelId", -1L));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         // Also pass the note id and ord if not adding new note
         if (!mAddNote) {
             intent.putExtra("noteId", mCurrentEditedCard.note().getId());
@@ -1372,7 +1344,6 @@ public class NoteEditor extends AnkiActivity {
             return;
         }
         if (note == null || mAddNote) {
-            try {
                 JSONObject_ conf = getCol().getConf();
                 JSONObject_ model = getCol().getModels().current();
                 if (conf.optBoolean("addToCur", true)) {
@@ -1388,9 +1359,6 @@ public class NoteEditor extends AnkiActivity {
                 } else {
                     mCurrentDid = model.getLong_("did");
                 }
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
         } else {
             mCurrentDid = mCurrentEditedCard.getDid();
         }
@@ -1442,7 +1410,6 @@ public class NoteEditor extends AnkiActivity {
     /** Update the list of card templates for current note type */
     private void updateCards(JSONObject_ model) {
         Timber.d("updateCards()");
-        try {
             JSONArray_ tmpls = model.getJSONArray_("tmpls");
             String cardsList = "";
             // Build comma separated list of card names
@@ -1464,9 +1431,6 @@ public class NoteEditor extends AnkiActivity {
                 cardsList = "<font color='red'>" + cardsList + "</font>";
             }
             mCardsButton.setText(CompatHelper.getCompat().fromHtml(getResources().getString(R.string.CardEditorCards, cardsList)));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -1557,12 +1521,8 @@ public class NoteEditor extends AnkiActivity {
         public int compare(JSONObject_ lhs, JSONObject_ rhs) {
             String[] o1;
             String[] o2;
-            try {
                 o1 = lhs.getString_("name").split("::");
                 o2 = rhs.getString_("name").split("::");
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
             for (int i = 0; i < Math.min(o1.length, o2.length); i++) {
                 int result = o1[i].compareToIgnoreCase(o2[i]);
                 if (result != 0) {
@@ -1586,30 +1546,18 @@ public class NoteEditor extends AnkiActivity {
             // If a new column was selected then change the key used to map from mCards to the column TextView
             //Timber.i("NoteEditor:: onItemSelected() fired on mNoteTypeSpinner");
             long oldModelId;
-            try {
                 oldModelId = getCol().getModels().current().getLong_("id");
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
             long newId = mAllModelIds.get(pos);
             if (oldModelId != newId) {
                 JSONObject_ model = getCol().getModels().get(newId);
                 getCol().getModels().setCurrent(model);
                 JSONObject_ cdeck = getCol().getDecks().current();
-                try {
                     cdeck.put_("mid", newId);
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
                 getCol().getDecks().save(cdeck);
                 // Update deck
                 if (!getCol().getConf().optBoolean("addToCur", true)) {
-                    try {
                         mCurrentDid = model.getLong_("did");
                         updateDeckPosition();
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
                 }
                 // Reset edit fields
                 int size = mEditFields.size();
@@ -1635,11 +1583,7 @@ public class NoteEditor extends AnkiActivity {
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
             // Get the current model
             long noteModelId;
-            try {
                 noteModelId = mCurrentEditedCard.model().getLong_("id");
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
             // Get new model
             JSONObject_ newModel = getCol().getModels().get(mAllModelIds.get(pos));
             // Configure the interface according to whether note type is getting changed or not
@@ -1651,7 +1595,6 @@ public class NoteEditor extends AnkiActivity {
                 }
                 // Initialize mapping between cards new model -> old model
                 mModelChangeCardMap = new HashMap<>();
-                try {
                     for (int i=0; i < newModel.getJSONArray_("tmpls").length() ; i++) {
                         if (i < mEditorNote.cards().size()) {
                             mModelChangeCardMap.put(i, i);
@@ -1659,9 +1602,6 @@ public class NoteEditor extends AnkiActivity {
                             mModelChangeCardMap.put(i, null);
                         }
                     }
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
                 // Update the field text edits based on the default mapping just assigned
                 updateFieldsFromMap(newModel);
                 // Don't let the user change any other values at the same time as changing note type
