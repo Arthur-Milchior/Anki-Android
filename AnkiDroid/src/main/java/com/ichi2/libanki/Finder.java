@@ -388,7 +388,6 @@ public class Finder {
         if (!order) {
             return new Pair<>("", false);
         }
-        try {
             // use deck default
             String type = mCol.getConf().getString_("sortType");
             String sort = null;
@@ -421,9 +420,6 @@ public class Finder {
             }
             boolean sortBackwards = mCol.getConf().getBoolean_("sortBackwards");
             return new Pair<>(" ORDER BY " + sort, sortBackwards);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -581,15 +577,11 @@ public class Finder {
 
     private String _findModel(String val) {
         LinkedList<Long> ids = new LinkedList<>();
-        try {
             for (JSONObject_ m : mCol.getModels().all()) {
                 if (m.getString_("name").equalsIgnoreCase(val)) {
                     ids.add(m.getLong_("id"));
                 }
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         return "n.mid in " + Utils.ids2str(ids);
     }
 
@@ -616,7 +608,6 @@ public class Finder {
         }
         List<Long> ids = null;
         // current deck?
-        try {
             if ("current".equalsIgnoreCase(val)) {
                 ids = dids(mCol.getDecks().current().getLong_("id"));
             } else if (!val.contains("*")) {
@@ -637,9 +628,6 @@ public class Finder {
                     }
                 }
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         if (ids == null || ids.size() == 0) {
             return null;
         }
@@ -661,7 +649,6 @@ public class Finder {
         }
         // search for template names
         List<String> lims = new ArrayList<>();
-        try {
             for (JSONObject_ m : mCol.getModels().all()) {
                 JSONArray_ tmpls = m.getJSONArray_("tmpls");
                 for (int ti = 0; ti < tmpls.length(); ++ti) {
@@ -679,9 +666,6 @@ public class Finder {
                     }
                 }
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         return TextUtils.join(" or ", lims.toArray(new String[lims.size()]));
     }
 
@@ -710,7 +694,6 @@ public class Finder {
 
         // find models that have that field
         Map<Long, Object[]> mods = new HashMap<>();
-        try {
             for (JSONObject_ m : mCol.getModels().all()) {
                 JSONArray_ flds = m.getJSONArray_("flds");
                 for (int fi = 0; fi < flds.length(); ++fi) {
@@ -720,9 +703,6 @@ public class Finder {
                     }
                 }
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         if (mods.isEmpty()) {
             // nothing has that field
             return null;
@@ -850,7 +830,6 @@ public class Finder {
             String field, boolean fold) {
         Map<Long, Integer> mmap = new HashMap<>();
         if (field != null) {
-            try {
                 for (JSONObject_ m : col.getModels().all()) {
                     JSONArray_ flds = m.getJSONArray_("flds");
                     for (int fi = 0; fi < flds.length(); ++fi) {
@@ -860,9 +839,6 @@ public class Finder {
                         }
                     }
                 }
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
             if (mmap.isEmpty()) {
                 return 0;
             }
@@ -932,7 +908,6 @@ public class Finder {
     public List<String> fieldNames(Collection col, boolean downcase) {
         Set<String> fields = new HashSet<>();
         List<String> names = new ArrayList<>();
-        try {
             for (JSONObject_ m : col.getModels().all()) {
                 JSONArray_ flds = m.getJSONArray_("flds");
                 for (int fi = 0; fi < flds.length(); ++fi) {
@@ -943,9 +918,6 @@ public class Finder {
                     }
                 }
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         if (downcase) {
             return new ArrayList<>(fields);
         }
@@ -960,7 +932,6 @@ public class Finder {
 
     public static Integer ordForMid(Collection col, Map<Long, Integer> fields, long mid, String fieldName) {
         if (!fields.containsKey(mid)) {
-            try {
                 JSONObject_ model = col.getModels().get(mid);
                 JSONArray_ flds = model.getJSONArray_("flds");
                 for (int c = 0; c < flds.length(); c++) {
@@ -970,9 +941,6 @@ public class Finder {
                         break;
                     }
                 }
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
         }
         return fields.get(mid);
     }
