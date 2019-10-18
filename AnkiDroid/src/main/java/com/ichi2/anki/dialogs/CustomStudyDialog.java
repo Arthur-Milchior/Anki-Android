@@ -237,40 +237,28 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
                     // Set behavior when clicking OK button
                     switch (dialogId) {
                         case CUSTOM_STUDY_NEW: {
-                            try {
                                 AnkiDroidApp.getSharedPrefs(getActivity()).edit().putInt("extendNew", n).commit();
                                 JSONObject_ deck = col.getDecks().get(did);
                                 deck.put_("extendNew", n);
                                 col.getDecks().save(deck);
                                 col.getSched().extendLimits(n, 0);
                                 onLimitsExtended(jumpToReviewer);
-                            } catch (JSONException e) {
-                                throw new RuntimeException(e);
-                            }
                             break;
                         }
                         case CUSTOM_STUDY_REV: {
-                            try {
                                 AnkiDroidApp.getSharedPrefs(getActivity()).edit().putInt("extendRev", n).commit();
                                 JSONObject_ deck = col.getDecks().get(did);
                                 deck.put_("extendRev", n);
                                 col.getDecks().save(deck);
                                 col.getSched().extendLimits(0, n);
                                 onLimitsExtended(jumpToReviewer);
-                            } catch (JSONException e) {
-                                throw new RuntimeException(e);
-                            }
                             break;
                         }
                         case CUSTOM_STUDY_FORGOT: {
-                            try {
                                 JSONArray_ ar = new JSONArray_();
                                 ar.put_(0, 1);
                                 createCustomStudySession(ar, new Object[] {String.format(Locale.US,
                                         "rated:%d:1", n), Consts.DYN_MAX_SIZE, Consts.DYN_RANDOM}, false);
-                            } catch (JSONException e) {
-                                throw new RuntimeException(e);
-                            }
                             break;
                         }
                         case CUSTOM_STUDY_AHEAD: {
@@ -434,7 +422,6 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
         JSONObject_ dyn;
         final AnkiActivity activity = (AnkiActivity) getActivity();
         Collection col = CollectionHelper.getInstance().getCol(activity);
-        try {
             long did = getArguments().getLong("did");
             String deckName = col.getDecks().get(did).getString_("name");
             String customStudyDeck = getResources().getString(R.string.custom_study_deck_name);
@@ -481,9 +468,6 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
                     ((CustomStudyListener) activity).onCreateCustomStudySession();
                 }
             });
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
 
         // Hide the dialogs
         activity.dismissAllDialogFragments();
