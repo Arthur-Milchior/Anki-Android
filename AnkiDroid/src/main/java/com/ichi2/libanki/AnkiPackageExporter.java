@@ -385,12 +385,8 @@ public final class AnkiPackageExporter extends AnkiExporter {
                 if (mpath.exists()) {
                     z.write(mpath.getPath(), Integer.toString(c));
                 }
-                try {
                     media.put(Integer.toString(c), file);
                     c++;
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
             }
         }
         // tidy up intermediate files
