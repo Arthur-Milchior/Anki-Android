@@ -415,11 +415,11 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
         if (requestCode == DECK_OPTIONS) {
             if (mLoadWithDeckOptions) {
                 mLoadWithDeckOptions = false;
-                    JSONObject_ deck = getCol().getDecks().current();
-                    if (deck.getInt_("dyn") != 0 && deck.has("empty")) {
-                        deck.remove("empty");
-                    }
-                    mProgressDialog = StyledProgressDialog.show(getActivity(), "",
+                JSONObject_ deck = getCol().getDecks().current();
+                if (deck.getInt_("dyn") != 0 && deck.has("empty")) {
+                    deck.remove("empty");
+                }
+                mProgressDialog = StyledProgressDialog.show(getActivity(), "",
                             getResources().getString(R.string.rebuild_cram_deck), true);
                     DeckTask.launchDeckTask(DeckTask.TASK_TYPE_REBUILD_CRAM, getDeckTaskListener(true),
                             new DeckTask.TaskData(mFragmented));
@@ -527,23 +527,23 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
                     // Set the deck name
                     String fullName;
                     JSONObject_ deck = getCol().getDecks().current();
-                        // Main deck name
-                        fullName = deck.getString_("name");
-                        String[] name = fullName.split("::");
-                        StringBuilder nameBuilder = new StringBuilder();
-                        if (name.length > 0) {
-                            nameBuilder.append(name[0]);
-                        }
-                        if (name.length > 1) {
-                            nameBuilder.append("\n").append(name[1]);
-                        }
-                        if (name.length > 3) {
-                            nameBuilder.append("...");
-                        }
-                        if (name.length > 2) {
-                            nameBuilder.append("\n").append(name[name.length - 1]);
-                        }
-                        mTextDeckName.setText(nameBuilder.toString());
+                    // Main deck name
+                    fullName = deck.getString_("name");
+                    String[] name = fullName.split("::");
+                    StringBuilder nameBuilder = new StringBuilder();
+                    if (name.length > 0) {
+                        nameBuilder.append(name[0]);
+                    }
+                    if (name.length > 1) {
+                        nameBuilder.append("\n").append(name[1]);
+                    }
+                    if (name.length > 3) {
+                        nameBuilder.append("...");
+                    }
+                    if (name.length > 2) {
+                        nameBuilder.append("\n").append(name[name.length - 1]);
+                    }
+                    mTextDeckName.setText(nameBuilder.toString());
 
                     // open cram deck option if deck is opened for the first time
                     if (mLoadWithDeckOptions) {
