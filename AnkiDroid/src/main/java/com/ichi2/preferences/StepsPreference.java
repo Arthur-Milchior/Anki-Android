@@ -90,14 +90,14 @@ public class StepsPreference extends EditTextPreference {
      * @return The correctly formatted string or null if the input is not valid.
      */
     private String getValidatedStepsInput(String steps) {
-        JSONArray ja = convertToJSON(steps);
+        JSONArray_ ja = convertToJSON(steps);
         if (ja == null) {
             return null;
         } else {
             StringBuilder sb = new StringBuilder();
             try {
                 for (int i = 0; i < ja.length(); i++) {
-                    sb.append(ja.getString(i)).append(" ");
+                    sb.append(ja.getString_(i)).append(" ");
                 }
                 return sb.toString().trim();
             } catch (JSONException e) {
@@ -110,14 +110,14 @@ public class StepsPreference extends EditTextPreference {
     /**
      * Convert steps format.
      * 
-     * @param a JSONArray representation of steps.
+     * @param a JSONArray_ representation of steps.
      * @return The steps as a space-separated string.
      */
-    public static String convertFromJSON(JSONArray a) {
+    public static String convertFromJSON(JSONArray_ a) {
         StringBuilder sb = new StringBuilder();
         try {
             for (int i = 0; i < a.length(); i++) {
-                sb.append(a.getString(i)).append(" ");
+                sb.append(a.getString_(i)).append(" ");
             }
         } catch (JSONException e) {
             throw new RuntimeException(e);
@@ -131,10 +131,10 @@ public class StepsPreference extends EditTextPreference {
      * 1).
      * 
      * @param steps String representation of steps.
-     * @return The steps as a JSONArray or null if the steps are not valid.
+     * @return The steps as a JSONArray_ or null if the steps are not valid.
      */
-    public static JSONArray convertToJSON(String steps) {
-        JSONArray ja = new JSONArray();
+    public static JSONArray_ convertToJSON(String steps) {
+        JSONArray_ ja = new JSONArray_();
         steps = steps.trim();
         if (TextUtils.isEmpty(steps)) {
             return ja;
