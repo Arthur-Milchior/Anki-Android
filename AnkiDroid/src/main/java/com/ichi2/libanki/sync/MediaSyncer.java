@@ -82,7 +82,6 @@ public class MediaSyncer {
 
 
     public String sync() throws UnknownHttpResponseException, MediaSyncException {
-        try {
             // check if there have been any changes
             // If we haven't built the media db yet, do so on this sync. See note at the top
             // of this class about this difference to the original.
@@ -227,9 +226,6 @@ public class MediaSyncer {
                 mCol.getMedia().forceResync();
                 return sRet;
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
