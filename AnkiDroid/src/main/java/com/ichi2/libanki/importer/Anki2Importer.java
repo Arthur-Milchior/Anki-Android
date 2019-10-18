@@ -338,7 +338,6 @@ public class Anki2Importer extends Importer {
 
     /** Return local id for remote MID. */
     private long _mid(long srcMid) {
-        try {
             // already processed this mid?
             if (mModelMap.containsKey(srcMid)) {
                 return mModelMap.get(srcMid);
@@ -375,9 +374,6 @@ public class Anki2Importer extends Importer {
             // save map and return new mid
             mModelMap.put(srcMid, mid);
             return mid;
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -388,7 +384,6 @@ public class Anki2Importer extends Importer {
 
     /** Given did in src col, return local id. */
     private long _did(long did) {
-        try {
             // already converted?
             if (mDecks.containsKey(did)) {
                 return mDecks.get(did);
@@ -434,9 +429,6 @@ public class Anki2Importer extends Importer {
             // add to deck map and return
             mDecks.put(did, newid);
             return newid;
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -700,7 +692,6 @@ public class Anki2Importer extends Importer {
      */
 
     private void _postImport() {
-        try {
             for (long did : mDecks.values()) {
                 mCol.getSched().maybeRandomizeDeck(did);
             }
@@ -708,9 +699,6 @@ public class Anki2Importer extends Importer {
             mDst.getConf().put_("nextPos", mDst.getDb().queryLongScalar(
                     "select max(due)+1 from cards where type = 0"));
             mDst.save();
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
