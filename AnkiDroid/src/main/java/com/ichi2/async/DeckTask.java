@@ -1340,7 +1340,7 @@ public class DeckTask extends BaseAsyncTask<DeckTask.TaskData, DeckTask.TaskData
         Collections.sort(models, new Comparator<JSONObject_>() {
             @Override
             public int compare(JSONObject_ a, JSONObject_ b) {
-                    return a.getString_("name").compareTo(b.getString_("name"));
+                return a.getString_("name").compareTo(b.getString_("name"));
             }
         });
 
