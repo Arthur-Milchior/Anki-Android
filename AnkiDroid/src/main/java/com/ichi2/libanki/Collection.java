@@ -173,7 +173,7 @@ public class Collection {
         mStartTime = 0;
         _loadScheduler();
         if (!mConf.optBoolean("newBury", false)) {
-                mConf.put_("newBury", true);
+            mConf.put_("newBury", true);
             setMod();
         }
     }
@@ -225,7 +225,7 @@ public class Collection {
         } else {
             v2Sched.moveToV2();
         }
-            mConf.put_("schedVer", ver);
+        mConf.put_("schedVer", ver);
         setMod();
         _loadScheduler();
     }
@@ -252,7 +252,7 @@ public class Collection {
             mDty = cursor.getInt(3) == 1; // No longer used
             mUsn = cursor.getInt(4);
             mLs = cursor.getLong(5);
-                mConf = new JSONObject_(cursor.getString(6));
+            mConf = new JSONObject_(cursor.getString(6));
             deckConf = cursor.getString(7);
             mTags.load(cursor.getString(8));
         } finally {
@@ -526,7 +526,7 @@ public class Collection {
         } catch (JSONException e) {
             id = 1;
         }
-            mConf.put_(type, id + 1);
+        mConf.put_(type, id + 1);
         return id;
     }
 
@@ -656,22 +656,22 @@ public class Collection {
     private ArrayList<JSONObject_> _tmplsFromOrds(JSONObject_ model, ArrayList<Integer> avail) {
         ArrayList<JSONObject_> ok = new ArrayList<>();
         JSONArray_ tmpls;
-            if (model.getInt_("type") == Consts.MODEL_STD) {
-                tmpls = model.getJSONArray_("tmpls");
-                for (int i = 0; i < tmpls.length(); i++) {
-                    JSONObject_ t = tmpls.getJSONObject_(i);
-                    if (avail.contains(t.getInt_("ord"))) {
-                        ok.add(t);
-                    }
-                }
-            } else {
-                // cloze - generate temporary templates from first
-                for (int ord : avail) {
-                    JSONObject_ t = new JSONObject_(model.getJSONArray_("tmpls").getString_(0));
-                    t.put_("ord", ord);
+        if (model.getInt_("type") == Consts.MODEL_STD) {
+            tmpls = model.getJSONArray_("tmpls");
+            for (int i = 0; i < tmpls.length(); i++) {
+                JSONObject_ t = tmpls.getJSONObject_(i);
+                if (avail.contains(t.getInt_("ord"))) {
                     ok.add(t);
                 }
             }
+        } else {
+            // cloze - generate temporary templates from first
+            for (int ord : avail) {
+                JSONObject_ t = new JSONObject_(model.getJSONArray_("tmpls").getString_(0));
+                t.put_("ord", ord);
+                ok.add(t);
+            }
+        }
         return ok;
     }
 
@@ -831,7 +831,7 @@ public class Collection {
     private Card _newCard(Note note, JSONObject_ template, int due, boolean flush) {
         Card card = new Card(this);
         card.setNid(note.getId());
-            card.setOrd(template.getInt_("ord"));
+        card.setOrd(template.getInt_("ord"));
         // Use template did (deck override) if valid, otherwise model did
         long did = template.optLong("did", 0);
         if (did > 0 && mDecks.getDecks().containsKey(did)) {
@@ -839,14 +839,14 @@ public class Collection {
         } else {
             card.setDid(note.model().optLong("did", 0));
         }
-            // if invalid did, use default instead
-            JSONObject_ deck = mDecks.get(card.getDid());
-            if (deck.getInt_("dyn") == 1) {
-                // must not be a filtered deck
-                card.setDid(1);
-            } else {
-                card.setDid(deck.getLong_("id"));
-            }
+        // if invalid did, use default instead
+        JSONObject_ deck = mDecks.get(card.getDid());
+        if (deck.getInt_("dyn") == 1) {
+            // must not be a filtered deck
+            card.setDid(1);
+        } else {
+            card.setDid(deck.getLong_("id"));
+        }
         card.setDue(_dueForDid(card.getDid(), due));
         if (flush) {
             card.flush();
@@ -1034,50 +1034,50 @@ public class Collection {
         for (String name : fmap.keySet()) {
             fields.put(name, flist[fmap.get(name).first]);
         }
-            int cardNum = ((Integer) data[4]) + 1;
-            fields.put("Tags", ((String) data[5]).trim());
-            fields.put("Type", (String) model.get_("name"));
-            fields.put("Deck", mDecks.name((Long) data[3]));
-            String[] parents = fields.get("Deck").split("::", -1);
-            fields.put("Subdeck", parents[parents.length-1]);
-            fields.put("CardFlag", _flagNameFromCardFlags((Integer) data[7]));
-            JSONObject_ template;
-            if (model.getInt_("type") == Consts.MODEL_STD) {
-                template = model.getJSONArray_("tmpls").getJSONObject_((Integer) data[4]);
+        int cardNum = ((Integer) data[4]) + 1;
+        fields.put("Tags", ((String) data[5]).trim());
+        fields.put("Type", (String) model.get_("name"));
+        fields.put("Deck", mDecks.name((Long) data[3]));
+        String[] parents = fields.get("Deck").split("::", -1);
+        fields.put("Subdeck", parents[parents.length-1]);
+        fields.put("CardFlag", _flagNameFromCardFlags((Integer) data[7]));
+        JSONObject_ template;
+        if (model.getInt_("type") == Consts.MODEL_STD) {
+            template = model.getJSONArray_("tmpls").getJSONObject_((Integer) data[4]);
+        } else {
+            template = model.getJSONArray_("tmpls").getJSONObject_(0);
+        }
+        fields.put("Card", template.getString_("name"));
+        fields.put(String.format(Locale.US, "c%d", cardNum), "1");
+        // render q & a
+        HashMap<String, String> d = new HashMap<>();
+        d.put("id", Long.toString((Long) data[0]));
+        qfmt = TextUtils.isEmpty(qfmt) ? template.getString_("qfmt") : qfmt;
+        afmt = TextUtils.isEmpty(afmt) ? template.getString_("afmt") : afmt;
+        for (Pair<String, String> p : new Pair[]{new Pair<>("q", qfmt), new Pair<>("a", afmt)}) {
+            String type = p.first;
+            String format = p.second;
+            if ("q".equals(type)) {
+                format = fClozePatternQ.matcher(format).replaceAll(String.format(Locale.US, "{{$1cq-%d:", cardNum));
+                format = fClozeTagStart.matcher(format).replaceAll(String.format(Locale.US, "<%%cq:%d:", cardNum));
             } else {
-                template = model.getJSONArray_("tmpls").getJSONObject_(0);
+                format = fClozePatternA.matcher(format).replaceAll(String.format(Locale.US, "{{$1ca-%d:", cardNum));
+                format = fClozeTagStart.matcher(format).replaceAll(String.format(Locale.US, "<%%ca:%d:", cardNum));
+                // the following line differs from libanki // TODO: why?
+                fields.put("FrontSide", d.get("q")); // fields.put_("FrontSide", mMedia.stripAudio(d.get("q")));
             }
-            fields.put("Card", template.getString_("name"));
-            fields.put(String.format(Locale.US, "c%d", cardNum), "1");
-            // render q & a
-            HashMap<String, String> d = new HashMap<>();
-            d.put("id", Long.toString((Long) data[0]));
-            qfmt = TextUtils.isEmpty(qfmt) ? template.getString_("qfmt") : qfmt;
-            afmt = TextUtils.isEmpty(afmt) ? template.getString_("afmt") : afmt;
-            for (Pair<String, String> p : new Pair[]{new Pair<>("q", qfmt), new Pair<>("a", afmt)}) {
-                String type = p.first;
-                String format = p.second;
-                if ("q".equals(type)) {
-                    format = fClozePatternQ.matcher(format).replaceAll(String.format(Locale.US, "{{$1cq-%d:", cardNum));
-                    format = fClozeTagStart.matcher(format).replaceAll(String.format(Locale.US, "<%%cq:%d:", cardNum));
-                } else {
-                    format = fClozePatternA.matcher(format).replaceAll(String.format(Locale.US, "{{$1ca-%d:", cardNum));
-                    format = fClozeTagStart.matcher(format).replaceAll(String.format(Locale.US, "<%%ca:%d:", cardNum));
-                    // the following line differs from libanki // TODO: why?
-                    fields.put("FrontSide", d.get("q")); // fields.put_("FrontSide", mMedia.stripAudio(d.get("q")));
-                }
-                fields = (Map<String, String>) Hooks.runFilter("mungeFields", fields, model, data, this);
-                String html = new Template(format, fields).render();
-                d.put(type, (String) Hooks.runFilter("mungeQA", html, type, fields, model, data, this));
-                // empty cloze?
-                if ("q".equals(type) && model.getInt_("type") == Consts.MODEL_CLOZE) {
-                    if (getModels()._availClozeOrds(model, (String) data[6], false).size() == 0) {
-                        String link = String.format("<a href=%s#cloze>%s</a>", Consts.HELP_SITE, "help");
-                        d.put("q", mContext.getString(R.string.empty_cloze_warning, link));
-                    }
+            fields = (Map<String, String>) Hooks.runFilter("mungeFields", fields, model, data, this);
+            String html = new Template(format, fields).render();
+            d.put(type, (String) Hooks.runFilter("mungeQA", html, type, fields, model, data, this));
+            // empty cloze?
+            if ("q".equals(type) && model.getInt_("type") == Consts.MODEL_CLOZE) {
+                if (getModels()._availClozeOrds(model, (String) data[6], false).size() == 0) {
+                    String link = String.format("<a href=%s#cloze>%s</a>", Consts.HELP_SITE, "help");
+                    d.put("q", mContext.getString(R.string.empty_cloze_warning, link));
                 }
             }
-            return d;
+        }
+        return d;
     }
 
 
@@ -1185,13 +1185,13 @@ public class Collection {
      */
 
     public void setTimeLimit(long seconds) {
-            mConf.put_("timeLim", seconds);
+        mConf.put_("timeLim", seconds);
     }
 
 
     public long getTimeLimit() {
         long timebox = 0;
-            timebox = mConf.getLong_("timeLim");
+        timebox = mConf.getLong_("timeLim");
         return timebox;
     }
 
@@ -1470,27 +1470,27 @@ public class Collection {
         if (badNotes) {
             return false;
         }
-            // invalid ords
-            for (JSONObject_ m : mModels.all()) {
-                // ignore clozes
-                if (m.getInt_("type") != Consts.MODEL_STD) {
-                    continue;
-                }
-                // Make a list of valid ords for this model
-                JSONArray_ tmpls = m.getJSONArray_("tmpls");
-                int[] ords = new int[tmpls.length()];
-                for (int t = 0; t < tmpls.length(); t++) {
-                    ords[t] = tmpls.getJSONObject_(t).getInt_("ord");
-                }
-
-                boolean badOrd = mDb.queryScalar(String.format(Locale.US,
-                        "select 1 from cards where ord not in %s and nid in ( " +
-                        "select id from notes where mid = %d) limit 1",
-                        Utils.ids2str(ords), m.getLong_("id"))) > 0;
-                if (badOrd) {
-                    return false;
-                }
+        // invalid ords
+        for (JSONObject_ m : mModels.all()) {
+            // ignore clozes
+            if (m.getInt_("type") != Consts.MODEL_STD) {
+                continue;
             }
+            // Make a list of valid ords for this model
+            JSONArray_ tmpls = m.getJSONArray_("tmpls");
+            int[] ords = new int[tmpls.length()];
+            for (int t = 0; t < tmpls.length(); t++) {
+                ords[t] = tmpls.getJSONObject_(t).getInt_("ord");
+            }
+
+            boolean badOrd = mDb.queryScalar(String.format(Locale.US,
+                    "select 1 from cards where ord not in %s and nid in ( " +
+                    "select id from notes where mid = %d) limit 1",
+                    Utils.ids2str(ords), m.getLong_("id"))) > 0;
+            if (badOrd) {
+                return false;
+            }
+        }
         return true;
     }
 
