@@ -267,7 +267,7 @@ public class Card implements Cloneable {
 
 
     public String css() {
-            return String.format(Locale.US, "<style>%s</style>", model().get_("css"));
+        return String.format(Locale.US, "<style>%s</style>", model().get_("css"));
     }
 
 
@@ -287,13 +287,13 @@ public class Card implements Cloneable {
             JSONObject_ m = model();
             JSONObject_ t = template();
             Object[] data;
-                data = new Object[] { mId, f.getId(), m.getLong_("id"), mODid != 0L ? mODid : mDid, mOrd,
+            data = new Object[] { mId, f.getId(), m.getLong_("id"), mODid != 0L ? mODid : mDid, mOrd,
                         f.stringTags(), f.joinedFields(), mFlags};
 
             if (browser) {
-                    String bqfmt = t.getString_("bqfmt");
-                    String bafmt = t.getString_("bafmt");
-                    mQA = mCol._renderQA(data, bqfmt, bafmt);
+                String bqfmt = t.getString_("bqfmt");
+                String bafmt = t.getString_("bafmt");
+                mQA = mCol._renderQA(data, bqfmt, bafmt);
             } else {
                 mQA = mCol._renderQA(data);
             }
@@ -322,11 +322,11 @@ public class Card implements Cloneable {
 
     public JSONObject_ template() {
         JSONObject_ m = model();
-            if (m.getInt_("type") == Consts.MODEL_STD) {
-                return m.getJSONArray_("tmpls").getJSONObject_(mOrd);
-            } else {
-                return model().getJSONArray_("tmpls").getJSONObject_(0);
-            }
+        if (m.getInt_("type") == Consts.MODEL_STD) {
+            return m.getJSONArray_("tmpls").getJSONObject_(mOrd);
+        } else {
+            return model().getJSONArray_("tmpls").getJSONObject_(0);
+        }
     }
 
 
@@ -340,12 +340,12 @@ public class Card implements Cloneable {
      */
     public int timeLimit() {
         JSONObject_ conf = mCol.getDecks().confForDid(mODid == 0 ? mDid : mODid);
-            return conf.getInt_("maxTaken") * 1000;
+        return conf.getInt_("maxTaken") * 1000;
     }
 
 
     public boolean shouldShowTimer() {
-            return mCol.getDecks().confForDid(mODid == 0 ? mDid : mODid).getInt_("timer") != 0;
+        return mCol.getDecks().confForDid(mODid == 0 ? mDid : mODid).getInt_("timer") != 0;
     }
 
 
