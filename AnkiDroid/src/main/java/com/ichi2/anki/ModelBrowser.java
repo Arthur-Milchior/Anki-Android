@@ -320,8 +320,8 @@ public class ModelBrowser extends AnkiActivity {
 
         if (mModels != null) {
             for (JSONObject_ model : mModels) {
-                    mNewModelLabels.add(String.format(clone, model.getString_("name")));
-                    mNewModelNames.add(model.getString_("name"));
+                mNewModelLabels.add(String.format(clone, model.getString_("name")));
+                mNewModelNames.add(model.getString_("name"));
             }
         }
 
@@ -466,33 +466,33 @@ public class ModelBrowser extends AnkiActivity {
      * Displays a confirmation box asking if you want to rename the note type and then renames it if confirmed
      */
     private void renameModelDialog() {
-            mModelNameInput = new EditText(this);
-            mModelNameInput.setSingleLine(true);
-            mModelNameInput.setText(mModels.get(mModelListPosition).getString_("name"));
-            mModelNameInput.setSelection(mModelNameInput.getText().length());
-            new MaterialDialog.Builder(this)
-                                .title(R.string.rename_model)
-                                .positiveText(R.string.rename)
-                                .negativeText(R.string.dialog_cancel)
-                                .customView(mModelNameInput, true)
-                                .onPositive((dialog, which) -> {
-                                        JSONObject_ model = mModels.get(mModelListPosition);
-                                        String deckName = mModelNameInput.getText().toString()
-                                                .replaceAll("[\'\"\\n\\r\\[\\]\\(\\)]", "");
-                                        getCol().getDecks().id(deckName, false);
-                                        if (deckName.length() > 0) {
-                                            model.put_("name", deckName);
-                                            col.getModels().update(model);
-                                            mModels.get(mModelListPosition).put_("name", deckName);
-                                            mModelDisplayList.set(mModelListPosition,
-                                                    new DisplayPair(mModels.get(mModelListPosition).getString_("name"),
-                                                            mCardCounts.get(mModelListPosition)));
-                                            refreshList();
-                                        } else {
-                                            showToast(getResources().getString(R.string.toast_empty_name));
-                                        }
-                                    })
-                                .show();
+        mModelNameInput = new EditText(this);
+        mModelNameInput.setSingleLine(true);
+        mModelNameInput.setText(mModels.get(mModelListPosition).getString_("name"));
+        mModelNameInput.setSelection(mModelNameInput.getText().length());
+        new MaterialDialog.Builder(this)
+                            .title(R.string.rename_model)
+                            .positiveText(R.string.rename)
+                            .negativeText(R.string.dialog_cancel)
+                            .customView(mModelNameInput, true)
+                            .onPositive((dialog, which) -> {
+                                    JSONObject_ model = mModels.get(mModelListPosition);
+                                    String deckName = mModelNameInput.getText().toString()
+                                            .replaceAll("[\'\"\\n\\r\\[\\]\\(\\)]", "");
+                                    getCol().getDecks().id(deckName, false);
+                                    if (deckName.length() > 0) {
+                                        model.put_("name", deckName);
+                                        col.getModels().update(model);
+                                        mModels.get(mModelListPosition).put_("name", deckName);
+                                        mModelDisplayList.set(mModelListPosition,
+                                                new DisplayPair(mModels.get(mModelListPosition).getString_("name"),
+                                                        mCardCounts.get(mModelListPosition)));
+                                        refreshList();
+                                    } else {
+                                        showToast(getResources().getString(R.string.toast_empty_name));
+                                    }
+                                })
+                            .show();
     }
 
     private void dismissContextMenu() {
