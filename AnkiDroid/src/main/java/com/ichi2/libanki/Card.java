@@ -267,11 +267,7 @@ public class Card implements Cloneable {
 
 
     public String css() {
-        try {
             return String.format(Locale.US, "<style>%s</style>", model().get_("css"));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -291,21 +287,13 @@ public class Card implements Cloneable {
             JSONObject_ m = model();
             JSONObject_ t = template();
             Object[] data;
-            try {
                 data = new Object[] { mId, f.getId(), m.getLong_("id"), mODid != 0L ? mODid : mDid, mOrd,
                         f.stringTags(), f.joinedFields(), mFlags};
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
 
             if (browser) {
-                try {
                     String bqfmt = t.getString_("bqfmt");
                     String bafmt = t.getString_("bafmt");
                     mQA = mCol._renderQA(data, bqfmt, bafmt);
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
             } else {
                 mQA = mCol._renderQA(data);
             }
@@ -334,15 +322,11 @@ public class Card implements Cloneable {
 
     public JSONObject_ template() {
         JSONObject_ m = model();
-        try {
             if (m.getInt_("type") == Consts.MODEL_STD) {
                 return m.getJSONArray_("tmpls").getJSONObject_(mOrd);
             } else {
                 return model().getJSONArray_("tmpls").getJSONObject_(0);
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -356,20 +340,12 @@ public class Card implements Cloneable {
      */
     public int timeLimit() {
         JSONObject_ conf = mCol.getDecks().confForDid(mODid == 0 ? mDid : mODid);
-        try {
             return conf.getInt_("maxTaken") * 1000;
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
     public boolean shouldShowTimer() {
-        try {
             return mCol.getDecks().confForDid(mODid == 0 ? mDid : mODid).getInt_("timer") != 0;
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
