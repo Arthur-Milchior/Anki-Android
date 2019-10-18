@@ -245,12 +245,8 @@ public class ModelBrowser extends AnkiActivity {
         mModelIds = new ArrayList<>();
 
         for (int i = 0; i < mModels.size(); i++) {
-            try {
                 mModelIds.add(mModels.get(i).getLong_("id"));
                 mModelDisplayList.add(new DisplayPair(mModels.get(i).getString_("name"), mCardCounts.get(i)));
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
         }
 
         mModelDisplayAdapter = new DisplayPairAdapter(this, mModelDisplayList);
@@ -416,8 +412,6 @@ public class ModelBrowser extends AnkiActivity {
             }
         } catch (ConfirmModSchemaException e) {
             //We should never get here since we're only modifying new mModels
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -472,7 +466,6 @@ public class ModelBrowser extends AnkiActivity {
      * Displays a confirmation box asking if you want to rename the note type and then renames it if confirmed
      */
     private void renameModelDialog() {
-        try {
             mModelNameInput = new EditText(this);
             mModelNameInput.setSingleLine(true);
             mModelNameInput.setText(mModels.get(mModelListPosition).getString_("name"));
@@ -488,25 +481,18 @@ public class ModelBrowser extends AnkiActivity {
                                                 .replaceAll("[\'\"\\n\\r\\[\\]\\(\\)]", "");
                                         getCol().getDecks().id(deckName, false);
                                         if (deckName.length() > 0) {
-                                            try {
                                             model.put_("name", deckName);
                                             col.getModels().update(model);
                                             mModels.get(mModelListPosition).put_("name", deckName);
                                             mModelDisplayList.set(mModelListPosition,
                                                     new DisplayPair(mModels.get(mModelListPosition).getString_("name"),
                                                             mCardCounts.get(mModelListPosition)));
-                                            } catch (JSONException e) {
-                                                throw new RuntimeException(e);
-                                            }
                                             refreshList();
                                         } else {
                                             showToast(getResources().getString(R.string.toast_empty_name));
                                         }
                                     })
                                 .show();
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private void dismissContextMenu() {
