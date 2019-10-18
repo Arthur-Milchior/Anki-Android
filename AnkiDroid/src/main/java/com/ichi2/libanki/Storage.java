@@ -116,7 +116,6 @@ public class Storage {
 
 
     private static void _upgrade(Collection col, int ver) {
-        try {
             if (ver < 3) {
                 // new deck properties
                 for (JSONObject_ d : col.getDecks().all()) {
@@ -231,14 +230,10 @@ public class Storage {
                 }
                 col.getDb().execute("update col set ver = 11");
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
     private static void _upgradeClozeModel(Collection col, JSONObject_ m) throws ConfirmModSchemaException {
-        try {
             m.put_("type", Consts.MODEL_CLOZE);
             // convert first template
             JSONObject_ t = m.getJSONArray_("tmpls").getJSONObject_(0);
@@ -263,9 +258,6 @@ public class Storage {
             m.put_("tmpls", newArray);
             col.getModels()._updateTemplOrds(m);
             col.getModels().save(m);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
 
     }
 
@@ -327,7 +319,6 @@ public class Storage {
 
 
     private static void _setColVars(DB db) {
-        try {
             JSONObject_ g = new JSONObject_(Decks.defaultDeck);
             g.put_("id", 1);
             g.put_("name", "Default");
@@ -344,9 +335,6 @@ public class Storage {
             values.put("decks", Utils.jsonToString(ag));
             values.put("dconf", Utils.jsonToString(agc));
             db.update("col", values);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
