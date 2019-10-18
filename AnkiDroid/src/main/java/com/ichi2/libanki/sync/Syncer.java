@@ -260,14 +260,14 @@ public class Syncer {
 
     /** Bundle up small objects. */
     public JSONObject_ changes() {
-            JSONObject_ o = new JSONObject_();
-            o.put_("models", getModels());
-            o.put_("decks", getDecks());
-            o.put_("tags", getTags());
-            if (mLNewer) {
-                o.put_("conf", getConf());
-                o.put_("crt", mCol.getCrt());
-            }
+        JSONObject_ o = new JSONObject_();
+        o.put_("models", getModels());
+        o.put_("decks", getDecks());
+        o.put_("tags", getTags());
+        if (mLNewer) {
+            o.put_("conf", getConf());
+            o.put_("crt", mCol.getCrt());
+        }
         return o;
     }
 
@@ -282,17 +282,17 @@ public class Syncer {
 
 
     public void mergeChanges(JSONObject_ lchg, JSONObject_ rchg) {
-            // then the other objects
-            mergeModels(rchg.getJSONArray_("models"));
-            mergeDecks(rchg.getJSONArray_("decks"));
-            mergeTags(rchg.getJSONArray_("tags"));
-            if (rchg.has("conf")) {
-                mergeConf(rchg.getJSONObject_("conf"));
-            }
-            // this was left out of earlier betas
-            if (rchg.has("crt")) {
-                mCol.setCrt(rchg.getLong_("crt"));
-            }
+        // then the other objects
+        mergeModels(rchg.getJSONArray_("models"));
+        mergeDecks(rchg.getJSONArray_("decks"));
+        mergeTags(rchg.getJSONArray_("tags"));
+        if (rchg.has("conf")) {
+            mergeConf(rchg.getJSONObject_("conf"));
+        }
+        // this was left out of earlier betas
+        if (rchg.has("crt")) {
+            mCol.setCrt(rchg.getLong_("crt"));
+        }
         prepareToChunk();
     }
 
@@ -492,68 +492,68 @@ public class Syncer {
 
     public JSONObject_ chunk() {
         JSONObject_ buf = new JSONObject_();
-            buf.put_("done", false);
-            int lim = 250;
-            List<Integer> colTypes = null;
-            while (!mTablesLeft.isEmpty() && lim > 0) {
-                String curTable = mTablesLeft.getFirst();
-                if (mCursor == null) {
-                    mCursor = cursorForTable(curTable);
-                }
-                colTypes = columnTypesForQuery(curTable);
-                JSONArray_ rows = new JSONArray_();
-                int count = mCursor.getColumnCount();
-                int fetched = 0;
-                while (mCursor.moveToNext()) {
-                    JSONArray_ r = new JSONArray_();
-                    for (int i = 0; i < count; i++) {
-                        switch (colTypes.get(i)) {
-                            case TYPE_STRING:
-                                r.put(mCursor.getString(i));
-                                break;
-                            case TYPE_FLOAT:
-                                r.put_(mCursor.getDouble(i));
-                                break;
-                            case TYPE_INTEGER:
-                                r.put_(mCursor.getLong(i));
-                                break;
-                        }
-                    }
-                    rows.put(r);
-                    if (++fetched == lim) {
-                        break;
-                    }
-                }
-                if (fetched != lim) {
-                    // table is empty
-                    mTablesLeft.removeFirst();
-                    mCursor.close();
-                    mCursor = null;
-                    // if we're the client, mark the objects as having been sent
-                    if (!mCol.getServer()) {
-                        mCol.getDb().execute("UPDATE " + curTable + " SET usn=" + mMaxUsn + " WHERE usn=-1");
-                    }
-                }
-                buf.put_(curTable, rows);
-                lim -= fetched;
+        buf.put_("done", false);
+        int lim = 250;
+        List<Integer> colTypes = null;
+        while (!mTablesLeft.isEmpty() && lim > 0) {
+            String curTable = mTablesLeft.getFirst();
+            if (mCursor == null) {
+                mCursor = cursorForTable(curTable);
             }
-            if (mTablesLeft.isEmpty()) {
-                buf.put_("done", true);
+            colTypes = columnTypesForQuery(curTable);
+            JSONArray_ rows = new JSONArray_();
+            int count = mCursor.getColumnCount();
+            int fetched = 0;
+            while (mCursor.moveToNext()) {
+                JSONArray_ r = new JSONArray_();
+                for (int i = 0; i < count; i++) {
+                    switch (colTypes.get(i)) {
+                        case TYPE_STRING:
+                            r.put(mCursor.getString(i));
+                            break;
+                        case TYPE_FLOAT:
+                            r.put_(mCursor.getDouble(i));
+                            break;
+                        case TYPE_INTEGER:
+                            r.put_(mCursor.getLong(i));
+                            break;
+                    }
+                }
+                rows.put(r);
+                if (++fetched == lim) {
+                    break;
+                }
             }
+            if (fetched != lim) {
+                // table is empty
+                mTablesLeft.removeFirst();
+                mCursor.close();
+                mCursor = null;
+                // if we're the client, mark the objects as having been sent
+                if (!mCol.getServer()) {
+                    mCol.getDb().execute("UPDATE " + curTable + " SET usn=" + mMaxUsn + " WHERE usn=-1");
+                }
+            }
+            buf.put_(curTable, rows);
+            lim -= fetched;
+        }
+        if (mTablesLeft.isEmpty()) {
+            buf.put_("done", true);
+        }
         return buf;
     }
 
 
     public void applyChunk(JSONObject_ chunk) {
-            if (chunk.has("revlog")) {
-                mergeRevlog(chunk.getJSONArray_("revlog"));
-            }
-            if (chunk.has("cards")) {
-                mergeCards(chunk.getJSONArray_("cards"));
-            }
-            if (chunk.has("notes")) {
-                mergeNotes(chunk.getJSONArray_("notes"));
-            }
+        if (chunk.has("revlog")) {
+            mergeRevlog(chunk.getJSONArray_("revlog"));
+        }
+        if (chunk.has("cards")) {
+            mergeCards(chunk.getJSONArray_("cards"));
+        }
+        if (chunk.has("notes")) {
+            mergeNotes(chunk.getJSONArray_("notes"));
+        }
     }
 
 
@@ -596,9 +596,9 @@ public class Syncer {
             mCol.getDb().execute("UPDATE graves SET usn=" + mMaxUsn + " WHERE usn=-1");
         }
         JSONObject_ o = new JSONObject_();
-            o.put_("cards", cards);
-            o.put_("notes", notes);
-            o.put_("decks", decks);
+        o.put_("cards", cards);
+        o.put_("notes", notes);
+        o.put_("decks", decks);
         return o;
     }
 
@@ -617,15 +617,15 @@ public class Syncer {
         // pretend to be the server so we don't set usn = -1
         boolean wasServer = mCol.getServer();
         mCol.setServer(true);
-            // notes first, so we don't end up with duplicate graves
-            mCol._remNotes(Utils.jsonArrayToLongArray(graves.getJSONArray_("notes")));
-            // then cards
-            mCol.remCards(Utils.jsonArrayToLongArray(graves.getJSONArray_("cards")), false);
-            // and decks
-            JSONArray_ decks = graves.getJSONArray_("decks");
-            for (int i = 0; i < decks.length(); i++) {
-                mCol.getDecks().rem(decks.getLong_(i), false, false);
-            }
+        // notes first, so we don't end up with duplicate graves
+        mCol._remNotes(Utils.jsonArrayToLongArray(graves.getJSONArray_("notes")));
+        // then cards
+        mCol.remCards(Utils.jsonArrayToLongArray(graves.getJSONArray_("cards")), false);
+        // and decks
+        JSONArray_ decks = graves.getJSONArray_("decks");
+        for (int i = 0; i < decks.length(); i++) {
+            mCol.getDecks().rem(decks.getLong_(i), false, false);
+        }
         mCol.setServer(wasServer);
     }
 
@@ -636,34 +636,34 @@ public class Syncer {
 
     private JSONArray_ getModels() {
         JSONArray_ result = new JSONArray_();
-            if (mCol.getServer()) {
-                for (JSONObject_ m : mCol.getModels().all()) {
-                    if (m.getInt_("usn") >= mMinUsn) {
-                        result.put(m);
-                    }
+        if (mCol.getServer()) {
+            for (JSONObject_ m : mCol.getModels().all()) {
+                if (m.getInt_("usn") >= mMinUsn) {
+                    result.put(m);
                 }
-            } else {
-                for (JSONObject_ m : mCol.getModels().all()) {
-                    if (m.getInt_("usn") == -1) {
-                        m.put_("usn", mMaxUsn);
-                        result.put(m);
-                    }
-                }
-                mCol.getModels().save();
             }
+        } else {
+            for (JSONObject_ m : mCol.getModels().all()) {
+                if (m.getInt_("usn") == -1) {
+                    m.put_("usn", mMaxUsn);
+                    result.put(m);
+                }
+            }
+            mCol.getModels().save();
+        }
         return result;
     }
 
 
     private void mergeModels(JSONArray_ rchg) {
         for (int i = 0; i < rchg.length(); i++) {
-                JSONObject_ r = rchg.getJSONObject_(i);
-                JSONObject_ l;
-                l = mCol.getModels().get(r.getLong_("id"));
-                // if missing locally or server is newer, update
-                if (l == null || r.getLong_("mod") > l.getLong_("mod")) {
-                    mCol.getModels().update(r);
-                }
+            JSONObject_ r = rchg.getJSONObject_(i);
+            JSONObject_ l;
+            l = mCol.getModels().get(r.getLong_("id"));
+            // if missing locally or server is newer, update
+            if (l == null || r.getLong_("mod") > l.getLong_("mod")) {
+                mCol.getModels().update(r);
+            }
         }
     }
 
@@ -674,63 +674,63 @@ public class Syncer {
 
     private JSONArray_ getDecks() {
         JSONArray_ result = new JSONArray_();
-            if (mCol.getServer()) {
-                JSONArray_ decks = new JSONArray_();
-                for (JSONObject_ g : mCol.getDecks().all()) {
-                    if (g.getInt_("usn") >= mMinUsn) {
-                        decks.put(g);
-                    }
+        if (mCol.getServer()) {
+            JSONArray_ decks = new JSONArray_();
+            for (JSONObject_ g : mCol.getDecks().all()) {
+                if (g.getInt_("usn") >= mMinUsn) {
+                    decks.put(g);
                 }
-                JSONArray_ dconfs = new JSONArray_();
-                for (JSONObject_ g : mCol.getDecks().allConf()) {
-                    if (g.getInt_("usn") >= mMinUsn) {
-                        dconfs.put(g);
-                    }
-                }
-                result.put(decks);
-                result.put(dconfs);
-            } else {
-                JSONArray_ decks = new JSONArray_();
-                for (JSONObject_ g : mCol.getDecks().all()) {
-                    if (g.getInt_("usn") == -1) {
-                        g.put_("usn", mMaxUsn);
-                        decks.put(g);
-                    }
-                }
-                JSONArray_ dconfs = new JSONArray_();
-                for (JSONObject_ g : mCol.getDecks().allConf()) {
-                    if (g.getInt_("usn") == -1) {
-                        g.put_("usn", mMaxUsn);
-                        dconfs.put(g);
-                    }
-                }
-                mCol.getDecks().save();
-                result.put(decks);
-                result.put(dconfs);
             }
+            JSONArray_ dconfs = new JSONArray_();
+            for (JSONObject_ g : mCol.getDecks().allConf()) {
+                if (g.getInt_("usn") >= mMinUsn) {
+                    dconfs.put(g);
+                }
+            }
+            result.put(decks);
+            result.put(dconfs);
+        } else {
+            JSONArray_ decks = new JSONArray_();
+            for (JSONObject_ g : mCol.getDecks().all()) {
+                if (g.getInt_("usn") == -1) {
+                    g.put_("usn", mMaxUsn);
+                    decks.put(g);
+                }
+            }
+            JSONArray_ dconfs = new JSONArray_();
+            for (JSONObject_ g : mCol.getDecks().allConf()) {
+                if (g.getInt_("usn") == -1) {
+                    g.put_("usn", mMaxUsn);
+                    dconfs.put(g);
+                }
+            }
+            mCol.getDecks().save();
+            result.put(decks);
+            result.put(dconfs);
+        }
         return result;
     }
 
 
     private void mergeDecks(JSONArray_ rchg) {
-            JSONArray_ decks = rchg.getJSONArray_(0);
-            for (int i = 0; i < decks.length(); i++) {
-                JSONObject_ r = decks.getJSONObject_(i);
-                JSONObject_ l = mCol.getDecks().get(r.getLong_("id"), false);
-                // if missing locally or server is newer, update
-                if (l == null || r.getLong_("mod") > l.getLong_("mod")) {
-                    mCol.getDecks().update(r);
-                }
+        JSONArray_ decks = rchg.getJSONArray_(0);
+        for (int i = 0; i < decks.length(); i++) {
+            JSONObject_ r = decks.getJSONObject_(i);
+            JSONObject_ l = mCol.getDecks().get(r.getLong_("id"), false);
+            // if missing locally or server is newer, update
+            if (l == null || r.getLong_("mod") > l.getLong_("mod")) {
+                mCol.getDecks().update(r);
             }
-            JSONArray_ confs = rchg.getJSONArray_(1);
-            for (int i = 0; i < confs.length(); i++) {
-                JSONObject_ r = confs.getJSONObject_(i);
-                JSONObject_ l = mCol.getDecks().getConf(r.getLong_("id"));
-                // if missing locally or server is newer, update
-                if (l == null || r.getLong_("mod") > l.getLong_("mod")) {
-                    mCol.getDecks().updateConf(r);
-                }
+        }
+        JSONArray_ confs = rchg.getJSONArray_(1);
+        for (int i = 0; i < confs.length(); i++) {
+            JSONObject_ r = confs.getJSONObject_(i);
+            JSONObject_ l = mCol.getDecks().getConf(r.getLong_("id"));
+            // if missing locally or server is newer, update
+            if (l == null || r.getLong_("mod") > l.getLong_("mod")) {
+                mCol.getDecks().updateConf(r);
             }
+        }
     }
 
 
@@ -763,7 +763,7 @@ public class Syncer {
     private void mergeTags(JSONArray_ tags) {
         ArrayList<String> list = new ArrayList<>();
         for (int i = 0; i < tags.length(); i++) {
-                list.add(tags.getString_(i));
+            list.add(tags.getString_(i));
         }
         mCol.getTags().register(list, mMaxUsn);
     }
@@ -788,35 +788,35 @@ public class Syncer {
 
     private ArrayList<Object[]> newerRows(JSONArray_ data, String table, int modIdx) {
         long[] ids = new long[data.length()];
-            for (int i = 0; i < data.length(); i++) {
-                ids[i] = data.getJSONArray_(i).getLong_(0);
+        for (int i = 0; i < data.length(); i++) {
+            ids[i] = data.getJSONArray_(i).getLong_(0);
+        }
+        HashMap<Long, Long> lmods = new HashMap<>();
+        Cursor cur = null;
+        try {
+            cur = mCol
+                    .getDb()
+                    .getDatabase()
+                    .query(
+                            "SELECT id, mod FROM " + table + " WHERE id IN " + Utils.ids2str(ids) + " AND "
+                                    + usnLim(), null);
+            while (cur.moveToNext()) {
+                lmods.put(cur.getLong(0), cur.getLong(1));
             }
-            HashMap<Long, Long> lmods = new HashMap<>();
-            Cursor cur = null;
-            try {
-                cur = mCol
-                        .getDb()
-                        .getDatabase()
-                        .query(
-                                "SELECT id, mod FROM " + table + " WHERE id IN " + Utils.ids2str(ids) + " AND "
-                                        + usnLim(), null);
-                while (cur.moveToNext()) {
-                    lmods.put(cur.getLong(0), cur.getLong(1));
-                }
-            } finally {
-                if (cur != null && !cur.isClosed()) {
-                    cur.close();
-                }
+        } finally {
+            if (cur != null && !cur.isClosed()) {
+                cur.close();
             }
-            ArrayList<Object[]> update = new ArrayList<>();
-            for (int i = 0; i < data.length(); i++) {
-                JSONArray_ r = data.getJSONArray_(i);
-                if (!lmods.containsKey(r.getLong_(0)) || lmods.get(r.getLong_(0)) < r.getLong_(modIdx)) {
-                    update.add(Utils.jsonArray2Objects(r));
-                }
+        }
+        ArrayList<Object[]> update = new ArrayList<>();
+        for (int i = 0; i < data.length(); i++) {
+            JSONArray_ r = data.getJSONArray_(i);
+            if (!lmods.containsKey(r.getLong_(0)) || lmods.get(r.getLong_(0)) < r.getLong_(modIdx)) {
+                update.add(Utils.jsonArray2Objects(r));
             }
-            mCol.log(table, data);
-            return update;
+        }
+        mCol.log(table, data);
+        return update;
     }
 
 
