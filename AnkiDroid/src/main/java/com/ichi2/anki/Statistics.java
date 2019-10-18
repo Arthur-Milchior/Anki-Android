@@ -236,14 +236,10 @@ public class Statistics extends NavigationDrawerActivity implements DeckDropDown
     // Iterates the drop down decks, and selects the one matching the given id
     private boolean selectDeckById(long deckId) {
         for (int dropDownDeckIdx = 0; dropDownDeckIdx < mDropDownDecks.size(); dropDownDeckIdx++) {
-            try {
                 if (mDropDownDecks.get(dropDownDeckIdx).getLong_("id") == deckId) {
                     selectDropDownItem(dropDownDeckIdx + 1);
                     return true;
                 }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
         }
         return false;
     }
@@ -452,7 +448,6 @@ public class Statistics extends NavigationDrawerActivity implements DeckDropDown
             mActivitySectionPagerAdapter = ((Statistics) getActivity()).getSectionsPagerAdapter();
             mDeckId = ((Statistics) getActivity()).getDeckId();
             if (mDeckId != Stats.ALL_DECKS_ID) {
-                try {
                     Collection col = CollectionHelper.getInstance().getCol(getActivity());
                     List<String> parts = Arrays.asList(col.getDecks().current().getString_("name").split("::", -1));
                     if (sIsSubtitle) {
@@ -460,9 +455,6 @@ public class Statistics extends NavigationDrawerActivity implements DeckDropDown
                     } else {
                         getActivity().setTitle(parts.get(parts.size() - 1));
                     }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
             } else {
                 if (sIsSubtitle) {
                     ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(R.string.stats_deck_collection);
@@ -613,16 +605,12 @@ public class Statistics extends NavigationDrawerActivity implements DeckDropDown
             Collection col = CollectionHelper.getInstance().getCol(getActivity());
             mDeckId = ((Statistics) getActivity()).getDeckId();
             if (mDeckId != Stats.ALL_DECKS_ID) {
-                try {
                     List<String> parts = Arrays.asList(col.getDecks().current().getString_("name").split("::"));
                     if (sIsSubtitle) {
                         ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(parts.get(parts.size() - 1));
                     } else {
                         getActivity().setTitle(parts.get(parts.size() - 1));
                     }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
             } else {
                 if (sIsSubtitle) {
                     ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(R.string.stats_deck_collection);
