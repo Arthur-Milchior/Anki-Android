@@ -165,243 +165,227 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
             @Override
             public boolean commit() {
                 Timber.d("DeckOptions - commit() changes back to database");
+                for (Entry<String, Object> entry : mUpdate.valueSet()) {
+                    String key = entry.getKey();
+                    Object value = entry.getValue();
+                    Timber.i("Change value for key '" + key + "': " + value);
 
-                    for (Entry<String, Object> entry : mUpdate.valueSet()) {
-                        String key = entry.getKey();
-                        Object value = entry.getValue();
-                        Timber.i("Change value for key '" + key + "': " + value);
-
-                        switch (key) {
-                            case "maxAnswerTime":
-                                mOptions.put_("maxTaken", value);
-                                break;
-                            case "newFactor":
-                                mOptions.getJSONObject_("new").put_("initialFactor", (Integer) value * 10);
-                                break;
-                            case "newOrder": {
-                                int newValue = Integer.parseInt((String) value);
-                                // Sorting is slow, so only do it if we change order
-                                int oldValue = mOptions.getJSONObject_("new").getInt_("order");
-                                if (oldValue != newValue) {
-                                    mOptions.getJSONObject_("new").put_("order", newValue);
-                                    DeckTask.launchDeckTask(DeckTask.TASK_TYPE_REORDER, mConfChangeHandler,
-                                            new DeckTask.TaskData(new Object[] {mOptions}));
-                                }
-                                mOptions.getJSONObject_("new").put_("order", Integer.parseInt((String) value));
-                                break;
+                    switch (key) {
+                        case "maxAnswerTime":
+                            mOptions.put_("maxTaken", value);
+                            break;
+                        case "newFactor":
+                            mOptions.getJSONObject_("new").put_("initialFactor", (Integer) value * 10);
+                            break;
+                        case "newOrder": {
+                            int newValue = Integer.parseInt((String) value);
+                            // Sorting is slow, so only do it if we change order
+                            int oldValue = mOptions.getJSONObject_("new").getInt_("order");
+                            if (oldValue != newValue) {
+                                mOptions.getJSONObject_("new").put_("order", newValue);
+                                DeckTask.launchDeckTask(DeckTask.TASK_TYPE_REORDER, mConfChangeHandler,
+                                        new DeckTask.TaskData(new Object[] {mOptions}));
                             }
-                            case "newPerDay":
-                                mOptions.getJSONObject_("new").put_("perDay", value);
-                                break;
-                            case "newGradIvl": {
-                                JSONArray_ ja = new JSONArray_(); // [graduating, easy]
-
-                                ja.put(value);
-                                ja.put(mOptions.getJSONObject_("new").getJSONArray_("ints").get_(1));
-                                mOptions.getJSONObject_("new").put_("ints", ja);
-                                break;
+                            mOptions.getJSONObject_("new").put_("order", Integer.parseInt((String) value));
+                            break;
+                        }
+                        case "newPerDay":
+                            mOptions.getJSONObject_("new").put_("perDay", value);
+                            break;
+                        case "newGradIvl": {
+                            JSONArray_ ja = new JSONArray_(); // [graduating, easy]
+                            ja.put(value);
+                            ja.put(mOptions.getJSONObject_("new").getJSONArray_("ints").get_(1));
+                            mOptions.getJSONObject_("new").put_("ints", ja);
+                            break;
+                        }
+                        case "newEasy": {
+                            JSONArray_ ja = new JSONArray_(); // [graduating, easy]
+                            ja.put(mOptions.getJSONObject_("new").getJSONArray_("ints").get_(0));
+                            ja.put(value);
+                            mOptions.getJSONObject_("new").put_("ints", ja);
+                            break;
+                        }
+                        case "newBury":
+                            mOptions.getJSONObject_("new").put_("bury", value);
+                            break;
+                        case "revPerDay":
+                            mOptions.getJSONObject_("rev").put_("perDay", value);
+                            break;
+                        case "easyBonus":
+                            mOptions.getJSONObject_("rev").put_("ease4", (Integer) value / 100.0f);
+                            break;
+                        case "revIvlFct":
+                            mOptions.getJSONObject_("rev").put_("ivlFct", (Integer) value / 100.0f);
+                            break;
+                        case "revMaxIvl":
+                            mOptions.getJSONObject_("rev").put_("maxIvl", value);
+                            break;
+                        case "revBury":
+                            mOptions.getJSONObject_("rev").put_("bury", value);
+                            break;
+                        case "lapMinIvl":
+                            mOptions.getJSONObject_("lapse").put_("minInt", value);
+                            break;
+                        case "lapLeechThres":
+                            mOptions.getJSONObject_("lapse").put_("leechFails", value);
+                            break;
+                        case "lapLeechAct":
+                            mOptions.getJSONObject_("lapse").put_("leechAction", Integer.parseInt((String) value));
+                            break;
+                        case "lapNewIvl":
+                            mOptions.getJSONObject_("lapse").put_("mult", (Integer) value / 100.0f);
+                            break;
+                        case "showAnswerTimer":
+                            mOptions.put_("timer", (Boolean) value ? 1 : 0);
+                            break;
+                        case "autoPlayAudio":
+                            mOptions.put_("autoplay", value);
+                            break;
+                        case "replayQuestion":
+                            mOptions.put_("replayq", value);
+                            break;
+                        case "desc":
+                            mDeck.put_("desc", value);
+                            mCol.getDecks().save(mDeck);
+                            break;
+                        case "newSteps":
+                            mOptions.getJSONObject_("new").put_("delays", StepsPreference.convertToJSON((String) value));
+                            break;
+                        case "lapSteps":
+                            mOptions.getJSONObject_("lapse")
+                                    .put_("delays", StepsPreference.convertToJSON((String) value));
+                            break;
+                        case "deckConf": {
+                            long newConfId = Long.parseLong((String) value);
+                            mOptions = mCol.getDecks().getConf(newConfId);
+                            DeckTask.launchDeckTask(DeckTask.TASK_TYPE_CONF_CHANGE, mConfChangeHandler,
+                                    new DeckTask.TaskData(new Object[] {mDeck, mOptions}));
+                            break;
+                        }
+                        case "confRename": {
+                            String newName = (String) value;
+                            if (!TextUtils.isEmpty(newName)) {
+                                mOptions.put_("name", newName);
                             }
-                            case "newEasy": {
-                                JSONArray_ ja = new JSONArray_(); // [graduating, easy]
-
-                                ja.put(mOptions.getJSONObject_("new").getJSONArray_("ints").get_(0));
-                                ja.put(value);
-                                mOptions.getJSONObject_("new").put_("ints", ja);
-                                break;
+                            break;
+                        }
+                        case "confReset":
+                            if ((Boolean) value) {
+                                DeckTask.launchDeckTask(DeckTask.TASK_TYPE_CONF_RESET, mConfChangeHandler,
+                                        new DeckTask.TaskData(new Object[] {mOptions}));
                             }
-                            case "newBury":
-                                mOptions.getJSONObject_("new").put_("bury", value);
-                                break;
-                            case "revPerDay":
-                                mOptions.getJSONObject_("rev").put_("perDay", value);
-                                break;
-                            case "easyBonus":
-                                mOptions.getJSONObject_("rev").put_("ease4", (Integer) value / 100.0f);
-                                break;
-                            case "revIvlFct":
-                                mOptions.getJSONObject_("rev").put_("ivlFct", (Integer) value / 100.0f);
-                                break;
-                            case "revMaxIvl":
-                                mOptions.getJSONObject_("rev").put_("maxIvl", value);
-                                break;
-                            case "revBury":
-                                mOptions.getJSONObject_("rev").put_("bury", value);
-                                break;
-                            case "lapMinIvl":
-                                mOptions.getJSONObject_("lapse").put_("minInt", value);
-                                break;
-                            case "lapLeechThres":
-                                mOptions.getJSONObject_("lapse").put_("leechFails", value);
-                                break;
-                            case "lapLeechAct":
-                                mOptions.getJSONObject_("lapse").put_("leechAction", Integer.parseInt((String) value));
-                                break;
-                            case "lapNewIvl":
-                                mOptions.getJSONObject_("lapse").put_("mult", (Integer) value / 100.0f);
-                                break;
-                            case "showAnswerTimer":
-                                mOptions.put_("timer", (Boolean) value ? 1 : 0);
-                                break;
-                            case "autoPlayAudio":
-                                mOptions.put_("autoplay", value);
-                                break;
-                            case "replayQuestion":
-                                mOptions.put_("replayq", value);
-                                break;
-                            case "desc":
-                                mDeck.put_("desc", value);
+                            break;
+                        case "confAdd": {
+                            String newName = (String) value;
+                            if (!TextUtils.isEmpty(newName)) {
+                                // New config clones current config
+                                long id = mCol.getDecks().confId(newName, mOptions.toString());
+                                mDeck.put_("conf", id);
                                 mCol.getDecks().save(mDeck);
-                                break;
-                            case "newSteps":
-                                mOptions.getJSONObject_("new").put_("delays", StepsPreference.convertToJSON((String) value));
-                                break;
-                            case "lapSteps":
-                                mOptions.getJSONObject_("lapse")
-                                        .put_("delays", StepsPreference.convertToJSON((String) value));
-                                break;
-                            case "deckConf": {
-                                long newConfId = Long.parseLong((String) value);
-                                mOptions = mCol.getDecks().getConf(newConfId);
-                                DeckTask.launchDeckTask(DeckTask.TASK_TYPE_CONF_CHANGE, mConfChangeHandler,
-                                        new DeckTask.TaskData(new Object[] {mDeck, mOptions}));
-                                break;
                             }
-                            case "confRename": {
-                                String newName = (String) value;
-                                if (!TextUtils.isEmpty(newName)) {
-                                    mOptions.put_("name", newName);
-                                }
-                                break;
-                            }
-                            case "confReset":
-                                if ((Boolean) value) {
-                                    DeckTask.launchDeckTask(DeckTask.TASK_TYPE_CONF_RESET, mConfChangeHandler,
-                                            new DeckTask.TaskData(new Object[] {mOptions}));
-                                }
-                                break;
-                            case "confAdd": {
-                                String newName = (String) value;
-                                if (!TextUtils.isEmpty(newName)) {
-                                    // New config clones current config
-                                    long id = mCol.getDecks().confId(newName, mOptions.toString());
-                                    mDeck.put_("conf", id);
-                                    mCol.getDecks().save(mDeck);
-                                }
-                                break;
-                            }
-                            case "confRemove":
-                                if (mOptions.getLong_("id") == 1) {
-                                    // Don't remove the options group if it's the default group
-                                    UIUtils.showThemedToast(DeckOptions.this,
-                                            getResources().getString(R.string.default_conf_delete_error), false);
-                                } else {
-                                    // Remove options group, handling the case where the user needs to confirm full sync
-                                    try {
-                                        remConf();
-                                    } catch (ConfirmModSchemaException e) {
-                                        // Libanki determined that a full sync will be required, so confirm with the user before proceeding
-                                        // TODO : Use ConfirmationDialog DialogFragment -- not compatible with PreferenceActivity
-                                        new MaterialDialog.Builder(DeckOptions.this)
-                                                .content(R.string.full_sync_confirmation)
-                                                .positiveText(R.string.dialog_ok)
-                                                .negativeText(R.string.dialog_cancel)
-                                                .onPositive((dialog, which) -> {
-                                                            mCol.modSchemaNoCheck();
-                                                            try {
-                                                                remConf();
-                                                            } catch (ConfirmModSchemaException cmse) {
-                                                                // This should never be reached as we just forced modSchema
-                                                                throw new RuntimeException(cmse);
-                                                            }
+                            break;
+                        }
+                        case "confRemove":
+                            if (mOptions.getLong_("id") == 1) {
+                                // Don't remove the options group if it's the default group
+                                UIUtils.showThemedToast(DeckOptions.this,
+                                        getResources().getString(R.string.default_conf_delete_error), false);
+                            } else {
+                                // Remove options group, handling the case where the user needs to confirm full sync
+                                try {
+                                    remConf();
+                                } catch (ConfirmModSchemaException e) {
+                                    // Libanki determined that a full sync will be required, so confirm with the user before proceeding
+                                    // TODO : Use ConfirmationDialog DialogFragment -- not compatible with PreferenceActivity
+                                    new MaterialDialog.Builder(DeckOptions.this)
+                                            .content(R.string.full_sync_confirmation)
+                                            .positiveText(R.string.dialog_ok)
+                                            .negativeText(R.string.dialog_cancel)
+                                            .onPositive((dialog, which) -> {
+                                                        mCol.modSchemaNoCheck();
+                                                        try {
+                                                            remConf();
+                                                        } catch (ConfirmModSchemaException cmse) {
+                                                            // This should never be reached as we just forced modSchema
+                                                            throw new RuntimeException(cmse);
                                                         }
-                                                )
-                                                .build().show();
-                                    }
+                                                    }
+                                            )
+                                            .build().show();
                                 }
-                                break;
-                            case "confSetSubdecks":
-                                if ((Boolean) value) {
-                                    DeckTask.launchDeckTask(DeckTask.TASK_TYPE_CONF_SET_SUBDECKS, mConfChangeHandler,
-                                            new DeckTask.TaskData(new Object[] {mDeck, mOptions}));
-                                }
-                                break;
-                            case "reminderEnabled": {
-                                final JSONObject_ reminder = new JSONObject_();
-
-                                reminder.put_("enabled", value);
-                                if (mOptions.has("reminder")) {
-                                    reminder.put_("time", mOptions.getJSONObject_("reminder").getJSONArray_("time"));
-                                } else {
-                                    reminder.put_("time", new JSONArray_()
-                                            .put(TimePreference.parseHours(TimePreference.DEFAULT_VALUE))
-                                            .put(TimePreference.parseMinutes(TimePreference.DEFAULT_VALUE)));
-                                }
-
-                                mOptions.put_("reminder", reminder);
-
-                                final AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-                                final PendingIntent reminderIntent = PendingIntent.getBroadcast(
-                                        getApplicationContext(),
-                                        (int) mDeck.getLong_("id"),
-                                        new Intent(getApplicationContext(), ReminderService.class).putExtra
-                                                (ReminderService.EXTRA_DECK_ID, mDeck.getLong_("id")),
-                                        0
-                                );
-
-                                alarmManager.cancel(reminderIntent);
-                                if ((Boolean) value) {
-                                    final Calendar calendar = Calendar.getInstance();
-
-                                    calendar.set(Calendar.HOUR_OF_DAY, reminder.getJSONArray_("time").getInt_(0));
-                                    calendar.set(Calendar.MINUTE, reminder.getJSONArray_("time").getInt_(1));
-                                    calendar.set(Calendar.SECOND, 0);
-
-                                    alarmManager.setRepeating(
-                                            AlarmManager.RTC_WAKEUP,
-                                            calendar.getTimeInMillis(),
-                                            AlarmManager.INTERVAL_DAY,
-                                            reminderIntent
-                                    );
-                                }
-                                break;
                             }
-                            case "reminderTime": {
-                                final JSONObject_ reminder = new JSONObject_();
-
-                                reminder.put_("enabled", true);
-                                reminder.put_("time", new JSONArray_().put(TimePreference.parseHours((String) value))
-                                        .put(TimePreference.parseMinutes((String) value)));
-
-                                mOptions.put_("reminder", reminder);
-
-                                final AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-                                final PendingIntent reminderIntent = PendingIntent.getBroadcast(
-                                        getApplicationContext(),
-                                        (int) mDeck.getLong_("id"),
-                                        new Intent(getApplicationContext(), ReminderService.class).putExtra
-                                                (ReminderService.EXTRA_DECK_ID, mDeck.getLong_("id")),
-                                        0
-                                );
-
-                                alarmManager.cancel(reminderIntent);
-
+                            break;
+                        case "confSetSubdecks":
+                            if ((Boolean) value) {
+                                DeckTask.launchDeckTask(DeckTask.TASK_TYPE_CONF_SET_SUBDECKS, mConfChangeHandler,
+                                        new DeckTask.TaskData(new Object[] {mDeck, mOptions}));
+                            }
+                            break;
+                        case "reminderEnabled": {
+                            final JSONObject_ reminder = new JSONObject_();
+                             reminder.put_("enabled", value);
+                            if (mOptions.has("reminder")) {
+                                reminder.put_("time", mOptions.getJSONObject_("reminder").getJSONArray_("time"));
+                            } else {
+                                reminder.put_("time", new JSONArray_()
+                                        .put(TimePreference.parseHours(TimePreference.DEFAULT_VALUE))
+                                        .put(TimePreference.parseMinutes(TimePreference.DEFAULT_VALUE)));
+                            }
+                             mOptions.put_("reminder", reminder);
+                             final AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                            final PendingIntent reminderIntent = PendingIntent.getBroadcast(
+                                    getApplicationContext(),
+                                    (int) mDeck.getLong_("id"),
+                                    new Intent(getApplicationContext(), ReminderService.class).putExtra
+                                            (ReminderService.EXTRA_DECK_ID, mDeck.getLong_("id")),
+                                    0
+                            );
+                             alarmManager.cancel(reminderIntent);
+                            if ((Boolean) value) {
                                 final Calendar calendar = Calendar.getInstance();
-
-                                calendar.set(Calendar.HOUR_OF_DAY, reminder.getJSONArray_("time").getInt_(0));
+                                 calendar.set(Calendar.HOUR_OF_DAY, reminder.getJSONArray_("time").getInt_(0));
                                 calendar.set(Calendar.MINUTE, reminder.getJSONArray_("time").getInt_(1));
                                 calendar.set(Calendar.SECOND, 0);
-
-                                alarmManager.setRepeating(
+                                 alarmManager.setRepeating(
                                         AlarmManager.RTC_WAKEUP,
                                         calendar.getTimeInMillis(),
                                         AlarmManager.INTERVAL_DAY,
                                         reminderIntent
                                 );
-                                break;
                             }
-                            default:
-                                Timber.w("Unknown key type: %s", key);
-                                break;
+                            break;
+                        }
+                        case "reminderTime": {
+                            final JSONObject_ reminder = new JSONObject_();
+                             reminder.put_("enabled", true);
+                            reminder.put_("time", new JSONArray_().put(TimePreference.parseHours((String) value))
+                                    .put(TimePreference.parseMinutes((String) value)));
+                             mOptions.put_("reminder", reminder);
+                             final AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                            final PendingIntent reminderIntent = PendingIntent.getBroadcast(
+                                    getApplicationContext(),
+                                    (int) mDeck.getLong_("id"),
+                                    new Intent(getApplicationContext(), ReminderService.class).putExtra
+                                            (ReminderService.EXTRA_DECK_ID, mDeck.getLong_("id")),
+                                    0
+                            );
+                             alarmManager.cancel(reminderIntent);
+                             final Calendar calendar = Calendar.getInstance();
+                             calendar.set(Calendar.HOUR_OF_DAY, reminder.getJSONArray_("time").getInt_(0));
+                            calendar.set(Calendar.MINUTE, reminder.getJSONArray_("time").getInt_(1));
+                            calendar.set(Calendar.SECOND, 0);
+                             alarmManager.setRepeating(
+                                    AlarmManager.RTC_WAKEUP,
+                                    calendar.getTimeInMillis(),
+                                    AlarmManager.INTERVAL_DAY,
+                                    reminderIntent
+                            );
+                            break;
+                        }
+                        default:
+                            Timber.w("Unknown key type: %s", key);
+                            break;
                         }
                     }
 
@@ -507,12 +491,12 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
              * Remove the currently selected options group
              */
             private void remConf() throws ConfirmModSchemaException {
-                    // Remove options group, asking user to confirm full sync if necessary
-                    mCol.getDecks().remConf(mOptions.getLong_("id"));
-                    // Run the CPU intensive re-sort operation in a background thread
-                    DeckTask.launchDeckTask(DeckTask.TASK_TYPE_CONF_REMOVE, mConfChangeHandler,
-                            new DeckTask.TaskData(new Object[] { mOptions }));
-                    mDeck.put_("conf", 1);
+                // Remove options group, asking user to confirm full sync if necessary
+                mCol.getDecks().remConf(mOptions.getLong_("id"));
+                // Run the CPU intensive re-sort operation in a background thread
+                DeckTask.launchDeckTask(DeckTask.TASK_TYPE_CONF_REMOVE, mConfChangeHandler,
+                        new DeckTask.TaskData(new Object[] { mOptions }));
+                mDeck.put_("conf", 1);
             }
         }
 
@@ -758,11 +742,11 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
         Collections.sort(confs, new JSONNameComparator());
         String[] confValues = new String[confs.size()];
         String[] confLabels = new String[confs.size()];
-            for (int i = 0; i < confs.size(); i++) {
-                JSONObject_ o = confs.get(i);
-                confValues[i] = o.getString_("id");
-                confLabels[i] = o.getString_("name");
-            }
+        for (int i = 0; i < confs.size(); i++) {
+            JSONObject_ o = confs.get(i);
+            confValues[i] = o.getString_("id");
+            confLabels[i] = o.getString_("name");
+        }
         deckConfPref.setEntries(confLabels);
         deckConfPref.setEntryValues(confValues);
         deckConfPref.setValue(mPref.getString("deckConf", "0"));
@@ -784,15 +768,15 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
      */
     private int getOptionsGroupCount() {
         int count = 0;
-            long conf = mDeck.getLong_("conf");
-            for (JSONObject_ deck : mCol.getDecks().all()) {
-                if (deck.getInt_("dyn") == 1) {
-                    continue;
-                }
-                if (deck.getLong_("conf") == conf) {
-                    count++;
-                }
+        long conf = mDeck.getLong_("conf");
+        for (JSONObject_ deck : mCol.getDecks().all()) {
+            if (deck.getInt_("dyn") == 1) {
+                continue;
             }
+            if (deck.getLong_("conf") == conf) {
+                count++;
+            }
+        }
         return count;
     }
 
@@ -802,7 +786,7 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
      */
     private String getOptionsGroupName() {
         long confId = mPref.getLong("deckConf", 0);
-            return mCol.getDecks().getConf(confId).getString_("name");
+        return mCol.getDecks().getConf(confId).getString_("name");
     }
 
 
@@ -810,17 +794,17 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
      * Get the number of (non-dynamic) subdecks for the current deck
      */
     private int getSubdeckCount() {
-            int count = 0;
-            long did = mDeck.getLong_("id");
-            TreeMap<String, Long> children = mCol.getDecks().children(did);
-            for (Entry<String, Long> entry : children.entrySet()) {
-                JSONObject_ child = mCol.getDecks().get(entry.getValue());
-                if (child.getInt_("dyn") == 1) {
-                    continue;
-                }
-                count++;
+        int count = 0;
+        long did = mDeck.getLong_("id");
+        TreeMap<String, Long> children = mCol.getDecks().children(did);
+        for (Entry<String, Long> entry : children.entrySet()) {
+            JSONObject_ child = mCol.getDecks().get(entry.getValue());
+            if (child.getInt_("dyn") == 1) {
+                continue;
             }
-            return count;
+            count++;
+        }
+        return count;
     }
 
 
@@ -829,8 +813,8 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
         public int compare(JSONObject_ lhs, JSONObject_ rhs) {
             String o1;
             String o2;
-                o1 = lhs.getString_("name");
-                o2 = rhs.getString_("name");
+            o1 = lhs.getString_("name");
+            o2 = rhs.getString_("name");
             return o1.compareToIgnoreCase(o2);
         }
     }
