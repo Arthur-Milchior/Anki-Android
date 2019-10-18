@@ -237,28 +237,28 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
                     // Set behavior when clicking OK button
                     switch (dialogId) {
                         case CUSTOM_STUDY_NEW: {
-                                AnkiDroidApp.getSharedPrefs(getActivity()).edit().putInt("extendNew", n).commit();
-                                JSONObject_ deck = col.getDecks().get(did);
-                                deck.put_("extendNew", n);
-                                col.getDecks().save(deck);
-                                col.getSched().extendLimits(n, 0);
-                                onLimitsExtended(jumpToReviewer);
+                            AnkiDroidApp.getSharedPrefs(getActivity()).edit().putInt("extendNew", n).commit();
+                            JSONObject_ deck = col.getDecks().get(did);
+                            deck.put_("extendNew", n);
+                            col.getDecks().save(deck);
+                            col.getSched().extendLimits(n, 0);
+                            onLimitsExtended(jumpToReviewer);
                             break;
                         }
                         case CUSTOM_STUDY_REV: {
-                                AnkiDroidApp.getSharedPrefs(getActivity()).edit().putInt("extendRev", n).commit();
-                                JSONObject_ deck = col.getDecks().get(did);
-                                deck.put_("extendRev", n);
-                                col.getDecks().save(deck);
-                                col.getSched().extendLimits(0, n);
-                                onLimitsExtended(jumpToReviewer);
+                            AnkiDroidApp.getSharedPrefs(getActivity()).edit().putInt("extendRev", n).commit();
+                            JSONObject_ deck = col.getDecks().get(did);
+                            deck.put_("extendRev", n);
+                            col.getDecks().save(deck);
+                            col.getSched().extendLimits(0, n);
+                            onLimitsExtended(jumpToReviewer);
                             break;
                         }
                         case CUSTOM_STUDY_FORGOT: {
-                                JSONArray_ ar = new JSONArray_();
-                                ar.put_(0, 1);
-                                createCustomStudySession(ar, new Object[] {String.format(Locale.US,
-                                        "rated:%d:1", n), Consts.DYN_MAX_SIZE, Consts.DYN_RANDOM}, false);
+                            JSONArray_ ar = new JSONArray_();
+                            ar.put_(0, 1);
+                            createCustomStudySession(ar, new Object[] {String.format(Locale.US,
+                                    "rated:%d:1", n), Consts.DYN_MAX_SIZE, Consts.DYN_RANDOM}, false);
                             break;
                         }
                         case CUSTOM_STUDY_AHEAD: {
@@ -422,52 +422,52 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
         JSONObject_ dyn;
         final AnkiActivity activity = (AnkiActivity) getActivity();
         Collection col = CollectionHelper.getInstance().getCol(activity);
-            long did = getArguments().getLong("did");
-            String deckName = col.getDecks().get(did).getString_("name");
-            String customStudyDeck = getResources().getString(R.string.custom_study_deck_name);
-            JSONObject_ cur = col.getDecks().byName(customStudyDeck);
-            if (cur != null) {
-                if (cur.getInt_("dyn") != 1) {
-                    new MaterialDialog.Builder(getActivity())
-                            .content(R.string.custom_study_deck_exists)
-                            .negativeText(R.string.dialog_cancel)
-                            .build().show();
-                    return;
-                } else {
-                    // safe to empty
-                    col.getSched().emptyDyn(cur.getLong_("id"));
-                    // reuse; don't delete as it may have children
-                    dyn = cur;
-                    col.getDecks().select(cur.getLong_("id"));
-                }
+        long did = getArguments().getLong("did");
+        String deckName = col.getDecks().get(did).getString_("name");
+        String customStudyDeck = getResources().getString(R.string.custom_study_deck_name);
+        JSONObject_ cur = col.getDecks().byName(customStudyDeck);
+        if (cur != null) {
+            if (cur.getInt_("dyn") != 1) {
+                new MaterialDialog.Builder(getActivity())
+                        .content(R.string.custom_study_deck_exists)
+                        .negativeText(R.string.dialog_cancel)
+                        .build().show();
+                return;
             } else {
-                long customStudyDid = col.getDecks().newDyn(customStudyDeck);
-                dyn = col.getDecks().get(customStudyDid);
+                // safe to empty
+                col.getSched().emptyDyn(cur.getLong_("id"));
+                // reuse; don't delete as it may have children
+                dyn = cur;
+                col.getDecks().select(cur.getLong_("id"));
             }
-            // and then set various options
-            if (delays.length() > 0) {
-                dyn.put_("delays", delays);
-            } else {
-                dyn.put_("delays", JSONObject_.NULL);
+        } else {
+            long customStudyDid = col.getDecks().newDyn(customStudyDeck);
+            dyn = col.getDecks().get(customStudyDid);
+        }
+        // and then set various options
+        if (delays.length() > 0) {
+            dyn.put_("delays", delays);
+        } else {
+            dyn.put_("delays", JSONObject_.NULL);
+        }
+        JSONArray_ ar = dyn.getJSONArray_("terms");
+        ar.getJSONArray_(0).put_(0, "deck:\"" + deckName + "\" " + terms[0]);
+        ar.getJSONArray_(0).put_(1, terms[1]);
+        ar.getJSONArray_(0).put_(2, terms[2]);
+        dyn.put_("resched", resched);
+        // Rebuild the filtered deck
+        DeckTask.launchDeckTask(DeckTask.TASK_TYPE_REBUILD_CRAM, new DeckTask.TaskListener() {
+            @Override
+            public void onPreExecute() {
+                activity.showProgressBar();
             }
-            JSONArray_ ar = dyn.getJSONArray_("terms");
-            ar.getJSONArray_(0).put_(0, "deck:\"" + deckName + "\" " + terms[0]);
-            ar.getJSONArray_(0).put_(1, terms[1]);
-            ar.getJSONArray_(0).put_(2, terms[2]);
-            dyn.put_("resched", resched);
-            // Rebuild the filtered deck
-            DeckTask.launchDeckTask(DeckTask.TASK_TYPE_REBUILD_CRAM, new DeckTask.TaskListener() {
-                @Override
-                public void onPreExecute() {
-                    activity.showProgressBar();
-                }
-    
-                @Override
-                public void onPostExecute(DeckTask.TaskData result) {
-                    activity.hideProgressBar();
-                    ((CustomStudyListener) activity).onCreateCustomStudySession();
-                }
-            });
+
+            @Override
+            public void onPostExecute(DeckTask.TaskData result) {
+                activity.hideProgressBar();
+                ((CustomStudyListener) activity).onCreateCustomStudySession();
+            }
+        });
 
         // Hide the dialogs
         activity.dismissAllDialogFragments();
