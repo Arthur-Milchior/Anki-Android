@@ -129,14 +129,14 @@ public class Reviewer extends AbstractFlashcardViewer {
 
     @Override
     protected void setTitle() {
-            String[] title = {""};
-            if (colIsOpen()) {
-                title = getCol().getDecks().current().getString_("name").split("::");
-            } else {
-                Timber.e("Could not set title in reviewer because collection closed");
-            }
-            getSupportActionBar().setTitle(title[title.length - 1]);
-            super.setTitle(title[title.length - 1]);
+        String[] title = {""};
+        if (colIsOpen()) {
+            title = getCol().getDecks().current().getString_("name").split("::");
+        } else {
+            Timber.e("Could not set title in reviewer because collection closed");
+        }
+        getSupportActionBar().setTitle(title[title.length - 1]);
+        super.setTitle(title[title.length - 1]);
         getSupportActionBar().setSubtitle("");
     }
 
