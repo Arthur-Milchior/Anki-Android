@@ -56,7 +56,6 @@ public class RemoteServer extends HttpSyncer {
 
     @Override
     public org.apache.http.HttpResponse meta() throws UnknownHttpResponseException {
-        try {
             mPostVars = new HashMap<>();
             mPostVars.put("k", mHKey);
             mPostVars.put("s", mSKey);
@@ -65,9 +64,6 @@ public class RemoteServer extends HttpSyncer {
             jo.put_("cv",
                     String.format(Locale.US, "ankidroid,%s,%s", VersionUtils.getPkgVersionName(), Utils.platDesc()));
             return super.req("meta", super.getInputStream(Utils.jsonToString(jo)));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -123,15 +119,11 @@ public class RemoteServer extends HttpSyncer {
 
     /** Note: these conversion helpers aren't needed in libanki as type deduction occurs automatically there **/
     private JSONObject_ parseDict(String s) {
-        try {
             if (!s.equalsIgnoreCase("null") && s.length() != 0) {
                 return new JSONObject_(s);
             } else {
                 return new JSONObject_();
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private long parseLong(String s) {
