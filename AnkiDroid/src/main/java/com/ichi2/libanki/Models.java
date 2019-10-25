@@ -331,6 +331,7 @@ public class Models {
             m.put("tmpls", new JSONArray());
             m.put("tags", new JSONArray());
             m.put("id", 0);
+			m.put("usn", mCol.usn());
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -349,7 +350,7 @@ public class Models {
     /** Delete model, and all its cards/notes. 
      * @throws ConfirmModSchemaException */
     public void rem(JSONObject m) throws ConfirmModSchemaException {
-        mCol.modSchema(true);
+        _modSchemaIfRequired(m);
         try {
             long id = m.getLong("id");
             boolean current = current().getLong("id") == id;
@@ -469,6 +470,7 @@ public class Models {
         try {
             m2 = new JSONObject(Utils.jsonToString(m));
             m2.put("name", m2.getString("name") + " copy");
+			m.put("usn", mCol.usn());
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -538,7 +540,7 @@ public class Models {
 
     public void setSortIdx(JSONObject m, int idx) throws ConfirmModSchemaException{
         try {
-            mCol.modSchema(true);
+            _modSchemaIfRequired(m);
             m.put("sortf", idx);
             mCol.updateFieldCache(Utils.toPrimitive(nids(m)));
             save(m);
@@ -564,11 +566,7 @@ public class Models {
     }
 
     public void addField(JSONObject m, JSONObject field) throws ConfirmModSchemaException {
-        // only mod schema if model isn't new
-        // this is Anki's addField.
-        if (!isModelNew(m)) {
-            mCol.modSchema(true);
-        }
+		_modSchemaIfRequired(m);
         _addField(m, field);
     }
 
@@ -600,7 +598,7 @@ public class Models {
 
 
     public void remField(JSONObject m, JSONObject field) throws ConfirmModSchemaException {
-        mCol.modSchema(true);
+        _modSchemaIfRequired(m);
         try {
             JSONArray ja = m.getJSONArray("flds");
             JSONArray ja2 = new JSONArray();
@@ -649,7 +647,7 @@ public class Models {
 
 
     public void moveField(JSONObject m, JSONObject field, int idx) throws ConfirmModSchemaException {
-        mCol.modSchema(true);
+        _modSchemaIfRequired(m);
         try {
             JSONArray ja = m.getJSONArray("flds");
             ArrayList<JSONObject> l = new ArrayList<>();
@@ -709,7 +707,7 @@ public class Models {
 
 
     public void renameField(JSONObject m, JSONObject field, String newName) throws ConfirmModSchemaException {
-        mCol.modSchema(true);
+        _modSchemaIfRequired(m);
         try {
             String pat = String.format("\\{\\{([^{}]*)([:#^/]|[^:#/^}][^:}]*?:|)%s\\}\\}",
                     Pattern.quote(field.getString("name")));
@@ -817,9 +815,7 @@ public class Models {
     /** @throws ConfirmModSchemaException */
     public void addTemplate(JSONObject m, JSONObject template) throws ConfirmModSchemaException {
         //That is Anki's addTemplate method
-        if (!isModelNew(m)) {
-            mCol.modSchema(true);
-        }
+		_modSchemaIfRequired(m);
         _addTemplate(m, template);
     }
 
@@ -865,7 +861,7 @@ public class Models {
                 return false;
             }
             // ok to proceed; remove cards
-            mCol.modSchema(true);
+            _modSchemaIfRequired(m);
             mCol.remCards(cids);
             // shift ordinals
             mCol.getDb()
@@ -965,7 +961,7 @@ public class Models {
      * @throws ConfirmModSchemaException 
      */
     public void change(JSONObject m, long[] nids, JSONObject newModel, Map<Integer, Integer> fmap, Map<Integer, Integer> cmap) throws ConfirmModSchemaException {
-        mCol.modSchema(true);
+        _modSchemaIfRequired(m);
         try {
             assert (newModel.getLong("id") == m.getLong("id")) || (fmap != null && cmap != null);
         } catch (JSONException e) {
@@ -1071,6 +1067,23 @@ public class Models {
         }
         mCol.getDb().executeMany("update cards set ord=?,usn=?,mod=? where id=?", d);
         mCol.remCards(Utils.toPrimitive(deleted));
+    }
+
+	/** 
+		Mod the schema only if it's required
+	 */
+    private void _modSchemaIfRequired(JSONObject m) throws ConfirmModSchemaException {
+        try {
+			// usn is -1 either if th model is new or if the schema was already mared as modified.
+			// in the first case, no need to mark schema as modified
+			// in the second, modified schema was already accepted.
+			// in both case, no mark a modification anymore.
+            if (isModelNew(m) and m.getInt("usn") != -1) {
+                _modSchemaIfRequired(m);
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
