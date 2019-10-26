@@ -160,7 +160,7 @@ public class ContentProviderTest {
         col.getDecks().flush();
         assertEquals("Check that all created decks have been deleted", mNumDecksBeforeTest, col.getDecks().count());
         // Delete test model
-        col.modSchema(false);
+        col.modSchemaNoCheck();
 
         removeAllModelsByName(col, BASIC_MODEL_NAME);
         removeAllModelsByName(col, TEST_MODEL_NAME);
@@ -454,7 +454,7 @@ public class ContentProviderTest {
         } finally {
             // Delete the model (this will force a full-sync)
             try {
-                col.modSchema(false);
+                col.modSchemaNoCheck();
                 col.getModels().rem(col.getModels().get(mid));
             } catch (ConfirmModSchemaException e) {
                 // This will never happen
