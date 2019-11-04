@@ -233,7 +233,7 @@ public class Decks {
 
 
     /**
-     * Add a deck with NAME. Reuse deck if already exists. Return id as int.
+     * Add a deck with NAME. Reuse deck if already exists. Return id as long.
      */
     public Long id(String name, boolean create, String type) {
         try {
