@@ -98,7 +98,7 @@ public class Sched {
 
 
     /**
-     * This is a do-nothing constructor for descendants (ScedV2) to use.
+     * This is a do-nothing constructor for descendants (SchedV2) to use.
      */
     public Sched() {
 
