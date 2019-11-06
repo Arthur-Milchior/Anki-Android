@@ -72,7 +72,7 @@ public class Sched {
     private int mReportLimit;
     private int mReps;
     private boolean mHaveQueues;
-    private int mToday;
+    private Integer mToday;
     public long mDayCutoff;
 
     private int mNewCount;
@@ -98,13 +98,6 @@ public class Sched {
 
 
     /**
-     * This is a do-nothing constructor for descendants (ScedV2) to use.
-     */
-    public Sched() {
-
-    }
-
-    /**
      * queue types: 0=new/cram, 1=lrn, 2=rev, 3=day lrn, -1=suspended, -2=buried
      * revlog types: 0=lrn, 1=rev, 2=relrn, 3=cram
      * positive revlog intervals are in days (rev), negative in seconds (lrn)
@@ -115,6 +108,7 @@ public class Sched {
         mQueueLimit = 50;
         mReportLimit = 99999;
         mReps = 0;
+        mToday = null;
         mHaveQueues = false;
         _updateCutoff();
     }
@@ -713,11 +707,11 @@ public class Sched {
 
     /* New count for a single deck. */
     public int _newForDeck(long did, int lim) {
-    	if (lim == 0) {
-    		return 0;
-    	}
-    	lim = Math.min(lim, mReportLimit);
-    	return mCol.getDb().queryScalar("SELECT count() FROM (SELECT 1 FROM cards WHERE did = " + did + " AND queue = 0 LIMIT " + lim + ")");
+        if (lim == 0) {
+            return 0;
+        }
+        lim = Math.min(lim, mReportLimit);
+        return mCol.getDb().queryScalar("SELECT count() FROM (SELECT 1 FROM cards WHERE did = " + did + " AND queue = 0 LIMIT " + lim + ")");
     }
 
 
@@ -972,12 +966,12 @@ public class Sched {
             try {
                 delay = ja.getDouble(len - left);
             } catch (JSONException e) {
-            	if (conf.getJSONArray("delays").length() > 0) {
-            		delay = conf.getJSONArray("delays").getDouble(0);
-            	} else {
-            		// user deleted final step; use dummy value
-            		delay = 1.0;
-            	}
+                if (conf.getJSONArray("delays").length() > 0) {
+                    delay = conf.getJSONArray("delays").getDouble(0);
+                } else {
+                    // user deleted final step; use dummy value
+                    delay = 1.0;
+                }
             }
             return (int) (delay * 60.0);
         } catch (JSONException e) {
@@ -1028,11 +1022,11 @@ public class Sched {
     private int _startingLeft(Card card) {
         try {
             JSONObject conf;
-        	if (card.getType() == 2) {
-        		conf = _lapseConf(card);
-        	} else {
-        		conf = _lrnConf(card);
-        	}
+            if (card.getType() == 2) {
+                conf = _lapseConf(card);
+            } else {
+                conf = _lrnConf(card);
+            }
             int tot = conf.getJSONArray("delays").length();
             int tod = _leftToday(conf.getJSONArray("delays"), tot);
             return tot + tod * 1000;
@@ -1144,7 +1138,7 @@ public class Sched {
 
 
     public void removeLrn() {
-    	removeLrn(null);
+        removeLrn(null);
     }
 
     /* Remove cards from the learning queues. */
@@ -1208,8 +1202,8 @@ public class Sched {
 
 
     public int _revForDeck(long did, int lim) {
-    	lim = Math.min(lim, mReportLimit);
-    	return mCol.getDb().queryScalar("SELECT count() FROM (SELECT 1 FROM cards WHERE did = " + did + " AND queue = 2 AND due <= " + mToday + " LIMIT " + lim + ")");
+        lim = Math.min(lim, mReportLimit);
+        return mCol.getDb().queryScalar("SELECT count() FROM (SELECT 1 FROM cards WHERE did = " + did + " AND queue = 2 AND due <= " + mToday + " LIMIT " + lim + ")");
     }
 
 
@@ -1317,8 +1311,8 @@ public class Sched {
 
     public int totalRevForCurrentDeck() {
         return mCol.getDb().queryScalar(String.format(Locale.US,
-        		"SELECT count() FROM cards WHERE id IN (SELECT id FROM cards WHERE did IN %s AND queue = 2 AND due <= %d LIMIT %s)",
-        		Utils.ids2str(mCol.getDecks().active()), mToday, mReportLimit));
+                "SELECT count() FROM cards WHERE id IN (SELECT id FROM cards WHERE did IN %s AND queue = 2 AND due <= %d LIMIT %s)",
+                Utils.ids2str(mCol.getDecks().active()), mToday, mReportLimit));
     }
 
 
@@ -1443,7 +1437,7 @@ public class Sched {
             } else if (ease == 3) {
                 interval = ivl3;
             } else if (ease == 4) {
-            	interval = ivl4;
+                interval = ivl4;
             }
             // interval capped?
             return Math.min(interval, conf.getInt("maxIvl"));
@@ -1481,8 +1475,8 @@ public class Sched {
 
     /** Integer interval after interval factor and prev+1 constraints applied */
     private int _constrainedIvl(int ivl, JSONObject conf, double prev) {
-    	double newIvl = ivl;
-    	newIvl = ivl * conf.optDouble("ivlFct",1.0);
+        double newIvl = ivl;
+        newIvl = ivl * conf.optDouble("ivlFct",1.0);
         return (int) Math.max(newIvl, prev + 1);
     }
 
@@ -1637,9 +1631,9 @@ public class Sched {
                         mToday, mToday);
                 break;
             default:
-            	// if we don't understand the term, default to due order
-            	t = "c.due";
-            	break;
+                // if we don't understand the term, default to due order
+                t = "c.due";
+                break;
         }
         return t + " limit " + l;
     }
@@ -1831,7 +1825,8 @@ public class Sched {
      * This function uses GregorianCalendar so as to be sensitive to leap years, daylight savings, etc.
      */
 
-    private void _updateCutoff() {
+    protected void _updateCutoff() {
+        //protected so that the constructor can call the child version of the method.
         int oldToday = mToday;
         // days since col created
         mToday = (int) ((Utils.now() - mCol.getCrt()) / 86400);
@@ -2209,10 +2204,10 @@ public class Sched {
         long now = Utils.intTime();
         ArrayList<Long> nids = new ArrayList<>();
         for (long id : cids) {
-        	long nid = mCol.getDb().queryLongScalar("SELECT nid FROM cards WHERE id = " + id);
-        	if (!nids.contains(nid)) {
-        		nids.add(nid);
-        	}
+            long nid = mCol.getDb().queryLongScalar("SELECT nid FROM cards WHERE id = " + id);
+            if (!nids.contains(nid)) {
+                nids.add(nid);
+            }
         }
         if (nids.size() == 0) {
             // no new cards
@@ -2330,8 +2325,22 @@ public class Sched {
         return mName;
     }
 
+    public Collection getCollection() {
+        return mCol;
+    }
 
-    public int getToday() {
+
+    public int getReportLimit() {
+        return mReportLimit;
+    }
+
+
+    public int getQueueLimit() {
+        return mQueueLimit;
+    }
+
+
+    public Integer getToday() {
         return mToday;
     }
 
