@@ -21,6 +21,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Pair;
 
@@ -57,6 +58,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import androidx.annotation.Nullable;
@@ -83,6 +85,7 @@ public class Collection {
     private Media mMedia;
     private Decks mDecks;
     private Models mModels;
+    private boolean loadingModels = false;
     private Tags mTags;
 
     private AbstractSched mSched;
@@ -266,9 +269,19 @@ public class Collection {
                 cursor.close();
             }
         }
-        mModels.load(loadColumn("models"));
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                Timber.d("Loading models: ");
+                loadingModels = true;
+                mModels.load(loadColumn("models"));
+                loadingModels = false;
+                Timber.d("Models loaded: ");
+            }
+        });
         mDecks.load(loadColumn("decks"), deckConf);
     }
+
 
     public String loadColumn(String columnName) {
         int pos = 1;
@@ -2026,6 +2039,15 @@ public class Collection {
 
 
     public Models getModels() {
+        while (loadingModels) {
+            try {
+                Timber.d("Waiting for models: ");
+                new Exception().printStackTrace();
+                TimeUnit.MILLISECONDS.sleep(200);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return mModels;
     }
 
