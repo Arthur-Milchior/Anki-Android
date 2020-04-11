@@ -203,7 +203,13 @@ public class XAxis implements Drawable {
         double currentX = this.ticStart - this.tic * tics;
 
         while (currentX <= this.end) {
-            if ((!this.isOnFrame && plotSheet.xToGraphic(currentX, field) <= plotSheet.xToGraphic(this.end, field) - 45
+            drawMarker_(-1, currentX, field, g);
+            currentX += this.tic;
+        }
+    }
+
+    private void drawMarker_(Integer i, double currentX, RectangleWrap field, GraphicsWrap g) {
+        if ((!this.isOnFrame && plotSheet.xToGraphic(currentX, field) <= plotSheet.xToGraphic(this.end, field) - 45
                     && plotSheet.xToGraphic(currentX, field) <= field.x + field.width - 45) ||
                     (this.isOnFrame && currentX <= this.plotSheet.getxRange()[1] &&
                             currentX >= this.plotSheet.getxRange()[0])) {
@@ -214,30 +220,17 @@ public class XAxis implements Drawable {
                 if (this.markOnUpside) {
                     drawUpwardsMarker(g, field, currentX);
                 }
-                drawNumbering(g, field, currentX, -1);
-            }
-            currentX += this.tic;
+                if (i != null) {
+                    drawNumbering(g, field, currentX, i);
+                }
         }
     }
-
 
     private void drawExplicitMarkers(GraphicsWrap g) {
         RectangleWrap field = g.getClipBounds();
         for (int i = 0; i < mTickPositions.length; i++) {
             double currentX = mTickPositions[i];
-            if ((!this.isOnFrame && plotSheet.xToGraphic(currentX, field) <= plotSheet.xToGraphic(this.end, field) - 45
-                    && plotSheet.xToGraphic(currentX, field) <= field.x + field.width - 45) ||
-                    (this.isOnFrame && currentX <= this.plotSheet.getxRange()[1] &&
-                            currentX >= this.plotSheet.getxRange()[0])) {
-
-                if (this.markOnDownside) {
-                    drawDownwardsMarker(g, field, currentX);
-                }
-                if (this.markOnUpside) {
-                    drawUpwardsMarker(g, field, currentX);
-                }
-                drawNumbering(g, field, currentX, i);
-            }
+            drawMarker_(i, currentX, field, g);
         }
     }
 
@@ -350,18 +343,7 @@ public class XAxis implements Drawable {
         double currentX = this.ticStart - this.tic * tics;
 
         while (currentX <= this.end) {
-            if ((!this.isOnFrame && plotSheet.xToGraphic(currentX, field) <= plotSheet.xToGraphic(this.end, field) - 45
-                    && plotSheet.xToGraphic(currentX, field) <= field.x + field.width - 45) ||
-                    (this.isOnFrame && currentX <= this.plotSheet.getxRange()[1] &&
-                            currentX >= this.plotSheet.getxRange()[0])) {
-
-                if (this.markOnDownside) {
-                    drawDownwardsMinorMarker(g, field, currentX);
-                }
-                if (this.markOnUpside) {
-                    drawUpwardsMinorMarker(g, field, currentX);
-                }
-            }
+            drawMarker_(null, currentX, field, g);
             currentX += minorTic;
         }
 
