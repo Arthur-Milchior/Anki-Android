@@ -117,30 +117,25 @@ public class ImportTest {
         // if the local file content is different, and import should trigger a rename
         empty.remCards(Utils.arrayList2array(empty.getDb().queryColumn(Long.class, "select id from cards", 0)));
         os = new FileOutputStream(new File(empty.getMedia().dir(), "foo.mp3"), false);
-        os.write("bar".getBytes());
-        os.close();
-        imp = new Anki2Importer(empty, testCol.getPath());
-        imp.run();
-        expected = Arrays.asList("foo.mp3", String.format("foo_%s.mp3", mid));
-        actual = Arrays.asList(new File(empty.getMedia().dir()).list());
-        actual.retainAll(expected);
-        assertEquals(expected.size(), actual.size());
-        n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
-        assertTrue(n.getFields()[0].contains("_"));
+        importFooMp3(os);
         // if the localized media file already exists, we rewrite the note and media
         empty.remCards(Utils.arrayList2array(empty.getDb().queryColumn(Long.class, "select id from cards", 0)));
         os = new FileOutputStream(new File(empty.getMedia().dir(), "foo.mp3"));
+        importFooMp3(os);
+        empty.close();
+    }
+
+    private void importFooMp3(FileOutputStream os, ) {
         os.write("bar".getBytes());
         os.close();
-        imp = new Anki2Importer(empty, testCol.getPath());
+        Importer imp = new Anki2Importer(empty, testCol.getPath());
         imp.run();
-        expected =  Arrays.asList("foo.mp3", String.format("foo_%s.mp3", mid));
-        actual = Arrays.asList(new File(empty.getMedia().dir()).list());
+        List<String> expected = Arrays.asList("foo.mp3", String.format("foo_%s.mp3", mid));
+        List<String> actual = Arrays.asList(new File(empty.getMedia().dir()).list());
         actual.retainAll(expected);
         assertEquals(expected.size(), actual.size());
-        n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
+        Note n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
         assertTrue(n.getFields()[0].contains("_"));
-        empty.close();
     }
 
     @Test
