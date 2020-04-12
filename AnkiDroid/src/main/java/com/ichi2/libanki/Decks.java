@@ -769,9 +769,18 @@ public class Decks {
         mCol.getDb().setMod(mod);
     }
 
-    private void _checkDeckTree() {
-        ArrayList<JSONObject> decks = allSorted();
+    /** Correct the list of deck
+     *
+     * @param decks : decks, as returned by allSorted. This avoid duplicate computation of this long method.
+     *
+     * @return Either the list of sorted deck if the decks where integer, null otherwise.
+     */
+    private List<JSONObject> _checkDeckTree(List<JSONObject> decks) {
+        if (decks == null) {
+            decks = allSorted();
+        }
         Set<String> names = new HashSet<String>();
+        boolean errorFound = false;
 
         for (JSONObject deck: decks) {
             // two decks with the same name?
@@ -779,6 +788,7 @@ public class Decks {
                 Timber.i("fix duplicate deck name %s", deck.getString("name"));
                 deck.put("name", deck.getString("name") + Utils.intTime(1000));
                 save(deck);
+                errorFound = true;
             }
 
             // ensure no sections are blank
@@ -786,6 +796,7 @@ public class Decks {
                 Timber.i("fix deck with missing sections %s", deck.getString("name"));
                 deck.put("name", "recovered"+Utils.intTime(1000));
                 save(deck);
+                errorFound = true;
             }
 
             // immediate parent must exist
@@ -794,14 +805,29 @@ public class Decks {
                 Timber.i("fix deck with missing parent %s", deck.getString("name"));
                 _ensureParents(deck.getString("name"));
                 names.add(normalizeName(immediateParent));
+                errorFound = true;
             }
             names.add(normalizeName(deck.getString("name")));
         }
+        if (errorFound) {
+            return null;
+        } else {
+            return decks;
+        }
     }
 
-    public void checkIntegrity() {
+
+    /** Correct the list of deck and cards without decks.
+     *
+     * @return Either the list of sorted deck if the decks where integer, null otherwise.
+     */
+    public List<JSONObject> checkIntegrity() {
+        return checkIntegrity(null);
+    }
+
+    public List<JSONObject> checkIntegrity(List<JSONObject> sortedDecks) {
         _recoverOrphans();
-        _checkDeckTree();
+        return _checkDeckTree(sortedDecks);
     }
 
 

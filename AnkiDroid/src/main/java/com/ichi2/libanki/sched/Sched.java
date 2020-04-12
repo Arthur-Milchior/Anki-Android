@@ -219,8 +219,11 @@ public class Sched extends SchedV2 {
     @Override
     public List<DeckDueTreeNode> deckDueList() {
         _checkDay();
-        mCol.getDecks().checkIntegrity();
-        ArrayList<JSONObject> decks = mCol.getDecks().allSorted();
+        List<JSONObject> decks = mCol.getDecks().allSorted();
+        decks = mCol.getDecks().checkIntegrity(decks);
+        if (decks == null) {
+            decks = mCol.getDecks().allSorted();
+        }
         HashMap<String, Integer[]> lims = new HashMap<>();
         ArrayList<DeckDueTreeNode> data = new ArrayList<>();
         for (JSONObject deck : decks) {
