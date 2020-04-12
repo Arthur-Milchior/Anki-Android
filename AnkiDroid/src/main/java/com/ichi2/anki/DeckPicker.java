@@ -807,6 +807,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
     @Override
     protected void onStop() {
         Timber.d("onStop()");
+        DeckTask.cancelTask(DeckTask.TASK_TYPE_LOAD_DECK_COUNTS);
         super.onStop();
         if (colIsOpen()) {
             WidgetStatus.update(this);
