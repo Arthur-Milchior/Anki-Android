@@ -365,7 +365,7 @@ public class Collection {
     public void lock() {
         // make sure we don't accidentally bump mod time
         boolean mod = mDb.getMod();
-        mDb.execute("UPDATE col SET mod=mod");
+        mDb.execute("UPDATE col SET mod=?", new Object[]{mod});
         mDb.setMod(mod);
     }
 
