@@ -129,7 +129,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
     public static final String REVIEWS = "reviews";
     private static Pattern sMarkedPattern = Pattern.compile(".*[Mm]arked.*");
 
-    private List<Map<String, String>> mCards;
+    private List<CardCache> mCards;
     private ArrayList<JSONObject> mDropDownDecks;
     private ListView mCardsListView;
     private SearchView mSearchView;
@@ -379,7 +379,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
         long[] ids = new long[checkedPositions.length];
         int count = 0;
         for (int cardPosition : checkedPositions) {
-            ids[count++] = Long.valueOf(mCards.get(cardPosition).get(ID));
+            ids[count++] = Long.valueOf(mCards.get(cardPosition).getId());
         }
         return ids;
     }
@@ -391,9 +391,9 @@ public class CardBrowser extends NavigationDrawerActivity implements
         }
         //copy to array to ensure threadsafe iteration
         Integer[] checkedPositions = mCheckedCardPositions.toArray(new Integer[0]);
-        HashSet<String> notes = new HashSet<>();
+        HashSet<Long> notes = new HashSet<>();
         for (Integer position : checkedPositions) {
-            String noteId = mCards.get(position).get(NOTE);
+            Long noteId = mCards.get(position).getCard().getNid();
             if (notes.add(noteId) && notes.size() > 1) {
                 return false;
             }
@@ -628,7 +628,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
                     onCheck(position, view);
                 } else {
                     // load up the card selected on the list
-                    long clickedCardId = Long.parseLong(getCards().get(position).get(ID));
+                    long clickedCardId = getCards().get(position).getId();
                     openNoteEditorForCard(clickedCardId);
                 }
             }
@@ -1267,7 +1267,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
         }
         if (colIsOpen() && mCardsAdapter!= null) {
             // clear the existing card list
-            mCards = new ArrayList<Map<String, String>>();
+            mCards = new ArrayList<CardCache>();
             mCardsAdapter.notifyDataSetChanged();
             //  estimate maximum number of cards that could be visible (assuming worst-case minimum row height of 20dp)
             int numCardsToRender = (int) Math.ceil(mCardsListView.getHeight()/
@@ -1295,10 +1295,10 @@ public class CardBrowser extends NavigationDrawerActivity implements
     }
 
 
-    private Map<Long, Integer> getPositionMap(List<Map<String, String>> list) {
+    private Map<Long, Integer> getPositionMap(List<CardCache> list) {
         Map<Long, Integer> positions = new HashMap<>();
         for (int i = 0; i < list.size(); i++) {
-            positions.put(Long.valueOf(list.get(i).get(ID)), i);
+            positions.put(list.get(i).getId(), i);
         }
         return positions;
     }
@@ -1421,24 +1421,9 @@ public class CardBrowser extends NavigationDrawerActivity implements
             if (pos < 0 || pos >= getCardCount()) {
                 continue;
             }
-            Map<String, String> card = getCards().get(pos);
-            // update tags
-            card.put(MARKED, (c.note().hasTag("marked")) ? "marked" : null);
-            if (updatedCardTags != null) {
-                card.put(TAGS, updatedCardTags.get(c.getNid()));
-            }
-            // update sfld
-            String sfld = note.getSFld();
-            card.put(SFLD, sfld);
-            // update Q & A etc
-            updateSearchItemQA(getBaseContext(), card, c, getCol());
-            // update deck
-            String deckName;
-            deckName = getCol().getDecks().get(c.getDid()).getString("name");
-            card.put(DECK, deckName);
-            // update flags (marked / suspended / etc) which determine color
-            card.put(SUSPENDED, c.getQueue() == Consts.QUEUE_TYPE_SUSPENDED ? "True": "False");
-            card.put(FLAGS, (new Integer(c.getUserFlag())).toString());
+            Card card = getCards().get(pos).getCard();
+            card._getQA();
+            card.note();
         }
 
         updateList();
@@ -1481,66 +1466,6 @@ public class CardBrowser extends NavigationDrawerActivity implements
             }, mCardsListView, null);
         }
     };
-
-    public static void updateSearchItemQA(Context context, Map<String, String> item, Card c, Collection col) {
-        // render question and answer
-        Map<String, String> qa = c._getQA(true, true);
-        // Render full question / answer if the bafmt (i.e. "browser appearance") setting forced blank result
-        if ("".equals(qa.get("q")) || "".equals(qa.get("a"))) {
-            HashMap<String, String> qaFull = c._getQA(true, false);
-            if ("".equals(qa.get("q"))) {
-                qa.put("q", qaFull.get("q"));
-            }
-            if ("".equals(qa.get("a"))) {
-                qa.put("a", qaFull.get("a"));
-            }
-        }
-        // update the original hash map to include rendered question & answer
-        String q = qa.get("q");
-        String a = qa.get("a");
-        // remove the question from the start of the answer if it exists
-        if (a.startsWith(q)) {
-            a = a.replaceFirst(Pattern.quote(q), "");
-        }
-        // put all of the fields in except for those that have already been pulled out straight from the
-        // database
-        item.put(ANSWER, formatQA(a, context));
-        item.put(CARD, c.template().optString("name"));
-        item.put(DUE, c.getDueString());
-        if (c.getType() == Consts.CARD_TYPE_NEW) {
-            item.put(EASE, context.getString(R.string.card_browser_ease_new_card));
-        } else {
-            item.put(EASE, (c.getFactor()/10)+"%");
-        }
-
-        Note note = c.note();
-        item.put(CHANGED, LanguageUtil.getShortDateFormatFromS(c.getMod()));
-        item.put(CREATED, LanguageUtil.getShortDateFormatFromMs(note.getId()));
-        item.put(EDITED, LanguageUtil.getShortDateFormatFromS(note.getMod()));
-        // interval
-        switch (c.getType()) {
-            case Consts.CARD_TYPE_NEW:
-                item.put(INTERVAL, context.getString(R.string.card_browser_interval_new_card));
-                break;
-            case Consts.CARD_TYPE_LRN :
-                item.put(INTERVAL, context.getString(R.string.card_browser_interval_learning_card));
-                break;
-            default:
-                item.put(INTERVAL, Utils.roundedTimeSpanUnformatted(context, c.getIvl()*86400));
-                break;
-        }
-        item.put(LAPSES, Integer.toString(c.getLapses()));
-        item.put(NOTE, c.model().optString("name"));
-        item.put(QUESTION, formatQA(q, context));
-        item.put(REVIEWS, Integer.toString(c.getReps()));
-        String tags = note.stringTags();
-        item.put(TAGS, tags);
-        item.put(MARKED, (sMarkedPattern.matcher(item.get(TAGS)).matches())?"marked": null);
-        item.put(FLAGS, (new Integer(c.getUserFlag())).toString());
-        item.put(SUSPENDED, c.getQueue() == Consts.QUEUE_TYPE_SUSPENDED ? "True": "False");
-        item.put(DECK, col.getDecks().name(c.getDid()));
-        item.put(SFLD, note.getSFld());
-    }
 
     @CheckResult
     private static String formatQA(String text, Context context) {
@@ -1588,7 +1513,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
      */
     private void removeNotesView(java.util.Collection<Long> cardsIds, boolean reorderCards) {
         long reviewerCardId = getReviewerCardId();
-        List<Map<String, String>> oldMCards = getCards();
+        List<CardCache> oldMCards = getCards();
         Map<Long, Integer> idToPos = getPositionMap(oldMCards);
         Set<Long> idToRemove = new HashSet<Long>();
         for (Long cardId : cardsIds) {
@@ -1600,10 +1525,10 @@ public class CardBrowser extends NavigationDrawerActivity implements
             }
         }
 
-        List<Map<String, String>> newMCards = new ArrayList<Map<String, String>>();
-        for (Map<String, String> cardProperties: oldMCards) {
-            if (! idToRemove.contains(Long.parseLong(cardProperties.get(ID)))) {
-                newMCards.add(cardProperties);
+        List<CardCache> newMCards = new ArrayList<>();
+        for (CardCache card: oldMCards) {
+            if (! idToRemove.contains(card.getId())) {
+                newMCards.add(card);
             }
         }
         mCards = newMCards;
@@ -1682,7 +1607,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
         @Override
         public void onPostExecute(TaskData result) {
             if (result != null) {
-                mCards = result.getCards();
+                mCards = result.getCardsCaches();
                 updateList();
                 handleSearchResult();
             }
@@ -1849,9 +1774,9 @@ public class CardBrowser extends NavigationDrawerActivity implements
             int lastVisibleItem = firstVisibleItem + visibleItemCount;
             int size = getCardCount();
             if ((size > 0) && (firstVisibleItem < size) && ((lastVisibleItem - 1) < size)) {
-                String firstAns = getCards().get(firstVisibleItem).get(ANSWER);
+                String firstAns = getCards().get(firstVisibleItem).getCard().getPureAnswer();
                 // Note: max value of lastVisibleItem is totalItemCount, so need to subtract 1
-                String lastAns = getCards().get(lastVisibleItem - 1).get(ANSWER);
+                String lastAns = getCards().get(lastVisibleItem - 1).getCard().getPureAnswer();
                 if (firstAns == null || lastAns == null) {
                     showProgressBar();
                     // Also start rendering the items on the screen every 300ms while scrolling
@@ -1923,16 +1848,16 @@ public class CardBrowser extends NavigationDrawerActivity implements
         private void bindView(final int position, final View v) {
             // Draw the content in the columns
             View[] columns = (View[]) v.getTag();
-            final Map<String, String> card = getCards().get(position);
+            final CardCache card = getCards().get(position);
             for (int i = 0; i < mToIds.length; i++) {
                 TextView col = (TextView) columns[i];
                 // set font for column
                 setFont(col);
                 // set text for column
-                col.setText(card.get(mFromKeys[i]));
+                col.setText(card.content(mFromKeys[i]));
             }
             // set card's background color
-            final int backgroundColor = Themes.getColorFromAttr(CardBrowser.this, getColor(card));
+            final int backgroundColor = Themes.getColorFromAttr(CardBrowser.this, card.getColor());
             v.setBackgroundColor(backgroundColor);
             // setup checkbox to change color in multi-select mode
             final CheckBox checkBox = (CheckBox) v.findViewById(R.id.card_checkbox);
@@ -1977,36 +1902,6 @@ public class CardBrowser extends NavigationDrawerActivity implements
             }
         }
 
-        /**
-         * Get the background color of items in the card list based on the Card
-         * @param cardProperties -- a card object to color
-         * @return index into TypedArray specifying the background color
-         */
-        private int getColor(Map<String, String> cardProperties) {
-            boolean suspended = "True".equals(cardProperties.get(SUSPENDED));
-            int flag = getFlagOrDefault(cardProperties, 0);
-            boolean marked = cardProperties.get(MARKED) != null ;
-            switch (flag) {
-                case 1:
-                   return R.attr.flagRed;
-                case 2:
-                   return R.attr.flagOrange;
-                case 3:
-                  return R.attr.flagGreen;
-                case 4:
-                   return R.attr.flagBlue;
-                default:
-                    if (marked) {
-                        return R.attr.markedColor;
-                    } else {
-                        if (suspended) {
-                            return R.attr.suspendedColor;
-                        } else {
-                            return android.R.attr.colorBackground;
-                        }
-                    }
-            }
-        }
 
 
         public void setFromMapping(String[] from) {
@@ -2037,21 +1932,6 @@ public class CardBrowser extends NavigationDrawerActivity implements
             return position;
         }
 
-    }
-
-    @VisibleForTesting
-    int getFlagOrDefault(Map<String, String> card, int defaultValue) {
-        String flagValue = card.get(FLAGS);
-        if (flagValue == null) {
-            Timber.d("Unable to obtain flag for card: '%s'. Returning %d", card.get(ID), defaultValue);
-            return defaultValue;
-        }
-        try {
-            return Integer.parseInt(flagValue);
-        } catch (Exception e) {
-            Timber.e(e, "couldn't parse flag value: %s", flagValue);
-            return defaultValue;
-        }
     }
 
 
@@ -2107,7 +1987,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
         }
     }
 
-    private List<Map<String, String>> getCards() {
+    private List<CardCache> getCards() {
         if (mCards == null) {
             mCards = new ArrayList<>();
         }
@@ -2117,7 +1997,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
     private long[] getAllCardIds() {
         long[] l = new long[mCards.size()];
         for (int i = 0; i < mCards.size(); i++) {
-            l[i] = Long.parseLong(mCards.get(i).get(ID));
+            l[i] = mCards.get(i).getId();
         }
         return l;
     }
@@ -2199,6 +2079,164 @@ public class CardBrowser extends NavigationDrawerActivity implements
         mActionBarTitle.setVisibility(View.GONE);
     }
 
+    public static class CardCache {
+        long mId;
+        Card mCard;
+        Collection mCol;
+
+        public CardCache(Collection col, long id) {
+            mCol = col;
+            mId = id;
+        }
+
+        public long getId() {
+            return mId;
+        }
+
+        public Card getCard() {
+            if (mCard == null) {
+                 mCard = mCol.getCard(mId);
+            }
+            return mCard;
+        }
+
+        public void setId(long id) {
+            mId = id;
+            mCard = null;
+        }
+
+        /** Allow to load from DB all values required to choose
+         * color. */
+        public void loadColor() {
+            getCard().note();
+        }
+
+        /** Allow to load from DB all values required to show
+         * content. */
+        public void loadTotally() {
+            getCard().note();
+            // render question and answer
+            Map<String, String> qa = getCard()._getQA(true, true);
+            // Render full question / answer if the bafmt (i.e. "browser appearance") setting forced blank result
+            if ("".equals(qa.get("q")) || "".equals(qa.get("a"))) {
+                HashMap<String, String> qaFull = getCard()._getQA(true, false);
+                if ("".equals(qa.get("q"))) {
+                    qa.put("q", qaFull.get("q"));
+                }
+                if ("".equals(qa.get("a"))) {
+                    qa.put("a", qaFull.get("a"));
+                }
+            }
+        }
+
+        @VisibleForTesting
+        int getFlagOrDefault(int defaultValue) {
+            int flagValue = getCard().getUserFlag();
+            try {
+                return flagValue;
+            } catch (Exception e) {
+                Timber.e(e, "couldn't parse flag value: %s", flagValue);
+                return defaultValue;
+            }
+        }
+
+        /**
+         * Get the background color of items in the card list based on the Card
+         * @param cardProperties -- a card object to color
+         * @return index into TypedArray specifying the background color
+         */
+        private int getColor() {
+            boolean suspended = getCard().getQueue() == Consts.QUEUE_TYPE_SUSPENDED;
+            int flag = getFlagOrDefault(0);
+            boolean marked = sMarkedPattern.matcher(getCard().note().stringTags()).matches() ;
+            switch (flag) {
+                case 1:
+                    return R.attr.flagRed;
+                case 2:
+                    return R.attr.flagOrange;
+                case 3:
+                    return R.attr.flagGreen;
+                case 4:
+                    return R.attr.flagBlue;
+                default:
+                    if (marked) {
+                        return R.attr.markedColor;
+                    } else {
+                        if (suspended) {
+                            return R.attr.suspendedColor;
+                        } else {
+                            return android.R.attr.colorBackground;
+                        }
+                    }
+            }
+        }
+
+        public String content(String key) {
+            Context context = AnkiDroidApp.getInstance();
+            switch(key) {
+            case QUESTION:
+                loadTotally();
+                return getCard().q();
+            case ANSWER:
+                loadTotally();
+                String q = getCard().q();
+                String a = getCard().a();
+                // remove the question from the start of the answer if it exists
+                if (a.startsWith(q)) {
+                    a = a.replaceFirst(Pattern.quote(q), "");
+                }
+                return a;
+            case FLAGS:
+                return (new Integer(getCard().getUserFlag())).toString();
+            case SUSPENDED:
+                return getCard().getQueue() == Consts.QUEUE_TYPE_SUSPENDED ? "True": "False";
+            case MARKED:
+                return (sMarkedPattern.matcher(getCard().note().stringTags()).matches()) ? "marked" : "";
+            case SFLD:
+                return getCard().note().getSFld();
+            case DECK:
+                return mCol.getDecks().name(getCard().getDid());
+            case TAGS:
+                return getCard().note().stringTags();
+            case ID:
+                return new Long(mId).toString();
+            case CARD:
+                return getCard().template().optString("name");
+            case DUE:
+                return getCard().getDueString();
+            case EASE:
+                if (getCard().getType() == Consts.CARD_TYPE_NEW) {
+                    return context.getString(R.string.card_browser_ease_new_card);
+                } else {
+                    return (getCard().getFactor()/10)+"%";
+                }
+            case CHANGED:
+                return LanguageUtil.getShortDateFormatFromS(getCard().getMod());
+            case CREATED:
+                return LanguageUtil.getShortDateFormatFromMs(getCard().note().getId());
+            case EDITED:
+                return LanguageUtil.getShortDateFormatFromS(getCard().note().getMod());
+            case INTERVAL:
+                switch (getCard().getType()) {
+                case Consts.CARD_TYPE_NEW:
+                    return context.getString(R.string.card_browser_interval_new_card);
+                case Consts.CARD_TYPE_LRN :
+                    return context.getString(R.string.card_browser_interval_learning_card);
+                default:
+                    return Utils.roundedTimeSpanUnformatted(context, getCard().getIvl()*86400);
+                }
+            case LAPSES:
+                return Integer.toString(getCard().getLapses());
+            case NOTE:
+                return getCard().model().optString("name");
+            case REVIEWS:
+                return Integer.toString(getCard().getReps());
+            default:
+                return "";
+            }
+        }
+    }
+
     @VisibleForTesting
     public int checkedCardCount() {
         return mCheckedCardPositions.size();
@@ -2228,9 +2266,8 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     void clearCardData(int position) {
-        String id = mCards.get(position).get(ID);
-        mCards.get(position).clear();
-        mCards.get(position).put(ID, id);
+        long id = mCards.get(position).getId();
+        mCards.get(position).setId(id);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
@@ -2242,10 +2279,10 @@ public class CardBrowser extends NavigationDrawerActivity implements
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     long[] getCardIds() {
         @SuppressWarnings("unchecked")
-        Map<String, String>[] cardsCopy = mCards.toArray(new Map[0]);
+        CardCache[] cardsCopy = (CardCache[]) mCards.toArray(new Map[0]);
         long[] ret = new long[cardsCopy.length];
         for (int i = 0; i < cardsCopy.length; i++) {
-            ret[i] = Long.parseLong(cardsCopy[i].get(ID));
+            ret[i] = cardsCopy[i].getId();
         }
         return ret;
     }
@@ -2285,8 +2322,8 @@ public class CardBrowser extends NavigationDrawerActivity implements
     public List<Long> getCheckedCardIds() {
         List<Long> cardIds = new ArrayList<>();
         for (Integer pos : mCheckedCardPositions) {
-            String id = mCards.get(pos).get(ID);
-            cardIds.add(Long.valueOf(Objects.requireNonNull(id)));
+            long id = mCards.get(pos).getId();
+            cardIds.add(Objects.requireNonNull(id));
         }
         return cardIds;
     }
@@ -2300,10 +2337,10 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    public Map<String, String> getPropertiesForCardId(long cardId) {
-        for (Map<String, String> props : mCards) {
-            String id = Objects.requireNonNull(props.get(ID));
-            if (Long.parseLong(id) == cardId) {
+    public CardCache getPropertiesForCardId(long cardId) {
+        for (CardCache props : mCards) {
+            long id = Objects.requireNonNull(props.getId());
+            if (id == cardId) {
                 return props;
             }
         }
