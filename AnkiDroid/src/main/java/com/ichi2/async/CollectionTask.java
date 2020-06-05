@@ -923,7 +923,7 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
         }
         // Render the first few items
         for (int i = 0; i < Math.min(numCardsToRender, searchResult.size()); i++) {
-            Card c = col.getCard(searchResult.get(i).getId());
+            Card c = searchResult.get(i).getCard();
             CardBrowser.updateSearchItemQA(mContext, searchResult.get(i), c, col);
         }
         // Finish off the task
@@ -972,13 +972,13 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
             }
             // Extract card item
             Card c;
-            long cardId = card.getId();
             try {
-                c = col.getCard(cardId);
+                c = card.getCard();
             } catch (WrongId e) {
                 //#5891 - card can be inconsistent between the deck browser screen and the collection.
                 //Realistically, we can skip any exception as it's a rendering task which should not kill the
                 //process
+                long cardId = card.getId();
                 Timber.e(e, "Could not process card '%d' - skipping and removing from sight", cardId);
                 invalidCardIds.add(cardId);
                 continue;
@@ -1628,7 +1628,7 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
         boolean hasUnsuspended = false;
         boolean hasUnmarked = false;
         for (int cardPosition : checkedCardPositions) {
-            Card card = col.getCard(cards.get(cardPosition).getId());
+            Card card = cards.get(cardPosition).getCard();
             hasUnsuspended = hasUnsuspended || card.getQueue() != Consts.QUEUE_TYPE_SUSPENDED;
             hasUnmarked = hasUnmarked || !card.note().hasTag("marked");
             if (hasUnsuspended && hasUnmarked)

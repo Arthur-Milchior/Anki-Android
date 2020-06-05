@@ -2132,6 +2132,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
     public class CardCache extends HashMap<String, String> {
         private long mId;
+        private Card mCard = null;
 
         public CardCache(long id) {
             mId = id;
@@ -2144,6 +2145,14 @@ public class CardBrowser extends NavigationDrawerActivity implements
         /** clear all values except ID.*/
         public void reload() {
             clear();
+            mCard = null;
+        }
+
+        public Card getCard() {
+            if (mCard == null) {
+                mCard = getCol().getCard(mId);
+            }
+            return mCard;
         }
     }
 
