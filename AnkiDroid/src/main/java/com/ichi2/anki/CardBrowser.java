@@ -1415,10 +1415,6 @@ public class CardBrowser extends NavigationDrawerActivity implements
             }
             CardCache card = getCards().get(pos);
             card.load(true);
-            // update tags
-            if (updatedCardTags != null) {
-                card.put(TAGS, updatedCardTags.get(c.getNid()));
-            }
             // update Q & A etc
             updateSearchItemQA(getBaseContext(), card, c, getCol());
         }
@@ -1515,8 +1511,6 @@ public class CardBrowser extends NavigationDrawerActivity implements
         item.put(NOTE_TYPE, c.model().optString("name"));
         item.put(QUESTION, formatQA(q, context));
         item.put(REVIEWS, Integer.toString(c.getReps()));
-        String tags = note.stringTags();
-        item.put(TAGS, tags);
     }
 
     @CheckResult
@@ -2136,6 +2130,8 @@ public class CardBrowser extends NavigationDrawerActivity implements
                 return getCard().note().getSFld();
             case DECK:
                 return getCol().getDecks().name(getCard().getDid());
+            case TAGS:
+                return getCard().note().stringTags();
             default:
                 return null;
             }
