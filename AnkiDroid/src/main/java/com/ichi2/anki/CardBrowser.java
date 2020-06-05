@@ -127,7 +127,6 @@ public class CardBrowser extends NavigationDrawerActivity implements
     public static final String LAPSES = "lapses";
     public static final String NOTE_TYPE = "note";
     public static final String REVIEWS = "reviews";
-    private static Pattern sMarkedPattern = Pattern.compile(".*[Mm]arked.*");
 
     private List<CardCache> mCards;
     private ArrayList<JSONObject> mDropDownDecks;
