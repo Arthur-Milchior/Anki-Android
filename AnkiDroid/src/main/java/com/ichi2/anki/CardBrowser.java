@@ -2004,7 +2004,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
         return l;
     }
 
-    public class CardCache extends HashMap<String, String> {
+    public class CardCache {
         private long mId;
         private Card mCard = null;
         private boolean mLoaded = false;
@@ -2020,7 +2020,6 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
         /** clear all values except ID.*/
         public void reload() {
-            clear();
             mCard = null;
             mLoaded = false;
             mQa = null;
