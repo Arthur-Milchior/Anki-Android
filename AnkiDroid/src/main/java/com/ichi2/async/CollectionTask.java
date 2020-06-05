@@ -915,10 +915,10 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
         CardBrowser cb = (CardBrowser) params[0].getObjArray()[3];
         List<Long> searchResult_ = col.findCards(query, order);
         int resultSize = searchResult_.size();
-        List<Map<String,String>> searchResult = new ArrayList<>(resultSize);
+        List<CardBrowser.CardCache> searchResult = new ArrayList<>(resultSize);
         Timber.d("The search found %d cards", resultSize);
         for (Long cid: searchResult_) {
-            Map<String, String> card = new HashMap<>();
+            CardBrowser.CardCache card = cb.new CardCache();
             card.put(CardBrowser.ID, cid.toString());
             searchResult.add(card);
         }
@@ -942,7 +942,7 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
         //(Range<Position>, Function<Position, BrowserCard>)
         Timber.d("doInBackgroundRenderBrowserQA");
         Collection col = CollectionHelper.getInstance().getCol(mContext);
-        List<Map<String, String>> cards = (List<Map<String, String>>) params[0].getObjArray()[0];
+        List<CardBrowser.CardCache> cards = (List<CardBrowser.CardCache>) params[0].getObjArray()[0];
         Integer startPos = (Integer) params[0].getObjArray()[1];
         Integer n = (Integer) params[0].getObjArray()[2];
 
@@ -957,7 +957,7 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
             if (i < 0 || i >= cards.size()) {
                 continue;
             }
-            Map<String, String> card;
+            CardBrowser.CardCache card;
             try {
                 card = cards.get(i);
             }
@@ -1635,7 +1635,7 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
         Collection col = CollectionHelper.getInstance().getCol(mContext);
         Object[] objects = params[0].getObjArray();
         Set<Integer> checkedCardPositions = (Set<Integer>) objects[0];
-        List<Map<String, String>> cards = (List<Map<String, String>>) objects[1];
+        List<CardBrowser.CardCache> cards = (List<CardBrowser.CardCache>) objects[1];
 
         boolean hasUnsuspended = false;
         boolean hasUnmarked = false;
@@ -1780,7 +1780,7 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
         private int mInteger;
         private String mMsg;
         private boolean mBool = false;
-        private List<Map<String, String>> mCards;
+        private List<CardBrowser.CardCache> mCards;
         private long mLong;
         private Context mContext;
         private int mType;
@@ -1836,7 +1836,7 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
         }
 
 
-        public TaskData(List<Map<String, String>> cards) {
+        public TaskData(List<CardBrowser.CardCache> cards) {
             mCards = cards;
         }
 
@@ -1907,7 +1907,7 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
         }
 
 
-        public List<Map<String, String>> getCards() {
+        public List<CardBrowser.CardCache> getCards() {
             return mCards;
         }
 
