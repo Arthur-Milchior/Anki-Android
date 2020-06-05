@@ -2128,7 +2128,12 @@ public class CardBrowser extends NavigationDrawerActivity implements
                 reload();
             }
             getCard().note();
-            updateSearchItemQA();
+            if (
+                COLUMN1_KEYS[mColumn1Index] == QUESTION ||
+                COLUMN2_KEYS[mColumn2Index] == QUESTION ||
+                COLUMN2_KEYS[mColumn2Index] == ANSWER) {
+                updateSearchItemQA();
+            }
             mLoaded = true;
         }
 
