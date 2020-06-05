@@ -1416,6 +1416,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
                 continue;
             }
             CardCache card = getCards().get(pos);
+            card.reload();
             // update tags
             card.put(MARKED, (c.note().hasTag("marked")) ? "marked" : null);
             if (updatedCardTags != null) {
