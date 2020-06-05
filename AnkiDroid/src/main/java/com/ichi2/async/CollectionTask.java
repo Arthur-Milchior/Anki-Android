@@ -923,9 +923,7 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
         }
         // Render the first few items
         for (int i = 0; i < Math.min(numCardsToRender, searchResult.size()); i++) {
-            CardBrowser.CardCache card = searchResult.get(i);
-            card.load(false);
-            CardBrowser.updateSearchItemQA(searchResult.get(i));
+            CardBrowser.CardCache card = searchResult.get(i).load(false);
         }
         // Finish off the task
         if (isCancelled()) {
@@ -985,7 +983,6 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
                 continue;
             }
             // Update item
-            CardBrowser.updateSearchItemQA(card);
             card.load(false);
             float progress = (float) i / n * 100;
             publishProgress(new TaskData((int) progress));
