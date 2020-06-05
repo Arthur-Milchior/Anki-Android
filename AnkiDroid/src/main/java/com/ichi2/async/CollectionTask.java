@@ -924,7 +924,7 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
         }
         // Render the first few items
         for (int i = 0; i < Math.min(numCardsToRender, searchResult.size()); i++) {
-            Card c = col.getCard(Long.parseLong(searchResult.get(i).get("id")));
+            Card c = col.getCard(Long.parseLong(searchResult.get(i).get(CardBrowser.ID)));
             CardBrowser.updateSearchItemQA(mContext, searchResult.get(i), c, col);
         }
         // Finish off the task
@@ -973,7 +973,7 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
             }
             // Extract card item
             Card c;
-            String maybeCardId = card.get("id");
+            String maybeCardId = card.get(CardBrowser.ID);
             if (maybeCardId == null) {
                 Timber.w("CardId was null, skipping");
                 continue;
@@ -1640,7 +1640,7 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
         boolean hasUnsuspended = false;
         boolean hasUnmarked = false;
         for (int cardPosition : checkedCardPositions) {
-            Card card = col.getCard(Long.parseLong(cards.get(cardPosition).get("id")));
+            Card card = col.getCard(Long.parseLong(cards.get(cardPosition).get(CardBrowser.ID)));
             hasUnsuspended = hasUnsuspended || card.getQueue() != Consts.QUEUE_TYPE_SUSPENDED;
             hasUnmarked = hasUnmarked || !card.note().hasTag("marked");
             if (hasUnsuspended && hasUnmarked)
