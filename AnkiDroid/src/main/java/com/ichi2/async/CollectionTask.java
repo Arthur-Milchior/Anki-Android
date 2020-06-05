@@ -918,13 +918,12 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
         List<CardBrowser.CardCache> searchResult = new ArrayList<>(resultSize);
         Timber.d("The search found %d cards", resultSize);
         for (Long cid: searchResult_) {
-            CardBrowser.CardCache card = cb.new CardCache();
-            card.put(CardBrowser.ID, cid.toString());
+            CardBrowser.CardCache card = cb.new CardCache(cid);
             searchResult.add(card);
         }
         // Render the first few items
         for (int i = 0; i < Math.min(numCardsToRender, searchResult.size()); i++) {
-            Card c = col.getCard(Long.parseLong(searchResult.get(i).get(CardBrowser.ID)));
+            Card c = col.getCard(searchResult.get(i).getId());
             CardBrowser.updateSearchItemQA(mContext, searchResult.get(i), c, col);
         }
         // Finish off the task
@@ -973,25 +972,14 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
             }
             // Extract card item
             Card c;
-            String maybeCardId = card.get(CardBrowser.ID);
-            if (maybeCardId == null) {
-                Timber.w("CardId was null, skipping");
-                continue;
-            }
-            Long cardId;
-            try {
-                cardId = Long.parseLong(maybeCardId);
-            } catch (Exception e) {
-                Timber.e("Unable to parse CardId: %s. Unable to remove card", maybeCardId);
-                continue;
-            }
+            long cardId = card.getId();
             try {
                 c = col.getCard(cardId);
             } catch (WrongId e) {
                 //#5891 - card can be inconsistent between the deck browser screen and the collection.
                 //Realistically, we can skip any exception as it's a rendering task which should not kill the
                 //process
-                Timber.e(e, "Could not process card '%s' - skipping and removing from sight", maybeCardId);
+                Timber.e(e, "Could not process card '%d' - skipping and removing from sight", cardId);
                 invalidCardIds.add(cardId);
                 continue;
             }
@@ -1640,7 +1628,7 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
         boolean hasUnsuspended = false;
         boolean hasUnmarked = false;
         for (int cardPosition : checkedCardPositions) {
-            Card card = col.getCard(Long.parseLong(cards.get(cardPosition).get(CardBrowser.ID)));
+            Card card = col.getCard(cards.get(cardPosition).getId());
             hasUnsuspended = hasUnsuspended || card.getQueue() != Consts.QUEUE_TYPE_SUSPENDED;
             hasUnmarked = hasUnmarked || !card.note().hasTag("marked");
             if (hasUnsuspended && hasUnmarked)
