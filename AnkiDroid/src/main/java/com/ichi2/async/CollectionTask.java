@@ -912,6 +912,7 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
         String query = (String) params[0].getObjArray()[0];
         Boolean order = (Boolean) params[0].getObjArray()[1];
         int numCardsToRender = (int) params[0].getObjArray()[2];
+        CardBrowser cb = (CardBrowser) params[0].getObjArray()[3];
         List<Long> searchResult_ = col.findCards(query, order);
         int resultSize = searchResult_.size();
         List<Map<String,String>> searchResult = new ArrayList<>(resultSize);
