@@ -2014,13 +2014,19 @@ public class CardBrowser extends NavigationDrawerActivity implements
         private Card mCard = null;
         private boolean mLoaded = false;
         private Pair<String, String> mQa = null;
+        private int mPosition;
 
-        public CardCache(long id) {
+        public CardCache(long id, int position) {
             mId = id;
+            mPosition = position;
         }
 
         public long getId() {
             return mId;
+        }
+
+        public int getPosition() {
+            return mPosition;
         }
 
         /** clear all values except ID.*/
