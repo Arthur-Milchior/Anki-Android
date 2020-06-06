@@ -1620,7 +1620,6 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
      * @return If there are unselected cards, if there are unmarked cards
      */
     public TaskData doInBackgroundCheckCardSelection(TaskData... params) {
-        Collection col = CollectionHelper.getInstance().getCol(mContext);
         Object[] objects = params[0].getObjArray();
         Set<CardBrowser.CardCache> checkedCards = (Set<CardBrowser.CardCache>) objects[0];
 
