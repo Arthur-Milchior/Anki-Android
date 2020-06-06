@@ -1623,7 +1623,6 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
         Collection col = CollectionHelper.getInstance().getCol(mContext);
         Object[] objects = params[0].getObjArray();
         Set<CardBrowser.CardCache> checkedCards = (Set<CardBrowser.CardCache>) objects[0];
-        List<CardBrowser.CardCache> cards = (List<CardBrowser.CardCache>) objects[1];
 
         boolean hasUnsuspended = false;
         boolean hasUnmarked = false;

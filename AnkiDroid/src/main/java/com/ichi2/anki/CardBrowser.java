@@ -868,7 +868,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
         if (!mCheckedCard.isEmpty()) {
             CollectionTask.launchCollectionTask(CollectionTask.TASK_TYPE_CHECK_CARD_SELECTION,
                     mCheckSelectedCardsHandler,
-                    new CollectionTask.TaskData(new Object[]{mCheckedCard, getCards()}));
+                    new CollectionTask.TaskData(new Object[]{mCheckedCard}));
         }
 
         mActionBarMenu.findItem(R.id.action_select_all).setVisible(!hasSelectedAllCards());
