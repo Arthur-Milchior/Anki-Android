@@ -1622,13 +1622,13 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
     public TaskData doInBackgroundCheckCardSelection(TaskData... params) {
         Collection col = CollectionHelper.getInstance().getCol(mContext);
         Object[] objects = params[0].getObjArray();
-        Set<Integer> checkedCardPositions = (Set<Integer>) objects[0];
+        Set<CardBrowser.CardCache> checkedCards = (Set<CardBrowser.CardCache>) objects[0];
         List<CardBrowser.CardCache> cards = (List<CardBrowser.CardCache>) objects[1];
 
         boolean hasUnsuspended = false;
         boolean hasUnmarked = false;
-        for (int cardPosition : checkedCardPositions) {
-            Card card = cards.get(cardPosition).getCard();
+        for (CardBrowser.CardCache c: checkedCards) {
+            Card card = c.getCard();
             hasUnsuspended = hasUnsuspended || card.getQueue() != Consts.QUEUE_TYPE_SUSPENDED;
             hasUnmarked = hasUnmarked || !card.note().hasTag("marked");
             if (hasUnsuspended && hasUnmarked)

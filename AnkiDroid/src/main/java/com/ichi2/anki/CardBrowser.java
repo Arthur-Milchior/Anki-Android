@@ -202,7 +202,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
     private TextView mActionBarTitle;
     private boolean mReloadRequired = false;
     private boolean mInMultiSelectMode = false;
-    private Set<Integer> mCheckedCardPositions = Collections.synchronizedSet(new LinkedHashSet<>());
+    private Set<CardCache> mCheckedCard = Collections.synchronizedSet(new LinkedHashSet<>());
     private int mLastSelectedPosition;
     @Nullable
     private Menu mActionBarMenu;
@@ -375,11 +375,11 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
     private long[] getSelectedCardIds() {
         //copy to array to ensure threadsafe iteration
-        Integer[] checkedPositions = mCheckedCardPositions.toArray(new Integer[0]);
-        long[] ids = new long[checkedPositions.length];
+        CardCache[] checkedCards = mCheckedCard.toArray(new CardCache[0]);
+        long[] ids = new long[checkedCards.length];
         int count = 0;
-        for (int cardPosition : checkedPositions) {
-            ids[count++] = mCards.get(cardPosition).getId();
+        for (CardCache cardPosition : checkedCards) {
+            ids[count++] = cardPosition.getId();
         }
         return ids;
     }
@@ -865,10 +865,10 @@ public class CardBrowser extends NavigationDrawerActivity implements
             return;
         }
 
-        if (!mCheckedCardPositions.isEmpty()) {
+        if (!mCheckedCard.isEmpty()) {
             CollectionTask.launchCollectionTask(CollectionTask.TASK_TYPE_CHECK_CARD_SELECTION,
                     mCheckSelectedCardsHandler,
-                    new CollectionTask.TaskData(new Object[]{mCheckedCardPositions, getCards()}));
+                    new CollectionTask.TaskData(new Object[]{mCheckedCard, getCards()}));
         }
 
         mActionBarMenu.findItem(R.id.action_select_all).setVisible(!hasSelectedAllCards());
@@ -879,11 +879,11 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
 
     private boolean hasSelectedCards() {
-        return mCheckedCardPositions.size() > 0;
+        return mCheckedCard.size() > 0;
     }
 
     private boolean hasSelectedAllCards() {
-        return mCheckedCardPositions.size() >= getCardCount(); //must handle 0.
+        return mCheckedCard.size() >= getCardCount(); //must handle 0.
     }
 
 
@@ -986,7 +986,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
                             mDeleteNoteHandler,
                             new CollectionTask.TaskData(new Object[]{getSelectedCardIds(), Collection.DismissType.DELETE_NOTE_MULTI}));
 
-                    mCheckedCardPositions.clear();
+                    mCheckedCard.clear();
                     endMultiSelectMode();
                     mCardsAdapter.notifyDataSetChanged();
                 }
@@ -1053,13 +1053,13 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
             case R.id.action_preview: {
                 Intent previewer = new Intent(CardBrowser.this, Previewer.class);
-                if (mInMultiSelectMode && mCheckedCardPositions.size() > 1) {
+                if (mInMultiSelectMode && mCheckedCard.size() > 1) {
                     // Multiple cards have been explicitly selected, so preview only those cards
                     previewer.putExtra("index", 0);
                     previewer.putExtra("cardList", getSelectedCardIds());
                 } else {
                     // Preview all cards, starting from the one that is currently selected
-                    int startIndex = mCheckedCardPositions.isEmpty() ? 0: mCheckedCardPositions.iterator().next();
+                    int startIndex = mCheckedCard.isEmpty() ? 0: mCheckedCard.iterator().next().getPosition();
                     previewer.putExtra("index", startIndex);
                     previewer.putExtra("cardList", getAllCardIds());
                 }
@@ -1573,7 +1573,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
         @Override
         protected void actualPostExecute(CollectionTask.TaskData result) {
             hideProgressBar();
-            mActionBarTitle.setText(Integer.toString(mCheckedCardPositions.size()));
+            mActionBarTitle.setText(Integer.toString(mCheckedCard.size()));
             invalidateOptionsMenu();    // maybe the availability of undo changed
             // snackbar to offer undo
             mUndoSnackbar = UIUtils.showSnackbar(CardBrowser.this, getString(R.string.deleted_message), SNACKBAR_DURATION, R.string.undo, new View.OnClickListener() {
@@ -1873,7 +1873,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             // if in multi-select mode, be sure to show the checkboxes
             if(mInMultiSelectMode) {
                 checkBox.setVisibility(View.VISIBLE);
-                if (mCheckedCardPositions.contains(position)) {
+                if (mCheckedCard.contains(card)) {
                     checkBox.setChecked(true);
                 } else {
                     checkBox.setChecked(false);
@@ -1944,35 +1944,34 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
     private void onCheck(int position, View cell) {
         CheckBox checkBox = (CheckBox) cell.findViewById(R.id.card_checkbox);
+        CardCache card = getCards().get(position);
 
         if (checkBox.isChecked()) {
-            mCheckedCardPositions.add(position);
+            mCheckedCard.add(card);
         } else {
-            mCheckedCardPositions.remove(position);
+            mCheckedCard.remove(card);
         }
 
        onSelectionChanged();
     }
 
     private void onSelectAll() {
-        for (int i = 0; i < mCards.size(); i++) {
-            mCheckedCardPositions.add(i);
-        }
+        mCheckedCard.addAll(mCards);
         onSelectionChanged();
     }
 
     private void onSelectNone() {
-        mCheckedCardPositions.clear();
+        mCheckedCard.clear();
         onSelectionChanged();
     }
 
     private void onSelectionChanged() {
         Timber.d("onSelectionChanged()");
         try {
-            if (!mInMultiSelectMode && !mCheckedCardPositions.isEmpty()) {
+            if (!mInMultiSelectMode && !mCheckedCard.isEmpty()) {
                 //If we have selected cards, load multiselect
                 loadMultiSelectMode();
-            } else if (mInMultiSelectMode && mCheckedCardPositions.isEmpty()) {
+            } else if (mInMultiSelectMode && mCheckedCard.isEmpty()) {
                 //If we don't have cards, unload multiselect
                 endMultiSelectMode();
             }
@@ -1988,7 +1987,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             }
 
             updateMultiselectMenu();
-            mActionBarTitle.setText(Integer.toString(mCheckedCardPositions.size()));
+            mActionBarTitle.setText(Integer.toString(mCheckedCard.size()));
         } finally {
             mCardsAdapter.notifyDataSetChanged();
         }
@@ -2250,7 +2249,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
         mInMultiSelectMode = true;
         // show title and hide spinner
         mActionBarTitle.setVisibility(View.VISIBLE);
-        mActionBarTitle.setText(String.valueOf(mCheckedCardPositions.size()));
+        mActionBarTitle.setText(String.valueOf(mCheckedCard.size()));
         mActionBarSpinner.setVisibility(View.GONE);
         // reload the actionbar using the multi-select mode actionbar
         supportInvalidateOptionsMenu();
@@ -2261,7 +2260,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
      */
     private void endMultiSelectMode() {
         Timber.d("endMultiSelectMode()");
-        mCheckedCardPositions.clear();
+        mCheckedCard.clear();
         mInMultiSelectMode = false;
         // If view which was originally selected when entering multi-select is visible then maintain its position
         View view = mCardsListView.getChildAt(mLastSelectedPosition - mCardsListView.getFirstVisiblePosition());
@@ -2278,7 +2277,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
     @VisibleForTesting
     public int checkedCardCount() {
-        return mCheckedCardPositions.size();
+        return mCheckedCard.size();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
@@ -2333,14 +2332,14 @@ public class CardBrowser extends NavigationDrawerActivity implements
                         String.format(Locale.US, "Attempted to check card at index %d. %d cards available",
                                 position, mCards.size()));
             }
-            mCheckedCardPositions.add(position);
+            mCheckedCard.add(getCards().get(position));
         }
         onSelectionChanged();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     boolean hasCheckedCardAtPosition(int i) {
-        return mCheckedCardPositions.contains(i);
+        return mCheckedCard.contains(getCards().get(i));
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
@@ -2359,8 +2358,8 @@ public class CardBrowser extends NavigationDrawerActivity implements
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public List<Long> getCheckedCardIds() {
         List<Long> cardIds = new ArrayList<>();
-        for (Integer pos : mCheckedCardPositions) {
-            long id = mCards.get(pos).getId();
+        for (CardCache card : mCheckedCard) {
+            long id = card.getId();
             cardIds.add(Objects.requireNonNull(id));
         }
         return cardIds;
