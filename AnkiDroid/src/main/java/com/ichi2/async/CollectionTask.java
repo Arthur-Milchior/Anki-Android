@@ -1911,11 +1911,6 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
         }
 
 
-        public void setCards(List<Map<String, String>> cards) {
-            mCards = cards;
-        }
-
-
         public Card getCard() {
             return mCard;
         }
