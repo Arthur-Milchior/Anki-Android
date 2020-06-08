@@ -925,8 +925,7 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
         for (int i = 0; i < Math.min(numCardsToRender, searchResult.size()); i++) {
             CardBrowser.CardCache card = searchResult.get(i);
             card.load(false);
-            Card c = card.getCard();
-            CardBrowser.updateSearchItemQA(searchResult.get(i), c);
+            CardBrowser.updateSearchItemQA(searchResult.get(i));
         }
         // Finish off the task
         if (isCancelled()) {
@@ -973,20 +972,20 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
                 continue;
             }
             // Extract card item
-            Card c;
+            long cardId = card.getId();
             try {
-                c = card.getCard();
+                // Ensure that card still exists.
+                card.getCard();
             } catch (WrongId e) {
                 //#5891 - card can be inconsistent between the deck browser screen and the collection.
                 //Realistically, we can skip any exception as it's a rendering task which should not kill the
                 //process
-                long cardId = card.getId();
                 Timber.e(e, "Could not process card '%d' - skipping and removing from sight", cardId);
                 invalidCardIds.add(cardId);
                 continue;
             }
             // Update item
-            CardBrowser.updateSearchItemQA(card, c);
+            CardBrowser.updateSearchItemQA(card);
             card.load(false);
             float progress = (float) i / n * 100;
             publishProgress(new TaskData((int) progress));
