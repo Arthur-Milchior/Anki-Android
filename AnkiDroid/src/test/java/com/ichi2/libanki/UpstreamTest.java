@@ -861,14 +861,14 @@ public class UpstreamTest extends RobolectricTest {
          note2["Front"] = "baz";
          note2["Back"] = "bar";
          col.addNote(note2);
-         f3 = col.newNote();
-         f3["Front"] = "quux";
-         f3["Back"] = "bar";
-         col.addNote(f3);
-         f4 = col.newNote();
-         f4["Front"] = "quuux";
-         f4["Back"] = "nope";
-         col.addNote(f4);
+         note3 = col.newNote();
+         note3["Front"] = "quux";
+         note3["Back"] = "bar";
+         col.addNote(note3);
+         note4 = col.newNote();
+         note4["Front"] = "quuux";
+         note4["Back"] = "nope";
+         col.addNote(note4);
          r = col.findDupes("Back");
          assertTrue(r[0][0] == "bar");
          assertTrue(len(r[0][1]) == 3);
@@ -898,24 +898,24 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_anki2_mediadupes(){
-         tmp = getEmptyCol();
+         col = getEmptyCol();
          // add a note that references a sound
-         n = tmp.newNote();
+         Note n = tmp.newNote();
          n["Front"] = "[sound:foo.mp3]";
          mid = n.model()["id"];
-         tmp.addNote(n);
+         col.addNote(n);
          // add that sound to media folder
-         with open(os.path.join(tmp.media.dir(), "foo.mp3"), "w") as note:
+         with open(os.path.join(col.media.dir(), "foo.mp3"), "w") as note:
              note.write("foo");
-         tmp.close();
+         col.close();
          // it should be imported correctly into an empty deck
          empty = getEmptyCol();
-         imp = Anki2Importer(empty, tmp.path);
+         imp = Anki2Importer(empty, col.path);
          imp.run();
          assertTrue(os.listdir(empty.media.dir()) == ["foo.mp3"]);
          // and importing again will not duplicate, as the file content matches
          empty.remove_cards_and_orphaned_notes(empty.db.list("select id from cards"));
-         imp = Anki2Importer(empty, tmp.path);
+         imp = Anki2Importer(empty, col.path);
          imp.run();
          assertTrue(os.listdir(empty.media.dir()) == ["foo.mp3"]);
          n = empty.getNote(empty.db.scalar("select id from notes"));
@@ -925,7 +925,7 @@ public class UpstreamTest extends RobolectricTest {
          empty.remove_cards_and_orphaned_notes(empty.db.list("select id from cards"));
          with open(os.path.join(empty.media.dir(), "foo.mp3"), "w") as note:
              note.write("bar");
-         imp = Anki2Importer(empty, tmp.path);
+         imp = Anki2Importer(empty, col.path);
          imp.run();
          assertTrue(sorted(os.listdir(empty.media.dir())) == ["foo.mp3", "foo_%s.mp3" % mid]);
          n = empty.getNote(empty.db.scalar("select id from notes"));
@@ -935,7 +935,7 @@ public class UpstreamTest extends RobolectricTest {
          empty.remove_cards_and_orphaned_notes(empty.db.list("select id from cards"));
          with open(os.path.join(empty.media.dir(), "foo.mp3"), "w") as note:
              note.write("bar");
-         imp = Anki2Importer(empty, tmp.path);
+         imp = Anki2Importer(empty, col.path);
          imp.run();
          assertTrue(sorted(os.listdir(empty.media.dir())) == ["foo.mp3", "foo_%s.mp3" % mid]);
          assertTrue(sorted(os.listdir(empty.media.dir())) == ["foo.mp3", "foo_%s.mp3" % mid]);
@@ -945,24 +945,24 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_apkg(){
-         tmp = getEmptyCol();
+         col = getEmptyCol();
          apkg = str(os.path.join(testDir, "support/media.apkg"));
-         imp = AnkiPackageImporter(tmp, apkg);
-         assertTrue(os.listdir(tmp.media.dir()) == []);
+         imp = AnkiPackageImporter(col, apkg);
+         assertTrue(os.listdir(col.media.dir()) == []);
          imp.run();
-         assertTrue(os.listdir(tmp.media.dir()) == ["foo.wav"]);
+         assertTrue(os.listdir(col.media.dir()) == ["foo.wav"]);
          // importing again should be idempotent in terms of media
-         tmp.remove_cards_and_orphaned_notes(tmp.db.list("select id from cards"));
-         imp = AnkiPackageImporter(tmp, apkg);
+         col.remove_cards_and_orphaned_notes(col.db.list("select id from cards"));
+         imp = AnkiPackageImporter(col, apkg);
          imp.run();
-         assertTrue(os.listdir(tmp.media.dir()) == ["foo.wav"]);
+         assertTrue(os.listdir(col.media.dir()) == ["foo.wav"]);
          // but if the local file has different data, it will rename
-         tmp.remove_cards_and_orphaned_notes(tmp.db.list("select id from cards"));
-         with open(os.path.join(tmp.media.dir(), "foo.wav"), "w") as note:
+         col.remove_cards_and_orphaned_notes(col.db.list("select id from cards"));
+         with open(os.path.join(col.media.dir(), "foo.wav"), "w") as note:
              note.write("xyz");
-         imp = AnkiPackageImporter(tmp, apkg);
+         imp = AnkiPackageImporter(col, apkg);
          imp.run();
-         assertTrue(len(os.listdir(tmp.media.dir())) == 2);
+         assertTrue(len(os.listdir(col.media.dir())) == 2);
      }
 
      @Test
@@ -971,13 +971,13 @@ public class UpstreamTest extends RobolectricTest {
          // changed, not the number of cards/fields
          dst = getEmptyCol();
          // import the first version of the model
-         tmp = getUpgradeDeckPath("diffmodeltemplates-1.apkg");
-         imp = AnkiPackageImporter(dst, tmp);
+         col = getUpgradeDeckPath("diffmodeltemplates-1.apkg");
+         imp = AnkiPackageImporter(dst, col);
          imp.dupeOnSchemaChange = True;
          imp.run();
          // then the version with updated template
-         tmp = getUpgradeDeckPath("diffmodeltemplates-2.apkg");
-         imp = AnkiPackageImporter(dst, tmp);
+         col = getUpgradeDeckPath("diffmodeltemplates-2.apkg");
+         imp = AnkiPackageImporter(dst, col);
          imp.dupeOnSchemaChange = True;
          imp.run();
          // collection should contain the note we imported
@@ -992,14 +992,14 @@ public class UpstreamTest extends RobolectricTest {
      public void test_anki2_updates(){
          // create a new empty deck
          dst = getEmptyCol();
-         tmp = getUpgradeDeckPath("update1.apkg");
-         imp = AnkiPackageImporter(dst, tmp);
+         col = getUpgradeDeckPath("update1.apkg");
+         imp = AnkiPackageImporter(dst, col);
          imp.run();
          assertTrue(imp.dupes == 0);
          assertTrue(imp.added == 1);
          assertTrue(imp.updated == 0);
          // importing again should be idempotent
-         imp = AnkiPackageImporter(dst, tmp);
+         imp = AnkiPackageImporter(dst, col);
          imp.run();
          assertTrue(imp.dupes == 1);
          assertTrue(imp.added == 0);
@@ -1007,8 +1007,8 @@ public class UpstreamTest extends RobolectricTest {
          // importing a newer note should update
          assertTrue(dst.noteCount() == 1);
          assertTrue(dst.db.scalar("select flds from notes").startswith("hello"));
-         tmp = getUpgradeDeckPath("update2.apkg");
-         imp = AnkiPackageImporter(dst, tmp);
+         col = getUpgradeDeckPath("update2.apkg");
+         imp = AnkiPackageImporter(dst, col);
          imp.run();
          assertTrue(imp.dupes == 0);
          assertTrue(imp.added == 0);
@@ -2827,12 +2827,12 @@ public class UpstreamTest extends RobolectricTest {
          col.sched.orderCards(1);
          assertTrue(note.cards()[0].due == 1);
          // shifting
-         f3 = col.newNote();
-         f3["Front"] = "three";
-         col.addNote(f3);
-         f4 = col.newNote();
-         f4["Front"] = "four";
-         col.addNote(f4);
+         note3 = col.newNote();
+         note3["NOTEront"] = "three";
+         col.addNote(note3);
+         note4 = col.newNote();
+         note4["Front"] = "four";
+         col.addNote(note4);
          assertTrue(note.cards()[0].due == 1);
          assertTrue(note2.cards()[0].due == 2);
          assertTrue(f3.cards()[0].due == 3);
@@ -4055,12 +4055,12 @@ public class UpstreamTest extends RobolectricTest {
          col.sched.orderCards(1);
          assertTrue(note.cards()[0].due == 1);
          // shifting
-         f3 = col.newNote();
-         f3["Front"] = "three";
-         col.addNote(f3);
-         f4 = col.newNote();
-         f4["Front"] = "four";
-         col.addNote(f4);
+         note3 = col.newNote();
+         note3["Front"] = "three";
+         col.addNote(note3);
+         note4 = col.newNote();
+         note4["Front"] = "four";
+         col.addNote(note4);
          assertTrue(note.cards()[0].due == 1);
          assertTrue(note2.cards()[0].due == 2);
          assertTrue(f3.cards()[0].due == 3);
