@@ -18,7 +18,9 @@ public class UpstreamTest extends RobolectricTest {
     /*****************
      ** Cards        *
      *****************/
-    def test_delete():
+
+    @Test
+    public void test_delete(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "1"
@@ -33,9 +35,10 @@ public class UpstreamTest extends RobolectricTest {
         assert col.db.scalar("select count() from notes") == 0
         assert col.db.scalar("select count() from cards") == 0
         assert col.db.scalar("select count() from graves") == 2
+    }
 
-
-    def test_misc():
+    @Test
+    public void test_misc(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "1"
@@ -44,9 +47,10 @@ public class UpstreamTest extends RobolectricTest {
         c = note.cards()[0]
         id = col.models.current()["id"]
         assert c.template()["ord"] == 0
+    }
 
-
-    def test_genrem():
+    @Test
+    public void test_genrem(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "1"
@@ -76,9 +80,10 @@ public class UpstreamTest extends RobolectricTest {
         note["Back"] = "1"
         note.flush()
         assert len(note.cards()) == 2
+    }
 
-
-    def test_gendeck():
+    @Test
+    public void test_gendeck(){
         col = getEmptyCol()
         cloze = col.models.byName("Cloze")
         col.models.setCurrent(cloze)
@@ -107,10 +112,13 @@ public class UpstreamTest extends RobolectricTest {
         note["Text"] += "{{c4::four}}"
         note.flush()
         assert note.cards()[3].did == newId
+    }
     /*****************
      ** Collection   *
      *****************/
-    def test_create_open():
+
+    @Test
+    public void test_create_open(){
         (fd, path) = tempfile.mkstemp(suffix=".anki2", prefix="test_attachNew")
         try:
             os.close(fd)
@@ -140,9 +148,10 @@ public class UpstreamTest extends RobolectricTest {
         assertException(Exception, lambda: aopen(newPath))
         os.chmod(newPath, 0o666)
         os.unlink(newPath)
+    }
 
-
-    def test_noteAddDelete():
+    @Test
+    public void test_noteAddDelete(){
         col = getEmptyCol()
         // add a note
         note = col.newNote()
@@ -179,9 +188,10 @@ public class UpstreamTest extends RobolectricTest {
         // empty first field should not be permitted either
         note2["Front"] = " "
         assert note2.dupeOrEmpty()
+    }
 
-
-    def test_fieldChecksum():
+    @Test
+    public void test_fieldChecksum(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "new"
@@ -192,9 +202,10 @@ public class UpstreamTest extends RobolectricTest {
         note["Front"] = "newx"
         note.flush()
         assert col.db.scalar("select csum from notes") == int("302811ae", 16)
+    }
 
-
-    def test_addDelTags():
+    @Test
+    public void test_addDelTags(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "1"
@@ -213,17 +224,19 @@ public class UpstreamTest extends RobolectricTest {
         note.load()
         assert note.tags[0] == "aaa"
         assert len(note.tags) == 2
+    }
 
-
-    def test_timestamps():
+    @Test
+    public void test_timestamps(){
         col = getEmptyCol()
         assert len(col.models.all_names_and_ids()) == len(get_stock_notetypes(col))
         for i in range(100):
             addBasicModel(col)
         assert len(col.models.all_names_and_ids()) == 100 + len(get_stock_notetypes(col))
+    }
 
-
-    def test_furigana():
+    @Test
+    public void test_furigana(){
         col = getEmptyCol()
         mm = col.models
         m = mm.current()
@@ -243,9 +256,10 @@ public class UpstreamTest extends RobolectricTest {
         m["tmpls"][0]["qfmt"] = "{{kana:}}"
         mm.save(m)
         c.q(reload=True)
+    }
 
-
-    def test_translate():
+    @Test
+    public void test_translate(){
         col = getEmptyCol()
         no_uni = without_unicode_isolation
 
@@ -255,9 +269,10 @@ public class UpstreamTest extends RobolectricTest {
     )
         assert no_uni(col.tr(TR.STATISTICS_REVIEWS, reviews=1)) == "1 review"
         assert no_uni(col.tr(TR.STATISTICS_REVIEWS, reviews=2)) == "2 reviews"
+    }
 
-
-    def test_db_named_args(capsys):
+    @Test
+    public void test_db_named_args(capsys):
         sql = "select a, 2+:test5 from b where arg =:foo and x = :test5"
         args = []
         kwargs = dict(test5=5, foo="blah")
@@ -268,10 +283,13 @@ public class UpstreamTest extends RobolectricTest {
 
         // swallow the warning
         _ = capsys.readouterr()
+    }
     /*****************
      ** Decks        *
      *****************/
-    def test_basic():
+
+    @Test
+    public void test_basic(){
         col = getEmptyCol()
         // we start with a standard col
         assert len(col.decks.all_names_and_ids()) == 1
@@ -308,9 +326,10 @@ public class UpstreamTest extends RobolectricTest {
         n = col.newNote()
         n["Front"] = "abc"
         col.addNote(n)
+    }
 
-
-    def test_remove():
+    @Test
+    public void test_remove(){
         col = getEmptyCol()
         // create a new col, and add a note/card to it
         deck1 = col.decks.id("deck1")
@@ -325,9 +344,10 @@ public class UpstreamTest extends RobolectricTest {
         assert col.cardCount() == 0
         // if we try to get it, we get the default
         assert col.decks.name(c.did) == "[no deck]"
+    }
 
-
-    def test_rename():
+    @Test
+    public void test_rename(){
         col = getEmptyCol()
         id = col.decks.id("hello::world")
         // should be able to rename into a completely different branch, creating
@@ -357,9 +377,10 @@ public class UpstreamTest extends RobolectricTest {
         child = col.decks.get(childId)
         assertException(DeckRenameError, lambda: col.decks.rename(child, "filtered::child"))
         assertException(DeckRenameError, lambda: col.decks.rename(child, "FILTERED::child"))
+    }
 
-
-    def test_renameForDragAndDrop():
+    @Test
+    public void test_renameForDragAndDrop(){
         col = getEmptyCol()
 
         def deckNames():
@@ -410,10 +431,12 @@ public class UpstreamTest extends RobolectricTest {
         // '' is a convenient alias for the top level DID
         col.decks.renameForDragAndDrop(hsk_did, "")
         assert deckNames() == ["Chinese", "HSK", "Languages"]
+     }
+
     /*****************
      ** Exporting    *
      *****************/
-    def setup1():
+    private void setup1(){
         global col
         col = getEmptyCol()
         note = col.newNote()
@@ -427,12 +450,14 @@ public class UpstreamTest extends RobolectricTest {
         note["Back"] = "qux"
         note.model()["did"] = col.decks.id("new col")
         col.addNote(note)
-
+    }
 
             /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 
-    def test_export_anki():
+
+    @Test
+    public void test_export_anki(){
         setup1()
         // create a new col with its own conf to test conf copying
         did = col.decks.id("test")
@@ -472,9 +497,10 @@ public class UpstreamTest extends RobolectricTest {
         e.exportInto(newname)
         d2 = aopen(newname)
         assert d2.cardCount() == 1
+    }
 
-
-    def test_export_ankipkg():
+    @Test
+    public void test_export_ankipkg(){
         setup1()
         // add a test file to the media folder
         with open(os.path.join(col.media.dir(), "今日.mp3"), "w") as note:
@@ -488,10 +514,12 @@ public class UpstreamTest extends RobolectricTest {
         os.close(fd)
         os.unlink(newname)
         e.exportInto(newname)
+    }
 
 
     @errorsAfterMidnight
-    def test_export_anki_due():
+    @Test
+    public void test_export_anki_due(){
         setup1()
         col = getEmptyCol()
         note = col.newNote()
@@ -523,9 +551,10 @@ public class UpstreamTest extends RobolectricTest {
         c = deck2.getCard(c.id)
         deck2.sched.reset()
         assert c.due - deck2.sched.today == 1
+    }
 
-
-    // def test_export_textcard():
+    @Test
+    public void test_export_textcard(){
     //     setup1()
     //     e = TextCardExporter(col)
     //     note = unicode(tempfile.mkstemp(prefix="ankitest")[1])
@@ -535,7 +564,10 @@ public class UpstreamTest extends RobolectricTest {
     //     e.exportInto(note)
 
 
-    def test_export_textnote():
+    }
+
+    @Test
+    public void test_export_textnote(){
         setup1()
         e = TextNoteExporter(col)
         fd, note = tempfile.mkstemp(prefix="ankitest")
@@ -550,9 +582,10 @@ public class UpstreamTest extends RobolectricTest {
         e.exportInto(note)
         with open(note) as file:
             assert file.readline() == "foo\tbar\n"
+    }
 
-
-    def test_exporters():
+    @Test
+    public void test_exporters(){
         assert "*.apkg" in str(exporters())
     /*****************
      ** Find         *
@@ -560,9 +593,10 @@ public class UpstreamTest extends RobolectricTest {
     class DummyCollection:
         def weakref(self):
             return None
+    }
 
-
-    def test_findCards():
+    @Test
+    public void test_findCards(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "dog"
@@ -778,9 +812,10 @@ public class UpstreamTest extends RobolectricTest {
         // flag
         with pytest.raises(Exception):
             col.findCards("flag:12")
+    }
 
-
-    def test_findReplace():
+    @Test
+    public void test_findReplace(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "foo"
@@ -812,9 +847,10 @@ public class UpstreamTest extends RobolectricTest {
         assert col.findReplace(nids, "B.r", "reg", regex=True) == 1
         note.load()
         assert note["Back"] == "reg"
+    }
 
-
-    def test_findDupes():
+    @Test
+    public void test_findDupes(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "foo"
@@ -844,19 +880,23 @@ public class UpstreamTest extends RobolectricTest {
         assert not r
         // front isn't dupe
         assert col.findDupes("Front") == []
-    /*****************
+    }
+
+     /*****************
      ** Importing    *
      *****************/
-    def clear_tempfile(tf):
+     private void clear_tempfile(tf) {
+            
         """ https://stackoverflow.com/questions/23212435/permission-denied-to-write-to-my-temporary-file """
         try:
             tf.close()
             os.unlink(tf.name)
         except:
             pass
+    }
 
-
-    def test_anki2_mediadupes():
+    @Test
+    public void test_anki2_mediadupes(){
         tmp = getEmptyCol()
         // add a note that references a sound
         n = tmp.newNote()
@@ -900,9 +940,10 @@ public class UpstreamTest extends RobolectricTest {
         assert sorted(os.listdir(empty.media.dir())) == ["foo.mp3", "foo_%s.mp3" % mid]
         n = empty.getNote(empty.db.scalar("select id from notes"))
         assert "_" in n.fields[0]
+    }
 
-
-    def test_apkg():
+    @Test
+    public void test_apkg(){
         tmp = getEmptyCol()
         apkg = str(os.path.join(testDir, "support/media.apkg"))
         imp = AnkiPackageImporter(tmp, apkg)
@@ -921,9 +962,10 @@ public class UpstreamTest extends RobolectricTest {
         imp = AnkiPackageImporter(tmp, apkg)
         imp.run()
         assert len(os.listdir(tmp.media.dir())) == 2
+    }
 
-
-    def test_anki2_diffmodel_templates():
+    @Test
+    public void test_anki2_diffmodel_templates(){
         // different from the above as this one tests only the template text being
         // changed, not the number of cards/fields
         dst = getEmptyCol()
@@ -943,9 +985,10 @@ public class UpstreamTest extends RobolectricTest {
         tcid = dst.findCards("")[0]  // only 1 note in collection
         tnote = dst.getCard(tcid).note()
         assert "Changed Front Template" in tnote.cards()[0].template()["qfmt"]
+    }
 
-
-    def test_anki2_updates():
+    @Test
+    public void test_anki2_updates(){
         // create a new empty deck
         dst = getEmptyCol()
         tmp = getUpgradeDeckPath("update1.apkg")
@@ -971,9 +1014,10 @@ public class UpstreamTest extends RobolectricTest {
         assert imp.updated == 1
         assert dst.noteCount() == 1
         assert dst.db.scalar("select flds from notes").startswith("goodbye")
+    }
 
-
-    def test_csv():
+    @Test
+    public void test_csv(){
         col = getEmptyCol()
         file = str(os.path.join(testDir, "support/text-2fields.txt"))
         i = TextImporter(col, file)
@@ -1006,9 +1050,10 @@ public class UpstreamTest extends RobolectricTest {
         assert i.total == 6
         assert col.cardCount() == 11
         col.close()
+    }
 
-
-    def test_csv2():
+    @Test
+    public void test_csv2(){
         col = getEmptyCol()
         mm = col.models
         m = mm.current()
@@ -1030,9 +1075,10 @@ public class UpstreamTest extends RobolectricTest {
         assert n["Back"] == "x"
         assert n["Three"] == "3"
         col.close()
+    }
 
-
-    def test_tsv_tag_modified():
+    @Test
+    public void test_tsv_tag_modified(){
         col = getEmptyCol()
         mm = col.models
         m = mm.current()
@@ -1066,9 +1112,10 @@ public class UpstreamTest extends RobolectricTest {
         assert i.updateCount == 1
 
         col.close()
+    }
 
-
-    def test_tsv_tag_multiple_tags():
+    @Test
+    public void test_tsv_tag_multiple_tags(){
         col = getEmptyCol()
         mm = col.models
         m = mm.current()
@@ -1100,9 +1147,10 @@ public class UpstreamTest extends RobolectricTest {
         assert list(sorted(n.tags)) == list(sorted(["four", "five", "six"]))
 
         col.close()
+    }
 
-
-    def test_csv_tag_only_if_modified():
+    @Test
+    public void test_csv_tag_only_if_modified(){
         col = getEmptyCol()
         mm = col.models
         m = mm.current()
@@ -1130,10 +1178,11 @@ public class UpstreamTest extends RobolectricTest {
         assert i.updateCount == 0
 
         col.close()
-
+    }
 
     @pytest.mark.filterwarnings("ignore:Using or importing the ABCs")
-    def test_supermemo_xml_01_unicode():
+    @Test
+    public void test_supermemo_xml_01_unicode(){
         col = getEmptyCol()
         file = str(os.path.join(testDir, "support/supermemo1.xml"))
         i = SupermemoXmlImporter(col, file)
@@ -1146,9 +1195,10 @@ public class UpstreamTest extends RobolectricTest {
         assert c.factor == 2879
         assert c.reps == 7
         col.close()
+    }
 
-
-    def test_mnemo():
+    @Test
+    public void test_mnemo(){
         col = getEmptyCol()
         file = str(os.path.join(testDir, "support/mnemo.db"))
         i = MnemosyneImporter(col, file)
@@ -1157,11 +1207,14 @@ public class UpstreamTest extends RobolectricTest {
         assert "a_longer_tag" in col.tags.all()
         assert col.db.scalar("select count() from cards where type = 0") == 1
         col.close()
+    }
 
     /*****************
      ** Flags        *
      *****************/
-    def test_flags():
+
+    @Test
+    public void test_flags(){
         col = getEmptyCol()
         n = col.newNote()
         n["Front"] = "one"
@@ -1200,11 +1253,14 @@ public class UpstreamTest extends RobolectricTest {
         assert c.userFlag() == 3
         c.setUserFlag(0)
         assert c.userFlag() == 0
+    }
     /*****************
      ** Media        *
      *****************/
     // copying files to media folder
-    def test_add():
+
+    @Test
+    public void test_add(){
         col = getEmptyCol()
         dir = tempfile.mkdtemp(prefix="anki")
         path = os.path.join(dir, "foo.jpg")
@@ -1218,9 +1274,10 @@ public class UpstreamTest extends RobolectricTest {
         with open(path, "w") as note:
             note.write("world")
         assert col.media.addFile(path) == "foo-7c211433f02071597741e6ff5a8ea34789abbf43.jpg"
+    }
 
-
-    def test_strings():
+    @Test
+    public void test_strings(){
         col = getEmptyCol()
         mf = col.media.filesInStr
         mid = col.models.current()["id"]
@@ -1247,9 +1304,10 @@ public class UpstreamTest extends RobolectricTest {
         assert es("aoeu") == "aoeu"
         assert es("<img src='http://foo.com'>") == "<img src='http://foo.com'>"
         assert es('<img src="foo bar.jpg">') == '<img src="foo%20bar.jpg">'
+    }
 
-
-    def test_deckIntegration():
+    @Test
+    public void test_deckIntegration(){
         col = getEmptyCol()
         // create a media dir
         col.media.dir()
@@ -1273,10 +1331,13 @@ public class UpstreamTest extends RobolectricTest {
         ret = col.media.check()
         assert ret.missing == ["fake2.png"]
         assert ret.unused == ["foo.jpg"]
+    }
     /*****************
      ** Models       *
      *****************/
-    def test_modelDelete():
+
+    @Test
+    public void test_modelDelete(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "1"
@@ -1285,9 +1346,10 @@ public class UpstreamTest extends RobolectricTest {
         assert col.cardCount() == 1
         col.models.rem(col.models.current())
         assert col.cardCount() == 0
+    }
 
-
-    def test_modelCopy():
+    @Test
+    public void test_modelCopy(){
         col = getEmptyCol()
         m = col.models.current()
         m2 = col.models.copy(m)
@@ -1299,9 +1361,10 @@ public class UpstreamTest extends RobolectricTest {
         assert len(m["tmpls"]) == 1
         assert len(m2["tmpls"]) == 1
         assert col.models.scmhash(m) == col.models.scmhash(m2)
+    }
 
-
-    def test_fields():
+    @Test
+    public void test_fields(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "1"
@@ -1346,9 +1409,10 @@ public class UpstreamTest extends RobolectricTest {
         // move 0 -> 1
         col.models.moveField(m, m["flds"][0], 1)
         assert col.getNote(col.models.nids(m)[0]).fields == ["", "2", "1"]
+    }
 
-
-    def test_templates():
+    @Test
+    public void test_templates(){
         col = getEmptyCol()
         m = col.models.current()
         mm = col.models
@@ -1389,9 +1453,10 @@ public class UpstreamTest extends RobolectricTest {
         )
             == 0
     )
+    }
 
-
-    def test_cloze_ordinals():
+    @Test
+    public void test_cloze_ordinals(){
         col = getEmptyCol()
         col.models.setCurrent(col.models.byName("Cloze"))
         m = col.models.current()
@@ -1413,9 +1478,10 @@ public class UpstreamTest extends RobolectricTest {
         // first card should have first ord
         assert c.ord == 0
         assert c2.ord == 1
+    }
 
-
-    def test_text():
+    @Test
+    public void test_text(){
         col = getEmptyCol()
         m = col.models.current()
         m["tmpls"][0]["qfmt"] = "{{text:Front}}"
@@ -1424,9 +1490,10 @@ public class UpstreamTest extends RobolectricTest {
         note["Front"] = "hello<b>world"
         col.addNote(note)
         assert "helloworld" in note.cards()[0].q()
+    }
 
-
-    def test_cloze():
+    @Test
+    public void test_cloze(){
         col = getEmptyCol()
         col.models.setCurrent(col.models.byName("Cloze"))
         note = col.newNote()
@@ -1472,9 +1539,10 @@ public class UpstreamTest extends RobolectricTest {
         note["Text"] += "{{c0::zero}} {{c-1:foo}}"
         note.flush()
         assert len(note.cards()) == 2
+    }
 
-
-    def test_cloze_mathjax():
+    @Test
+    public void test_cloze_mathjax(){
         col = getEmptyCol()
         col.models.setCurrent(col.models.byName("Cloze"))
         note = col.newNote()
@@ -1498,9 +1566,10 @@ public class UpstreamTest extends RobolectricTest {
             .q()
             .endswith(r"\(a\) <span class=cloze>[...]</span> \[ [...] \]")
     )
+    }
 
-
-    def test_typecloze():
+    @Test
+    public void test_typecloze(){
         col = getEmptyCol()
         m = col.models.byName("Cloze")
         col.models.setCurrent(m)
@@ -1510,9 +1579,10 @@ public class UpstreamTest extends RobolectricTest {
         note["Text"] = "hello {{c1::world}}"
         col.addNote(note)
         assert "[[type:cloze:Text]]" in note.cards()[0].q()
+    }
 
-
-    def test_chained_mods():
+    @Test
+    public void test_chained_mods(){
         col = getEmptyCol()
         col.models.setCurrent(col.models.byName("Cloze"))
         m = col.models.current()
@@ -1546,9 +1616,10 @@ public class UpstreamTest extends RobolectricTest {
             "This <span class=cloze>phrase</span> demonstrates <span class=cloze>en chaine</span> clozes."
             in note.cards()[0].a()
     )
+    }
 
-
-    def test_modelChange():
+    @Test
+    public void test_modelChange(){
         col = getEmptyCol()
         cloze = col.models.byName("Cloze")
         // enable second template and add a note
@@ -1629,9 +1700,10 @@ public class UpstreamTest extends RobolectricTest {
         map = {0: 0}
         col.models.change(cloze, [note.id], basic, map, map)
         assert col.db.scalar("select count() from cards where nid = ?", note.id) == 1
+    }
 
-
-    def test_req():
+    @Test
+    public void test_req(){
         def reqSize(model):
             if model["type"] == MODEL_CLOZE:
                 return
@@ -1666,33 +1738,38 @@ public class UpstreamTest extends RobolectricTest {
         r = opt["req"][0]
         assert r[1] in ("any", "all")
         assert r[2] == [0, 1]
+    }
+
     /*****************
          ** SchedV1      *
      *****************/
-    def getEmptyCol():
+    private Collection getEmptyCol(){
         col = getEmptyColOrig()
         col.changeSchedulerVer(1)
         return col
+    }
 
-
-    def test_clock():
+    @Test
+    public void test_clock(){
         col = getEmptyCol()
         if (col.sched.dayCutoff - intTime()) < 10 * 60:
             raise Exception("Unit tests will fail around the day rollover.")
+    }
 
-
-    def checkRevIvl(col, c, targetIvl):
+    private boolean checkRevIvl(col, c, targetIvl) {
         min, max = col.sched._fuzzIvlRange(targetIvl)
         return min <= c.ivl <= max
+    }
 
-
-    def test_basics():
+    @Test
+    public void test_basics(){
         col = getEmptyCol()
         col.reset()
         assert not col.sched.getCard()
+    }
 
-
-    def test_new():
+    @Test
+    public void test_new(){
         col = getEmptyCol()
         col.reset()
         assert col.sched.newCount == 0
@@ -1736,9 +1813,10 @@ public class UpstreamTest extends RobolectricTest {
         //     c = col.sched.getCard()
         //     assert qs[n] in c.q()
         //     col.sched.answerCard(c, 2)
+    }
 
-
-    def test_newLimits():
+    @Test
+    public void test_newLimits(){
         col = getEmptyCol()
         // add some notes
         deck2 = col.decks.id("Default::foo")
@@ -1769,9 +1847,10 @@ public class UpstreamTest extends RobolectricTest {
         col.decks.save(conf2)
         col.reset()
         assert col.sched.newCount == 9
+    }
 
-
-    def test_newBoxes():
+    @Test
+    public void test_newBoxes(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -1786,9 +1865,10 @@ public class UpstreamTest extends RobolectricTest {
         conf["new"]["delays"] = [1]
         col.decks.save(conf)
         col.sched.answerCard(c, 2)
+    }
 
-
-    def test_learn():
+    @Test
+    public void test_learn(){
         col = getEmptyCol()
         // add a note
         note = col.newNote()
@@ -1864,9 +1944,10 @@ public class UpstreamTest extends RobolectricTest {
         c.load()
         assert c.queue == QUEUE_TYPE_REV
         assert c.due == 321
+    }
 
-
-    def test_learn_collapsed():
+    @Test
+    public void test_learn_collapsed(){
         col = getEmptyCol()
         // add 2 notes
         note = col.newNote()
@@ -1891,9 +1972,10 @@ public class UpstreamTest extends RobolectricTest {
         // we shouldn't get the same card again
         c = col.sched.getCard()
         assert not c.q().endswith("2")
+    }
 
-
-    def test_learn_day():
+    @Test
+    public void test_learn_day(){
         col = getEmptyCol()
         // add a note
         note = col.newNote()
@@ -1954,9 +2036,10 @@ public class UpstreamTest extends RobolectricTest {
         col.sched.answerCard(c, 1)
         assert c.queue == CARD_TYPE_RELEARNING
         assert col.sched.counts() == (0, 0, 0)
+    }
 
-
-    def test_reviews():
+    @Test
+    public void test_reviews(){
         col = getEmptyCol()
         // add a note
         note = col.newNote()
@@ -2035,9 +2118,10 @@ public class UpstreamTest extends RobolectricTest {
         assert c.due == col.sched.today + c.ivl
         // factor should have been increased
         assert c.factor == 2650
+    }
 
-
-    def test_button_spacing():
+    @Test
+    public void test_button_spacing(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -2057,9 +2141,10 @@ public class UpstreamTest extends RobolectricTest {
         assert wo(ni(c, 2)) == "2d"
         assert wo(ni(c, 3)) == "3d"
         assert wo(ni(c, 4)) == "4d"
+    }
 
-
-    def test_overdue_lapse():
+    @Test
+    public void test_overdue_lapse(){
         // disabled in commit 3069729776990980f34c25be66410e947e9d51a2
         return
         col = getEmptyCol()  // pylint: disable=unreachable
@@ -2093,9 +2178,10 @@ public class UpstreamTest extends RobolectricTest {
         // learning queue
         col.sched.reset()
         assert col.sched.counts() == (0, 0, 1)
+    }
 
-
-    def test_finished():
+    @Test
+    public void test_finished(){
         col = getEmptyCol()
         // nothing due
         assert "Congratulations" in col.sched.finishedMsg()
@@ -2114,9 +2200,10 @@ public class UpstreamTest extends RobolectricTest {
         // nothing should be due tomorrow, as it's due in a week
         assert "Congratulations" in col.sched.finishedMsg()
         assert "limit" not in col.sched.finishedMsg()
+    }
 
-
-    def test_nextIvl():
+    @Test
+    public void test_nextIvl(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -2174,9 +2261,10 @@ public class UpstreamTest extends RobolectricTest {
         // (* 100 2.5 1.3 86400)28080000.0
         assert ni(c, 4) == 28080000
         assert without_unicode_isolation(col.sched.nextIvlStr(c, 4)) == "10.8mo"
+    }
 
-
-    def test_misc():
+    @Test
+    public void test_misc(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -2189,9 +2277,10 @@ public class UpstreamTest extends RobolectricTest {
         col.sched.unburyCards()
         col.reset()
         assert col.sched.getCard()
+    }
 
-
-    def test_suspend():
+    @Test
+    public void test_suspend(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -2237,9 +2326,10 @@ public class UpstreamTest extends RobolectricTest {
         c.load()
         assert c.due == 1
         assert c.did == 1
+    }
 
-
-    def test_cram():
+    @Test
+    public void test_cram(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -2349,9 +2439,10 @@ public class UpstreamTest extends RobolectricTest {
         col.sched.answerCard(c, 4)
         // it should have been moved back to the original deck
         assert c.did == 1
+    }
 
-
-    def test_cram_rem():
+    @Test
+    public void test_cram_rem(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -2370,9 +2461,10 @@ public class UpstreamTest extends RobolectricTest {
         c.load()
         assert c.type == CARD_TYPE_NEW and c.queue == QUEUE_TYPE_NEW
         assert c.due == oldDue
+    }
 
-
-    def test_cram_resched():
+    @Test
+    public void test_cram_resched(){
         // add card
         col = getEmptyCol()
         note = col.newNote()
@@ -2478,9 +2570,10 @@ public class UpstreamTest extends RobolectricTest {
         // c = col.sched.getCard()
         // col.sched.answerCard(c, 2)
         // print c.__dict__
+    }
 
-
-    def test_ordcycle():
+    @Test
+    public void test_ordcycle(){
         col = getEmptyCol()
         // add two more templates and set second active
         m = col.models.current()
@@ -2505,9 +2598,10 @@ public class UpstreamTest extends RobolectricTest {
         assert col.sched.getCard().ord == 0
         assert col.sched.getCard().ord == 1
         assert col.sched.getCard().ord == 2
+    }
 
-
-    def test_counts_idx():
+    @Test
+    public void test_counts_idx(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -2529,9 +2623,10 @@ public class UpstreamTest extends RobolectricTest {
         // answering should add it back again
         col.sched.answerCard(c, 1)
         assert col.sched.counts() == (0, 2, 0)
+    }
 
-
-    def test_repCounts():
+    @Test
+    public void test_repCounts(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -2582,9 +2677,10 @@ public class UpstreamTest extends RobolectricTest {
         assert col.sched.counts() == (0, 0, 1)
         col.sched.answerCard(col.sched.getCard(), 1)
         assert col.sched.counts() == (0, 1, 0)
+    }
 
-
-    def test_timing():
+    @Test
+    public void test_timing(){
         col = getEmptyCol()
         // add a few review cards, due today
         for i in range(5):
@@ -2617,9 +2713,10 @@ public class UpstreamTest extends RobolectricTest {
         c = col.sched.getCard()
         assert c.queue == QUEUE_TYPE_LRN
         time.time = orig_time
+    }
 
-
-    def test_collapse():
+    @Test
+    public void test_collapse(){
         col = getEmptyCol()
         // add a note
         note = col.newNote()
@@ -2632,9 +2729,10 @@ public class UpstreamTest extends RobolectricTest {
         c = col.sched.getCard()
         col.sched.answerCard(c, 3)
         assert not col.sched.getCard()
+    }
 
-
-    def test_deckDue():
+    @Test
+    public void test_deckDue(){
         col = getEmptyCol()
         // add a note with default deck
         note = col.newNote()
@@ -2678,9 +2776,10 @@ public class UpstreamTest extends RobolectricTest {
         c.did = 12345
         c.flush()
         col.sched.deck_due_tree()
+    }
 
-
-    def test_deckFlow():
+    @Test
+    public void test_deckFlow(){
         col = getEmptyCol()
         // add a note with default deck
         note = col.newNote()
@@ -2703,9 +2802,10 @@ public class UpstreamTest extends RobolectricTest {
             c = col.sched.getCard()
             assert c.note()["Front"] == i
             col.sched.answerCard(c, 2)
+    }
 
-
-    def test_reorder():
+    @Test
+    public void test_reorder(){
         col = getEmptyCol()
         // add a note with default deck
         note = col.newNote()
@@ -2741,9 +2841,10 @@ public class UpstreamTest extends RobolectricTest {
         assert note2.cards()[0].due == 4
         assert f3.cards()[0].due == 1
         assert f4.cards()[0].due == 2
+    }
 
-
-    def test_forget():
+    @Test
+    public void test_forget(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -2759,9 +2860,10 @@ public class UpstreamTest extends RobolectricTest {
         col.sched.forgetCards([c.id])
         col.reset()
         assert col.sched.counts() == (1, 0, 0)
+    }
 
-
-    def test_resched():
+    @Test
+    public void test_resched(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -2776,9 +2878,10 @@ public class UpstreamTest extends RobolectricTest {
         c.load()
         assert c.due == col.sched.today + 1
         assert c.ivl == +1
+    }
 
-
-    def test_norelearn():
+    @Test
+    public void test_norelearn(){
         col = getEmptyCol()
         // add a note
         note = col.newNote()
@@ -2798,9 +2901,10 @@ public class UpstreamTest extends RobolectricTest {
         col.sched.answerCard(c, 1)
         col.sched._cardConf(c)["lapse"]["delays"] = []
         col.sched.answerCard(c, 1)
+    }
 
-
-    def test_failmult():
+    @Test
+    public void test_failmult(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -2824,33 +2928,37 @@ public class UpstreamTest extends RobolectricTest {
         assert c.ivl == 50
         col.sched.answerCard(c, 1)
         assert c.ivl == 25
+    }
     /*****************
          ** SchedV2      *
      *****************/
-    def getEmptyCol():
+    private Collection getEmptyCol(){
         col = getEmptyColOrig()
         col.changeSchedulerVer(2)
         return col
+    }
 
-
-    def test_clock():
+    @Test
+    public void test_clock(){
         col = getEmptyCol()
         if (col.sched.dayCutoff - intTime()) < 10 * 60:
             raise Exception("Unit tests will fail around the day rollover.")
 
 
-    def checkRevIvl(col, c, targetIvl):
+    private boolean checkRevIvl(col, c, targetIvl):
         min, max = col.sched._fuzzIvlRange(targetIvl)
         return min <= c.ivl <= max
+    }
 
-
-    def test_basics():
+    @Test
+    public void test_basics(){
         col = getEmptyCol()
         col.reset()
         assert not col.sched.getCard()
+    }
 
-
-    def test_new():
+    @Test
+    public void test_new(){
         col = getEmptyCol()
         col.reset()
         assert col.sched.newCount == 0
@@ -2894,9 +3002,10 @@ public class UpstreamTest extends RobolectricTest {
         //     c = col.sched.getCard()
         //     assert qs[n] in c.q()
         //     col.sched.answerCard(c, 2)
+    }
 
-
-    def test_newLimits():
+    @Test
+    public void test_newLimits(){
         col = getEmptyCol()
         // add some notes
         deck2 = col.decks.id("Default::foo")
@@ -2927,9 +3036,10 @@ public class UpstreamTest extends RobolectricTest {
         col.decks.save(conf2)
         col.reset()
         assert col.sched.newCount == 9
+    }
 
-
-    def test_newBoxes():
+    @Test
+    public void test_newBoxes(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -2944,9 +3054,10 @@ public class UpstreamTest extends RobolectricTest {
         conf["new"]["delays"] = [1]
         col.decks.save(conf)
         col.sched.answerCard(c, 2)
+    }
 
-
-    def test_learn():
+    @Test
+    public void test_learn(){
         col = getEmptyCol()
         // add a note
         note = col.newNote()
@@ -3007,9 +3118,10 @@ public class UpstreamTest extends RobolectricTest {
         assert checkRevIvl(col, c, 4)
         // revlog should have been updated each time
         assert col.db.scalar("select count() from revlog where type = 0") == 5
+    }
 
-
-    def test_relearn():
+    @Test
+    public void test_relearn(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -3034,9 +3146,10 @@ public class UpstreamTest extends RobolectricTest {
         assert c.queue == CARD_TYPE_REV and c.type == QUEUE_TYPE_REV
         assert c.ivl == 2
         assert c.due == col.sched.today + c.ivl
+    }
 
-
-    def test_relearn_no_steps():
+    @Test
+    public void test_relearn_no_steps(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -3057,9 +3170,10 @@ public class UpstreamTest extends RobolectricTest {
         c = col.sched.getCard()
         col.sched.answerCard(c, 1)
         assert c.queue == CARD_TYPE_REV and c.type == QUEUE_TYPE_REV
+    }
 
-
-    def test_learn_collapsed():
+    @Test
+    public void test_learn_collapsed(){
         col = getEmptyCol()
         // add 2 notes
         note = col.newNote()
@@ -3084,9 +3198,10 @@ public class UpstreamTest extends RobolectricTest {
         // we shouldn't get the same card again
         c = col.sched.getCard()
         assert not c.q().endswith("2")
+    }
 
-
-    def test_learn_day():
+    @Test
+    public void test_learn_day(){
         col = getEmptyCol()
         // add a note
         note = col.newNote()
@@ -3147,9 +3262,10 @@ public class UpstreamTest extends RobolectricTest {
         col.sched.answerCard(c, 1)
         assert c.queue == QUEUE_TYPE_DAY_LEARN_RELEARN
         assert col.sched.counts() == (0, 0, 0)
+    }
 
-
-    def test_reviews():
+    @Test
+    public void test_reviews(){
         col = getEmptyCol()
         // add a note
         note = col.newNote()
@@ -3224,9 +3340,10 @@ public class UpstreamTest extends RobolectricTest {
         assert c.queue == QUEUE_TYPE_SUSPENDED
         c.load()
         assert c.queue == QUEUE_TYPE_SUSPENDED
+    }
 
-
-    def test_review_limits():
+    @Test
+    public void test_review_limits(){
         col = getEmptyCol()
 
         parent = col.decks.get(col.decks.id("parent"))
@@ -3278,9 +3395,10 @@ public class UpstreamTest extends RobolectricTest {
         tree = col.sched.deck_due_tree().children
         assert tree[0].review_count == 4  // parent
         assert tree[0].children[0].review_count == 4  // child
+    }
 
-
-    def test_button_spacing():
+    @Test
+    public void test_button_spacing(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -3306,9 +3424,10 @@ public class UpstreamTest extends RobolectricTest {
         conf["rev"]["hardFactor"] = 1
         col.decks.save(conf)
         assert wo(ni(c, 2)) == "1d"
+    }
 
-
-    def test_overdue_lapse():
+    @Test
+    public void test_overdue_lapse(){
         // disabled in commit 3069729776990980f34c25be66410e947e9d51a2
         return
         col = getEmptyCol()  // pylint: disable=unreachable
@@ -3342,9 +3461,10 @@ public class UpstreamTest extends RobolectricTest {
         // learning queue
         col.sched.reset()
         assert col.sched.counts() == (0, 0, 1)
+    }
 
-
-    def test_finished():
+    @Test
+    public void test_finished(){
         col = getEmptyCol()
         // nothing due
         assert "Congratulations" in col.sched.finishedMsg()
@@ -3363,9 +3483,10 @@ public class UpstreamTest extends RobolectricTest {
         // nothing should be due tomorrow, as it's due in a week
         assert "Congratulations" in col.sched.finishedMsg()
         assert "limit" not in col.sched.finishedMsg()
+    }
 
-
-    def test_nextIvl():
+    @Test
+    public void test_nextIvl(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -3426,9 +3547,10 @@ public class UpstreamTest extends RobolectricTest {
         // (* 100 2.5 1.3 86400)28080000.0
         assert ni(c, 4) == 28080000
         assert without_unicode_isolation(col.sched.nextIvlStr(c, 4)) == "10.8mo"
+    }
 
-
-    def test_bury():
+    @Test
+    public void test_bury(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -3469,9 +3591,10 @@ public class UpstreamTest extends RobolectricTest {
         col.reset()
 
         assert col.sched.counts() == (2, 0, 0)
+    }
 
-
-    def test_suspend():
+    @Test
+    public void test_suspend(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -3519,9 +3642,10 @@ public class UpstreamTest extends RobolectricTest {
         assert c.due != 1
         assert c.did != 1
         assert c.odue == 1
+    }
 
-
-    def test_filt_reviewing_early_normal():
+    @Test
+    public void test_filt_reviewing_early_normal(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -3575,9 +3699,10 @@ public class UpstreamTest extends RobolectricTest {
         assert col.sched.nextIvl(c, 2) == 60 * 86400
         assert col.sched.nextIvl(c, 3) == 100 * 86400
         assert col.sched.nextIvl(c, 4) == 114 * 86400
+    }
 
-
-    def test_filt_keep_lrn_state():
+    @Test
+    public void test_filt_keep_lrn_state(){
         col = getEmptyCol()
 
         note = col.newNote()
@@ -3619,9 +3744,10 @@ public class UpstreamTest extends RobolectricTest {
         assert c.type == CARD_TYPE_LRN and c.queue == QUEUE_TYPE_LRN
         assert c.left == 1001
         assert c.due - intTime() > 60 * 60
+    }
 
-
-    def test_preview():
+    @Test
+    public void test_preview(){
         // add cards
         col = getEmptyCol()
         note = col.newNote()
@@ -3669,9 +3795,10 @@ public class UpstreamTest extends RobolectricTest {
         assert c.queue == QUEUE_TYPE_NEW
         assert c.reps == 0
         assert c.type == CARD_TYPE_NEW
+    }
 
-
-    def test_ordcycle():
+    @Test
+    public void test_ordcycle(){
         col = getEmptyCol()
         // add two more templates and set second active
         m = col.models.current()
@@ -3696,9 +3823,10 @@ public class UpstreamTest extends RobolectricTest {
         assert col.sched.getCard().ord == 0
         assert col.sched.getCard().ord == 1
         assert col.sched.getCard().ord == 2
+    }
 
-
-    def test_counts_idx():
+    @Test
+    public void test_counts_idx(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -3720,9 +3848,10 @@ public class UpstreamTest extends RobolectricTest {
         // answering should add it back again
         col.sched.answerCard(c, 1)
         assert col.sched.counts() == (0, 1, 0)
+    }
 
-
-    def test_repCounts():
+    @Test
+    public void test_repCounts(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -3773,9 +3902,10 @@ public class UpstreamTest extends RobolectricTest {
         assert col.sched.counts() == (0, 0, 1)
         col.sched.answerCard(col.sched.getCard(), 1)
         assert col.sched.counts() == (0, 1, 0)
+    }
 
-
-    def test_timing():
+    @Test
+    public void test_timing(){
         col = getEmptyCol()
         // add a few review cards, due today
         for i in range(5):
@@ -3800,9 +3930,10 @@ public class UpstreamTest extends RobolectricTest {
         col.reset()
         c = col.sched.getCard()
         assert c.queue == QUEUE_TYPE_LRN
+    }
 
-
-    def test_collapse():
+    @Test
+    public void test_collapse(){
         col = getEmptyCol()
         // add a note
         note = col.newNote()
@@ -3815,9 +3946,10 @@ public class UpstreamTest extends RobolectricTest {
         c = col.sched.getCard()
         col.sched.answerCard(c, 4)
         assert not col.sched.getCard()
+    }
 
-
-    def test_deckDue():
+    @Test
+    public void test_deckDue(){
         col = getEmptyCol()
         // add a note with default deck
         note = col.newNote()
@@ -3861,9 +3993,10 @@ public class UpstreamTest extends RobolectricTest {
         c.did = 12345
         c.flush()
         col.sched.deck_due_tree()
+    }
 
-
-    def test_deckTree():
+    @Test
+    public void test_deckTree(){
         col = getEmptyCol()
         col.decks.id("new::b::c")
         col.decks.id("new2")
@@ -3871,9 +4004,10 @@ public class UpstreamTest extends RobolectricTest {
         names = [x.name for x in col.sched.deck_due_tree().children]
         names.remove("new")
         assert "new" not in names
+    }
 
-
-    def test_deckFlow():
+    @Test
+    public void test_deckFlow(){
         col = getEmptyCol()
         // add a note with default deck
         note = col.newNote()
@@ -3896,9 +4030,10 @@ public class UpstreamTest extends RobolectricTest {
             c = col.sched.getCard()
             assert c.note()["Front"] == i
             col.sched.answerCard(c, 3)
+    }
 
-
-    def test_reorder():
+    @Test
+    public void test_reorder(){
         col = getEmptyCol()
         // add a note with default deck
         note = col.newNote()
@@ -3934,9 +4069,10 @@ public class UpstreamTest extends RobolectricTest {
         assert note2.cards()[0].due == 4
         assert f3.cards()[0].due == 1
         assert f4.cards()[0].due == 2
+    }
 
-
-    def test_forget():
+    @Test
+    public void test_forget(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -3952,9 +4088,10 @@ public class UpstreamTest extends RobolectricTest {
         col.sched.forgetCards([c.id])
         col.reset()
         assert col.sched.counts() == (1, 0, 0)
+    }
 
-
-    def test_resched():
+    @Test
+    public void test_resched(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -3969,9 +4106,10 @@ public class UpstreamTest extends RobolectricTest {
         c.load()
         assert c.due == col.sched.today + 1
         assert c.ivl == +1
+    }
 
-
-    def test_norelearn():
+    @Test
+    public void test_norelearn(){
         col = getEmptyCol()
         // add a note
         note = col.newNote()
@@ -3991,9 +4129,10 @@ public class UpstreamTest extends RobolectricTest {
         col.sched.answerCard(c, 1)
         col.sched._cardConf(c)["lapse"]["delays"] = []
         col.sched.answerCard(c, 1)
+    }
 
-
-    def test_failmult():
+    @Test
+    public void test_failmult(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -4017,9 +4156,10 @@ public class UpstreamTest extends RobolectricTest {
         assert c.ivl == 50
         col.sched.answerCard(c, 1)
         assert c.ivl == 25
+    }
 
-
-    def test_moveVersions():
+    @Test
+    public void test_moveVersions(){
         col = getEmptyCol()
         col.changeSchedulerVer(1)
 
@@ -4075,11 +4215,12 @@ public class UpstreamTest extends RobolectricTest {
         col.changeSchedulerVer(1)
         c.load()
         assert c.due == 50
-
+    }
 
     // cards with a due date earlier than the collection should retain
     // their due date when removed
-    def test_negativeDueFilter():
+    @Test
+    public void test_negativeDueFilter(){
         col = getEmptyCol()
 
         // card due prior to collection date
@@ -4101,11 +4242,14 @@ public class UpstreamTest extends RobolectricTest {
 
         c.load()
         assert c.due == -5
+    }
 
 
     // hard on the first step should be the average of again and good,
     // and it should be logged properly
-    def test_initial_repeat():
+
+    @Test
+    public void test_initial_repeat(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "one"
@@ -4121,10 +4265,13 @@ public class UpstreamTest extends RobolectricTest {
 
         ivl = col.db.scalar("select ivl from revlog")
         assert ivl == -5.5 * 60
+    }
     /*****************
          ** Stats        *
      *****************/
-    def test_stats():
+
+    @Test
+    public void test_stats(){
         col = getEmptyCol()
         note = col.newNote()
         note["Front"] = "foo"
@@ -4137,14 +4284,16 @@ public class UpstreamTest extends RobolectricTest {
         col.sched.answerCard(c, 3)
         col.sched.answerCard(c, 2)
         assert col.cardStats(c)
+    }
 
-
-    def test_graphs_empty():
+    @Test
+    public void test_graphs_empty(){
         col = getEmptyCol()
         assert col.stats().report()
+    }
 
-
-    def test_graphs():
+    @Test
+    public void test_graphs(){
         dir = tempfile.gettempdir()
         col = getEmptyCol()
         g = col.stats()
@@ -4152,10 +4301,13 @@ public class UpstreamTest extends RobolectricTest {
         with open(os.path.join(dir, "test.html"), "w", encoding="UTF-8") as note:
             note.write(rep)
         return
+    }
     /*****************
          ** Templates    *
      *****************/
-    def test_deferred_frontside():
+
+    @Test
+    public void test_deferred_frontside(){
         col = getEmptyCol()
         m = col.models.current()
         m["tmpls"][0]["qfmt"] = "{{custom:Front}}"
@@ -4167,16 +4319,18 @@ public class UpstreamTest extends RobolectricTest {
         col.addNote(note)
 
         assert "xxtest" in note.cards()[0].a()
+    }
     /*****************
          ** Undo         *
      *****************/
-    def getEmptyCol():
+    private Collection getEmptyCol(){
         col = getEmptyColOrig()
         col.changeSchedulerVer(2)
         return col
+    }
 
-
-    def test_op():
+    @Test
+    public void test_op(){
         col = getEmptyCol()
         // should have no undo by default
         assert not col.undoName()
@@ -4206,9 +4360,10 @@ public class UpstreamTest extends RobolectricTest {
         c = col.sched.getCard()
         col.sched.answerCard(c, 2)
         assert col.undoName() == "Review"
+    }
 
-
-    def test_review():
+    @Test
+    public void test_review(){
         col = getEmptyCol()
         col.conf["counts"] = COUNT_REMAINING
         note = col.newNote()
@@ -4258,3 +4413,6 @@ public class UpstreamTest extends RobolectricTest {
         assert col.undoName() == "foo"
         col.undo()
             }
+
+}
+
