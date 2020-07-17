@@ -46,7 +46,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Back","2");
          col.addNote(note);
          Card c = note.cards()[0];
-         long id = col.models.current()["id"];
+         long id = col.getModels().current()["id"];
          assertTrue(c.template()["ord"] == 0);
      }
 
@@ -58,8 +58,8 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Back","");
          col.addNote(note);
          assertTrue(len(note.cards()) == 1);
-         Model m = col.models.current();
-         Models mm = col.models;
+         Model m = col.getModels().current();
+         Models mm = col.getModels();
          // adding a new template should automatically create cards
          JSONObject t = mm.newTemplate("rev");
          t["qfmt"] = "{{Front}}";
@@ -86,8 +86,8 @@ public class UpstreamTest extends RobolectricTest {
      @Test
      public void test_gendeck(){
          Collection col = getEmptyCol();
-         Model cloze = col.models.byName("Cloze");
-         col.models.setCurrent(cloze);
+         Model cloze = col.getModels().byName("Cloze");
+         col.getModels().setCurrent(cloze);
          Note note = col.newNote();
          note.setItem("Text","{{c1::one}}");
          col.addNote(note);
@@ -96,7 +96,7 @@ public class UpstreamTest extends RobolectricTest {
          // set the model to a new default col
          long newid = col.decks.getId()("new");
          cloze["did"] = newId;
-         col.models.save(cloze, updateReqs=False);
+         col.getModels().save(cloze, updateReqs=False);
          // a newly generated card should share the first card's col
          note.setItem("Text","{{c2::two}}");
          note.flush();
@@ -161,8 +161,8 @@ public class UpstreamTest extends RobolectricTest {
          Note n = col.addNote(note);
          assertTrue(n == 1);
          // test multiple cards - add another template
-         Model m = col.models.current();
-         Models mm = col.models;
+         Model m = col.getModels().current();
+         Models mm = col.getModels();
          JSONObject t = mm.newTemplate("Reverse");
          t["qfmt"] = "{{Back}}";
          t["afmt"] = "{{Front}}";
@@ -230,16 +230,16 @@ public class UpstreamTest extends RobolectricTest {
      @Test
      public void test_timestamps(){
          Collection col = getEmptyCol();
-         assertTrue(len(col.models.all_names_and_ids()) == len(get_stock_notetypes(col)));
+         assertTrue(len(col.getModels().all_names_and_ids()) == len(get_stock_notetypes(col)));
          for i in range(100):
              addBasicModel(col);
-             assertTrue(len(col.models.all_names_and_ids()) == 100 + len(get_stock_notetypes(col)));
+             assertTrue(len(col.getModels().all_names_and_ids()) == 100 + len(get_stock_notetypes(col)));
      }
 
      @Test
      public void test_furigana(){
          Collection col = getEmptyCol();
-         Models mm = col.models;
+         Models mm = col.getModels();
          Model m = mm.current();
          // filter should work
          m["tmpls"][0]["qfmt"] = "{{kana:Front}}";
@@ -321,9 +321,9 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(col.decks.active() == [childId]);
          // parents with a different case should be handled correctly
          col.decks.getId()("ONE");
-         Model m = col.models.current();
+         Model m = col.getModels().current();
          m["did"] = col.decks.getId()("one::two");
-         col.models.save(m, updateReqs=False);
+         col.getModels().save(m, updateReqs=False);
          Note n = col.newNote();
          n["Front"] = "abc";
          col.addNote(n);
@@ -617,9 +617,9 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Back","sheep");
          col.addNote(note);
          catCard = note.cards()[0];
-         Model m = col.models.current();
-         Model m = col.models.copy(m);
-         Models mm = col.models;
+         Model m = col.getModels().current();
+         Model m = col.getModels().copy(m);
+         Models mm = col.getModels();
          JSONObject t = mm.newTemplate("Reverse");
          t["qfmt"] = "{{Back}}";
          t["afmt"] = "{{Front}}";
@@ -1056,7 +1056,7 @@ note.setItem("Back","abc2");
      @Test
      public void test_csv2(){
          Collection col = getEmptyCol();
-         Models mm = col.models;
+         Models mm = col.getModels();
          Model m = mm.current();
          Note note = mm.newField("Three");
          mm.addField(m, note);
@@ -1081,7 +1081,7 @@ note.setItem("Back","abc2");
      @Test
      public void test_tsv_tag_modified(){
          Collection col = getEmptyCol();
-         Models mm = col.models;
+         Models mm = col.getModels();
          Model m = mm.current();
          Note note = mm.newField("Top");
          mm.addField(m, note);
@@ -1118,7 +1118,7 @@ note.setItem("Back","abc2");
      @Test
      public void test_tsv_tag_multiple_tags(){
          Collection col = getEmptyCol();
-         Models mm = col.models;
+         Models mm = col.getModels();
          Model m = mm.current();
          Note note = mm.newField("Top");
          mm.addField(m, note);
@@ -1153,7 +1153,7 @@ note.setItem("Back","abc2");
      @Test
      public void test_csv_tag_only_if_modified(){
          Collection col = getEmptyCol();
-         Models mm = col.models;
+         Models mm = col.getModels();
          Model m = mm.current();
          Note note = mm.newField("Left");
          mm.addField(m, note);
@@ -1281,7 +1281,7 @@ note.setItem("Back","abc2");
      public void test_strings(){
          Collection col = getEmptyCol();
          mf = col.media.filesInStr;
-         mid = col.models.current()["id"];
+         mid = col.getModels().current()["id"];
          assertTrue(mf(mid, "aoeu") == []);
          assertTrue(mf(mid, "aoeu<img src='foo.jpg'>ao") == ["foo.jpg"]);
          assertTrue(mf(mid, "aoeu<img src='foo.jpg' style='test'>ao") == ["foo.jpg"]);
@@ -1345,15 +1345,15 @@ note.setItem("Back","abc2");
          note.setItem("Back","2");
          col.addNote(note);
          assertTrue(col.cardCount() == 1);
-         col.models.rem(col.models.current());
+         col.getModels().rem(col.getModels().current());
          assertTrue(col.cardCount() == 0);
      }
 
      @Test
      public void test_modelCopy(){
          Collection col = getEmptyCol();
-         Model m = col.models.current();
-         Model m2 = col.models.copy(m);
+         Model m = col.getModels().current();
+         Model m2 = col.getModels().copy(m);
          assertTrue(m2["name"] == "Basic copy");
          assertTrue(m2["id"] != m["id"]);
          assertTrue(len(m2["flds"]) == 2);
@@ -1361,7 +1361,7 @@ note.setItem("Back","abc2");
          assertTrue(len(m2["flds"]) == len(m["flds"]));
          assertTrue(len(m["tmpls"]) == 1);
          assertTrue(len(m2["tmpls"]) == 1);
-         assertTrue(col.models.scmhash(m) == col.models.scmhash(m2));
+         assertTrue(col.getModels().scmhash(m) == col.getModels().scmhash(m2));
      }
 
      @Test
@@ -1371,52 +1371,52 @@ note.setItem("Back","abc2");
          note.setItem("Front","1");
          note.setItem("Back","2");
          col.addNote(note);
-         Model m = col.models.current();
+         Model m = col.getModels().current();
          // make sure renaming a field updates the templates
-         col.models.renameField(m, m["flds"][0], "NewFront");
+         col.getModels().renameField(m, m["flds"][0], "NewFront");
          assertTrue("{{NewFront}}" in m["tmpls"][0]["qfmt"]);
-         String h = col.models.scmhash(m);
+         String h = col.getModels().scmhash(m);
          // add a field
-         Note note = col.models.newField("foo");
-         col.models.addField(m, note);
-         assertTrue(col.getNote(col.models.nids(m)[0]).fields == ["1", "2", ""]);
-         assertTrue(col.models.scmhash(m) != h);
+         Note note = col.getModels().newField("foo");
+         col.getModels().addField(m, note);
+         assertTrue(col.getNote(col.getModels().nids(m)[0]).fields == ["1", "2", ""]);
+         assertTrue(col.getModels().scmhash(m) != h);
          // rename it
          Note note = m["flds"][2];
-         col.models.renameField(m, note, "bar");
-         assertTrue(col.getNote(col.models.nids(m)[0])["bar"] == "");
+         col.getModels().renameField(m, note, "bar");
+         assertTrue(col.getNote(col.getModels().nids(m)[0])["bar"] == "");
          // delete back
-         col.models.remField(m, m["flds"][1]);
-         assertTrue(col.getNote(col.models.nids(m)[0]).fields == ["1", ""]);
+         col.getModels().remField(m, m["flds"][1]);
+         assertTrue(col.getNote(col.getModels().nids(m)[0]).fields == ["1", ""]);
          // move 0 -> 1
-         col.models.moveField(m, m["flds"][0], 1);
-         assertTrue(col.getNote(col.models.nids(m)[0]).fields == ["", "1"]);
+         col.getModels().moveField(m, m["flds"][0], 1);
+         assertTrue(col.getNote(col.getModels().nids(m)[0]).fields == ["", "1"]);
          // move 1 -> 0
-         col.models.moveField(m, m["flds"][1], 0);
-         assertTrue(col.getNote(col.models.nids(m)[0]).fields == ["1", ""]);
+         col.getModels().moveField(m, m["flds"][1], 0);
+         assertTrue(col.getNote(col.getModels().nids(m)[0]).fields == ["1", ""]);
          // add another and put in middle
-         Note note = col.models.newField("baz");
-         col.models.addField(m, note);
-         Note note = col.getNote(col.models.nids(m)[0]);
+         Note note = col.getModels().newField("baz");
+         col.getModels().addField(m, note);
+         Note note = col.getNote(col.getModels().nids(m)[0]);
          note.setItem("baz","2");
          note.flush();
-         assertTrue(col.getNote(col.models.nids(m)[0]).fields == ["1", "", "2"]);
+         assertTrue(col.getNote(col.getModels().nids(m)[0]).fields == ["1", "", "2"]);
          // move 2 -> 1
-         col.models.moveField(m, m["flds"][2], 1);
-         assertTrue(col.getNote(col.models.nids(m)[0]).fields == ["1", "2", ""]);
+         col.getModels().moveField(m, m["flds"][2], 1);
+         assertTrue(col.getNote(col.getModels().nids(m)[0]).fields == ["1", "2", ""]);
          // move 0 -> 2
-         col.models.moveField(m, m["flds"][0], 2);
-         assertTrue(col.getNote(col.models.nids(m)[0]).fields == ["2", "", "1"]);
+         col.getModels().moveField(m, m["flds"][0], 2);
+         assertTrue(col.getNote(col.getModels().nids(m)[0]).fields == ["2", "", "1"]);
          // move 0 -> 1
-         col.models.moveField(m, m["flds"][0], 1);
-         assertTrue(col.getNote(col.models.nids(m)[0]).fields == ["", "2", "1"]);
+         col.getModels().moveField(m, m["flds"][0], 1);
+         assertTrue(col.getNote(col.getModels().nids(m)[0]).fields == ["", "2", "1"]);
      }
 
      @Test
      public void test_templates(){
          Collection col = getEmptyCol();
-         Model m = col.models.current();
-         Models mm = col.models;
+         Model m = col.getModels().current();
+         Models mm = col.getModels();
          JSONObject t = mm.newTemplate("Reverse");
          t["qfmt"] = "{{Back}}";
          t["afmt"] = "{{Front}}";
@@ -1432,13 +1432,13 @@ note.setItem("Back","abc2");
          assertTrue(c.ord == 0);
          assertTrue(c2.ord == 1);
          // switch templates
-         col.models.moveTemplate(m, c.template(), 1);
+         col.getModels().moveTemplate(m, c.template(), 1);
          c.load();
          c2.load();
          assertTrue(c.ord == 1);
          assertTrue(c2.ord == 0);
          // removing a template should delete its cards
-         col.models.remTemplate(m, m["tmpls"][0]);
+         col.getModels().remTemplate(m, m["tmpls"][0]);
          assertTrue(col.cardCount() == 1);
          // and should have updated the other cards' ordinals
          Card c = note.cards()[0];
@@ -1447,7 +1447,7 @@ note.setItem("Back","abc2");
          // it shouldn't be possible to orphan notes by removing templates
          JSONObject t = mm.newTemplate("template name");
          mm.addTemplate(m, t);
-         col.models.remTemplate(m, m["tmpls"][0]);
+         col.getModels().remTemplate(m, m["tmpls"][0]);
          assertTrue(();
              col.getDb().scalar(;
                  "select count() from cards where nid not in (select id from notes)";
@@ -1459,9 +1459,9 @@ note.setItem("Back","abc2");
      @Test
      public void test_cloze_ordinals(){
          Collection col = getEmptyCol();
-         col.models.setCurrent(col.models.byName("Cloze"));
-         Model m = col.models.current();
-         Models mm = col.models;
+         col.getModels().setCurrent(col.getModels().byName("Cloze"));
+         Model m = col.getModels().current();
+         Models mm = col.getModels();
 
          // We replace the default Cloze template
          JSONObject t = mm.newTemplate("ChainedCloze");
@@ -1469,7 +1469,7 @@ note.setItem("Back","abc2");
          t["afmt"] = "{{text:cloze:Text}}";
          mm.addTemplate(m, t);
          mm.save(m);
-         col.models.remTemplate(m, m["tmpls"][0]);
+         col.getModels().remTemplate(m, m["tmpls"][0]);
 
          Note note = col.newNote();
          note.setItem("Text","{{c1::firstQ::firstA}}{{c2::secondQ::secondA}}");
@@ -1484,9 +1484,9 @@ note.setItem("Back","abc2");
      @Test
      public void test_text(){
          Collection col = getEmptyCol();
-         Model m = col.models.current();
+         Model m = col.getModels().current();
          m["tmpls"][0]["qfmt"] = "{{text:Front}}";
-         col.models.save(m);
+         col.getModels().save(m);
          Note note = col.newNote();
          note.setItem("Front","hello<b>world");
          col.addNote(note);
@@ -1496,7 +1496,7 @@ note.setItem("Back","abc2");
      @Test
      public void test_cloze(){
          Collection col = getEmptyCol();
-         col.models.setCurrent(col.models.byName("Cloze"));
+         col.getModels().setCurrent(col.getModels().byName("Cloze"));
          Note note = col.newNote();
          assertTrue(note.model()["name"] == "Cloze");
          // a cloze model with no clozes is not empty
@@ -1545,7 +1545,7 @@ note.setItem("Back","abc2");
      @Test
      public void test_cloze_mathjax(){
          Collection col = getEmptyCol();
-         col.models.setCurrent(col.models.byName("Cloze"));
+         col.getModels().setCurrent(col.getModels().byName("Cloze"));
          Note note = col.newNote();
          note[;
              "Text";
@@ -1572,10 +1572,10 @@ note.setItem("Back","abc2");
      @Test
      public void test_typecloze(){
          Collection col = getEmptyCol();
-         Model m = col.models.byName("Cloze");
-         col.models.setCurrent(m);
+         Model m = col.getModels().byName("Cloze");
+         col.getModels().setCurrent(m);
          m["tmpls"][0]["qfmt"] = "{{cloze:Text}}{{type:cloze:Text}}";
-         col.models.save(m);
+         col.getModels().save(m);
          Note note = col.newNote();
          note.setItem("Text","hello {{c1::world}}");
          col.addNote(note);
@@ -1585,9 +1585,9 @@ note.setItem("Back","abc2");
      @Test
      public void test_chained_mods(){
          Collection col = getEmptyCol();
-         col.models.setCurrent(col.models.byName("Cloze"));
-         Model m = col.models.current();
-         Models mm = col.models;
+         col.getModels().setCurrent(col.getModels().byName("Cloze"));
+         Model m = col.getModels().current();
+         Models mm = col.getModels();
 
          // We replace the default Cloze template
          JSONObject t = mm.newTemplate("ChainedCloze");
@@ -1595,7 +1595,7 @@ note.setItem("Back","abc2");
          t["afmt"] = "{{cloze:text:Text}}";
          mm.addTemplate(m, t);
          mm.save(m);
-         col.models.remTemplate(m, m["tmpls"][0]);
+         col.getModels().remTemplate(m, m["tmpls"][0]);
 
          Note note = col.newNote();
          q1 = '<span style="color:red">phrase</span>';
@@ -1622,10 +1622,10 @@ note.setItem("Back","abc2");
      @Test
      public void test_modelChange(){
          Collection col = getEmptyCol();
-         Model cloze = col.models.byName("Cloze");
+         Model cloze = col.getModels().byName("Cloze");
          // enable second template and add a note
-         Model m = col.models.current();
-         Models mm = col.models;
+         Model m = col.getModels().current();
+         Models mm = col.getModels();
          JSONObject t = mm.newTemplate("Reverse");
          t["qfmt"] = "{{Back}}";
          t["afmt"] = "{{Front}}";
@@ -1638,7 +1638,7 @@ note.setItem("Back","abc2");
          col.addNote(note);
          // switch fields
          map = {0: 1, 1: 0}
-         col.models.change(basic, [note.getId()], basic, map, None);
+         col.getModels().change(basic, [note.getId()], basic, map, None);
          note.load();
          assertTrue(note.setItem("Front","b123"));
          assertTrue(note.setItem("Back","note"));
@@ -1649,7 +1649,7 @@ note.setItem("Back","abc2");
          assertTrue("note" in c1.q());
          assertTrue(c0.ord == 0);
          assertTrue(c1.ord == 1);
-         col.models.change(basic, [note.getId()], basic, None, map);
+         col.getModels().change(basic, [note.getId()], basic, None, map);
          note.load();
          c0.load();
          c1.load();
@@ -1664,7 +1664,7 @@ note.setItem("Back","abc2");
          if isWin:
              // The low precision timer on Windows reveals a race condition
              time.sleep(0.05);
-         col.models.change(basic, [note.getId()], basic, None, map);
+         col.getModels().change(basic, [note.getId()], basic, None, map);
          note.load();
          c0.load();
          // the card was deleted
@@ -1678,7 +1678,7 @@ note.setItem("Back","abc2");
          // an unmapped field becomes blank
              assertTrue(note.setItem("Front","b123"));
              assertTrue(note.setItem("Back","note"));
-         col.models.change(basic, [note.getId()], basic, map, None);
+         col.getModels().change(basic, [note.getId()], basic, map, None);
          note.load();
          assertTrue(note.setItem("Front",""));
          assertTrue(note.setItem("Back","note"));
@@ -1687,19 +1687,19 @@ note.setItem("Back","abc2");
          note.setItem("Front","f2");
          note.setItem("Back","b2");
          col.addNote(note);
-         counts = col.models.all_use_counts();
+         counts = col.getModels().all_use_counts();
          assertTrue(next(c.use_count for c in counts if c.name == "Basic") == 2);
          assertTrue(next(c.use_count for c in counts if c.name == "Cloze") == 0);
          map = {0: 0, 1: 1}
-         col.models.change(basic, [note.getId()], cloze, map, map);
+         col.getModels().change(basic, [note.getId()], cloze, map, map);
          note.load();
          assertTrue(note.setItem("Text","f2"));
          assertTrue(len(note.cards()) == 2);
          // back the other way, with deletion of second ord
-         col.models.remTemplate(basic, basic["tmpls"][1]);
+         col.getModels().remTemplate(basic, basic["tmpls"][1]);
          assertTrue(col.getDb().queryScalar("select count() from cards where nid = ?", note.getId()) == 2);
          map = {0: 0}
-         col.models.change(cloze, [note.getId()], basic, map, map);
+         col.getModels().change(cloze, [note.getId()], basic, map, map);
          assertTrue(col.getDb().queryScalar("select count() from cards where nid = ?", note.getId()) == 1);
      }
 
@@ -1711,7 +1711,7 @@ note.setItem("Back","abc2");
                  assertTrue(len(model["tmpls"]) == len(model["req"]));
 
          Collection col = getEmptyCol();
-         Models mm = col.models;
+         Models mm = col.getModels();
          basiCard c = mm.byName("Basic");
          assertTrue("req" in basic);
          reqSize(basic);
@@ -1796,7 +1796,7 @@ note.setItem("Back","abc2");
          // disabled for now, as the learn fudging makes this randomly fail
          // // the default order should ensure siblings are not seen together, and
          // // should show all cards
-         // Model m = col.models.current(); Models mm = col.models
+         // Model m = col.getModels().current(); Models mm = col.getModels()
          // JSONObject t = mm.newTemplate("Reverse")
          // t['qfmt'] = "{{Back}}"
          // t['afmt'] = "{{Front}}"
@@ -2575,8 +2575,8 @@ note.setItem("Back","abc2");
      public void test_ordcycle(){
          Collection col = getEmptyCol();
          // add two more templates and set second active
-         Model m = col.models.current();
-         Models mm = col.models;
+         Model m = col.getModels().current();
+         Models mm = col.getModels();
          JSONObject t = mm.newTemplate("Reverse");
          t["qfmt"] = "{{Back}}";
          t["afmt"] = "{{Front}}";
@@ -2983,7 +2983,7 @@ note.setItem("Back","abc2");
          // disabled for now, as the learn fudging makes this randomly fail
          // // the default order should ensure siblings are not seen together, and
          // // should show all cards
-         // Model m = col.models.current(); Models mm = col.models
+         // Model m = col.getModels().current(); Models mm = col.getModels()
          // JSONObject t = mm.newTemplate("Reverse")
          // t['qfmt'] = "{{Back}}"
          // t['afmt'] = "{{Front}}"
@@ -3356,9 +3356,9 @@ note.setItem("Back","abc2");
          col.decks.update_config(cconf);
          col.decks.setConf(child, cconf["id"]);
 
-         Model m = col.models.current();
+         Model m = col.getModels().current();
          m["did"] = child["id"];
-         col.models.save(m, updateReqs=False);
+         col.getModels().save(m, updateReqs=False);
 
          // add some cards
          for i in range(20):
@@ -3798,8 +3798,8 @@ note.setItem("Back","abc2");
      public void test_ordcycle(){
          Collection col = getEmptyCol();
          // add two more templates and set second active
-         Model m = col.models.current();
-         Models mm = col.models;
+         Model m = col.getModels().current();
+         Models mm = col.getModels();
          JSONObject t = mm.newTemplate("Reverse");
          t["qfmt"] = "{{Back}}";
          t["afmt"] = "{{Front}}";
@@ -4306,9 +4306,9 @@ note.setItem("Back","abc2");
      @Test
      public void test_deferred_frontside(){
          Collection col = getEmptyCol();
-         Model m = col.models.current();
+         Model m = col.getModels().current();
          m["tmpls"][0]["qfmt"] = "{{custom:Front}}";
-         col.models.save(m);
+         col.getModels().save(m);
 
          Note note = col.newNote();
          note.setItem("Front","xxtest");
