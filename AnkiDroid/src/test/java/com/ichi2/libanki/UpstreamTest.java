@@ -33,9 +33,9 @@ public class UpstreamTest extends RobolectricTest {
          col.remove_cards_and_orphaned_notes([cid]);
          assertTrue(col.cardCount() == 0);
          assertTrue(col.noteCount() == 0);
-         assertTrue(col.getDb().scalar("select count() from notes") == 0);
-         assertTrue(col.getDb().scalar("select count() from cards") == 0);
-         assertTrue(col.getDb().scalar("select count() from graves") == 2);
+         assertTrue(col.getDb().queryScalar("select count() from notes") == 0);
+         assertTrue(col.getDb().queryScalar("select count() from cards") == 0);
+         assertTrue(col.getDb().queryScalar("select count() from graves") == 2);
      }
 
      @Test
@@ -1206,7 +1206,7 @@ note.setItem("Back","abc2");
          i.run();
          assertTrue(col.cardCount() == 7);
          assertTrue("a_longer_tag" in col.tags.all());
-         assertTrue(col.getDb().scalar("select count() from cards where type = 0") == 1);
+         assertTrue(col.getDb().queryScalar("select count() from cards where type = 0") == 1);
          col.close();
      }
 
@@ -1697,10 +1697,10 @@ note.setItem("Back","abc2");
          assertTrue(len(note.cards()) == 2);
          // back the other way, with deletion of second ord
          col.models.remTemplate(basic, basic["tmpls"][1]);
-         assertTrue(col.getDb().scalar("select count() from cards where nid = ?", note.getId()) == 2);
+         assertTrue(col.getDb().queryScalar("select count() from cards where nid = ?", note.getId()) == 2);
          map = {0: 0}
          col.models.change(cloze, [note.getId()], basic, map, map);
-         assertTrue(col.getDb().scalar("select count() from cards where nid = ?", note.getId()) == 1);
+         assertTrue(col.getDb().queryScalar("select count() from cards where nid = ?", note.getId()) == 1);
      }
 
      @Test
@@ -1925,7 +1925,7 @@ note.setItem("Back","abc2");
                               assertTrue(c.queue == QUEUE_TYPE_REV);
                               assertTrue(checkRevIvl(col, c, 4));
          // revlog should have been updated each time
-                              assertTrue(col.getDb().scalar("select count() from revlog where type = 0") == 5);
+                              assertTrue(col.getDb().queryScalar("select count() from revlog where type = 0") == 5);
          // now failed card handling
          c.type = CARD_TYPE_REV;
          c.queue = 1;
@@ -3114,7 +3114,7 @@ note.setItem("Back","abc2");
                               assertTrue(c.queue == QUEUE_TYPE_REV);
                               assertTrue(checkRevIvl(col, c, 4));
          // revlog should have been updated each time
-                              assertTrue(col.getDb().scalar("select count() from revlog where type = 0") == 5);
+                              assertTrue(col.getDb().queryScalar("select count() from revlog where type = 0") == 5);
      }
 
      @Test
