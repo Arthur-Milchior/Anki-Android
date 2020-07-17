@@ -33,9 +33,9 @@ public class UpstreamTest extends RobolectricTest {
          col.remove_cards_and_orphaned_notes([cid]);
          assertTrue(col.cardCount() == 0);
          assertTrue(col.noteCount() == 0);
-         assertTrue(col.db.scalar("select count() from notes") == 0);
-         assertTrue(col.db.scalar("select count() from cards") == 0);
-         assertTrue(col.db.scalar("select count() from graves") == 2);
+         assertTrue(col.getDb().scalar("select count() from notes") == 0);
+         assertTrue(col.getDb().scalar("select count() from cards") == 0);
+         assertTrue(col.getDb().scalar("select count() from graves") == 2);
      }
 
      @Test
@@ -198,11 +198,11 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Front","new");
          note.setItem("Back","new2");
          col.addNote(note);
-         assertTrue(col.db.scalar("select csum from notes") == int("c2a6b03f", 16));
+         assertTrue(col.getDb().scalar("select csum from notes") == int("c2a6b03f", 16));
          // changing the val should change the checksum
          note.setItem("Front","newx");
          note.flush();
-         assertTrue(col.db.scalar("select csum from notes") == int("302811ae", 16));
+         assertTrue(col.getDb().scalar("select csum from notes") == int("302811ae", 16));
      }
 
      @Test
@@ -645,9 +645,9 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(len(col.findCards("tag:monkey")) == 1);
          assertTrue(len(col.findCards("tag:sheep -tag:monkey")) == 1);
          assertTrue(len(col.findCards("-tag:sheep")) == 4);
-         col.tags.bulkAdd(col.db.list("select id from notes"), "foo bar");
+         col.tags.bulkAdd(col.getDb().list("select id from notes"), "foo bar");
          assertTrue(len(col.findCards("tag:foo")) == len(col.findCards("tag:bar")) == 5);
-         col.tags.bulkRem(col.db.list("select id from notes"), "foo");
+         col.tags.bulkRem(col.getDb().list("select id from notes"), "foo");
          assertTrue(len(col.findCards("tag:foo")) == 0);
          assertTrue(len(col.findCards("tag:bar")) == 5);
          // text searches
@@ -672,7 +672,7 @@ public class UpstreamTest extends RobolectricTest {
          c.queue = -1;
          // ensure this card gets a later mod time
          c.flush();
-         col.db.execute("update cards set mod = mod + 1 where long id = ?", c.getId());
+         col.getDb().execute("update cards set mod = mod + 1 where long id = ?", c.getId());
          assertTrue(col.findCards("is:suspended") == [c.getId()]);
          // nids
          assertTrue(col.findCards("nid:54321") == []);
@@ -745,8 +745,8 @@ public class UpstreamTest extends RobolectricTest {
          with pytest.raises(Exception):
              len(col.findCards("is:invalid"));
          // should be able to limit to parent col, no children
- long id = col.db.scalar("select id from cards limit 1");
-         col.db.execute(;
+ long id = col.getDb().scalar("select id from cards limit 1");
+         col.getDb().execute(;
              "update cards set long did = ? where long id = ?", col.decks.getId()("Default::Child"), id;
      );
          col.save();
@@ -754,8 +754,8 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(len(col.findCards("deck:default::child")) == 1);
          assertTrue(len(col.findCards("deck:default -deck:default::*")) == 6);
          // properties
- long id = col.db.scalar("select id from cards limit 1");
-         col.db.execute(;
+ long id = col.getDb().scalar("select id from cards limit 1");
+         col.getDb().execute(;
              "update cards set queue=2, ivl=10, reps=20, due=30, factor=2200 ";
              "where long id = ?",;
              id,;
@@ -792,7 +792,7 @@ public class UpstreamTest extends RobolectricTest {
              assertTrue(len(col.findCards("rated:2:2")) == 1);
              // added
              assertTrue(len(col.findCards("added:0")) == 0);
-             col.db.execute("update cards set long id = id - 86400*1000 where long id = ?", id);
+             col.getDb().execute("update cards set long id = id - 86400*1000 where long id = ?", id);
              assertTrue(len(col.findCards("added:1")) == col.cardCount() - 1);
              assertTrue(len(col.findCards("added:2")) == col.cardCount());
          else:
@@ -914,32 +914,32 @@ note.setItem("Back","abc2");
          imp.run();
          assertTrue(os.listdir(empty.media.dir()) == ["foo.mp3"]);
          // and importing again will not duplicate, as the file content matches
-         empty.remove_cards_and_orphaned_notes(empty.db.list("select id from cards"));
+         empty.remove_cards_and_orphaned_notes(empty.getDb().list("select id from cards"));
          Anki2Importer imp = Anki2Importer(empty, col.path);
          imp.run();
          assertTrue(os.listdir(empty.media.dir()) == ["foo.mp3"]);
-         Note n = empty.getNote(empty.db.scalar("select id from notes"));
+         Note n = empty.getNote(empty.getDb().scalar("select id from notes"));
          assertTrue("foo.mp3" in n.fields[0]);
          // if the local file content is different, and import should trigger a
          // rename
-         empty.remove_cards_and_orphaned_notes(empty.db.list("select id from cards"));
+         empty.remove_cards_and_orphaned_notes(empty.getDb().list("select id from cards"));
          with open(os.path.join(empty.media.dir(), "foo.mp3"), "w") as note:
              note.write("bar");
          Anki2Importer imp = Anki2Importer(empty, col.path);
          imp.run();
          assertTrue(sorted(os.listdir(empty.media.dir())) == ["foo.mp3", "foo_%s.mp3" % mid]);
-         Note n = empty.getNote(empty.db.scalar("select id from notes"));
+         Note n = empty.getNote(empty.getDb().scalar("select id from notes"));
          assertTrue("_" in n.fields[0]);
          // if the localized media file already exists, we rewrite the note and
          // media
-         empty.remove_cards_and_orphaned_notes(empty.db.list("select id from cards"));
+         empty.remove_cards_and_orphaned_notes(empty.getDb().list("select id from cards"));
          with open(os.path.join(empty.media.dir(), "foo.mp3"), "w") as note:
              note.write("bar");
          Anki2Importer imp = Anki2Importer(empty, col.path);
          imp.run();
          assertTrue(sorted(os.listdir(empty.media.dir())) == ["foo.mp3", "foo_%s.mp3" % mid]);
          assertTrue(sorted(os.listdir(empty.media.dir())) == ["foo.mp3", "foo_%s.mp3" % mid]);
-         Note n = empty.getNote(empty.db.scalar("select id from notes"));
+         Note n = empty.getNote(empty.getDb().scalar("select id from notes"));
          assertTrue("_" in n.fields[0]);
      }
 
@@ -952,12 +952,12 @@ note.setItem("Back","abc2");
          imp.run();
          assertTrue(os.listdir(col.media.dir()) == ["foo.wav"]);
          // importing again should be idempotent in terms of media
-         col.remove_cards_and_orphaned_notes(col.db.list("select id from cards"));
+         col.remove_cards_and_orphaned_notes(col.getDb().list("select id from cards"));
          AnkiPackageImporter imp = AnkiPackageImporter(col, apkg);
          imp.run();
          assertTrue(os.listdir(col.media.dir()) == ["foo.wav"]);
          // but if the local file has different data, it will rename
-         col.remove_cards_and_orphaned_notes(col.db.list("select id from cards"));
+         col.remove_cards_and_orphaned_notes(col.getDb().list("select id from cards"));
          with open(os.path.join(col.media.dir(), "foo.wav"), "w") as note:
              note.write("xyz");
          imp = AnkiPackageImporter(col, apkg);
@@ -1006,7 +1006,7 @@ note.setItem("Back","abc2");
          assertTrue(imp.updated == 0);
          // importing a newer note should update
          assertTrue(dst.noteCount() == 1);
-         assertTrue(dst.db.scalar("select flds from notes").startswith("hello"));
+         assertTrue(dst.getDb().scalar("select flds from notes").startswith("hello"));
          Collection col = getUpgradeDeckPath("update2.apkg");
          imp = AnkiPackageImporter(dst, col);
          imp.run();
@@ -1014,7 +1014,7 @@ note.setItem("Back","abc2");
          assertTrue(imp.added == 0);
          assertTrue(imp.updated == 1);
          assertTrue(dst.noteCount() == 1);
-         assertTrue(dst.db.scalar("select flds from notes").startswith("goodbye"));
+         assertTrue(dst.getDb().scalar("select flds from notes").startswith("goodbye"));
      }
 
      @Test
@@ -1033,7 +1033,7 @@ note.setItem("Back","abc2");
          assertTrue(len(i.log) == 10);
          assertTrue(i.total == 5);
          // but importing should not clobber tags if they're unmapped
-         Note n = col.getNote(col.db.scalar("select id from notes"));
+         Note n = col.getNote(col.getDb().scalar("select id from notes"));
          n.addTag("test");
          n.flush();
          i.run();
@@ -1190,7 +1190,7 @@ note.setItem("Back","abc2");
          // i.META.logToStdOutput = True
          i.run();
          assertTrue(i.total == 1);
-         long cid = col.db.scalar("select id from cards");
+         long cid = col.getDb().scalar("select id from cards");
          Card c = col.getCard(cid);
          // Applies A Factor-to-E Factor conversion
          assertTrue(c.factor == 2879);
@@ -1201,12 +1201,12 @@ note.setItem("Back","abc2");
      @Test
      public void test_mnemo(){
          Collection col = getEmptyCol();
-         String file = str(os.path.join(testDir, "support/mnemo.db"));
+         String file = str(os.path.join(testDir, "support/mnemo.getDb()"));
          MnemosyneImporter i = MnemosyneImporter(col, file);
          i.run();
          assertTrue(col.cardCount() == 7);
          assertTrue("a_longer_tag" in col.tags.all());
-         assertTrue(col.db.scalar("select count() from cards where type = 0") == 1);
+         assertTrue(col.getDb().scalar("select count() from cards where type = 0") == 1);
          col.close();
      }
 
@@ -1449,7 +1449,7 @@ note.setItem("Back","abc2");
          mm.addTemplate(m, t);
          col.models.remTemplate(m, m["tmpls"][0]);
          assertTrue(();
-             col.db.scalar(;
+             col.getDb().scalar(;
                  "select count() from cards where nid not in (select id from notes)";
          );
              == 0;
@@ -1697,10 +1697,10 @@ note.setItem("Back","abc2");
          assertTrue(len(note.cards()) == 2);
          // back the other way, with deletion of second ord
          col.models.remTemplate(basic, basic["tmpls"][1]);
-         assertTrue(col.db.scalar("select count() from cards where nid = ?", note.getId()) == 2);
+         assertTrue(col.getDb().scalar("select count() from cards where nid = ?", note.getId()) == 2);
          map = {0: 0}
          col.models.change(cloze, [note.getId()], basic, map, map);
-         assertTrue(col.db.scalar("select count() from cards where nid = ?", note.getId()) == 1);
+         assertTrue(col.getDb().scalar("select count() from cards where nid = ?", note.getId()) == 1);
      }
 
      @Test
@@ -1875,7 +1875,7 @@ note.setItem("Back","abc2");
          note.setItem("Back","two");
          Note note = col.addNote(note);
          // set as a learn card and rebuild queues
-         col.db.execute("update cards set queue=0, type=0");
+         col.getDb().execute("update cards set queue=0, type=0");
          col.reset();
          // sched.getCard should return it, since it's due in the past
          Card c = col.getSched().getCard();
@@ -1898,7 +1898,7 @@ note.setItem("Back","abc2");
                 assertTrue(c.left % 1000 == 2);
                 assertTrue(c.left // 1000 == )2
          // check log is accurate
-         log = col.db.first("select * from revlog order by id desc");
+         log = col.getDb().first("select * from revlog order by id desc");
                        assertTrue(log[3] == 2);
                        assertTrue(log[4] == -180);
                        assertTrue(log[5] == -30);
@@ -1925,7 +1925,7 @@ note.setItem("Back","abc2");
                               assertTrue(c.queue == QUEUE_TYPE_REV);
                               assertTrue(checkRevIvl(col, c, 4));
          // revlog should have been updated each time
-                              assertTrue(col.db.scalar("select count() from revlog where type = 0") == 5);
+                              assertTrue(col.getDb().scalar("select count() from revlog where type = 0") == 5);
          // now failed card handling
          c.type = CARD_TYPE_REV;
          c.queue = 1;
@@ -1956,7 +1956,7 @@ note.setItem("Back","abc2");
          note.setItem("Front","2");
          Note note = col.addNote(note);
          // set as a learn card and rebuild queues
-         col.db.execute("update cards set queue=0, type=0");
+         col.getDb().execute("update cards set queue=0, type=0");
          col.reset();
          // should get '1' first
          Card c = col.getSched().getCard();
@@ -2374,7 +2374,7 @@ note.setItem("Back","abc2");
          assertTrue(c.odue == 138);
          assertTrue(c.queue == QUEUE_TYPE_LRN);
          // should be logged as a cram rep
-         assertTrue(col.db.scalar("select type from revlog order by id desc limit 1") == 3);
+         assertTrue(col.getDb().scalar("select type from revlog order by id desc limit 1") == 3);
          // check ivls again
          assertTrue(col.getSched().nextIvl(c, 1) == 60);
          assertTrue(col.getSched().nextIvl(c, 2) == 138 * 60 * 60 * 24);
@@ -3062,7 +3062,7 @@ note.setItem("Back","abc2");
          note.setItem("Back","two");
          Note note = col.addNote(note);
          // set as a learn card and rebuild queues
-         col.db.execute("update cards set queue=0, type=0");
+         col.getDb().execute("update cards set queue=0, type=0");
          col.reset();
          // sched.getCard should return it, since it's due in the past
          Card c = col.getSched().getCard();
@@ -3086,7 +3086,7 @@ note.setItem("Back","abc2");
                 assertTrue(c.left % 1000 == 2);
                 assertTrue(c.left // 1000 == )2
          // check log is accurate
-         log = col.db.first("select * from revlog order by id desc");
+         log = col.getDb().first("select * from revlog order by id desc");
                        assertTrue(log[3] == 3);
                        assertTrue(log[4] == -180);
                        assertTrue(log[5] == -30);
@@ -3114,7 +3114,7 @@ note.setItem("Back","abc2");
                               assertTrue(c.queue == QUEUE_TYPE_REV);
                               assertTrue(checkRevIvl(col, c, 4));
          // revlog should have been updated each time
-                              assertTrue(col.db.scalar("select count() from revlog where type = 0") == 5);
+                              assertTrue(col.getDb().scalar("select count() from revlog where type = 0") == 5);
      }
 
      @Test
@@ -3180,7 +3180,7 @@ note.setItem("Back","abc2");
          note.setItem("Front","2");
          Note note = col.addNote(note);
          // set as a learn card and rebuild queues
-         col.db.execute("update cards set queue=0, type=0");
+         col.getDb().execute("update cards set queue=0, type=0");
          col.reset();
          // should get '1' first
          Card c = col.getSched().getCard();
@@ -3683,7 +3683,7 @@ note.setItem("Back","abc2");
          // should not be in learning
          assertTrue(c.queue == QUEUE_TYPE_REV);
          // should be logged as a cram rep
-         assertTrue(col.db.scalar("select type from revlog order by id desc limit 1") == 3);
+         assertTrue(col.getDb().scalar("select type from revlog order by id desc limit 1") == 3);
 
          // due in 75 days, so it's been waiting 25 days
          c.ivl = 100;
@@ -4260,7 +4260,7 @@ note.setItem("Back","abc2");
          expected = time.time() + 5.5 * 60;
          assertTrue(expected - 10 < c.due < expected * 1.25);
 
-         ivl = col.db.scalar("select ivl from revlog");
+         ivl = col.getDb().scalar("select ivl from revlog");
          assertTrue(ivl == -5.5 * 60);
      }
      /*****************
