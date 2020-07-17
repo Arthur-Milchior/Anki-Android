@@ -27,7 +27,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Front","1");
          note.setItem("Back","2");
          col.addNote(note);
-         long cid = note.cards()[0].getId();
+         long cid = note.cards().get(0).getId();
          col.reset();
          col.getSched().answerCard(col.getSched().getCard(), 2);
          col.remove_cards_and_orphaned_notes([cid]);
@@ -45,7 +45,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Front","1");
          note.setItem("Back","2");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          long id = col.getModels().current()["id"];
          assertTrue(c.template()["ord"] == 0);
      }
@@ -92,7 +92,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Text","{{c1::one}}");
          col.addNote(note);
          assertTrue(col.cardCount() == 1);
-         assertTrue(note.cards()[0].did == 1);
+         assertTrue(note.cards().get(0).did == 1);
          // set the model to a new default col
          long newid = col.decks.getId()("new");
          cloze["did"] = newId;
@@ -177,7 +177,7 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(n == 2);
          assertTrue(col.cardCount() == 4);
          // check q/a generation
-         Card c0 = note.cards()[0];
+         Card c0 = note.cards().get(0);
          assertTrue("three" in c0.q());
          // it should not be a duplicate
          assertTrue(not note.dupeOrEmpty());
@@ -247,7 +247,7 @@ public class UpstreamTest extends RobolectricTest {
          Note n = col.newNote();
          n["Front"] = "foo[abc]";
          col.addNote(n);
-         Card c = n.cards()[0];
+         Card c = n.cards().get(0);
          assertTrue(c.q().endswith("abc"));
          // and should avoid sound
          n["Front"] = "foo[sound:abc.mp3]";
@@ -338,7 +338,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Front","1");
          note.model()["did"] = deck1;
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          assertTrue(c.did == deck1);
          assertTrue(col.cardCount() == 1);
          col.decks.rem(deck1);
@@ -605,7 +605,7 @@ public class UpstreamTest extends RobolectricTest {
          note.tags.append("monkey animal_1 * %");
          col.addNote(note);
          long f1id = note.getId();
-         firstCarlong did = note.cards()[0].getId();
+         firstCarlong did = note.cards().get(0).getId();
          Note note = col.newNote();
          note.setItem("Front","goats are fun");
          note.setItem("Back","sheep");
@@ -616,7 +616,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Front","cat");
          note.setItem("Back","sheep");
          col.addNote(note);
-         catCard = note.cards()[0];
+         catCard = note.cards().get(0);
          Model m = col.getModels().current();
          Model m = col.getModels().copy(m);
          Models mm = col.getModels();
@@ -658,7 +658,7 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(len(col.findCards('"are goats"')) == 0);
          assertTrue(len(col.findCards('"goats are"')) == 1);
          // card states
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.queue = c.type = CARD_TYPE_REV;
          assertTrue(col.findCards("is:review") == []);
          c.flush();
@@ -985,7 +985,7 @@ note.setItem("Back","abc2");
          // the front template should contain the text added in the 2nd package
          tlong cid = dst.findCards("")[0]  // only 1 note in collection
          tNote note = dst.getCard(tcid).note();
-         assertTrue("Changed Front Template" in tnote.cards()[0].template()["qfmt"]);
+         assertTrue("Changed Front Template" in tnote.cards().get(0).template()["qfmt"]);
      }
 
      @Test
@@ -1221,7 +1221,7 @@ note.setItem("Back","abc2");
          n["Front"] = "one";
          n["Back"] = "two";
          int cnt = col.addNote(n);
-         Card c = n.cards()[0];
+         Card c = n.cards().get(0);
          // make sure higher bits are preserved
          int origBits = 0b101 << 3;
          c.flags = origBits;
@@ -1441,7 +1441,7 @@ note.setItem("Back","abc2");
          col.getModels().remTemplate(m, m["tmpls"][0]);
          assertTrue(col.cardCount() == 1);
          // and should have updated the other cards' ordinals
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          assertTrue(c.ord == 0);
          assertTrue(stripHTML(c.q()) == "1");
          // it shouldn't be possible to orphan notes by removing templates
@@ -1490,7 +1490,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","hello<b>world");
          col.addNote(note);
-         assertTrue("helloworld" in note.cards()[0].q());
+         assertTrue("helloworld" in note.cards().get(0).q());
      }
 
      @Test
@@ -1506,14 +1506,14 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Text","hello {{c1::world}}");
          assertTrue(col.addNote(note) == 1);
-         assertTrue("hello <span class=cloze>[...]</span>" in note.cards()[0].q());
-         assertTrue("hello <span class=cloze>world</span>" in note.cards()[0].a());
+         assertTrue("hello <span class=cloze>[...]</span>" in note.cards().get(0).q());
+         assertTrue("hello <span class=cloze>world</span>" in note.cards().get(0).a());
          // and with a comment
          Note note = col.newNote();
          note.setItem("Text","hello {{c1::world::typical}}");
          assertTrue(col.addNote(note) == 1);
-         assertTrue("<span class=cloze>[typical]</span>" in note.cards()[0].q());
-         assertTrue("<span class=cloze>world</span>" in note.cards()[0].a());
+         assertTrue("<span class=cloze>[typical]</span>" in note.cards().get(0).q());
+         assertTrue("<span class=cloze>world</span>" in note.cards().get(0).a());
          // and with 2 clozes
          Note note = col.newNote();
          note.setItem("Text","hello {{c1::world}} {{c2::bar}}");
@@ -1529,7 +1529,7 @@ note.setItem("Back","abc2");
          note.setItem("Text","a {{c1::b}} {{c1::c}}");
          assertTrue(col.addNote(note) == 1);
          assertTrue("<span class=cloze>b</span> <span class=cloze>c</span>" in ();
-             note.cards()[0].a();
+             note.cards().get(0).a();
      );
          // if we add another cloze, a card should be generated
          cnt = col.cardCount();
@@ -1552,7 +1552,7 @@ note.setItem("Back","abc2");
          ] = r"{{c1::ok}} \(2^2\) {{c2::not ok}} \(2^{{c3::2}}\) \(x^3\) {{c4::blah}} {{c5::text with \(x^2\) jax}}";
          assertTrue(col.addNote(note));
          assertTrue(len(note.cards()) == 5);
-         assertTrue("class=cloze" in note.cards()[0].q());
+         assertTrue("class=cloze" in note.cards().get(0).q());
          assertTrue("class=cloze" in note.cards()[1].q());
          assertTrue("class=cloze" not in note.cards()[2].q());
          assertTrue("class=cloze" in note.cards()[3].q());
@@ -1563,7 +1563,7 @@ note.setItem("Back","abc2");
          assertTrue(col.addNote(note));
          assertTrue(len(note.cards()) == 1);
          assertTrue(();
-             note.cards()[0];
+             note.cards().get(0);
              .q();
              .endswith(r"\(a\) <span class=cloze>[...]</span> \[ [...] \]");
      );
@@ -1579,7 +1579,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Text","hello {{c1::world}}");
          col.addNote(note);
-         assertTrue("[[type:cloze:Text]]" in note.cards()[0].q());
+         assertTrue("[[type:cloze:Text]]" in note.cards().get(0).q());
      }
 
      @Test
@@ -1611,11 +1611,11 @@ note.setItem("Back","abc2");
          assertTrue(col.addNote(note) == 1);
          assertTrue(();
              "This <span class=cloze>[sentence]</span> demonstrates <span class=cloze>[chained]</span> clozes.";
-             in note.cards()[0].q();
+             in note.cards().get(0).q();
      );
          assertTrue(();
              "This <span class=cloze>phrase</span> demonstrates <span class=cloze>en chaine</span> clozes.";
-             in note.cards()[0].a();
+             in note.cards().get(0).a();
      );
      }
 
@@ -1643,7 +1643,7 @@ note.setItem("Back","abc2");
          assertTrue(note.setItem("Front","b123"));
          assertTrue(note.setItem("Back","note"));
          // switch cards
-         Card c0 = note.cards()[0];
+         Card c0 = note.cards().get(0);
          Card c1 = note.cards()[1];
          assertTrue("b123" in c0.q());
          assertTrue("note" in c1.q());
@@ -1658,7 +1658,7 @@ note.setItem("Back","abc2");
          assertTrue(c0.ord == 1);
          assertTrue(c1.ord == 0);
          // .cards() returns cards in order
-         assertTrue(note.cards()[0].getId() == c1.getId());
+         assertTrue(note.cards().get(0).getId() == c1.getId());
          // delete first card
          map = {0: None, 1: 1}
          if isWin:
@@ -2046,7 +2046,7 @@ note.setItem("Back","abc2");
          note.setItem("Back","two");
          col.addNote(note);
          // set the card up as a review card, due 8 days ago
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
          c.due = col.getSched().today - 8;
@@ -2126,7 +2126,7 @@ note.setItem("Back","abc2");
          note.setItem("Front","one");
          col.addNote(note);
          // 1 day ivl review card due now
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
          c.due = col.getSched().today;
@@ -2152,7 +2152,7 @@ note.setItem("Back","abc2");
          note.setItem("Front","one");
          col.addNote(note);
          // simulate a review that was lapsed and is now due for its normal review
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = 1;
          c.due = -1;
@@ -2193,7 +2193,7 @@ note.setItem("Back","abc2");
          assertTrue("new cards available" in col.getSched().finishedMsg());
          // turn it into a review
          col.reset();
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.startTimer();
          col.getSched().answerCard(c, 3);
          // nothing should be due tomorrow, as it's due in a week
@@ -2268,7 +2268,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          // burying
          col.getSched().buryNote(c.nid);
          col.reset();
@@ -2284,7 +2284,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          // suspending
          col.reset();
          assertTrue(col.getSched().getCard());
@@ -2333,7 +2333,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.ivl = 100;
          c.queue = CARD_TYPE_REV;
          c.type = QUEUE_TYPE_REV;
@@ -2446,7 +2446,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         oldDue = note.cards()[0].due;
+         oldDue = note.cards().get(0).due;
          long did = col.decks.newDyn("Cram");
          col.getSched().rebuildDyn(did);
          col.reset();
@@ -2667,7 +2667,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","three");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
          c.due = col.getSched().today;
@@ -2686,7 +2686,7 @@ note.setItem("Back","abc2");
              Note note = col.newNote();
          note.setItem("Front","num") + str(i);
              col.addNote(note);
-             Card c = note.cards()[0];
+             Card c = note.cards().get(0);
              c.type = CARD_TYPE_REV;
              c.queue = QUEUE_TYPE_REV;
              c.due = 0;
@@ -2743,7 +2743,7 @@ note.setItem("Back","abc2");
          default1 = note.model()["did"] = col.decks.getId()("Default::1");
          col.addNote(note);
          // make it a review card
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.queue = QUEUE_TYPE_REV;
          c.due = 0;
          c.flush();
@@ -2813,17 +2813,17 @@ note.setItem("Back","abc2");
          Note note2 = col.newNote();
          note2.setItem("Front","two");
          col.addNote(note2);
-         assertTrue(note2.cards()[0].due == 2);
+         assertTrue(note2.cards().get(0).due == 2);
          found = False;
          // 50/50 chance of being reordered
          for i in range(20):
              col.getSched().randomizeCards(1);
-             if note.cards()[0].due != note.getId():
+             if note.cards().get(0).due != note.getId():
                  found = True;
                  break;
                  assertTrue(found);
          col.getSched().orderCards(1);
-         assertTrue(note.cards()[0].due == 1);
+         assertTrue(note.cards().get(0).due == 1);
          // shifting
          note3 = col.newNote();
          note3.setItem("Front","three");
@@ -2831,15 +2831,15 @@ note.setItem("Back","abc2");
          note4 = col.newNote();
          note4.setItem("Front","four");
          col.addNote(note4);
-         assertTrue(note.cards()[0].due == 1);
-         assertTrue(note2.cards()[0].due == 2);
-         assertTrue(note3.cards()[0].due == 3);
-         assertTrue(note4.cards()[0].due == 4);
-         col.getSched().sortCards([note3.cards()[0].getId(), note4.cards()[0].getId()], start=1, shift=True);
-         assertTrue(note.cards()[0].due == 3);
-         assertTrue(note2.cards()[0].due == 4);
-         assertTrue(note3.cards()[0].due == 1);
-         assertTrue(note4.cards()[0].due == 2);
+         assertTrue(note.cards().get(0).due == 1);
+         assertTrue(note2.cards().get(0).due == 2);
+         assertTrue(note3.cards().get(0).due == 3);
+         assertTrue(note4.cards().get(0).due == 4);
+         col.getSched().sortCards([note3.cards().get(0).getId(), note4.cards().get(0).getId()], start=1, shift=True);
+         assertTrue(note.cards().get(0).due == 3);
+         assertTrue(note2.cards().get(0).due == 4);
+         assertTrue(note3.cards().get(0).due == 1);
+         assertTrue(note4.cards().get(0).due == 2);
      }
 
      @Test
@@ -2848,7 +2848,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.queue = QUEUE_TYPE_REV;
          c.type = CARD_TYPE_REV;
          c.ivl = 100;
@@ -2867,7 +2867,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          col.getSched().reschedCards([c.getId()], 0, 0);
          c.load();
          assertTrue(c.due == col.getSched().today);
@@ -2886,7 +2886,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
          c.due = 0;
@@ -2909,7 +2909,7 @@ note.setItem("Back","abc2");
          note.setItem("Front","one");
          note.setItem("Back","two");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
          c.ivl = 100;
@@ -3123,7 +3123,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.ivl = 100;
          c.due = col.getSched().today;
          c.queue = CARD_TYPE_REV;
@@ -3151,7 +3151,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.ivl = 100;
          c.due = col.getSched().today;
          c.queue = CARD_TYPE_REV;
@@ -3270,7 +3270,7 @@ note.setItem("Back","abc2");
          note.setItem("Back","two");
          col.addNote(note);
          // set the card up as a review card, due 8 days ago
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
          c.due = col.getSched().today - 8;
@@ -3368,7 +3368,7 @@ note.setItem("Back","abc2");
              col.addNote(note);
 
              // make them reviews
-             Card c = note.cards()[0];
+             Card c = note.cards().get(0);
              c.queue = CARD_TYPE_REV;
              c.type = QUEUE_TYPE_REV;
              c.due = 0;
@@ -3401,7 +3401,7 @@ note.setItem("Back","abc2");
          note.setItem("Front","one");
          col.addNote(note);
          // 1 day ivl review card due now
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
          c.due = col.getSched().today;
@@ -3433,7 +3433,7 @@ note.setItem("Back","abc2");
          note.setItem("Front","one");
          col.addNote(note);
          // simulate a review that was lapsed and is now due for its normal review
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = 1;
          c.due = -1;
@@ -3474,7 +3474,7 @@ note.setItem("Back","abc2");
          assertTrue("new cards available" in col.getSched().finishedMsg());
          // turn it into a review
          col.reset();
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.startTimer();
          col.getSched().answerCard(c, 3);
          // nothing should be due tomorrow, as it's due in a week
@@ -3552,11 +3552,11 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          Note note = col.newNote();
          note.setItem("Front","two");
          col.addNote(note);
-         c2 = note.cards()[0];
+         c2 = note.cards().get(0);
          // burying
          col.getSched().buryCards([c.getId()], manual=True)  // pylint: disable=unexpected-keyword-arg
          c.load();
@@ -3596,7 +3596,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          // suspending
          col.reset();
          assertTrue(col.getSched().getCard());
@@ -3647,7 +3647,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.ivl = 100;
          c.queue = CARD_TYPE_REV;
          c.type = QUEUE_TYPE_REV;
@@ -3750,7 +3750,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          orig = copy.copy(c);
          Note note2 = col.newNote();
          note2.setItem("Front","two");
@@ -3890,7 +3890,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","three");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
          c.due = col.getSched().today;
@@ -3909,7 +3909,7 @@ note.setItem("Back","abc2");
              Note note = col.newNote();
          note.setItem("Front","num") + str(i);
              col.addNote(note);
-             Card c = note.cards()[0];
+             Card c = note.cards().get(0);
              c.type = CARD_TYPE_REV;
              c.queue = QUEUE_TYPE_REV;
              c.due = 0;
@@ -3958,7 +3958,7 @@ note.setItem("Back","abc2");
          default1 = note.model()["did"] = col.decks.getId()("Default::1");
          col.addNote(note);
          // make it a review card
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.queue = QUEUE_TYPE_REV;
          c.due = 0;
          c.flush();
@@ -4039,17 +4039,17 @@ note.setItem("Back","abc2");
          Note note2 = col.newNote();
          note2.setItem("Front","two");
          col.addNote(note2);
-         assertTrue(note2.cards()[0].due == 2);
+         assertTrue(note2.cards().get(0).due == 2);
          found = False;
          // 50/50 chance of being reordered
          for i in range(20):
              col.getSched().randomizeCards(1);
-             if note.cards()[0].due != note.getId():
+             if note.cards().get(0).due != note.getId():
                  found = True;
                  break;
                  assertTrue(found);
          col.getSched().orderCards(1);
-         assertTrue(note.cards()[0].due == 1);
+         assertTrue(note.cards().get(0).due == 1);
          // shifting
          note3 = col.newNote();
          note3.setItem("Front","three")b;
@@ -4057,15 +4057,15 @@ note.setItem("Back","abc2");
          note4 = col.newNote();
          note4.setItem("Front","four");
          col.addNote(note4);
-         assertTrue(note.cards()[0].due == 1);
-         assertTrue(note2.cards()[0].due == 2);
-         assertTrue(note3.cards()[0].due == 3);
-         assertTrue(note4.cards()[0].due == 4);
-         col.getSched().sortCards([note3.cards()[0].getId(), note4.cards()[0].getId()], start=1, shift=True);
-         assertTrue(note.cards()[0].due == 3);
-         assertTrue(note2.cards()[0].due == 4);
-         assertTrue(note3.cards()[0].due == 1);
-         assertTrue(note4.cards()[0].due == 2);
+         assertTrue(note.cards().get(0).due == 1);
+         assertTrue(note2.cards().get(0).due == 2);
+         assertTrue(note3.cards().get(0).due == 3);
+         assertTrue(note4.cards().get(0).due == 4);
+         col.getSched().sortCards([note3.cards().get(0).getId(), note4.cards().get(0).getId()], start=1, shift=True);
+         assertTrue(note.cards().get(0).due == 3);
+         assertTrue(note2.cards().get(0).due == 4);
+         assertTrue(note3.cards().get(0).due == 1);
+         assertTrue(note4.cards().get(0).due == 2);
      }
 
      @Test
@@ -4074,7 +4074,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.queue = QUEUE_TYPE_REV;
          c.type = CARD_TYPE_REV;
          c.ivl = 100;
@@ -4093,7 +4093,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          col.getSched().reschedCards([c.getId()], 0, 0);
          c.load();
          assertTrue(c.due == col.getSched().today);
@@ -4112,7 +4112,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
          c.due = 0;
@@ -4135,7 +4135,7 @@ note.setItem("Back","abc2");
          note.setItem("Front","one");
          note.setItem("Back","two");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
          c.ivl = 100;
@@ -4225,7 +4225,7 @@ note.setItem("Back","abc2");
          note.setItem("Front","one");
          note.setItem("Back","two");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          c.due = -5;
          c.queue = QUEUE_TYPE_REV;
          c.ivl = 5;
@@ -4273,7 +4273,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Front","foo");
          col.addNote(note);
-         Card c = note.cards()[0];
+         Card c = note.cards().get(0);
          // card stats
          assertTrue(col.cardStats(c));
          col.reset();
@@ -4315,7 +4315,7 @@ note.setItem("Back","abc2");
          note.setItem("Back","");
          col.addNote(note);
 
-         assertTrue("xxtest" in note.cards()[0].a());
+         assertTrue("xxtest" in note.cards().get(0).a());
      }
      /*****************
           ** Undo         *
