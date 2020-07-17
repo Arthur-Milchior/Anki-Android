@@ -27,7 +27,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Front","1");
          note.setItem("Back","2");
          col.addNote(note);
-         long cid = note.cards()[0].id;
+         long cid = note.cards()[0].getId();
          col.reset();
          col.getSched().answerCard(col.getSched().getCard(), 2);
          col.remove_cards_and_orphaned_notes([cid]);
@@ -94,7 +94,7 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(col.cardCount() == 1);
          assertTrue(note.cards()[0].did == 1);
          // set the model to a new default col
-         long newid = col.decks.id("new");
+         long newid = col.decks.getId()("new");
          cloze["did"] = newId;
          col.models.save(cloze, updateReqs=False);
          // a newly generated card should share the first card's col
@@ -215,13 +215,13 @@ public class UpstreamTest extends RobolectricTest {
          note2.setItem("Front","2");
          col.addNote(note2);
          // adding for a given id
-         col.tags.bulkAdd([note.id], "foo");
+         col.tags.bulkAdd([note.getId()], "foo");
          note.load();
          note2.load();
          assertTrue("foo" in note.tags);
          assertTrue("foo" not in note2.tags);
          // should be canonified
-         col.tags.bulkAdd([note.id], "foo aaa");
+         col.tags.bulkAdd([note.getId()], "foo aaa");
          note.load();
          assertTrue(note.tags[0] == "aaa");
          assertTrue(len(note.tags) == 2);
@@ -297,11 +297,11 @@ public class UpstreamTest extends RobolectricTest {
          // it should have an id of 1
          assertTrue(col.decks.name(1));
          // create a new col
-         long parentId = col.decks.id("new deck");
+         long parentId = col.decks.getId()("new deck");
          assertTrue(parentId);
          assertTrue(len(col.decks.all_names_and_ids()) == 2);
          // should get the same id
-         assertTrue(col.decks.id("new deck") == parentId);
+         assertTrue(col.decks.getId()("new deck") == parentId);
          // we start with the default col selected
          assertTrue(col.decks.selected() == 1);
          assertTrue(col.decks.active() == [1]);
@@ -310,7 +310,7 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(col.decks.selected() == parentId);
          assertTrue(col.decks.active() == [parentId]);
          // let's create a child
-         long childId = col.decks.id("new deck::child");
+         long childId = col.decks.getId()("new deck::child");
          col.getSched().reset();
          // it should have been added to the active list
          assertTrue(col.decks.selected() == parentId);
@@ -320,9 +320,9 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(col.decks.selected() == childId);
          assertTrue(col.decks.active() == [childId]);
          // parents with a different case should be handled correctly
-         col.decks.id("ONE");
+         col.decks.getId()("ONE");
          Model m = col.models.current();
-         m["did"] = col.decks.id("one::two");
+         m["did"] = col.decks.getId()("one::two");
          col.models.save(m, updateReqs=False);
          Note n = col.newNote();
          n["Front"] = "abc";
@@ -333,7 +333,7 @@ public class UpstreamTest extends RobolectricTest {
      public void test_remove(){
          Collection col = getEmptyCol();
          // create a new col, and add a note/card to it
-         long deck1 = col.decks.id("deck1");
+         long deck1 = col.decks.getId()("deck1");
          Note note = col.newNote();
          note.setItem("Front","1");
          note.model()["did"] = deck1;
@@ -350,7 +350,7 @@ public class UpstreamTest extends RobolectricTest {
      @Test
      public void test_rename(){
          Collection col = getEmptyCol();
-         long id = col.decks.id("hello::world");
+         long id = col.decks.getId()("hello::world");
          // should be able to rename into a completely different branch, creating
          // parents as necessary
          col.decks.rename(col.decks.get(id), "foo::bar");
@@ -359,14 +359,14 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue("foo::bar" in names);
          assertTrue("hello::world" not in names);
          // create another col
-         long id = col.decks.id("tmp");
+         long id = col.decks.getId()("tmp");
          // automatically adjusted if a duplicate name
          col.decks.rename(col.decks.get(id), "FOO");
          names = [n.name for n in col.decks.all_names_and_ids()];
          assertTrue("FOO+" in names);
          // when renaming, the children should be renamed too
-         col.decks.id("one::two::three");
-         long id = col.decks.id("one");
+         col.decks.getId()("one::two::three");
+         long id = col.decks.getId()("one");
          col.decks.rename(col.decks.get(id), "yo");
          names = [n.name for n in col.decks.all_names_and_ids()];
          for n in "yo", "yo::two", "yo::two::three":
@@ -374,7 +374,7 @@ public class UpstreamTest extends RobolectricTest {
          // over filtered
          long filteredId = col.decks.newDyn("filtered");
          Deck filtered = col.decks.get(filteredId);
-         long childId = col.decks.id("child");
+         long childId = col.decks.getId()("child");
          Deck child = col.decks.get(childId);
          assertException(DeckRenameError, lambda: col.decks.rename(child, "filtered::child"));
          assertException(DeckRenameError, lambda: col.decks.rename(child, "FILTERED::child"));
@@ -387,9 +387,9 @@ public class UpstreamTest extends RobolectricTest {
          def deckNames():
              return [n.name for n in col.decks.all_names_and_ids(skip_empty_default=True)];
 
-         long languages_did = col.decks.id("Languages");
-         long chinese_did = col.decks.id("Chinese");
-         long hsk_did = col.decks.id("Chinese::HSK");
+         long languages_did = col.decks.getId()("Languages");
+         long chinese_did = col.decks.getId()("Chinese");
+         long hsk_did = col.decks.getId()("Chinese::HSK");
 
          // Renaming also renames children
          col.decks.renameForDragAndDrop(chinese_did, languages_did);
@@ -424,7 +424,7 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(deckNames() == ["Chinese", "Chinese::HSK", "Languages"]);
 
          // decks are renamed if necessary
-         long new_hsk_did = col.decks.id("hsk");
+         long new_hsk_did = col.decks.getId()("hsk");
          col.decks.renameForDragAndDrop(new_hsk_did, chinese_did);
          assertTrue(deckNames() == ["Chinese", "Chinese::HSK", "Chinese::hsk+", "Languages"]);
          col.decks.rem(new_hsk_did);
@@ -449,7 +449,7 @@ public class UpstreamTest extends RobolectricTest {
          Note note = col.newNote();
          note.setItem("Front","baz");
          note.setItem("Back","qux");
-         note.model()["did"] = col.decks.id("new col");
+         note.model()["did"] = col.decks.getId()("new col");
          col.addNote(note);
      }
 
@@ -461,7 +461,7 @@ public class UpstreamTest extends RobolectricTest {
      public void test_export_anki(){
          setup1();
          // create a new col with its own conf to test conf copying
-         long did = col.decks.id("test");
+         long did = col.decks.getId()("test");
          Deck dobj = col.decks.get(did);
          long confId = col.decks.add_config_returning_id("newconf");
          DeckConfig conf = col.decks.get_config(confId);
@@ -482,7 +482,7 @@ public class UpstreamTest extends RobolectricTest {
          Collection col2 = aopen(newname);
          assertTrue(col2.cardCount() == 2);
          // as scheduling was reset, should also revert decks to default conf
-         long did = col2.decks.id("test", create=False);
+         long did = col2.decks.getId()("test", create=False);
          assertTrue(did);
          conf2 = col2.decks.confForDid(did);
          assertTrue(conf2["new"]["perDay"] == 20);
@@ -549,7 +549,7 @@ public class UpstreamTest extends RobolectricTest {
          col2 = getEmptyCol();
          imp = Anki2Importer(col2, newname);
          imp.run();
-         Card c = col2.getCard(c.id);
+         Card c = col2.getCard(c.getId());
          col2.getSched().reset();
          assertTrue(c.due - col2.getSched().today == 1);
      }
@@ -604,14 +604,14 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Back","cat");
          note.tags.append("monkey animal_1 * %");
          col.addNote(note);
-         long f1id = note.id;
-         firstCarlong did = note.cards()[0].id;
+         long f1id = note.getId();
+         firstCarlong did = note.cards()[0].getId();
          Note note = col.newNote();
          note.setItem("Front","goats are fun");
          note.setItem("Back","sheep");
          note.tags.append("sheep goat horse animal11");
          col.addNote(note);
-         long f2id = note.id;
+         long f2id = note.getId();
          Note note = col.newNote();
          note.setItem("Front","cat");
          note.setItem("Back","sheep");
@@ -630,7 +630,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Back","foo bar");
          col.addNote(note);
          col.save();
-         long[] latestCardIds = [c.id for c in note.cards()];
+         long[] latestCardIds = [c.getId() for c in note.cards()];
          // tag searches
          assertTrue(len(col.findCards("tag:*")) == 5);
          assertTrue(len(col.findCards("tag:\\*")) == 1);
@@ -662,21 +662,21 @@ public class UpstreamTest extends RobolectricTest {
          c.queue = c.type = CARD_TYPE_REV;
          assertTrue(col.findCards("is:review") == []);
          c.flush();
-         assertTrue(col.findCards("is:review") == [c.id]);
+         assertTrue(col.findCards("is:review") == [c.getId()]);
          assertTrue(col.findCards("is:due") == []);
          c.due = 0;
          c.queue = QUEUE_TYPE_REV;
          c.flush();
-         assertTrue(col.findCards("is:due") == [c.id]);
+         assertTrue(col.findCards("is:due") == [c.getId()]);
          assertTrue(len(col.findCards("-is:due")) == 4);
          c.queue = -1;
          // ensure this card gets a later mod time
          c.flush();
-         col.db.execute("update cards set mod = mod + 1 where long id = ?", c.id);
-         assertTrue(col.findCards("is:suspended") == [c.id]);
+         col.db.execute("update cards set mod = mod + 1 where long id = ?", c.getId());
+         assertTrue(col.findCards("is:suspended") == [c.getId()]);
          // nids
          assertTrue(col.findCards("nid:54321") == []);
-         assertTrue(len(col.findCards(f"nid:{note.id}")) == 2);
+         assertTrue(len(col.findCards(f"nid:{note.getId()}")) == 2);
          assertTrue(len(col.findCards(f"nid:{f1id},{f2id}")) == 2);
          // templates
          assertTrue(len(col.findCards("card:foo")) == 0);
@@ -699,7 +699,7 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(col.findCards("", order=True)[-1] in latestCardIds);
          col.conf["sortType"] = "noteFld";
          col.flush();
-         assertTrue(col.findCards("", order=True)[0] == catCard.id);
+         assertTrue(col.findCards("", order=True)[0] == catCard.getId());
          assertTrue(col.findCards("", order=True)[-1] in latestCardIds);
          col.conf["sortType"] = "cardMod";
          col.flush();
@@ -747,7 +747,7 @@ public class UpstreamTest extends RobolectricTest {
          // should be able to limit to parent col, no children
  long id = col.db.scalar("select id from cards limit 1");
          col.db.execute(;
-             "update cards set long did = ? where long id = ?", col.decks.id("Default::Child"), id;
+             "update cards set long did = ? where long id = ?", col.decks.getId()("Default::Child"), id;
      );
          col.save();
          assertTrue(len(col.findCards("deck:default")) == 7);
@@ -826,7 +826,7 @@ note.setItem("Back","abc2");
          note2.setItem("Front","baz");
          note2.setItem("Back","foo");
          col.addNote(note2);
-         nids = [note.id, note2.id];
+         nids = [note.getId(), note2.getId()];
          // should do nothing
          assertTrue(col.findReplace(nids, "abc", "123") == 0);
          // global replace
@@ -1231,7 +1231,7 @@ note.setItem("Back","abc2");
          assertTrue(len(col.findCards("flag:0")) == 1);
          assertTrue(len(col.findCards("flag:1")) == 0);
          // set flag 2
-         col.setUserFlag(2, [c.id]);
+         col.setUserFlag(2, [c.getId()]);
          c.load();
          assertTrue(c.userFlag() == 2);
          assertTrue(c.flags & origBits == origBits);
@@ -1239,11 +1239,11 @@ note.setItem("Back","abc2");
          assertTrue(len(col.findCards("flag:2")) == 1);
          assertTrue(len(col.findCards("flag:3")) == 0);
          // change to 3
-         col.setUserFlag(3, [c.id]);
+         col.setUserFlag(3, [c.getId()]);
          c.load();
          assertTrue(c.userFlag() == 3);
          // unset
-         col.setUserFlag(0, [c.id]);
+         col.setUserFlag(0, [c.getId()]);
          c.load();
          assertTrue(c.userFlag() == 0);
 
@@ -1638,7 +1638,7 @@ note.setItem("Back","abc2");
          col.addNote(note);
          // switch fields
          map = {0: 1, 1: 0}
-         col.models.change(basic, [note.id], basic, map, None);
+         col.models.change(basic, [note.getId()], basic, map, None);
          note.load();
          assertTrue(note.setItem("Front","b123"));
          assertTrue(note.setItem("Back","note"));
@@ -1649,7 +1649,7 @@ note.setItem("Back","abc2");
          assertTrue("note" in c1.q());
          assertTrue(c0.ord == 0);
          assertTrue(c1.ord == 1);
-         col.models.change(basic, [note.id], basic, None, map);
+         col.models.change(basic, [note.getId()], basic, None, map);
          note.load();
          c0.load();
          c1.load();
@@ -1658,13 +1658,13 @@ note.setItem("Back","abc2");
          assertTrue(c0.ord == 1);
          assertTrue(c1.ord == 0);
          // .cards() returns cards in order
-         assertTrue(note.cards()[0].id == c1.id);
+         assertTrue(note.cards()[0].getId() == c1.getId());
          // delete first card
          map = {0: None, 1: 1}
          if isWin:
              // The low precision timer on Windows reveals a race condition
              time.sleep(0.05);
-         col.models.change(basic, [note.id], basic, None, map);
+         col.models.change(basic, [note.getId()], basic, None, map);
          note.load();
          c0.load();
          // the card was deleted
@@ -1678,7 +1678,7 @@ note.setItem("Back","abc2");
          // an unmapped field becomes blank
              assertTrue(note.setItem("Front","b123"));
              assertTrue(note.setItem("Back","note"));
-         col.models.change(basic, [note.id], basic, map, None);
+         col.models.change(basic, [note.getId()], basic, map, None);
          note.load();
          assertTrue(note.setItem("Front",""));
          assertTrue(note.setItem("Back","note"));
@@ -1691,16 +1691,16 @@ note.setItem("Back","abc2");
          assertTrue(next(c.use_count for c in counts if c.name == "Basic") == 2);
          assertTrue(next(c.use_count for c in counts if c.name == "Cloze") == 0);
          map = {0: 0, 1: 1}
-         col.models.change(basic, [note.id], cloze, map, map);
+         col.models.change(basic, [note.getId()], cloze, map, map);
          note.load();
          assertTrue(note.setItem("Text","f2"));
          assertTrue(len(note.cards()) == 2);
          // back the other way, with deletion of second ord
          col.models.remTemplate(basic, basic["tmpls"][1]);
-         assertTrue(col.db.scalar("select count() from cards where nid = ?", note.id) == 2);
+         assertTrue(col.db.scalar("select count() from cards where nid = ?", note.getId()) == 2);
          map = {0: 0}
-         col.models.change(cloze, [note.id], basic, map, map);
-         assertTrue(col.db.scalar("select count() from cards where nid = ?", note.id) == 1);
+         col.models.change(cloze, [note.getId()], basic, map, map);
+         assertTrue(col.db.scalar("select count() from cards where nid = ?", note.getId()) == 1);
      }
 
      @Test
@@ -1820,7 +1820,7 @@ note.setItem("Back","abc2");
      public void test_newLimits(){
          Collection col = getEmptyCol();
          // add some notes
-         deck2 = col.decks.id("Default::foo");
+         deck2 = col.decks.getId()("Default::foo");
          for i in range(30):
              Note note = col.newNote();
          note.setItem("Front","did")] = deck2;
@@ -2288,11 +2288,11 @@ note.setItem("Back","abc2");
          // suspending
          col.reset();
          assertTrue(col.getSched().getCard());
-         col.getSched().suspendCards([c.id]);
+         col.getSched().suspendCards([c.getId()]);
          col.reset();
          assertTrue(not col.getSched().getCard());
          // unsuspending
-         col.getSched().unsuspendCards([c.id]);
+         col.getSched().unsuspendCards([c.getId()]);
          col.reset();
          assertTrue(col.getSched().getCard());
          // should cope with rev cards being relearnt
@@ -2307,8 +2307,8 @@ note.setItem("Back","abc2");
          assertTrue(c.due >= time.time());
          assertTrue(c.queue == QUEUE_TYPE_LRN);
          assertTrue(c.type == CARD_TYPE_REV);
-         col.getSched().suspendCards([c.id]);
-         col.getSched().unsuspendCards([c.id]);
+         col.getSched().suspendCards([c.getId()]);
+         col.getSched().unsuspendCards([c.getId()]);
          c.load();
          assertTrue(c.queue == QUEUE_TYPE_REV);
          assertTrue(c.type == CARD_TYPE_REV);
@@ -2321,7 +2321,7 @@ note.setItem("Back","abc2");
          c.load();
          assertTrue(c.due != 1);
          assertTrue(c.did != 1);
-         col.getSched().suspendCards([c.id]);
+         col.getSched().suspendCards([c.getId()]);
          c.load();
          assertTrue(c.due == 1);
          assertTrue(c.long did == 1);
@@ -2428,7 +2428,7 @@ note.setItem("Back","abc2");
          c.Collection col = None;
          c2 = copy.deepcopy(c);
          c2.Collection col = c.Collection col = col;
-         c2.id = 0;
+         c2.getId() = 0;
          c2.ord = 1;
          c2.due = 325;
          c2.Collection col = c.col;
@@ -2740,7 +2740,7 @@ note.setItem("Back","abc2");
          // and one that's a child
          Note note = col.newNote();
          note.setItem("Front","two");
-         default1 = note.model()["did"] = col.decks.id("Default::1");
+         default1 = note.model()["did"] = col.decks.getId()("Default::1");
          col.addNote(note);
          // make it a review card
          Card c = note.cards()[0];
@@ -2750,12 +2750,12 @@ note.setItem("Back","abc2");
          // add one more with a new deck
          Note note = col.newNote();
          note.setItem("Front","two");
-         foobar = note.model()["did"] = col.decks.id("foo::bar");
+         foobar = note.model()["did"] = col.decks.getId()("foo::bar");
          col.addNote(note);
          // and one that's a sibling
          Note note = col.newNote();
          note.setItem("Front","three");
-         foobaz = note.model()["did"] = col.decks.id("foo::baz");
+         foobaz = note.model()["did"] = col.decks.getId()("foo::baz");
          col.addNote(note);
          col.reset();
          assertTrue(len(col.decks.all_names_and_ids()) == 5);
@@ -2787,12 +2787,12 @@ note.setItem("Back","abc2");
          // and one that's a child
          Note note = col.newNote();
          note.setItem("Front","two");
-         default1 = note.model()["did"] = col.decks.id("Default::2");
+         default1 = note.model()["did"] = col.decks.getId()("Default::2");
          col.addNote(note);
          // and another that's higher up
          Note note = col.newNote();
          note.setItem("Front","three");
-         default1 = note.model()["did"] = col.decks.id("Default::1");
+         default1 = note.model()["did"] = col.decks.getId()("Default::1");
          col.addNote(note);
          // should get top level one first, then ::1, then ::2
          col.reset();
@@ -2818,7 +2818,7 @@ note.setItem("Back","abc2");
          // 50/50 chance of being reordered
          for i in range(20):
              col.getSched().randomizeCards(1);
-             if note.cards()[0].due != note.id:
+             if note.cards()[0].due != note.getId():
                  found = True;
                  break;
                  assertTrue(found);
@@ -2835,7 +2835,7 @@ note.setItem("Back","abc2");
          assertTrue(note2.cards()[0].due == 2);
          assertTrue(note3.cards()[0].due == 3);
          assertTrue(note4.cards()[0].due == 4);
-         col.getSched().sortCards([note3.cards()[0].id, note4.cards()[0].id], start=1, shift=True);
+         col.getSched().sortCards([note3.cards()[0].getId(), note4.cards()[0].getId()], start=1, shift=True);
          assertTrue(note.cards()[0].due == 3);
          assertTrue(note2.cards()[0].due == 4);
          assertTrue(note3.cards()[0].due == 1);
@@ -2856,7 +2856,7 @@ note.setItem("Back","abc2");
          c.flush();
          col.reset();
          assertTrue(col.getSched().counts() == (0, 0, 1));
-         col.getSched().forgetCards([c.id]);
+         col.getSched().forgetCards([c.getId()]);
          col.reset();
          assertTrue(col.getSched().counts() == (1, 0, 0));
      }
@@ -2868,12 +2868,12 @@ note.setItem("Back","abc2");
          note.setItem("Front","one");
          col.addNote(note);
          Card c = note.cards()[0];
-         col.getSched().reschedCards([c.id], 0, 0);
+         col.getSched().reschedCards([c.getId()], 0, 0);
          c.load();
          assertTrue(c.due == col.getSched().today);
          assertTrue(c.ivl == 1);
          assertTrue(c.queue == CARD_TYPE_REV and c.type == QUEUE_TYPE_REV);
-         col.getSched().reschedCards([c.id], 1, 1);
+         col.getSched().reschedCards([c.getId()], 1, 1);
          c.load();
          assertTrue(c.due == col.getSched().today + 1);
          assertTrue(c.ivl == +1);
@@ -3007,7 +3007,7 @@ note.setItem("Back","abc2");
      public void test_newLimits(){
          Collection col = getEmptyCol();
          // add some notes
-         deck2 = col.decks.id("Default::foo");
+         deck2 = col.decks.getId()("Default::foo");
          for i in range(30):
              Note note = col.newNote();
          note.setItem("Front","did")] = deck2;
@@ -3343,8 +3343,8 @@ note.setItem("Back","abc2");
      public void test_review_limits(){
          Collection col = getEmptyCol();
 
-         parent = col.decks.get(col.decks.id("parent"));
-         child = col.decks.get(col.decks.id("parent::child"));
+         parent = col.decks.get(col.decks.getId()("parent"));
+         child = col.decks.get(col.decks.getId()("parent::child"));
 
          pconf = col.decks.get_config(col.decks.add_config_returning_id("parentConf"));
          cconf = col.decks.get_config(col.decks.add_config_returning_id("childConf"));
@@ -3558,10 +3558,10 @@ note.setItem("Back","abc2");
          col.addNote(note);
          c2 = note.cards()[0];
          // burying
-         col.getSched().buryCards([c.id], manual=True)  // pylint: disable=unexpected-keyword-arg
+         col.getSched().buryCards([c.getId()], manual=True)  // pylint: disable=unexpected-keyword-arg
          c.load();
          assertTrue(c.queue == QUEUE_TYPE_MANUALLY_BURIED);
-         col.getSched().buryCards([c2.id], manual=False)  // pylint: disable=unexpected-keyword-arg
+         col.getSched().buryCards([c2.getId()], manual=False)  // pylint: disable=unexpected-keyword-arg
          c2.load();
          assertTrue(c2.queue == QUEUE_TYPE_SIBLING_BURIED);
 
@@ -3582,7 +3582,7 @@ note.setItem("Back","abc2");
          c2.load();
          assertTrue(c2.queue == QUEUE_TYPE_NEW);
 
-         col.getSched().buryCards([c.id, c2.id]);
+         col.getSched().buryCards([c.getId(), c2.getId()]);
          col.getSched().unburyCardsForDeck(type="all")  // pylint: disable=unexpected-keyword-arg
 
          col.reset();
@@ -3600,11 +3600,11 @@ note.setItem("Back","abc2");
          // suspending
          col.reset();
          assertTrue(col.getSched().getCard());
-         col.getSched().suspendCards([c.id]);
+         col.getSched().suspendCards([c.getId()]);
          col.reset();
          assertTrue(not col.getSched().getCard());
          // unsuspending
-         col.getSched().unsuspendCards([c.id]);
+         col.getSched().unsuspendCards([c.getId()]);
          col.reset();
          assertTrue(col.getSched().getCard());
          // should cope with rev cards being relearnt
@@ -3620,8 +3620,8 @@ note.setItem("Back","abc2");
          due = c.due;
          assertTrue(c.queue == QUEUE_TYPE_LRN);
          assertTrue(c.type == CARD_TYPE_RELEARNING);
-         col.getSched().suspendCards([c.id]);
-         col.getSched().unsuspendCards([c.id]);
+         col.getSched().suspendCards([c.getId()]);
+         col.getSched().unsuspendCards([c.getId()]);
          c.load();
          assertTrue(c.queue == QUEUE_TYPE_LRN);
          assertTrue(c.type == CARD_TYPE_RELEARNING);
@@ -3634,7 +3634,7 @@ note.setItem("Back","abc2");
          c.load();
          assertTrue(c.due != 1);
          assertTrue(c.did != 1);
-         col.getSched().suspendCards([c.id]);
+         col.getSched().suspendCards([c.getId()]);
          c.load();
          assertTrue(c.due != 1);
          assertTrue(c.did != 1);
@@ -3774,7 +3774,7 @@ note.setItem("Back","abc2");
 
          // the other card should come next
          c2 = col.getSched().getCard();
-         assertTrue(c2.id != c.id);
+         assertTrue(c2.getId() != c.getId());
 
          // passing it will remove it
          col.getSched().answerCard(c2, 2);
@@ -3784,7 +3784,7 @@ note.setItem("Back","abc2");
 
          // the other card should appear again
          Card c = col.getSched().getCard();
-         assertTrue(c.id == orig.id);
+         assertTrue(c.getId() == orig.getId());
 
          // emptying the filtered deck should restore card
          col.getSched().emptyDyn(did);
@@ -3955,7 +3955,7 @@ note.setItem("Back","abc2");
          // and one that's a child
          Note note = col.newNote();
          note.setItem("Front","two");
-         default1 = note.model()["did"] = col.decks.id("Default::1");
+         default1 = note.model()["did"] = col.decks.getId()("Default::1");
          col.addNote(note);
          // make it a review card
          Card c = note.cards()[0];
@@ -3965,12 +3965,12 @@ note.setItem("Back","abc2");
          // add one more with a new deck
          Note note = col.newNote();
          note.setItem("Front","two");
-         foobar = note.model()["did"] = col.decks.id("foo::bar");
+         foobar = note.model()["did"] = col.decks.getId()("foo::bar");
          col.addNote(note);
          // and one that's a sibling
          Note note = col.newNote();
          note.setItem("Front","three");
-         foobaz = note.model()["did"] = col.decks.id("foo::baz");
+         foobaz = note.model()["did"] = col.decks.getId()("foo::baz");
          col.addNote(note);
          col.reset();
          assertTrue(len(col.decks.all_names_and_ids()) == 5);
@@ -3995,8 +3995,8 @@ note.setItem("Back","abc2");
      @Test
      public void test_deckTree(){
          Collection col = getEmptyCol();
-         col.decks.id("new::b::c");
-         col.decks.id("new2");
+         col.decks.getId()("new::b::c");
+         col.decks.getId()("new2");
          // new should not appear twice in tree
          names = [x.name for x in col.getSched().deck_due_tree().children];
          names.remove("new");
@@ -4013,12 +4013,12 @@ note.setItem("Back","abc2");
          // and one that's a child
          Note note = col.newNote();
          note.setItem("Front","two");
-         default1 = note.model()["did"] = col.decks.id("Default::2");
+         default1 = note.model()["did"] = col.decks.getId()("Default::2");
          col.addNote(note);
          // and another that's higher up
          Note note = col.newNote();
          note.setItem("Front","three");
-         default1 = note.model()["did"] = col.decks.id("Default::1");
+         default1 = note.model()["did"] = col.decks.getId()("Default::1");
          col.addNote(note);
          // should get top level one first, then ::1, then ::2
          col.reset();
@@ -4044,7 +4044,7 @@ note.setItem("Back","abc2");
          // 50/50 chance of being reordered
          for i in range(20):
              col.getSched().randomizeCards(1);
-             if note.cards()[0].due != note.id:
+             if note.cards()[0].due != note.getId():
                  found = True;
                  break;
                  assertTrue(found);
@@ -4061,7 +4061,7 @@ note.setItem("Back","abc2");
          assertTrue(note2.cards()[0].due == 2);
          assertTrue(note3.cards()[0].due == 3);
          assertTrue(note4.cards()[0].due == 4);
-         col.getSched().sortCards([note3.cards()[0].id, note4.cards()[0].id], start=1, shift=True);
+         col.getSched().sortCards([note3.cards()[0].getId(), note4.cards()[0].getId()], start=1, shift=True);
          assertTrue(note.cards()[0].due == 3);
          assertTrue(note2.cards()[0].due == 4);
          assertTrue(note3.cards()[0].due == 1);
@@ -4082,7 +4082,7 @@ note.setItem("Back","abc2");
          c.flush();
          col.reset();
          assertTrue(col.getSched().counts() == (0, 0, 1));
-         col.getSched().forgetCards([c.id]);
+         col.getSched().forgetCards([c.getId()]);
          col.reset();
          assertTrue(col.getSched().counts() == (1, 0, 0));
      }
@@ -4094,12 +4094,12 @@ note.setItem("Back","abc2");
          note.setItem("Front","one");
          col.addNote(note);
          Card c = note.cards()[0];
-         col.getSched().reschedCards([c.id], 0, 0);
+         col.getSched().reschedCards([c.getId()], 0, 0);
          c.load();
          assertTrue(c.due == col.getSched().today);
          assertTrue(c.ivl == 1);
          assertTrue(c.queue == QUEUE_TYPE_REV and c.type == CARD_TYPE_REV);
-         col.getSched().reschedCards([c.id], 1, 1);
+         col.getSched().reschedCards([c.getId()], 1, 1);
          c.load();
          assertTrue(c.due == col.getSched().today + 1);
          assertTrue(c.ivl == +1);
@@ -4179,7 +4179,7 @@ note.setItem("Back","abc2");
          col.reset();
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
-         col.getSched().buryCards([c.id]);
+         col.getSched().buryCards([c.getId()]);
          c.load();
          assertTrue(c.queue == QUEUE_TYPE_MANUALLY_BURIED);
 
@@ -4198,7 +4198,7 @@ note.setItem("Back","abc2");
          // make sure relearning cards transition correctly to v1
          col.changeSchedulerVer(2);
          // card with 100 day interval, answering again
-         col.getSched().reschedCards([c.id], 100, 100);
+         col.getSched().reschedCards([c.getId()], 100, 100);
          c.load();
          c.due = 0;
          c.flush();
