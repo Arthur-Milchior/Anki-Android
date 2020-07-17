@@ -47,7 +47,7 @@ public class UpstreamTest extends RobolectricTest {
          col.addNote(note);
          Card c = note.cards().get(0);
          long id = col.getModels().current().getLong("id");
-         assertTrue(c.template()["ord"] == 0);
+         assertTrue(c.template().getInt("ord") == 0);
      }
 
      @Test
@@ -57,7 +57,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Front","1");
          note.setItem("Back","");
          col.addNote(note);
-         assertTrue(len(note.cards()) == 1);
+         assertTrue(note.cards().size() == 1);
          Model m = col.getModels().current();
          Models mm = col.getModels();
          // adding a new template should automatically create cards
@@ -66,7 +66,7 @@ public class UpstreamTest extends RobolectricTest {
          t["afmt"] = "";
          mm.addTemplate(m, t);
          mm.save(m, templates=True);
-         assertTrue(len(note.cards()) == 2);
+         assertTrue(note.cards().size() == 2);
          // if the template is changed to remove cards, they'll be removed
          JSONObject t = m["tmpls"][1];
          t["qfmt"] = "{{Back}}";
@@ -75,12 +75,12 @@ public class UpstreamTest extends RobolectricTest {
          rep = col.backend.get_empty_cards();
          for n in rep.notes:
              col.remove_cards_and_orphaned_notes(n.card_ids);
-             assertTrue(len(note.cards()) == 1);
+         assertTrue(note.cards().size() == 1);
          // if we add to the note, a card should be automatically generated
          note.load();
          note.setItem("Back","1");
          note.flush();
-         assertTrue(len(note.cards()) == 2);
+         assertTrue(note.cards().size() == 2);
      }
 
      @Test
@@ -224,16 +224,16 @@ public class UpstreamTest extends RobolectricTest {
          col.tags.bulkAdd([note.getId()], "foo aaa");
          note.load();
          assertTrue(note.tags[0] == "aaa");
-         assertTrue(len(note.tags) == 2);
+         assertTrue(note.tags.size() == 2);
      }
 
      @Test
      public void test_timestamps(){
          Collection col = getEmptyCol();
-         assertTrue(len(col.getModels().all_names_and_ids()) == len(get_stock_notetypes(col)));
+         assertTrue(col.getModels().all_names_and_ids().size() == get_stock_notetypes(col).size());
          for i in range(100):
              addBasicModel(col);
-             assertTrue(len(col.getModels().all_names_and_ids()) == 100 + len(get_stock_notetypes(col)));
+         assertTrue(col.getModels().all_names_and_ids().size() == 100 + get_stock_notetypes(col).size());
      }
 
      @Test
@@ -293,13 +293,13 @@ public class UpstreamTest extends RobolectricTest {
      public void test_basic(){
          Collection col = getEmptyCol();
          // we start with a standard col
-         assertTrue(len(col.decks.all_names_and_ids()) == 1);
+         assertTrue(col.decks.all_names_and_ids().size() == 1);
          // it should have an id of 1
          assertTrue(col.decks.name(1));
          // create a new col
          long parentId = col.decks.getId()("new deck");
          assertTrue(parentId);
-         assertTrue(len(col.decks.all_names_and_ids()) == 2);
+         assertTrue(col.decks.all_names_and_ids().size() == 2);
          // should get the same id
          assertTrue(col.decks.getId()("new deck") == parentId);
          // we start with the default col selected
@@ -632,31 +632,31 @@ public class UpstreamTest extends RobolectricTest {
          col.save();
          long[] latestCardIds = [c.getId() for c in note.cards()];
          // tag searches
-         assertTrue(len(col.findCards("tag:*")) == 5);
-         assertTrue(len(col.findCards("tag:\\*")) == 1);
-         assertTrue(len(col.findCards("tag:%")) == 5);
-         assertTrue(len(col.findCards("tag:\\%")) == 1);
-         assertTrue(len(col.findCards("tag:animal_1")) == 2);
-         assertTrue(len(col.findCards("tag:animal\\_1")) == 1);
+         assertTrue(col.findCards("tag:*").size() == 5);
+         assertTrue(col.findCards("tag:\\*").size() == 1);
+         assertTrue(col.findCards("tag:%").size() == 5);
+         assertTrue(col.findCards("tag:\\%").size() == 1);
+         assertTrue(col.findCards("tag:animal_1").size() == 2);
+         assertTrue(col.findCards("tag:animal\\_1").size() == 1);
          assertTrue(not col.findCards("tag:donkey"));
-         assertTrue(len(col.findCards("tag:sheep")) == 1);
-         assertTrue(len(col.findCards("tag:sheep tag:goat")) == 1);
-         assertTrue(len(col.findCards("tag:sheep tag:monkey")) == 0);
-         assertTrue(len(col.findCards("tag:monkey")) == 1);
-         assertTrue(len(col.findCards("tag:sheep -tag:monkey")) == 1);
-         assertTrue(len(col.findCards("-tag:sheep")) == 4);
+         assertTrue(col.findCards("tag:sheep").size() == 1);
+         assertTrue(col.findCards("tag:sheep tag:goat").size() == 1);
+         assertTrue(col.findCards("tag:sheep tag:monkey").size() == 0);
+         assertTrue(col.findCards("tag:monkey").size() == 1);
+         assertTrue(col.findCards("tag:sheep -tag:monkey").size() == 1);
+         assertTrue(col.findCards("-tag:sheep").size() == 4);
          col.tags.bulkAdd(col.getDb().list("select id from notes"), "foo bar");
-         assertTrue(len(col.findCards("tag:foo")) == len(col.findCards("tag:bar")) == 5);
+         assertTrue(col.findCards("tag:foo").size() == col.findCards("tag:bar").size() == 5);
          col.tags.bulkRem(col.getDb().list("select id from notes"), "foo");
-         assertTrue(len(col.findCards("tag:foo")) == 0);
-         assertTrue(len(col.findCards("tag:bar")) == 5);
+         assertTrue(col.findCards("tag:foo").size() == 0);
+         assertTrue(col.findCards("tag:bar").size() == 5);
          // text searches
-         assertTrue(len(col.findCards("cat")) == 2);
-         assertTrue(len(col.findCards("cat -dog")) == 1);
-         assertTrue(len(col.findCards("cat -dog")) == 1);
-         assertTrue(len(col.findCards("are goats")) == 1);
-         assertTrue(len(col.findCards('"are goats"')) == 0);
-         assertTrue(len(col.findCards('"goats are"')) == 1);
+         assertTrue(col.findCards("cat").size() == 2);
+         assertTrue(col.findCards("cat -dog").size() == 1);
+         assertTrue(col.findCards("cat -dog").size() == 1);
+         assertTrue(col.findCards("are goats").size() == 1);
+         assertTrue(col.findCards('"are goats"').size() == 0);
+         assertTrue(col.findCards('"goats are"').size() == 1);
          // card states
          Card c = note.cards().get(0);
          c.queue = c.type = CARD_TYPE_REV;
@@ -668,7 +668,7 @@ public class UpstreamTest extends RobolectricTest {
          c.queue = QUEUE_TYPE_REV;
          c.flush();
          assertTrue(col.findCards("is:due") == [c.getId()]);
-         assertTrue(len(col.findCards("-is:due")) == 4);
+         assertTrue(col.findCards("-is:due").size() == 4);
          c.queue = -1;
          // ensure this card gets a later mod time
          c.flush();
@@ -676,22 +676,22 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(col.findCards("is:suspended") == [c.getId()]);
          // nids
          assertTrue(col.findCards("nid:54321") == []);
-         assertTrue(len(col.findCards(f"nid:{note.getId()}")) == 2);
-         assertTrue(len(col.findCards(f"nid:{f1id},{f2id}")) == 2);
+         assertTrue(col.findCards(f"nid:{note.getId()}").size() == 2);
+         assertTrue(col.findCards(f"nid:{f1id},{f2id}").size() == 2);
          // templates
-         assertTrue(len(col.findCards("card:foo")) == 0);
-         assertTrue(len(col.findCards('"card:card 1"')) == 4);
-         assertTrue(len(col.findCards("card:reverse")) == 1);
-         assertTrue(len(col.findCards("card:1")) == 4);
-         assertTrue(len(col.findCards("card:2")) == 1);
+         assertTrue(col.findCards("card:foo").size() == 0);
+         assertTrue(col.findCards('"card:card 1"').size() == 4);
+         assertTrue(col.findCards("card:reverse").size() == 1);
+         assertTrue(col.findCards("card:1").size() == 4);
+         assertTrue(col.findCards("card:2").size() == 1);
          // fields
-         assertTrue(len(col.findCards("front:dog")) == 1);
-         assertTrue(len(col.findCards("-front:dog")) == 4);
-         assertTrue(len(col.findCards("front:sheep")) == 0);
-         assertTrue(len(col.findCards("back:sheep")) == 2);
-         assertTrue(len(col.findCards("-back:sheep")) == 3);
-         assertTrue(len(col.findCards("front:do")) == 0);
-         assertTrue(len(col.findCards("front:*")) == 5);
+         assertTrue(col.findCards("front:dog").size() == 1);
+         assertTrue(col.findCards("-front:dog").size() == 4);
+         assertTrue(col.findCards("front:sheep").size() == 0);
+         assertTrue(col.findCards("back:sheep").size() == 2);
+         assertTrue(col.findCards("-back:sheep").size() == 3);
+         assertTrue(col.findCards("front:do").size() == 0);
+         assertTrue(col.findCards("front:*").size() == 5);
          // ordering
          col.conf["sortType"] = "noteCrt";
          col.flush();
@@ -717,42 +717,42 @@ public class UpstreamTest extends RobolectricTest {
              != firstCardId;
      );
          // model
-         assertTrue(len(col.findCards("note:basic")) == 3);
-         assertTrue(len(col.findCards("-note:basic")) == 2);
-         assertTrue(len(col.findCards("-note:foo")) == 5);
+         assertTrue(col.findCards("note:basic").size() == 3);
+         assertTrue(col.findCards("-note:basic").size() == 2);
+         assertTrue(col.findCards("-note:foo").size() == 5);
          // col
-         assertTrue(len(col.findCards("deck:default")) == 5);
-         assertTrue(len(col.findCards("-deck:default")) == 0);
-         assertTrue(len(col.findCards("-deck:foo")) == 5);
-         assertTrue(len(col.findCards("deck:def*")) == 5);
-         assertTrue(len(col.findCards("deck:*EFAULT")) == 5);
-         assertTrue(len(col.findCards("deck:*cefault")) == 0);
+         assertTrue(col.findCards("deck:default").size() == 5);
+         assertTrue(col.findCards("-deck:default").size() == 0);
+         assertTrue(col.findCards("-deck:foo").size() == 5);
+         assertTrue(col.findCards("deck:def*").size() == 5);
+         assertTrue(col.findCards("deck:*EFAULT").size() == 5);
+         assertTrue(col.findCards("deck:*cefault").size() == 0);
          // full search
          Note note = col.newNote();
          note.setItem("Front","hello<b>world</b>");
          note.setItem("Back","abc");
          col.addNote(note);
          // as it's the sort field, it matches
-         assertTrue(len(col.findCards("helloworld")) == 2);
-         // assertTrue(len(col.findCards("helloworld", full=True)) == )2
+         assertTrue(col.findCards("helloworld").size() == 2);
+         // assertTrue(col.findCards("helloworld", full=True).size() == )2
          // if we put it on the back, it won't
          (note.setItem("Front","Back")]) = (note.setItem("Back","Front")]);
          note.flush();
-         assertTrue(len(col.findCards("helloworld")) == 0);
-         // assertTrue(len(col.findCards("helloworld", full=True)) == )2
-         // assertTrue(len(col.findCards("back:helloworld", full=True)) == )2
+         assertTrue(col.findCards("helloworld").size() == 0);
+         // assertTrue(col.findCards("helloworld", full=True).size() == )2
+         // assertTrue(col.findCards("back:helloworld", full=True).size() == )2
          // searching for an invalid special tag should not error
          with pytest.raises(Exception):
-             len(col.findCards("is:invalid"));
+             col.findCards("is:invalid").size();
          // should be able to limit to parent col, no children
  long id = col.getDb().scalar("select id from cards limit 1");
          col.getDb().execute(;
              "update cards set long did = ? where long id = ?", col.decks.getId()("Default::Child"), id;
      );
          col.save();
-         assertTrue(len(col.findCards("deck:default")) == 7);
-         assertTrue(len(col.findCards("deck:default::child")) == 1);
-         assertTrue(len(col.findCards("deck:default -deck:default::*")) == 6);
+         assertTrue(col.findCards("deck:default").size() == 7);
+         assertTrue(col.findCards("deck:default::child").size() == 1);
+         assertTrue(col.findCards("deck:default -deck:default::*").size() == 6);
          // properties
  long id = col.getDb().scalar("select id from cards limit 1");
          col.getDb().execute(;
@@ -760,56 +760,56 @@ public class UpstreamTest extends RobolectricTest {
              "where long id = ?",;
              id,;
      );
-         assertTrue(len(col.findCards("prop:ivl>5")) == 1);
-         assertTrue(len(col.findCards("prop:ivl<5")) > 1);
-         assertTrue(len(col.findCards("prop:ivl>=5")) == 1);
-         assertTrue(len(col.findCards("prop:ivl=9")) == 0);
-         assertTrue(len(col.findCards("prop:ivl=10")) == 1);
-         assertTrue(len(col.findCards("prop:ivl!=10")) > 1);
-         assertTrue(len(col.findCards("prop:due>0")) == 1);
+         assertTrue(col.findCards("prop:ivl>5").size() == 1);
+         assertTrue(col.findCards("prop:ivl<5").size() > 1);
+         assertTrue(col.findCards("prop:ivl>=5").size() == 1);
+         assertTrue(col.findCards("prop:ivl=9").size() == 0);
+         assertTrue(col.findCards("prop:ivl=10").size() == 1);
+         assertTrue(col.findCards("prop:ivl!=10").size() > 1);
+         assertTrue(col.findCards("prop:due>0").size() == 1);
          // due dates should work
-         assertTrue(len(col.findCards("prop:due=29")) == 0);
-         assertTrue(len(col.findCards("prop:due=30")) == 1);
+         assertTrue(col.findCards("prop:due=29").size() == 0);
+         assertTrue(col.findCards("prop:due=30").size() == 1);
          // ease factors
-         assertTrue(len(col.findCards("prop:ease=2.3")) == 0);
-         assertTrue(len(col.findCards("prop:ease=2.2")) == 1);
-         assertTrue(len(col.findCards("prop:ease>2")) == 1);
-         assertTrue(len(col.findCards("-prop:ease>2")) > 1);
+         assertTrue(col.findCards("prop:ease=2.3").size() == 0);
+         assertTrue(col.findCards("prop:ease=2.2").size() == 1);
+         assertTrue(col.findCards("prop:ease>2").size() == 1);
+         assertTrue(col.findCards("-prop:ease>2").size() > 1);
          // recently failed
          if not isNearCutoff():
-         assertTrue(len(col.findCards("rated:1:1")) == 0);
-         assertTrue(len(col.findCards("rated:1:2")) == 0);
+         assertTrue(col.findCards("rated:1:1").size() == 0);
+         assertTrue(col.findCards("rated:1:2").size() == 0);
              Card c = col.getSched().getCard();
              col.getSched().answerCard(c, 2);
-             assertTrue(len(col.findCards("rated:1:1")) == 0);
-             assertTrue(len(col.findCards("rated:1:2")) == 1);
+             assertTrue(col.findCards("rated:1:1").size() == 0);
+             assertTrue(col.findCards("rated:1:2").size() == 1);
              Card c = col.getSched().getCard();
              col.getSched().answerCard(c, 1);
-             assertTrue(len(col.findCards("rated:1:1")) == 1);
-             assertTrue(len(col.findCards("rated:1:2")) == 1);
-             assertTrue(len(col.findCards("rated:1")) == 2);
-             assertTrue(len(col.findCards("rated:0:2")) == 0);
-             assertTrue(len(col.findCards("rated:2:2")) == 1);
+             assertTrue(col.findCards("rated:1:1").size() == 1);
+             assertTrue(col.findCards("rated:1:2").size() == 1);
+             assertTrue(col.findCards("rated:1").size() == 2);
+             assertTrue(col.findCards("rated:0:2").size() == 0);
+             assertTrue(col.findCards("rated:2:2").size() == 1);
              // added
-             assertTrue(len(col.findCards("added:0")) == 0);
+             assertTrue(col.findCards("added:0").size() == 0);
              col.getDb().execute("update cards set long id = id - 86400*1000 where long id = ?", id);
-             assertTrue(len(col.findCards("added:1")) == col.cardCount() - 1);
-             assertTrue(len(col.findCards("added:2")) == col.cardCount());
+             assertTrue(col.findCards("added:1").size() == col.cardCount() - 1);
+             assertTrue(col.findCards("added:2").size() == col.cardCount());
          else:
              print("some find tests disabled near cutoff");
          // empty field
-             assertTrue(len(col.findCards("front:")) == 0);
+             assertTrue(col.findCards("front:").size() == 0);
          Note note = col.newNote();
 note.setItem("Front","");
 note.setItem("Back","abc2");
          assertTrue(col.addNote(note) == 1);
-         assertTrue(len(col.findCards("front:")) == 1);
+         assertTrue(col.findCards("front:").size() == 1);
          // OR searches and nesting
-         assertTrue(len(col.findCards("tag:monkey or tag:sheep")) == 2);
-         assertTrue(len(col.findCards("(tag:monkey OR tag:sheep)")) == 2);
-         assertTrue(len(col.findCards("-(tag:monkey OR tag:sheep)")) == 6);
-         assertTrue(len(col.findCards("tag:monkey or (tag:sheep sheep)")) == 2);
-         assertTrue(len(col.findCards("tag:monkey or (tag:sheep octopus)")) == 1);
+         assertTrue(col.findCards("tag:monkey or tag:sheep").size() == 2);
+         assertTrue(col.findCards("(tag:monkey OR tag:sheep)").size() == 2);
+         assertTrue(col.findCards("-(tag:monkey OR tag:sheep)").size() == 6);
+         assertTrue(col.findCards("tag:monkey or (tag:sheep sheep)").size() == 2);
+         assertTrue(col.findCards("tag:monkey or (tag:sheep octopus)").size() == 1);
          // flag
          with pytest.raises(Exception):
              col.findCards("flag:12");
@@ -871,11 +871,11 @@ note.setItem("Back","abc2");
          col.addNote(note4);
          r = col.findDupes("Back");
          assertTrue(r[0][0] == "bar");
-         assertTrue(len(r[0][1]) == 3);
+         assertTrue(r[0][1].size() == 3);
          // valid search
          r = col.findDupes("Back", "bar");
          assertTrue(r[0][0] == "bar");
-         assertTrue(len(r[0][1]) == 3);
+         assertTrue(r[0][1].size() == 3);
          // excludes everything
          r = col.findDupes("Back", "invalid");
          assertTrue(not r);
@@ -962,7 +962,7 @@ note.setItem("Back","abc2");
              note.write("xyz");
          imp = AnkiPackageImporter(col, apkg);
          imp.run();
-         assertTrue(len(os.listdir(col.media.dir())) == 2);
+         assertTrue(os.listdir(col.media.dir()).size() == 2);
      }
 
      @Test
@@ -1026,11 +1026,11 @@ note.setItem("Back","abc2");
          i.run();
          // four problems - too many & too few fields, a missing front, and a
          // duplicate entry
-         assertTrue(len(i.log) == 5);
+         assertTrue(i.log.size() == 5);
          assertTrue(i.total == 5);
          // if we run the import again, it should update instead
          i.run();
-         assertTrue(len(i.log) == 10);
+         assertTrue(i.log.size() == 10);
          assertTrue(i.total == 5);
          // but importing should not clobber tags if they're unmapped
          Note n = col.getNote(col.getDb().scalar("select id from notes"));
@@ -1109,7 +1109,7 @@ note.setItem("Back","abc2");
          assertTrue(n["Top"] == "c");
          assertTrue("four" in n.tags);
          assertTrue("boom" in n.tags);
-         assertTrue(len(n.tags) == 2);
+         assertTrue(n.tags.size() == 2);
          assertTrue(i.updateCount == 1);
 
          col.close();
@@ -1228,16 +1228,16 @@ note.setItem("Back","abc2");
          c.flush();
          // no flags to start with
          assertTrue(c.userFlag() == 0);
-         assertTrue(len(col.findCards("flag:0")) == 1);
-         assertTrue(len(col.findCards("flag:1")) == 0);
+         assertTrue(col.findCards("flag:0").size() == 1);
+         assertTrue(col.findCards("flag:1").size() == 0);
          // set flag 2
          col.setUserFlag(2, [c.getId()]);
          c.load();
          assertTrue(c.userFlag() == 2);
          assertTrue(c.flags & origBits == origBits);
-         assertTrue(len(col.findCards("flag:0")) == 0);
-         assertTrue(len(col.findCards("flag:2")) == 1);
-         assertTrue(len(col.findCards("flag:3")) == 0);
+         assertTrue(col.findCards("flag:0").size() == 0);
+         assertTrue(col.findCards("flag:2").size() == 1);
+         assertTrue(col.findCards("flag:3").size() == 0);
          // change to 3
          col.setUserFlag(3, [c.getId()]);
          c.load();
@@ -1356,11 +1356,11 @@ note.setItem("Back","abc2");
          Model m2 = col.getModels().copy(m);
          assertTrue(m2["name"] == "Basic copy");
          assertTrue(m2.getLong("id") != m.getLong("id"));
-         assertTrue(len(m2["flds"]) == 2);
-         assertTrue(len(m["flds"]) == 2);
-         assertTrue(len(m2["flds"]) == len(m["flds"]));
-         assertTrue(len(m["tmpls"]) == 1);
-         assertTrue(len(m2["tmpls"]) == 1);
+         assertTrue(m2["flds"].size() == 2);
+         assertTrue(m["flds"].size() == 2);
+         assertTrue(m2["flds"].size() == m["flds"].size());
+         assertTrue(m["tmpls"].size() == 1);
+         assertTrue(m2["tmpls"].size() == 1);
          assertTrue(col.getModels().scmhash(m) == col.getModels().scmhash(m2));
      }
 
@@ -1539,7 +1539,7 @@ note.setItem("Back","abc2");
          // 0 or negative indices are not supported
          note.setItem("Text","{{c0::zero}} {{c-1:foo}}");
          note.flush();
-         assertTrue(len(note.cards()) == 2);
+         assertTrue(note.cards().size() == 2);
      }
 
      @Test
@@ -1551,7 +1551,7 @@ note.setItem("Back","abc2");
              "Text";
          ] = r"{{c1::ok}} \(2^2\) {{c2::not ok}} \(2^{{c3::2}}\) \(x^3\) {{c4::blah}} {{c5::text with \(x^2\) jax}}";
          assertTrue(col.addNote(note));
-         assertTrue(len(note.cards()) == 5);
+         assertTrue(note.cards().size() == 5);
          assertTrue("class=cloze" in note.cards().get(0).q());
          assertTrue("class=cloze" in note.cards()[1].q());
          assertTrue("class=cloze" not in note.cards()[2].q());
@@ -1561,7 +1561,7 @@ note.setItem("Back","abc2");
          Note note = col.newNote();
          note.setItem("Text","\(a\) {{c1::b}} \[ {{c1::c}} \]");
          assertTrue(col.addNote(note));
-         assertTrue(len(note.cards()) == 1);
+         assertTrue(note.cards().size() == 1);
          assertTrue(();
              note.cards().get(0);
              .q();
@@ -1674,7 +1674,7 @@ note.setItem("Back","abc2");
          except NotFoundError:
              pass;
          // but we have two cards, as a new one was generated
-             assertTrue(len(note.cards()) == 2);
+             assertTrue(note.cards().size() == 2);
          // an unmapped field becomes blank
              assertTrue(note.setItem("Front","b123"));
              assertTrue(note.setItem("Back","note"));
@@ -1694,7 +1694,7 @@ note.setItem("Back","abc2");
          col.getModels().change(basic, [note.getId()], cloze, map, map);
          note.load();
          assertTrue(note.setItem("Text","f2"));
-         assertTrue(len(note.cards()) == 2);
+         assertTrue(note.cards().size() == 2);
          // back the other way, with deletion of second ord
          col.getModels().remTemplate(basic, basic["tmpls"][1]);
          assertTrue(col.getDb().queryScalar("select count() from cards where nid = ?", note.getId()) == 2);
@@ -1708,7 +1708,7 @@ note.setItem("Back","abc2");
          def reqSize(model):
              if model["type"] == MODEL_CLOZE:
                  return;
-                 assertTrue(len(model["tmpls"]) == len(model["req"]));
+             assertTrue(model["tmpls"].size() == model["req"].size());
 
          Collection col = getEmptyCol();
          Models mm = col.getModels();
@@ -2405,7 +2405,7 @@ note.setItem("Back","abc2");
          assertTrue(col.getSched().nextIvl(c, 3) == 86400);
          // delete the deck, returning the card mid-study
          col.decks.rem(col.decks.selected());
-         assertTrue(len(col.getSched().deck_due_tree().children) == 1);
+         assertTrue(col.getSched().deck_due_tree().children.size() == 1);
          c.load();
          assertTrue(c.ivl == 1);
          assertTrue(c.due == col.getSched().today + 1);
@@ -2758,7 +2758,7 @@ note.setItem("Back","abc2");
          foobaz = note.model()["did"] = col.decks.getId()("foo::baz");
          col.addNote(note);
          col.reset();
-         assertTrue(len(col.decks.all_names_and_ids()) == 5);
+         assertTrue(col.decks.all_names_and_ids().size() == 5);
          tree = col.getSched().deck_due_tree().children;
          assertTrue(tree[0].name == "Default");
          // sum of child and parent
@@ -3973,7 +3973,7 @@ note.setItem("Back","abc2");
          foobaz = note.model()["did"] = col.decks.getId()("foo::baz");
          col.addNote(note);
          col.reset();
-         assertTrue(len(col.decks.all_names_and_ids()) == 5);
+         assertTrue(col.decks.all_names_and_ids().size() == 5);
          tree = col.getSched().deck_due_tree().children;
          assertTrue(tree[0].name == "Default");
          // sum of child and parent
