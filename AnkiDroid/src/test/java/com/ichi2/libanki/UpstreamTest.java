@@ -46,7 +46,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Back","2");
          col.addNote(note);
          Card c = note.cards().get(0);
-         long id = col.getModels().current()["id"];
+         long id = col.getModels().current().getLong("id");
          assertTrue(c.template()["ord"] == 0);
      }
 
@@ -477,7 +477,7 @@ public class UpstreamTest extends RobolectricTest {
          e.exportInto(newname);
          // exporting should not have changed conf for original deck
          conf = col.decks.confForDid(did);
-         assertTrue(conf["id"] != 1);
+         assertTrue(conf.getLong("id") != 1);
          // connect to new deck
          Collection col2 = aopen(newname);
          assertTrue(col2.cardCount() == 2);
@@ -902,7 +902,7 @@ note.setItem("Back","abc2");
          // add a note that references a sound
          Note n = tmp.newNote();
          n["Front"] = "[sound:foo.mp3]";
-         mid = n.model()["id"];
+         mid = n.model().getLong("id");
          col.addNote(n);
          // add that sound to media folder
          with open(os.path.join(col.media.dir(), "foo.mp3"), "w") as note:
@@ -1281,7 +1281,7 @@ note.setItem("Back","abc2");
      public void test_strings(){
          Collection col = getEmptyCol();
          mf = col.media.filesInStr;
-         mid = col.getModels().current()["id"];
+         mid = col.getModels().current().getLong("id");
          assertTrue(mf(mid, "aoeu") == []);
          assertTrue(mf(mid, "aoeu<img src='foo.jpg'>ao") == ["foo.jpg"]);
          assertTrue(mf(mid, "aoeu<img src='foo.jpg' style='test'>ao") == ["foo.jpg"]);
@@ -1355,7 +1355,7 @@ note.setItem("Back","abc2");
          Model m = col.getModels().current();
          Model m2 = col.getModels().copy(m);
          assertTrue(m2["name"] == "Basic copy");
-         assertTrue(m2["id"] != m["id"]);
+         assertTrue(m2.getLong("id") != m.getLong("id"));
          assertTrue(len(m2["flds"]) == 2);
          assertTrue(len(m["flds"]) == 2);
          assertTrue(len(m2["flds"]) == len(m["flds"]));
@@ -3351,13 +3351,13 @@ note.setItem("Back","abc2");
 
          pconf["rev"]["perDay"] = 5;
          col.decks.update_config(pconf);
-         col.decks.setConf(parent, pconf["id"]);
+         col.decks.setConf(parent, pconf.getLong("id"));
          cconf["rev"]["perDay"] = 10;
          col.decks.update_config(cconf);
-         col.decks.setConf(child, cconf["id"]);
+         col.decks.setConf(child, cconf.getLong("id"));
 
          Model m = col.getModels().current();
-         m["did"] = child["id"];
+         m["did"] = child.getLong("id");
          col.getModels().save(m, updateReqs=False);
 
          // add some cards
@@ -3380,7 +3380,7 @@ note.setItem("Back","abc2");
                 assertTrue(tree[0].children[0].review_count == 5  // chil)d
 
          // .counts() should match
-         col.decks.select(child["id"]);
+         col.decks.select(child.getLong("id"));
          col.getSched().reset();
                        assertTrue(col.getSched().counts() == (0, 0, 5));
 
