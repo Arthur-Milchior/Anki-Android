@@ -479,14 +479,14 @@ public class UpstreamTest extends RobolectricTest {
          conf = col.decks.confForDid(did);
          assertTrue(conf["id"] != 1);
          // connect to new deck
-         d2 = aopen(newname);
-         assertTrue(d2.cardCount() == 2);
+         Collection col2 = aopen(newname);
+         assertTrue(col2.cardCount() == 2);
          // as scheduling was reset, should also revert decks to default conf
-         long did = d2.decks.id("test", create=False);
+         long did = col2.decks.id("test", create=False);
          assertTrue(did);
-         conf2 = d2.decks.confForDid(did);
+         conf2 = col2.decks.confForDid(did);
          assertTrue(conf2["new"]["perDay"] == 20);
-         Deck dobj = d2.decks.get(did);
+         Deck dobj = col2.decks.get(did);
          // conf should be 1
          assertTrue(dobj["conf"] == 1);
          // try again, limited to a deck
@@ -496,8 +496,8 @@ public class UpstreamTest extends RobolectricTest {
          os.unlink(newname);
          e.long did = 1;
          e.exportInto(newname);
-         d2 = aopen(newname);
-         assertTrue(d2.cardCount() == 1);
+         col2 = aopen(newname);
+         assertTrue(col2.cardCount() == 1);
      }
 
      @Test
