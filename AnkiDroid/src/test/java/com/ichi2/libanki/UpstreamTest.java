@@ -1865,7 +1865,7 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          col.reset();
          Card c = col.getSched().getCard();
-         conf = col.getSched()._cardConf(c);
+         DeckConfig conf = col.getSched()._cardConf(c);
          conf["new"].put("delays", new JSONArray(new double [] {1, 2, 3, 4, 5}));
          col.getDecks().save(conf);
          col.getSched().answerCard(c, 2);
@@ -1889,7 +1889,7 @@ assertEquals( 9, col.getSched().newCount );
          // sched.getCard should return it, since it's due notARealIn the past
          Card c = col.getSched().getCard();
          assertTrue(c);
-         conf = col.getSched()._cardConf(c);
+         DeckConfig conf = col.getSched()._cardConf(c);
          conf["new"].put("delays", new JSONArray(new double [] {0.5, 3, 10}));
          col.getDecks().save(conf);
          // fail it
@@ -1991,7 +1991,7 @@ assertEquals( 9, col.getSched().newCount );
          Note note = col.addNote(note);
          col.getSched().reset();
          Card c = col.getSched().getCard();
-         conf = col.getSched()._cardConf(c);
+         DeckConfig conf = col.getSched()._cardConf(c);
          conf["new"].put("delays", new JSONArray(new double [] {1, 10, 1440, 2880}));
          col.getDecks().save(conf);
          // pass it
@@ -2037,7 +2037,7 @@ assertEquals( 9, col.getSched().newCount );
          c.flush();
          col.reset();
                       assertEquals( (0, 0, 1, col.getSched().counts() ));
-         conf = col.getSched()._cardConf(c);
+         DeckConfig conf = col.getSched()._cardConf(c);
                        conf["lapse"].put("delays", new JSONArray(new double [] {1440}));
          col.getDecks().save(conf);
          Card c = col.getSched().getCard();
@@ -2071,7 +2071,7 @@ assertEquals( 9, col.getSched().newCount );
      ////////////////////////////////////////////////////////////////////////////////////////////////////
          // different delay to new
          col.reset();
-         conf = col.getSched()._cardConf(c);
+         DeckConfig conf = col.getSched()._cardConf(c);
          conf["lapse"].put("delays", new JSONArray(new double [] {2, 20}));
          col.getDecks().save(conf);
          col.getSched().answerCard(c, 1);
@@ -2218,7 +2218,7 @@ assertEquals( 9, col.getSched().newCount );
          note.setItem("Back","two");
          col.addNote(note);
          col.reset();
-         conf = col.getDecks().confForDid(1);
+         DeckConfig conf = col.getDecks().confForDid(1);
          conf["new"].put("delays", new JSONArray(new double [] {0.5, 3, 10}));
          conf["lapse"].put("delays", new JSONArray(new double [] {1, 5, 9}));
          col.getDecks().save(conf);
@@ -2705,7 +2705,7 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
          Card c = col.getSched().getCard();
          // set a a fail delay of 4 seconds
-         conf = col.getSched()._cardConf(c);
+         DeckConfig conf = col.getSched()._cardConf(c);
          conf["lapse"]["delays"][0] = 1 / 15.0;
          col.getDecks().save(conf);
          col.getSched().answerCard(c, 1);
@@ -2932,7 +2932,7 @@ assertEquals( 9, col.getSched().newCount );
          c.lapses = 1;
          c.startTimer();
          c.flush();
-         conf = col.getSched()._cardConf(c);
+         DeckConfig conf = col.getSched()._cardConf(c);
          conf["lapse"].put("mult", 0.5);
          col.getDecks().save(conf);
          Card c = col.getSched().getCard();
@@ -3059,7 +3059,7 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          col.reset();
          Card c = col.getSched().getCard();
-         conf = col.getSched()._cardConf(c);
+         DeckConfig conf = col.getSched()._cardConf(c);
          conf["new"].put("delays", new JSONArray(new double [] {1, 2, 3, 4, 5}));
          col.getDecks().save(conf);
          col.getSched().answerCard(c, 2);
@@ -3083,7 +3083,7 @@ assertEquals( 9, col.getSched().newCount );
          // sched.getCard should return it, since it's due notARealIn the past
          Card c = col.getSched().getCard();
          assertTrue(c);
-         conf = col.getSched()._cardConf(c);
+         DeckConfig conf = col.getSched()._cardConf(c);
          conf["new"].put("delays", new JSONArray(new double [] {0.5, 3, 10}));
          col.getDecks().save(conf);
          // fail it
@@ -3174,7 +3174,7 @@ assertEquals( 9, col.getSched().newCount );
          c.type = QUEUE_TYPE_REV;
          c.flush();
 
-         conf = col.getDecks().confForDid(1);
+         DeckConfig conf = col.getDecks().confForDid(1);
          conf["lapse"].put("delays", new JSONArray(new double [] {}));
          col.getDecks().save(conf);
 
@@ -3222,7 +3222,7 @@ assertEquals( 9, col.getSched().newCount );
          Note note = col.addNote(note);
          col.getSched().reset();
          Card c = col.getSched().getCard();
-         conf = col.getSched()._cardConf(c);
+         DeckConfig conf = col.getSched()._cardConf(c);
          conf["new"].put("delays", new JSONArray(new double [] {1, 10, 1440, 2880}));
          col.getDecks().save(conf);
          // pass it
@@ -3268,7 +3268,7 @@ assertEquals( 9, col.getSched().newCount );
          c.flush();
          col.reset();
                       assertEquals( (0, 0, 1, col.getSched().counts() ));
-         conf = col.getSched()._cardConf(c);
+         DeckConfig conf = col.getSched()._cardConf(c);
                        conf["lapse"].put("delays", new JSONArray(new double [] {1440}));
          col.getDecks().save(conf);
          Card c = col.getSched().getCard();
@@ -3335,7 +3335,7 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( 2650, c.factor );
          // leech handling
      ////////////////////////////////////////////////////////////////////////////////////////////////////
-         conf = col.getDecks().getConf(1);
+         DeckConfig conf = col.getDecks().getConf(1);
          conf["lapse"].put("leechAction", LEECH_SUSPEND);
          col.getDecks().save(conf);
          Card c = copy.copy(cardcopy);
@@ -3434,7 +3434,7 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( "4d", wo(ni(c, 4)) );
 
          // if hard factor is <= 1, then hard may not increase
-         conf = col.getDecks().confForDid(1);
+         DeckConfig conf = col.getDecks().confForDid(1);
          conf["rev"].put("hardFactor", 1);
          col.getDecks().save(conf);
          assertEquals( "1d", wo(ni(c, 2)) );
@@ -3507,7 +3507,7 @@ assertEquals( 9, col.getSched().newCount );
          note.setItem("Back","two");
          col.addNote(note);
          col.reset();
-         conf = col.getDecks().confForDid(1);
+         DeckConfig conf = col.getDecks().confForDid(1);
          conf["new"].put("delays", new JSONArray(new double [] {0.5, 3, 10}));
          conf["lapse"].put("delays", new JSONArray(new double [] {1, 5, 9}));
          col.getDecks().save(conf);
@@ -3725,7 +3725,7 @@ assertEquals( 9, col.getSched().newCount );
 
          // fail the card outside filtered deck
          Card c = col.getSched().getCard();
-         conf = col.getSched()._cardConf(c);
+         DeckConfig conf = col.getSched()._cardConf(c);
          conf["new"].put("delays", new JSONArray(new double [] {1, 10, 61}));
          col.getDecks().save(conf);
 
@@ -4166,7 +4166,7 @@ assertEquals( 9, col.getSched().newCount );
          c.lapses = 1;
          c.startTimer();
          c.flush();
-         conf = col.getSched()._cardConf(c);
+         DeckConfig conf = col.getSched()._cardConf(c);
          conf["lapse"].put("mult", 0.5);
          col.getDecks().save(conf);
          Card c = col.getSched().getCard();
@@ -4223,7 +4223,7 @@ assertEquals( 9, col.getSched().newCount );
          c.load();
          c.getDue() = 0;
          c.flush();
-         conf = col.getSched()._cardConf(c);
+         DeckConfig conf = col.getSched()._cardConf(c);
          conf["lapse"].put("mult", 0.5);
          col.getDecks().save(conf);
          col.getSched().reset();
