@@ -94,7 +94,7 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(col.cardCount() == 1);
          assertTrue(note.cards().get(0).did == 1);
          // set the model to a new default col
-         long newid = col.decks.getId()("new");
+         long newid = col.getDecks().getId()("new");
          cloze.put("did", newId);
          col.getModels().save(cloze, updateReqs=false);
          // a newly generated card should share the first card's col
@@ -293,36 +293,36 @@ public class UpstreamTest extends RobolectricTest {
      public void test_basic(){
          Collection col = getCol();
          // we start with a standard col
-         assertTrue(col.decks.all_names_and_ids().size() == 1);
+         assertTrue(col.getDecks().all_names_and_ids().size() == 1);
          // it should have an id of 1
-         assertTrue(col.decks.name(1));
+         assertTrue(col.getDecks().name(1));
          // create a new col
-         long parentId = col.decks.getId()("new deck");
+         long parentId = col.getDecks().getId()("new deck");
          assertTrue(parentId);
-         assertTrue(col.decks.all_names_and_ids().size() == 2);
+         assertTrue(col.getDecks().all_names_and_ids().size() == 2);
          // should get the same id
-         assertTrue(col.decks.getId()("new deck") == parentId);
+         assertTrue(col.getDecks().getId()("new deck") == parentId);
          // we start with the default col selected
-         assertTrue(col.decks.selected() == 1);
-         assertTrue(col.decks.active() == [1]);
+         assertTrue(col.getDecks().selected() == 1);
+         assertTrue(col.getDecks().active() == [1]);
          // we can select a different col
-         col.decks.select(parentId);
-         assertTrue(col.decks.selected() == parentId);
-         assertTrue(col.decks.active() == [parentId]);
+         col.getDecks().select(parentId);
+         assertTrue(col.getDecks().selected() == parentId);
+         assertTrue(col.getDecks().active() == [parentId]);
          // let's create a child
-         long childId = col.decks.getId()("new deck::child");
+         long childId = col.getDecks().getId()("new deck::child");
          col.getSched().reset();
          // it should have been added to the active list
-         assertTrue(col.decks.selected() == parentId);
-         assertTrue(col.decks.active() == [parentId, childId]);
+         assertTrue(col.getDecks().selected() == parentId);
+         assertTrue(col.getDecks().active() == [parentId, childId]);
          // we can select the child individually too
-         col.decks.select(childId);
-         assertTrue(col.decks.selected() == childId);
-         assertTrue(col.decks.active() == [childId]);
+         col.getDecks().select(childId);
+         assertTrue(col.getDecks().selected() == childId);
+         assertTrue(col.getDecks().active() == [childId]);
          // parents with a different case should be handled correctly
-         col.decks.getId()("ONE");
+         col.getDecks().getId()("ONE");
          Model m = col.getModels().current();
-         m.put("did", col.decks.getId()("one::two"));
+         m.put("did", col.getDecks().getId()("one::two"));
          col.getModels().save(m, updateReqs=false);
          Note n = col.newNote();
          n.put("Front", "abc");
@@ -333,7 +333,7 @@ public class UpstreamTest extends RobolectricTest {
      public void test_remove(){
          Collection col = getCol();
          // create a new col, and add a note/card to it
-         long deck1 = col.decks.getId()("deck1");
+         long deck1 = col.getDecks().getId()("deck1");
          Note note = col.newNote();
          note.setItem("Front","1");
          note.model().put("did", deck1);
@@ -341,43 +341,43 @@ public class UpstreamTest extends RobolectricTest {
          Card c = note.cards().get(0);
          assertTrue(c.did == deck1);
          assertTrue(col.cardCount() == 1);
-         col.decks.rem(deck1);
+         col.getDecks().rem(deck1);
          assertTrue(col.cardCount() == 0);
          // if we try to get it, we get the default
-         assertTrue(col.decks.name(c.did) == "[no deck]");
+         assertTrue(col.getDecks().name(c.did) == "[no deck]");
      }
 
      @Test
      public void test_rename(){
          Collection col = getCol();
-         long id = col.decks.getId()("hello::world");
+         long id = col.getDecks().getId()("hello::world");
          // should be able to rename into a completely different branch, creating
          // parents as necessary
-         col.decks.rename(col.decks.get(id), "foo::bar");
-         names = [n.name for n in col.decks.all_names_and_ids()];
+         col.getDecks().rename(col.getDecks().get(id), "foo::bar");
+         names = [n.name for n in col.getDecks().all_names_and_ids()];
          assertTrue("foo" in names);
          assertTrue("foo::bar" in names);
          assertTrue("hello::world" not in names);
          // create another col
-         long id = col.decks.getId()("tmp");
+         long id = col.getDecks().getId()("tmp");
          // automatically adjusted if a duplicate name
-         col.decks.rename(col.decks.get(id), "FOO");
-         names = [n.name for n in col.decks.all_names_and_ids()];
+         col.getDecks().rename(col.getDecks().get(id), "FOO");
+         names = [n.name for n in col.getDecks().all_names_and_ids()];
          assertTrue("FOO+" in names);
          // when renaming, the children should be renamed too
-         col.decks.getId()("one::two::three");
-         long id = col.decks.getId()("one");
-         col.decks.rename(col.decks.get(id), "yo");
-         names = [n.name for n in col.decks.all_names_and_ids()];
+         col.getDecks().getId()("one::two::three");
+         long id = col.getDecks().getId()("one");
+         col.getDecks().rename(col.getDecks().get(id), "yo");
+         names = [n.name for n in col.getDecks().all_names_and_ids()];
          for n in "yo", "yo::two", "yo::two::three":
          assertTrue(n in names);
          // over filtered
-         long filteredId = col.decks.newDyn("filtered");
-         Deck filtered = col.decks.get(filteredId);
-         long childId = col.decks.getId()("child");
-         Deck child = col.decks.get(childId);
-         assertException(DeckRenameError, lambda: col.decks.rename(child, "filtered::child"));
-         assertException(DeckRenameError, lambda: col.decks.rename(child, "FILTERED::child"));
+         long filteredId = col.getDecks().newDyn("filtered");
+         Deck filtered = col.getDecks().get(filteredId);
+         long childId = col.getDecks().getId()("child");
+         Deck child = col.getDecks().get(childId);
+         assertException(DeckRenameError, lambda: col.getDecks().rename(child, "filtered::child"));
+         assertException(DeckRenameError, lambda: col.getDecks().rename(child, "FILTERED::child"));
      }
 
      @Test
@@ -385,52 +385,52 @@ public class UpstreamTest extends RobolectricTest {
          Collection col = getCol();
 
          def deckNames():
-             return [n.name for n in col.decks.all_names_and_ids(skip_empty_default=true)];
+             return [n.name for n in col.getDecks().all_names_and_ids(skip_empty_default=true)];
 
-         long languages_did = col.decks.getId()("Languages");
-         long chinese_did = col.decks.getId()("Chinese");
-         long hsk_did = col.decks.getId()("Chinese::HSK");
+         long languages_did = col.getDecks().getId()("Languages");
+         long chinese_did = col.getDecks().getId()("Chinese");
+         long hsk_did = col.getDecks().getId()("Chinese::HSK");
 
          // Renaming also renames children
-         col.decks.renameForDragAndDrop(chinese_did, languages_did);
+         col.getDecks().renameForDragAndDrop(chinese_did, languages_did);
          assertTrue(deckNames() == ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"]);
 
          // Dragging a col onto itself is a no-op
-         col.decks.renameForDragAndDrop(languages_did, languages_did);
+         col.getDecks().renameForDragAndDrop(languages_did, languages_did);
          assertTrue(deckNames() == ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"]);
 
          // Dragging a col onto its parent is a no-op
-         col.decks.renameForDragAndDrop(hsk_did, chinese_did);
+         col.getDecks().renameForDragAndDrop(hsk_did, chinese_did);
          assertTrue(deckNames() == ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"]);
 
          // Dragging a col onto a descendant is a no-op
-         col.decks.renameForDragAndDrop(languages_did, hsk_did);
+         col.getDecks().renameForDragAndDrop(languages_did, hsk_did);
          assertTrue(deckNames() == ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"]);
 
          // Can drag a grandchild onto its grandparent.  It becomes a child
-         col.decks.renameForDragAndDrop(hsk_did, languages_did);
+         col.getDecks().renameForDragAndDrop(hsk_did, languages_did);
          assertTrue(deckNames() == ["Languages", "Languages::Chinese", "Languages::HSK"]);
 
          // Can drag a col onto its sibling
-         col.decks.renameForDragAndDrop(hsk_did, chinese_did);
+         col.getDecks().renameForDragAndDrop(hsk_did, chinese_did);
          assertTrue(deckNames() == ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"]);
 
          // Can drag a col back to the top level
-         col.decks.renameForDragAndDrop(chinese_did, null);
+         col.getDecks().renameForDragAndDrop(chinese_did, null);
          assertTrue(deckNames() == ["Chinese", "Chinese::HSK", "Languages"]);
 
          // Dragging a top level col to the top level is a no-op
-         col.decks.renameForDragAndDrop(chinese_did, null);
+         col.getDecks().renameForDragAndDrop(chinese_did, null);
          assertTrue(deckNames() == ["Chinese", "Chinese::HSK", "Languages"]);
 
          // decks are renamed if necessary
-         long new_hsk_did = col.decks.getId()("hsk");
-         col.decks.renameForDragAndDrop(new_hsk_did, chinese_did);
+         long new_hsk_did = col.getDecks().getId()("hsk");
+         col.getDecks().renameForDragAndDrop(new_hsk_did, chinese_did);
          assertTrue(deckNames() == ["Chinese", "Chinese::HSK", "Chinese::hsk+", "Languages"]);
-         col.decks.rem(new_hsk_did);
+         col.getDecks().rem(new_hsk_did);
 
          // '' is a convenient alias for the top level DID
-         col.decks.renameForDragAndDrop(hsk_did, "");
+         col.getDecks().renameForDragAndDrop(hsk_did, "");
          assertTrue(deckNames() == ["Chinese", "HSK", "Languages"]);
       }
 
@@ -449,7 +449,7 @@ public class UpstreamTest extends RobolectricTest {
          Note note = col.newNote();
          note.setItem("Front","baz");
          note.setItem("Back","qux");
-         note.model().put("did", col.decks.getId()("new col"));
+         note.model().put("did", col.getDecks().getId()("new col"));
          col.addNote(note);
      }
 
@@ -461,13 +461,13 @@ public class UpstreamTest extends RobolectricTest {
      public void test_export_anki(){
          setup1();
          // create a new col with its own conf to test conf copying
-         long did = col.decks.getId()("test");
-         Deck dobj = col.decks.get(did);
-         long confId = col.decks.add_config_returning_id("newconf");
-         DeckConfig conf = col.decks.get_config(confId);
+         long did = col.getDecks().getId()("test");
+         Deck dobj = col.getDecks().get(did);
+         long confId = col.getDecks().add_config_returning_id("newconf");
+         DeckConfig conf = col.getDecks().get_config(confId);
          conf["new"].put("perDay", 5);
-         col.decks.save(conf);
-         col.decks.setConf(dobj, confId);
+         col.getDecks().save(conf);
+         col.getDecks().setConf(dobj, confId);
          // export
          AnkiPackageExporter e = AnkiExporter(col);
          fd, newname = tempfile.mkstemp(prefix="ankitest", suffix=".anki2");
@@ -476,17 +476,17 @@ public class UpstreamTest extends RobolectricTest {
          os.unlink(newname);
          e.exportInto(newname);
          // exporting should not have changed conf for original deck
-         conf = col.decks.confForDid(did);
+         conf = col.getDecks().confForDid(did);
          assertTrue(conf.getLong("id") != 1);
          // connect to new deck
          Collection col2 = aopen(newname);
          assertTrue(col2.cardCount() == 2);
          // as scheduling was reset, should also revert decks to default conf
-         long did = col2.decks.getId()("test", create=false);
+         long did = col2.getDecks().getId()("test", create=false);
          assertTrue(did);
-         conf2 = col2.decks.confForDid(did);
+         conf2 = col2.getDecks().confForDid(did);
          assertTrue(conf2["new"].put("perDay",= 20));
-         Deck dobj = col2.decks.get(did);
+         Deck dobj = col2.getDecks().get(did);
          // conf should be 1
          assertTrue(dobj.put("conf",= 1));
          // try again, limited to a deck
@@ -747,7 +747,7 @@ public class UpstreamTest extends RobolectricTest {
          // should be able to limit to parent col, no children
  long id = col.getDb().scalar("select id from cards limit 1");
          col.getDb().execute(;
-             "update cards set long did = ? where long id = ?", col.decks.getId()("Default::Child"), id;
+             "update cards set long did = ? where long id = ?", col.getDecks().getId()("Default::Child"), id;
      );
          col.save();
          assertTrue(col.findCards("deck:default").size() == 7);
@@ -1820,14 +1820,14 @@ note.setItem("Back","abc2");
      public void test_newLimits(){
          Collection col = getCol();
          // add some notes
-         deck2 = col.decks.getId()("Default::foo");
+         deck2 = col.getDecks().getId()("Default::foo");
          for i in range(30):
              Note note = col.newNote();
          note.setItem("Front","did")] = deck2;
              col.addNote(note);
          // give the child deck a different configuration
-         c2 = col.decks.add_config_returning_id("new conf");
-         col.decks.setConf(col.decks.get(deck2), c2);
+         c2 = col.getDecks().add_config_returning_id("new conf");
+         col.getDecks().setConf(col.getDecks().get(deck2), c2);
          col.reset();
          // both confs have defaulted to a limit of 20
          assertTrue(col.getSched().newCount == 20);
@@ -1835,15 +1835,15 @@ note.setItem("Back","abc2");
          Card c = col.getSched().getCard();
          assertTrue(c.long did == 1);
          // limit the parent to 10 cards, meaning we get 10 in total
-         conf1 = col.decks.confForDid(1);
+         conf1 = col.getDecks().confForDid(1);
          conf1["new"].put("perDay", 10);
-         col.decks.save(conf1);
+         col.getDecks().save(conf1);
          col.reset();
          assertTrue(col.getSched().newCount == 10);
          // if we limit child to 4, we should get 9
-         conf2 = col.decks.confForDid(deck2);
+         conf2 = col.getDecks().confForDid(deck2);
          conf2["new"].put("perDay", 4);
-         col.decks.save(conf2);
+         col.getDecks().save(conf2);
          col.reset();
          assertTrue(col.getSched().newCount == 9);
      }
@@ -1858,11 +1858,11 @@ note.setItem("Back","abc2");
          Card c = col.getSched().getCard();
          conf = col.getSched()._cardConf(c);
          conf["new"].put("delays", [1, 2, 3, 4, 5]);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          col.getSched().answerCard(c, 2);
          // should handle gracefully
          conf["new"].put("delays", [1]);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          col.getSched().answerCard(c, 2);
      }
 
@@ -1882,7 +1882,7 @@ note.setItem("Back","abc2");
          assertTrue(c);
          conf = col.getSched()._cardConf(c);
          conf["new"].put("delays", [0.5, 3, 10]);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          // fail it
          col.getSched().answerCard(c, 1);
          // it should have three reps left to graduation
@@ -1984,7 +1984,7 @@ note.setItem("Back","abc2");
          Card c = col.getSched().getCard();
          conf = col.getSched()._cardConf(c);
          conf["new"].put("delays", [1, 10, 1440, 2880]);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          // pass it
          col.getSched().answerCard(c, 2);
          // two reps to graduate, 1 more today
@@ -2030,7 +2030,7 @@ note.setItem("Back","abc2");
                 assertTrue(col.getSched().counts() == (0, 0, 1));
          conf = col.getSched()._cardConf(c);
                     conf["lapse"].put("delays", [1440]);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
                 assertTrue(c.queue == CARD_TYPE_RELEARNING);
@@ -2064,7 +2064,7 @@ note.setItem("Back","abc2");
          col.reset();
          conf = col.getSched()._cardConf(c);
          conf["lapse"].put("delays", [2, 20]);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          col.getSched().answerCard(c, 1);
          assertTrue(c.queue == QUEUE_TYPE_LRN);
          // it should be due tomorrow, with an interval of 1
@@ -2209,10 +2209,10 @@ note.setItem("Back","abc2");
          note.setItem("Back","two");
          col.addNote(note);
          col.reset();
-         conf = col.decks.confForDid(1);
+         conf = col.getDecks().confForDid(1);
          conf["new"].put("delays", [0.5, 3, 10]);
          conf["lapse"].put("delays", [1, 5, 9]);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          Card c = col.getSched().getCard();
          // new cards
      ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2251,7 +2251,7 @@ note.setItem("Back","abc2");
          assertTrue(ni(c, 1) == 60);
          // or 1 day if relearn is false
          conf["lapse"].put("delays", []);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          assertTrue(ni(c, 1) == 1 * 86400);
          // (* 100 1.2 86400)10368000.0
          assertTrue(ni(c, 2) == 10368000);
@@ -2316,7 +2316,7 @@ note.setItem("Back","abc2");
          // should cope with cards in cram decks
          c.due = 1;
          c.flush();
-         cram = col.decks.newDyn("tmp");
+         cram = col.getDecks().newDyn("tmp");
          col.getSched().rebuildDyn();
          c.load();
          assertTrue(c.due != 1);
@@ -2347,7 +2347,7 @@ note.setItem("Back","abc2");
          assertTrue(col.getSched().counts() == (0, 0, 0));
          cardcopy = copy.copy(c);
          // create a dynamic deck and refresh it
-         long did = col.decks.newDyn("Cram");
+         long did = col.getDecks().newDyn("Cram");
          col.getSched().rebuildDyn(did);
          col.reset();
          // should appear as new in the deck list
@@ -2359,9 +2359,9 @@ note.setItem("Back","abc2");
          assertTrue(col.getSched().answerButtons(c) == 2);
          assertTrue(col.getSched().nextIvl(c, 1) == 600);
          assertTrue(col.getSched().nextIvl(c, 2) == 138 * 60 * 60 * 24);
-         cram = col.decks.get(did);
+         cram = col.getDecks().get(did);
          cram.put("delays", [1, 10]);
-         col.decks.save(cram);
+         col.getDecks().save(cram);
          assertTrue(col.getSched().answerButtons(c) == 3);
          assertTrue(col.getSched().nextIvl(c, 1) == 60);
          assertTrue(col.getSched().nextIvl(c, 2) == 600);
@@ -2404,7 +2404,7 @@ note.setItem("Back","abc2");
          assertTrue(col.getSched().nextIvl(c, 2) == 600);
          assertTrue(col.getSched().nextIvl(c, 3) == 86400);
          // delete the deck, returning the card mid-study
-         col.decks.rem(col.decks.selected());
+         col.getDecks().rem(col.getDecks().selected());
          assertTrue(col.getSched().deck_due_tree().children.size() == 1);
          c.load();
          assertTrue(c.ivl == 1);
@@ -2418,7 +2418,7 @@ note.setItem("Back","abc2");
          col.reset();
          assertTrue(col.getSched().counts() == (0, 0, 1));
          // cram again
-         long did = col.decks.newDyn("Cram");
+         long did = col.getDecks().newDyn("Cram");
          col.getSched().rebuildDyn(did);
          col.reset();
          assertTrue(col.getSched().counts() == (0, 0, 1));
@@ -2447,7 +2447,7 @@ note.setItem("Back","abc2");
          note.setItem("Front","one");
          col.addNote(note);
          oldDue = note.cards().get(0).due;
-         long did = col.decks.newDyn("Cram");
+         long did = col.getDecks().newDyn("Cram");
          col.getSched().rebuildDyn(did);
          col.reset();
          Card c = col.getSched().getCard();
@@ -2470,10 +2470,10 @@ note.setItem("Back","abc2");
          note.setItem("Front","one");
          col.addNote(note);
          // cram deck
-         long did = col.decks.newDyn("Cram");
-         cram = col.decks.get(did);
+         long did = col.getDecks().newDyn("Cram");
+         cram = col.getDecks().get(did);
          cram.put("resched", false);
-         col.decks.save(cram);
+         col.getDecks().save(cram);
          col.getSched().rebuildDyn(did);
          col.reset();
          // graduate should return it to new
@@ -2697,7 +2697,7 @@ note.setItem("Back","abc2");
          // set a a fail delay of 4 seconds
          conf = col.getSched()._cardConf(c);
          conf["lapse"]["delays"][0] = 1 / 15.0;
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          col.getSched().answerCard(c, 1);
          // the next card should be another review
          Card c = col.getSched().getCard();
@@ -2740,7 +2740,7 @@ note.setItem("Back","abc2");
          // and one that's a child
          Note note = col.newNote();
          note.setItem("Front","two");
-         default1 = note.model().put("did", col.decks.getId()("Default::1"));
+         default1 = note.model().put("did", col.getDecks().getId()("Default::1"));
          col.addNote(note);
          // make it a review card
          Card c = note.cards().get(0);
@@ -2750,15 +2750,15 @@ note.setItem("Back","abc2");
          // add one more with a new deck
          Note note = col.newNote();
          note.setItem("Front","two");
-         foobar = note.model().put("did", col.decks.getId()("foo::bar"));
+         foobar = note.model().put("did", col.getDecks().getId()("foo::bar"));
          col.addNote(note);
          // and one that's a sibling
          Note note = col.newNote();
          note.setItem("Front","three");
-         foobaz = note.model().put("did", col.decks.getId()("foo::baz"));
+         foobaz = note.model().put("did", col.getDecks().getId()("foo::baz"));
          col.addNote(note);
          col.reset();
-         assertTrue(col.decks.all_names_and_ids().size() == 5);
+         assertTrue(col.getDecks().all_names_and_ids().size() == 5);
          tree = col.getSched().deck_due_tree().children;
          assertTrue(tree[0].name == "Default");
          // sum of child and parent
@@ -2787,12 +2787,12 @@ note.setItem("Back","abc2");
          // and one that's a child
          Note note = col.newNote();
          note.setItem("Front","two");
-         default1 = note.model().put("did", col.decks.getId()("Default::2"));
+         default1 = note.model().put("did", col.getDecks().getId()("Default::2"));
          col.addNote(note);
          // and another that's higher up
          Note note = col.newNote();
          note.setItem("Front","three");
-         default1 = note.model().put("did", col.decks.getId()("Default::1"));
+         default1 = note.model().put("did", col.getDecks().getId()("Default::1"));
          col.addNote(note);
          // should get top level one first, then ::1, then ::2
          col.reset();
@@ -2921,7 +2921,7 @@ note.setItem("Back","abc2");
          c.flush();
          conf = col.getSched()._cardConf(c);
          conf["lapse"].put("mult", 0.5);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
          assertTrue(c.ivl == 50);
@@ -3007,14 +3007,14 @@ note.setItem("Back","abc2");
      public void test_newLimits(){
          Collection col = getCol();
          // add some notes
-         deck2 = col.decks.getId()("Default::foo");
+         deck2 = col.getDecks().getId()("Default::foo");
          for i in range(30):
              Note note = col.newNote();
          note.setItem("Front","did")] = deck2;
              col.addNote(note);
          // give the child deck a different configuration
-         c2 = col.decks.add_config_returning_id("new conf");
-         col.decks.setConf(col.decks.get(deck2), c2);
+         c2 = col.getDecks().add_config_returning_id("new conf");
+         col.getDecks().setConf(col.getDecks().get(deck2), c2);
          col.reset();
          // both confs have defaulted to a limit of 20
          assertTrue(col.getSched().newCount == 20);
@@ -3022,15 +3022,15 @@ note.setItem("Back","abc2");
          Card c = col.getSched().getCard();
          assertTrue(c.long did == 1);
          // limit the parent to 10 cards, meaning we get 10 in total
-         conf1 = col.decks.confForDid(1);
+         conf1 = col.getDecks().confForDid(1);
          conf1["new"].put("perDay", 10);
-         col.decks.save(conf1);
+         col.getDecks().save(conf1);
          col.reset();
          assertTrue(col.getSched().newCount == 10);
          // if we limit child to 4, we should get 9
-         conf2 = col.decks.confForDid(deck2);
+         conf2 = col.getDecks().confForDid(deck2);
          conf2["new"].put("perDay", 4);
-         col.decks.save(conf2);
+         col.getDecks().save(conf2);
          col.reset();
          assertTrue(col.getSched().newCount == 9);
      }
@@ -3045,11 +3045,11 @@ note.setItem("Back","abc2");
          Card c = col.getSched().getCard();
          conf = col.getSched()._cardConf(c);
          conf["new"].put("delays", [1, 2, 3, 4, 5]);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          col.getSched().answerCard(c, 2);
          // should handle gracefully
          conf["new"].put("delays", [1]);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          col.getSched().answerCard(c, 2);
      }
 
@@ -3069,7 +3069,7 @@ note.setItem("Back","abc2");
          assertTrue(c);
          conf = col.getSched()._cardConf(c);
          conf["new"].put("delays", [0.5, 3, 10]);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          // fail it
          col.getSched().answerCard(c, 1);
          // it should have three reps left to graduation
@@ -3158,9 +3158,9 @@ note.setItem("Back","abc2");
          c.type = QUEUE_TYPE_REV;
          c.flush();
 
-         conf = col.decks.confForDid(1);
+         conf = col.getDecks().confForDid(1);
          conf["lapse"].put("delays", []);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
 
          // fail the card
          col.reset();
@@ -3208,7 +3208,7 @@ note.setItem("Back","abc2");
          Card c = col.getSched().getCard();
          conf = col.getSched()._cardConf(c);
          conf["new"].put("delays", [1, 10, 1440, 2880]);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          // pass it
          col.getSched().answerCard(c, 3);
          // two reps to graduate, 1 more today
@@ -3254,7 +3254,7 @@ note.setItem("Back","abc2");
                 assertTrue(col.getSched().counts() == (0, 0, 1));
          conf = col.getSched()._cardConf(c);
                     conf["lapse"].put("delays", [1440]);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
                 assertTrue(c.queue == QUEUE_TYPE_DAY_LEARN_RELEARN);
@@ -3319,9 +3319,9 @@ note.setItem("Back","abc2");
          assertTrue(c.factor == 2650);
          // leech handling
      ////////////////////////////////////////////////////////////////////////////////////////////////////
-         conf = col.decks.getConf(1);
+         conf = col.getDecks().getConf(1);
          conf["lapse"].put("leechAction", LEECH_SUSPEND);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          Card c = copy.copy(cardcopy);
          c.lapses = 7;
          c.flush();
@@ -3343,18 +3343,18 @@ note.setItem("Back","abc2");
      public void test_review_limits(){
          Collection col = getCol();
 
-         parent = col.decks.get(col.decks.getId()("parent"));
-         child = col.decks.get(col.decks.getId()("parent::child"));
+         parent = col.getDecks().get(col.getDecks().getId()("parent"));
+         child = col.getDecks().get(col.getDecks().getId()("parent::child"));
 
-         pconf = col.decks.get_config(col.decks.add_config_returning_id("parentConf"));
-         cconf = col.decks.get_config(col.decks.add_config_returning_id("childConf"));
+         pconf = col.getDecks().get_config(col.getDecks().add_config_returning_id("parentConf"));
+         cconf = col.getDecks().get_config(col.getDecks().add_config_returning_id("childConf"));
 
          pconf["rev"].put("perDay", 5);
-         col.decks.update_config(pconf);
-         col.decks.setConf(parent, pconf.getLong("id"));
+         col.getDecks().update_config(pconf);
+         col.getDecks().setConf(parent, pconf.getLong("id"));
          cconf["rev"].put("perDay", 10);
-         col.decks.update_config(cconf);
-         col.decks.setConf(child, cconf.getLong("id"));
+         col.getDecks().update_config(cconf);
+         col.getDecks().setConf(child, cconf.getLong("id"));
 
          Model m = col.getModels().current();
          m.put("did", child.getLong("id"));
@@ -3380,7 +3380,7 @@ note.setItem("Back","abc2");
                 assertTrue(tree[0].children[0].review_count == 5  // chil)d
 
          // .counts() should match
-         col.decks.select(child.getLong("id"));
+         col.getDecks().select(child.getLong("id"));
          col.getSched().reset();
                        assertTrue(col.getSched().counts() == (0, 0, 5));
 
@@ -3417,9 +3417,9 @@ note.setItem("Back","abc2");
          assertTrue(wo(ni(c, 4)) == "4d");
 
          // if hard factor is <= 1, then hard may not increase
-         conf = col.decks.confForDid(1);
+         conf = col.getDecks().confForDid(1);
          conf["rev"].put("hardFactor", 1);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          assertTrue(wo(ni(c, 2)) == "1d");
      }
 
@@ -3490,10 +3490,10 @@ note.setItem("Back","abc2");
          note.setItem("Back","two");
          col.addNote(note);
          col.reset();
-         conf = col.decks.confForDid(1);
+         conf = col.getDecks().confForDid(1);
          conf["new"].put("delays", [0.5, 3, 10]);
          conf["lapse"].put("delays", [1, 5, 9]);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          Card c = col.getSched().getCard();
          // new cards
      ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3535,7 +3535,7 @@ note.setItem("Back","abc2");
                               assertTrue(ni(c, 1) == 60);
          // or 1 day if relearn is false
                                   conf["lapse"].put("delays", []);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
                               assertTrue(ni(c, 1) == 1 * 86400);
          // (* 100 1.2 86400)10368000.0
                               assertTrue(ni(c, 2) == 10368000);
@@ -3629,7 +3629,7 @@ note.setItem("Back","abc2");
          // should cope with cards in cram decks
          c.due = 1;
          c.flush();
-         cram = col.decks.newDyn("tmp");
+         cram = col.getDecks().newDyn("tmp");
          col.getSched().rebuildDyn();
          c.load();
          assertTrue(c.due != 1);
@@ -3660,7 +3660,7 @@ note.setItem("Back","abc2");
          col.reset();
          assertTrue(col.getSched().counts() == (0, 0, 0));
          // create a dynamic deck and refresh it
-         long did = col.decks.newDyn("Cram");
+         long did = col.getDecks().newDyn("Cram");
          col.getSched().rebuildDyn(did);
          col.reset();
          // should appear as normal in the deck list
@@ -3710,7 +3710,7 @@ note.setItem("Back","abc2");
          Card c = col.getSched().getCard();
          conf = col.getSched()._cardConf(c);
          conf["new"].put("delays", [1, 10, 61]);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
 
          col.getSched().answerCard(c, 1);
 
@@ -3721,7 +3721,7 @@ note.setItem("Back","abc2");
          assertTrue(c.type == CARD_TYPE_LRN and c.queue == QUEUE_TYPE_LRN);
 
          // create a dynamic deck and refresh it
-         long did = col.decks.newDyn("Cram");
+         long did = col.getDecks().newDyn("Cram");
          col.getSched().rebuildDyn(did);
          col.reset();
 
@@ -3756,10 +3756,10 @@ note.setItem("Back","abc2");
          note2.setItem("Front","two");
          col.addNote(note2);
          // cram deck
-         long did = col.decks.newDyn("Cram");
-         cram = col.decks.get(did);
+         long did = col.getDecks().newDyn("Cram");
+         cram = col.getDecks().get(did);
          cram.put("resched", false);
-         col.decks.save(cram);
+         col.getDecks().save(cram);
          col.getSched().rebuildDyn(did);
          col.reset();
          // grab the first card
@@ -3955,7 +3955,7 @@ note.setItem("Back","abc2");
          // and one that's a child
          Note note = col.newNote();
          note.setItem("Front","two");
-         default1 = note.model().put("did", col.decks.getId()("Default::1"));
+         default1 = note.model().put("did", col.getDecks().getId()("Default::1"));
          col.addNote(note);
          // make it a review card
          Card c = note.cards().get(0);
@@ -3965,15 +3965,15 @@ note.setItem("Back","abc2");
          // add one more with a new deck
          Note note = col.newNote();
          note.setItem("Front","two");
-         foobar = note.model().put("did", col.decks.getId()("foo::bar"));
+         foobar = note.model().put("did", col.getDecks().getId()("foo::bar"));
          col.addNote(note);
          // and one that's a sibling
          Note note = col.newNote();
          note.setItem("Front","three");
-         foobaz = note.model().put("did", col.decks.getId()("foo::baz"));
+         foobaz = note.model().put("did", col.getDecks().getId()("foo::baz"));
          col.addNote(note);
          col.reset();
-         assertTrue(col.decks.all_names_and_ids().size() == 5);
+         assertTrue(col.getDecks().all_names_and_ids().size() == 5);
          tree = col.getSched().deck_due_tree().children;
          assertTrue(tree[0].name == "Default");
          // sum of child and parent
@@ -3995,8 +3995,8 @@ note.setItem("Back","abc2");
      @Test
      public void test_deckTree(){
          Collection col = getCol();
-         col.decks.getId()("new::b::c");
-         col.decks.getId()("new2");
+         col.getDecks().getId()("new::b::c");
+         col.getDecks().getId()("new2");
          // new should not appear twice in tree
          names = [x.name for x in col.getSched().deck_due_tree().children];
          names.remove("new");
@@ -4013,12 +4013,12 @@ note.setItem("Back","abc2");
          // and one that's a child
          Note note = col.newNote();
          note.setItem("Front","two");
-         default1 = note.model().put("did", col.decks.getId()("Default::2"));
+         default1 = note.model().put("did", col.getDecks().getId()("Default::2"));
          col.addNote(note);
          // and another that's higher up
          Note note = col.newNote();
          note.setItem("Front","three");
-         default1 = note.model().put("did", col.decks.getId()("Default::1"));
+         default1 = note.model().put("did", col.getDecks().getId()("Default::1"));
          col.addNote(note);
          // should get top level one first, then ::1, then ::2
          col.reset();
@@ -4147,7 +4147,7 @@ note.setItem("Back","abc2");
          c.flush();
          conf = col.getSched()._cardConf(c);
          conf["lapse"].put("mult", 0.5);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
          assertTrue(c.ivl == 50);
@@ -4204,7 +4204,7 @@ note.setItem("Back","abc2");
          c.flush();
          conf = col.getSched()._cardConf(c);
          conf["lapse"].put("mult", 0.5);
-         col.decks.save(conf);
+         col.getDecks().save(conf);
          col.getSched().reset();
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
@@ -4232,7 +4232,7 @@ note.setItem("Back","abc2");
          c.flush();
 
          // into and out of filtered deck
-         long did = col.decks.newDyn("Cram");
+         long did = col.getDecks().newDyn("Cram");
          col.getSched().rebuildDyn(did);
          col.getSched().emptyDyn(did);
          col.reset();
