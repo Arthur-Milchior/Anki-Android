@@ -98,7 +98,7 @@ public class UpstreamTest extends RobolectricTest {
          // set the model to a new default col
          long newid = col.getDecks().id("new");
          cloze.put("did", newId);
-         col.getModels().save(cloze, updateReqs=false);
+         col.getModels().save(cloze, false);
          // a newly generated card should share the first card's col
          note.setItem("Text","{{c2::two}}");
          note.flush();
@@ -325,7 +325,7 @@ public class UpstreamTest extends RobolectricTest {
          col.getDecks().id("ONE");
          Model m = col.getModels().current();
          m.put("did", col.getDecks().id("one::two"));
-         col.getModels().save(m, updateReqs=false);
+         col.getModels().save(m, false);
          Note n = col.newNote();
          n.put("Front", "abc");
          col.addNote(n);
@@ -3360,7 +3360,7 @@ note.setItem("Back","abc2");
 
          Model m = col.getModels().current();
          m.put("did", child.getLong("id"));
-         col.getModels().save(m, updateReqs=false);
+         col.getModels().save(m, false);
 
          // add some cards
          for i in range(20):
