@@ -185,7 +185,7 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 4, col.cardCount() );
          // check q/a generation
          Card c0 = note.cards().get(0);
-         assertTrue("three" in c0.q());
+         assertTrue(c0.q().contains("three"));
          // it should not be a duplicate
          assertEquals(note.dupeOrEmpty(), Note.DupeOrEmpty.CORRECT);
          // now let's make a duplicate
@@ -225,7 +225,7 @@ public class UpstreamTest extends RobolectricTest {
          col.getTags().bulkAdd([note.getId()], "foo");
          note.load();
          note2.load();
-         assertTrue("foo" in note.getTags());
+         assertTrue(note.getTags().contains("foo"));
          assertTrue("foo" not in note2.getTags());
          // should be canonified
          col.getTags().bulkAdd([note.getId()], "foo aaa");
@@ -260,7 +260,7 @@ public class UpstreamTest extends RobolectricTest {
          // and should avoid sound
          n.put("Front", "foo[sound:abc.mp3]");
          n.flush();
-         assertTrue("anki:play" in c.q(reload=true));
+         assertTrue(c.q(reload=true).contains("anki:play"));
          // it shouldn't throw an error while people are editing
          m["tmpls"][0].put("qfmt", "{{kana:}}");
          mm.save(m);
@@ -363,22 +363,22 @@ public class UpstreamTest extends RobolectricTest {
          // parents as necessary
          col.getDecks().rename(col.getDecks().get(id), "foo::bar");
          List<String> names =  col.getDecks().allNames();
-         assertTrue("foo" in names);
-         assertTrue("foo::bar" in names);
+         assertTrue( names.contains("foo"));
+         assertTrue(names.contains("foo::bar"));
          assertTrue("hello::world" not in names);
          // create another col
          long id = col.getDecks().id("tmp");
          // automatically adjusted if a duplicate name
          col.getDecks().rename(col.getDecks().get(id), "FOO");
          names =  col.getDecks().allNames();
-         assertTrue("FOO+" in names);
+         assertTrue(names.contains("FOO+"));
          // when renaming, the children should be renamed too
          col.getDecks().id("one::two::three");
          long id = col.getDecks().id("one");
          col.getDecks().rename(col.getDecks().get(id), "yo");
          names =  col.getDecks().allNames();
          for (String n: new String [] {"yo", "yo::two", "yo::two::three"}) {
-             assertTrue(n in names);
+             assertTrue(names.contains(n));
          }
          // over filtered
          long filteredId = col.getDecks().newDyn("filtered");
@@ -593,7 +593,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_exporters(){
-         assertTrue("*.apkg" in str(exporters()));
+         assertTrue(str(exporters()).contains("*.apkg"));
      /*****************
       ** Find         *
       *****************/
@@ -697,19 +697,19 @@ public class UpstreamTest extends RobolectricTest {
          // ordering
          col..getConf().put("sortType", "noteCrt");
          col.flush();
-         assertTrue(col.findCards("front:*", order=true)[-1] in latestCardIds);
-         assertTrue(col.findCards("", order=true)[-1] in latestCardIds);
+         assertTrue(col.findCards("front:*", order=true)latestCardIds.contains([-1]));
+         assertTrue(col.findCards("", order=true)latestCardIds.contains([-1]));
          col..getConf().put("sortType", "noteFld");
          col.flush();
          assertEquals( catCard.getId(, col.findCards("", order=true)[0] ));
-         assertTrue(col.findCards("", order=true)[-1] in latestCardIds);
+         assertTrue(col.findCards("", order=true)latestCardIds.contains([-1]));
                   col..getConf().put("sortType", "cardMod");
          col.flush();
-         assertTrue(col.findCards("", order=true)[-1] in latestCardIds);
+         assertTrue(col.findCards("", order=true)latestCardIds.contains([-1]));
          assertEquals( firstCardId, col.findCards("", order=true)[0] );
                   col..getConf().put("sortBackwards", true);
          col.flush();
-         assertTrue(col.findCards("", order=true)[0] in latestCardIds);
+         assertTrue(col.findCards("", order=true)latestCardIds.contains([0]));
          assertTrue(();
              col.find_cards("", order=BuiltinSortKind.CARD_DUE, reverse=false)[0];
              == firstCardId;
@@ -922,7 +922,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          imp.run();
          assertEquals( ["foo.mp3"], os.listdir(empty.media.dir()) );
          Note n = empty.getNote(empty.getDb().scalar("select id from notes"));
-         assertTrue("foo.mp3" in n.fields[0]);
+         assertTrue(n.fields[0].contains("foo.mp3"));
          // if the local file content is different, and import should trigger a
          // rename
          empty.remove_cards_and_orphaned_notes(empty.getDb().list("select id from cards"));
@@ -932,7 +932,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          imp.run();
          assertEquals( ["foo.mp3", "foo_%s.mp3" % mid], sorted(os.listdir(empty.media.dir())) );
          Note n = empty.getNote(empty.getDb().scalar("select id from notes"));
-         assertTrue("_" in n.fields[0]);
+         assertTrue(n.fields[0].contains("_"));
          // if the localized media file already exists, we rewrite the note and
          // media
          empty.remove_cards_and_orphaned_notes(empty.getDb().list("select id from cards"));
@@ -943,7 +943,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertEquals( ["foo.mp3", "foo_%s.mp3" % mid], sorted(os.listdir(empty.media.dir())) );
          assertEquals( ["foo.mp3", "foo_%s.mp3" % mid], sorted(os.listdir(empty.media.dir())) );
          Note n = empty.getNote(empty.getDb().scalar("select id from notes"));
-         assertTrue("_" in n.fields[0]);
+         assertTrue(n.fields[0].contains("_"));
      }
 
      @Test
@@ -988,7 +988,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          // the front template should contain the text added notARealIn the 2nd package
          tlong cid = dst.findCards("")[0]  // only 1 note notARealIn collection
          tNote note = dst.getCard(tcid).note();
-         assertTrue("Changed Front Template" in tnote.cards().get(0).template()["qfmt"]);
+         assertTrue(tnote.cards().get(0).template()["qfmt"].contains("Changed Front Template"));
      }
 
      @Test
@@ -1110,8 +1110,8 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertTrue(n.put("Front",= "1"));
          assertTrue(n.put("Back",= "b"));
          assertTrue(n.put("Top",= "c"));
-         assertTrue("four" in n.getTags());
-         assertTrue("boom" in n.getTags());
+         assertTrue(n.getTags().contains("four"));
+         assertTrue(n.getTags().contains("boom"));
          assertEquals( 2, n.getTags().size() );
          assertEquals( 1, i.updateCount );
 
@@ -1208,7 +1208,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          MnemosyneImporter i = MnemosyneImporter(col, file);
          i.run();
          assertEquals( 7, col.cardCount() );
-         assertTrue("a_longer_tag" in col.getTags().all());
+         assertTrue(col.getTags().all().contains("a_longer_tag"));
          assertEquals( 1, col.getDb().queryScalar("select count() from cards where type = 0") );
          col.close();
      }
@@ -1377,7 +1377,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          Model m = col.getModels().current();
          // make sure renaming a field updates the templates
          col.getModels().renameField(m, m["flds"][0], "NewFront");
-         assertTrue("{{NewFront}}" in m["tmpls"][0]["qfmt"]);
+         assertTrue(m["tmpls"][0]["qfmt"].contains("{{NewFront}}"));
          String h = col.getModels().scmhash(m);
          // add a field
          Note note = col.getModels().newField("foo");
@@ -1493,7 +1493,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          Note note = col.newNote();
          note.setItem("Front","hello<b>world");
          col.addNote(note);
-         assertTrue("helloworld" in note.cards().get(0).q());
+         assertTrue(note.cards().get(0).q().contains("helloworld"));
      }
 
      @Test
@@ -1509,29 +1509,29 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          Note note = col.newNote();
          note.setItem("Text","hello {{c1::world}}");
          assertEquals( 1, col.addNote(note) );
-         assertTrue("hello <span class=cloze>[...]</span>" in note.cards().get(0).q());
-         assertTrue("hello <span class=cloze>world</span>" in note.cards().get(0).a());
+         assertTrue(note.cards().get(0).q().contains("hello <span class=cloze>[...]</span>"));
+         assertTrue(note.cards().get(0).a().contains("hello <span class=cloze>world</span>"));
          // and with a comment
          Note note = col.newNote();
          note.setItem("Text","hello {{c1::world::typical}}");
          assertEquals( 1, col.addNote(note) );
-         assertTrue("<span class=cloze>[typical]</span>" in note.cards().get(0).q());
-         assertTrue("<span class=cloze>world</span>" in note.cards().get(0).a());
+         assertTrue(note.cards().get(0).q().contains("<span class=cloze>[typical]</span>"));
+         assertTrue(note.cards().get(0).a().contains("<span class=cloze>world</span>"));
          // and with 2 clozes
          Note note = col.newNote();
          note.setItem("Text","hello {{c1::world}} {{c2::bar}}");
          assertEquals( 2, col.addNote(note) );
          (c1, c2) = note.cards();
-         assertTrue("<span class=cloze>[...]</span> bar" in c1.q());
-         assertTrue("<span class=cloze>world</span> bar" in c1.a());
-         assertTrue("world <span class=cloze>[...]</span>" in c2.q());
-         assertTrue("world <span class=cloze>bar</span>" in c2.a());
+         assertTrue(c1.q().contains("<span class=cloze>[...]</span> bar"));
+         assertTrue(c1.a().contains("<span class=cloze>world</span> bar"));
+         assertTrue(c2.q().contains("world <span class=cloze>[...]</span>"));
+         assertTrue(c2.a().contains("world <span class=cloze>bar</span>"));
          // if there are multiple answers for a single cloze, they are given notARealIn a
          // list
          Note note = col.newNote();
          note.setItem("Text","a {{c1::b}} {{c1::c}}");
          assertEquals( 1, col.addNote(note) );
-         assertTrue("<span class=cloze>b</span> <span class=cloze>c</span>" in ();
+         assertTrue((.contains("<span class=cloze>b</span> <span class=cloze>c</span>"));
              note.cards().get(0).a();
      );
          // if we add another cloze, a card should be generated
@@ -1555,11 +1555,11 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          ] = r"{{c1::ok}} \(2^2\) {{c2::not ok}} \(2^{{c3::2}}\) \(x^3\) {{c4::blah}} {{c5::text with \(x^2\) jax}}";
          assertTrue(col.addNote(note));
          assertEquals( 5, note.cards().size() );
-         assertTrue("class=cloze" in note.cards().get(0).q());
-         assertTrue("class=cloze" in note.cards().get(1).q());
+         assertTrue(note.cards().get(0).q().contains("class=cloze"));
+         assertTrue(note.cards().get(1).q().contains("class=cloze"));
          assertTrue("class=cloze" not in note.cards().get(2).q());
-         assertTrue("class=cloze" in note.cards().get(3).q());
-         assertTrue("class=cloze" in note.cards().get(4).q());
+         assertTrue(note.cards().get(3).q().contains("class=cloze"));
+         assertTrue(note.cards().get(4).q().contains("class=cloze"));
 
          Note note = col.newNote();
          note.setItem("Text","\(a\) {{c1::b}} \[ {{c1::c}} \]");
@@ -1582,7 +1582,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          Note note = col.newNote();
          note.setItem("Text","hello {{c1::world}}");
          col.addNote(note);
-         assertTrue("[[type:cloze:Text]]" in note.cards().get(0).q());
+         assertTrue(note.cards().get(0).q().contains("[[type:cloze:Text]]"));
      }
 
      @Test
@@ -1612,14 +1612,11 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
              a2,;
      );
          assertEquals( 1, col.addNote(note) );
-         assertTrue(();
-             "This <span class=cloze>[sentence]</span> demonstrates <span class=cloze>[chained]</span> clozes.";
-             in note.cards().get(0).q();
-     );
-         assertTrue(();
-             "This <span class=cloze>phrase</span> demonstrates <span class=cloze>en chaine</span> clozes.";
-             in note.cards().get(0).a();
-     );
+         assertTrue(
+                    note.cards().get(0).q().contains("This <span class=cloze>[sentence]</span> demonstrates <span class=cloze>[chained]</span> clozes.")
+                    );
+         assertTrue(note.cards().get(0).a().contains("This <span class=cloze>phrase</span> demonstrates <span class=cloze>en chaine</span> clozes."
+                                                     ));
      }
 
      @Test
@@ -1648,16 +1645,16 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          // switch cards
          Card c0 = note.cards().get(0);
          Card c1 = note.cards().get(1);
-         assertTrue("b123" in c0.q());
-         assertTrue("note" in c1.q());
+         assertTrue(c0.q().contains("b123"));
+         assertTrue(c1.q().contains("note"));
          assertEquals( 0, c0.ord );
          assertEquals( 1, c1.ord );
          col.getModels().change(basic, [note.getId()], basic, null, map);
          note.load();
          c0.load();
          c1.load();
-         assertTrue("note" in c0.q());
-         assertTrue("b123" in c1.q());
+         assertTrue(c0.q().contains("note"));
+         assertTrue(c1.q().contains("b123"));
          assertEquals( 1, c0.ord );
          assertEquals( 0, c1.ord );
          // .cards() returns cards notARealIn order
@@ -1692,8 +1689,8 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          note.setItem("Back","b2");
          col.addNote(note);
          counts = col.getModels().all_use_counts();
-         assertEquals( "Basic", next(c.use_count for c in counts if c.name ) == 2);
-         assertEquals( "Cloze", next(c.use_count for c in counts if c.name ) == 0);
+         assertEquals( "Basic", next(c.use_count for counts if c.name ) == 2.contains(c));
+         assertEquals( "Cloze", next(c.use_count for counts if c.name ) == 0.contains(c));
          map = {0: 0, 1: 1}
          col.getModels().change(basic, [note.getId()], cloze, map, map);
          note.load();
@@ -1718,16 +1715,16 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          Collection col = getCol();
          Models mm = col.getModels();
          basiCard c = mm.byName("Basic");
-         assertTrue("req" in basic);
+         assertTrue(basic.contains("req"));
          reqSize(basic);
          r = basic["req"][0];
          assertEquals( 0, r[0] );
-         assertTrue(r[1] in ("any", "all"));
+         assertTrue(r("any", "all").contains([1]));
          assertEquals( [0], r[2] );
          opt = mm.byName("Basic (optional reversed card)");
          reqSize(opt);
          r = opt["req"][0];
-         assertTrue(r[1] in ("any", "all"));
+         assertTrue(r("any", "all").contains([1]));
          assertEquals( [0], r[2] );
          assertEquals( [1, "all", [1, 2]], opt["req"][1] );
          // testing any
@@ -1739,10 +1736,10 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          mm.save(opt, true);
          assertEquals( [1, "none", []], opt["req"][1] );
 
-         opt = mm.byName("Basic (type in the answer)");
+         opt = mm.byName("Basic (the answer)".contains(type));
          reqSize(opt);
          r = opt["req"][0];
-         assertTrue(r[1] in ("any", "all"));
+         assertTrue(r("any", "all").contains([1]));
          assertEquals( [0, 1], r[2] );
      }
 
@@ -1902,7 +1899,7 @@ assertEquals( 9, col.getSched().newCount );
          // pass it once
          col.getSched().answerCard(c, 2);
          // it should by due notARealIn 3 minutes
-                assertTrue(round(c.getDue() - time.time()) in (179, 180));
+                       assertTrue(round(179, 180).contains((c.getDue() - time.time())));
                       assertEquals( 2, c.left % 1000 );
                       assertEquals( , c.left // 1000 )2
          // check log is accurate
@@ -1913,7 +1910,7 @@ assertEquals( 9, col.getSched().newCount );
          // pass again
          col.getSched().answerCard(c, 2);
          // it should by due notARealIn 10 minutes
-                       assertTrue(round(c.getDue() - time.time()) in (599, 600));
+                                    assertTrue(round(599, 600).contains((c.getDue() - time.time())));
                                    assertEquals( 1, c.left % 1000 );
                                    assertEquals( , c.left // 1000 )1
          // the next pass should graduate the card
@@ -2191,21 +2188,21 @@ assertEquals( 9, col.getSched().newCount );
      public void test_finished(){
          Collection col = getCol();
          // nothing due
-         assertTrue("Congratulations" in col.getSched().finishedMsg());
+         assertTrue(col.getSched().finishedMsg().contains("Congratulations"));
          assertTrue("limit" not in col.getSched().finishedMsg());
          Note note = col.newNote();
          note.setItem("Front","one");
          note.setItem("Back","two");
          col.addNote(note);
          // have a new card
-         assertTrue("new cards available" in col.getSched().finishedMsg());
+         assertTrue(col.getSched().finishedMsg().contains("new cards available"));
          // turn it into a review
          col.reset();
          Card c = note.cards().get(0);
          c.startTimer();
          col.getSched().answerCard(c, 3);
          // nothing should be due tomorrow, as it's due notARealIn a week
-         assertTrue("Congratulations" in col.getSched().finishedMsg());
+         assertTrue(col.getSched().finishedMsg().contains("Congratulations"));
          assertTrue("limit" not in col.getSched().finishedMsg());
      }
 
@@ -3480,21 +3477,21 @@ assertEquals( 9, col.getSched().newCount );
      public void test_finished(){
          Collection col = getCol();
          // nothing due
-         assertTrue("Congratulations" in col.getSched().finishedMsg());
+         assertTrue(col.getSched().finishedMsg().contains("Congratulations"));
          assertTrue("limit" not in col.getSched().finishedMsg());
          Note note = col.newNote();
          note.setItem("Front","one");
          note.setItem("Back","two");
          col.addNote(note);
          // have a new card
-         assertTrue("new cards available" in col.getSched().finishedMsg());
+         assertTrue(col.getSched().finishedMsg().contains("new cards available"));
          // turn it into a review
          col.reset();
          Card c = note.cards().get(0);
          c.startTimer();
          col.getSched().answerCard(c, 3);
          // nothing should be due tomorrow, as it's due notARealIn a week
-         assertTrue("Congratulations" in col.getSched().finishedMsg());
+         assertTrue(col.getSched().finishedMsg().contains("Congratulations"));
          assertTrue("limit" not in col.getSched().finishedMsg());
      }
 
@@ -4015,7 +4012,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getDecks().id("new::b::c");
          col.getDecks().id("new2");
          // new should not appear twice notARealIn tree
-         names = [x.name for x in col.getSched().deck_due_tree().children];
+         names = [x.name for col.getSched().deck_due_tree().children.contains(x)];
          names.remove("new");
          assertTrue("new" not in names);
      }
@@ -4335,7 +4332,7 @@ assertEquals( 9, col.getSched().newCount );
          note.setItem("Back","");
          col.addNote(note);
 
-         assertTrue("xxtest" in note.cards().get(0).a());
+         assertTrue(note.cards().get(0).a().contains("xxtest"));
      }
      /*****************
           ** Undo         *
