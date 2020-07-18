@@ -539,9 +539,9 @@ public class UpstreamTest extends RobolectricTest {
          col.getSched().answerCard(c, 3);
          // should have ivl of 1, due on day 11
          assertEquals( 1, c.ivl );
-         assertEquals( 11, c.due );
+         assertEquals( 11, c.getDue() );
          assertEquals( 10, col.getSched().today );
-         assertEquals( 1, c.due - col.getSched().today );
+         assertEquals( 1, c.getDue() - col.getSched().today );
          // export
          AnkiPackageExporter e = AnkiExporter(col);
          e.includeSched = true;
@@ -556,7 +556,7 @@ public class UpstreamTest extends RobolectricTest {
          imp.run();
          Card c = col2.getCard(c.getId());
          col2.getSched().reset();
-         assertEquals( 1, c.due - col2.getSched().today );
+         assertEquals( 1, c.getDue() - col2.getSched().today );
      }
 
      @Test
@@ -665,7 +665,7 @@ public class UpstreamTest extends RobolectricTest {
          c.flush();
          assertEquals( [c.getId(, col.findCards("is:review") )]);
          assertEquals( [], col.findCards("is:due") );
-         c.due = 0;
+         c.getDue() = 0;
          c.queue = QUEUE_TYPE_REV;
          c.flush();
          assertEquals( [c.getId(, col.findCards("is:due") )]);
@@ -1796,7 +1796,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          col.getSched().answerCard(c, 1);
          assertEquals( QUEUE_TYPE_LRN, c.queue );
          assertEquals( CARD_TYPE_LRN, c.type );
-         assertTrue(c.due >= t);
+         assertTrue(c.getDue() >= t);
 
          // disabled for now, as the learn fudging makes this randomly fail
          // // the default order should ensure siblings are not seen together, and
@@ -1896,12 +1896,12 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( 3, c.left % 1000 );
          assertEquals( , c.left // 1000 )3
          // it should by due in 30 seconds
-         JSONObject t = round(c.due - time.time());
+         JSONObject t = round(c.getDue() - time.time());
                 assertTrue(t >= 25 and t <= 40);
          // pass it once
          col.getSched().answerCard(c, 2);
          // it should by due in 3 minutes
-                assertTrue(round(c.due - time.time()) in (179, 180));
+                assertTrue(round(c.getDue() - time.time()) in (179, 180));
                       assertEquals( 2, c.left % 1000 );
                       assertEquals( , c.left // 1000 )2
          // check log is accurate
@@ -1912,7 +1912,7 @@ assertEquals( 9, col.getSched().newCount );
          // pass again
          col.getSched().answerCard(c, 2);
          // it should by due in 10 minutes
-                       assertTrue(round(c.due - time.time()) in (599, 600));
+                       assertTrue(round(c.getDue() - time.time()) in (599, 600));
                                    assertEquals( 1, c.left % 1000 );
                                    assertEquals( , c.left // 1000 )1
          // the next pass should graduate the card
@@ -1922,7 +1922,7 @@ assertEquals( 9, col.getSched().newCount );
                                                 assertEquals( QUEUE_TYPE_REV, c.queue );
                                                 assertEquals( CARD_TYPE_REV, c.type );
          // should be due tomorrow, with an interval of 1
-                                                assertEquals( col.getSched(, c.due ).today + 1);
+                                                assertEquals( col.getSched(, c.getDue() ).today + 1);
                                                 assertEquals( 1, c.ivl );
          // or normal removal
          c.type = 0;
@@ -1938,7 +1938,7 @@ assertEquals( 9, col.getSched().newCount );
          c.queue = 1;
          c.odue = 123;
          col.getSched().answerCard(c, 3);
-                                                assertEquals( 123, c.due );
+                                                assertEquals( 123, c.getDue() );
                                                 assertEquals( CARD_TYPE_REV, c.type );
                                                 assertEquals( QUEUE_TYPE_REV, c.queue );
          // we should be able to remove manually, too
@@ -1949,7 +1949,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().removeLrn();
          c.load();
                                                 assertEquals( QUEUE_TYPE_REV, c.queue );
-                                                assertEquals( 321, c.due );
+                                                assertEquals( 321, c.getDue() );
      }
 
      @Test
@@ -2003,11 +2003,11 @@ assertEquals( 9, col.getSched().newCount );
                       assertEquals( 86400, ni(c, 2) );
          // answering it will place it in queue 3
          col.getSched().answerCard(c, 2);
-                      assertEquals( col.getSched(, c.due ).today + 1);
+                      assertEquals( col.getSched(, c.getDue() ).today + 1);
                       assertEquals( CARD_TYPE_RELEARNING, c.queue );
                 assertFalse(col.getSched().getCard());
          // for testing, move it back a day
-         c.due -= 1;
+         c.getDue() -= 1;
          c.flush();
          col.reset();
                       assertEquals( (0, 1, 0, col.getSched().counts() ));
@@ -2022,7 +2022,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 2);
          // simulate the passing of another two days
-         c.due -= 2;
+         c.getDue() -= 2;
          c.flush();
          col.reset();
          // the last pass should graduate it into a review card
@@ -2031,7 +2031,7 @@ assertEquals( 9, col.getSched().newCount );
                       assertEquals( CARD_TYPE_REV and c.type == QUEUE_TYPE_REV, c.queue );
          // if the lapse step is tomorrow, failing it should handle the counts
          // correctly
-         c.due = 0;
+         c.getDue() = 0;
          c.flush();
          col.reset();
                       assertEquals( (0, 0, 1, col.getSched().counts() ));
@@ -2056,7 +2056,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
-         c.due = col.getSched().today - 8;
+         c.getDue() = col.getSched().today - 8;
          c.factor = STARTING_FACTOR;
          c.reps = 3;
          c.lapses = 1;
@@ -2079,8 +2079,8 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( 1, c.ivl );
          // but because it's in the learn queue, its current due time should be in
          // the future
-         assertTrue(c.due >= time.time());
-         assertTrue((c.due - time.time()) > 118);
+         assertTrue(c.getDue() >= time.time());
+         assertTrue((c.getDue() - time.time()) > 118);
          // factor should have been decremented
          assertEquals( 2300, c.factor );
          // check counters
@@ -2098,7 +2098,7 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( QUEUE_TYPE_REV, c.queue );
          // the new interval should be (100 + 8/4) * 1.2 = 122
          assertTrue(checkRevIvl(col, c, 122));
-         assertEquals( col.getSched(, c.due ).today + c.ivl);
+         assertEquals( col.getSched(, c.getDue() ).today + c.ivl);
          // factor should have been decremented
          assertEquals( 2350, c.factor );
          // check counters
@@ -2111,7 +2111,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().answerCard(c, 3);
          // the new interval should be (100 + 8/2) * 2.5 = 260
          assertTrue(checkRevIvl(col, c, 260));
-         assertEquals( col.getSched(, c.due ).today + c.ivl);
+         assertEquals( col.getSched(, c.getDue() ).today + c.ivl);
          // factor should have been left alone
          assertEquals( STARTING_FACTOR, c.factor );
          // ease 4
@@ -2121,7 +2121,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().answerCard(c, 4);
          // the new interval should be (100 + 8) * 2.5 * 1.3 = 351
          assertTrue(checkRevIvl(col, c, 351));
-         assertEquals( col.getSched(, c.due ).today + c.ivl);
+         assertEquals( col.getSched(, c.getDue() ).today + c.ivl);
          // factor should have been increased
          assertEquals( 2650, c.factor );
      }
@@ -2136,7 +2136,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
-         c.due = col.getSched().today;
+         c.getDue() = col.getSched().today;
          c.reps = 1;
          c.ivl = 1;
          c.startTimer();
@@ -2162,7 +2162,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = 1;
-         c.due = -1;
+         c.getDue() = -1;
          c.odue = -1;
          c.factor = STARTING_FACTOR;
          c.left = 2002;
@@ -2176,7 +2176,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 3);
          // it should be due tomorrow
-         assertEquals( col.getSched(, c.due ).today + 1);
+         assertEquals( col.getSched(, c.getDue() ).today + 1);
          // revert to before
          col.rollback();
          col.getSched()._clearOverdue = true;
@@ -2303,7 +2303,7 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
          assertTrue(col.getSched().getCard());
          // should cope with rev cards being relearnt
-         c.due = 0;
+         c.getDue() = 0;
          c.ivl = 100;
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
@@ -2311,7 +2311,7 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
-         assertTrue(c.due >= time.time());
+         assertTrue(c.getDue() >= time.time());
          assertEquals( QUEUE_TYPE_LRN, c.queue );
          assertEquals( CARD_TYPE_REV, c.type );
          col.getSched().suspendCards([c.getId()]);
@@ -2319,18 +2319,18 @@ assertEquals( 9, col.getSched().newCount );
          c.load();
          assertEquals( QUEUE_TYPE_REV, c.queue );
          assertEquals( CARD_TYPE_REV, c.type );
-         assertEquals( 1, c.due );
+         assertEquals( 1, c.getDue() );
          // should cope with cards in cram decks
-         c.due = 1;
+         c.getDue() = 1;
          c.flush();
          cram = col.getDecks().newDyn("tmp");
          col.getSched().rebuildDyn();
          c.load();
-         assertNotEquals( 1, c.due );
+         assertNotEquals( 1, c.getDue() );
          assertNotEquals( 1, c.getDid() );
          col.getSched().suspendCards([c.getId()]);
          c.load();
-         assertEquals( 1, c.due );
+         assertEquals( 1, c.getDue() );
          assertEquals( 1, c.long did );
      }
 
@@ -2345,7 +2345,7 @@ assertEquals( 9, col.getSched().newCount );
          c.queue = CARD_TYPE_REV;
          c.type = QUEUE_TYPE_REV;
          // due in 25 days, so it's been waiting 75 days
-         c.due = col.getSched().today + 25;
+         c.getDue() = col.getSched().today + 25;
          c.setMod(1);
          c.factor = STARTING_FACTOR;
          c.startTimer();
@@ -2390,7 +2390,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 2);
          assertEquals( 138, c.ivl );
-         assertEquals( 138, c.due );
+         assertEquals( 138, c.getDue() );
          assertEquals( QUEUE_TYPE_REV, c.queue );
          // and it will have moved back to the previous deck
          assertEquals( 1, c.long did );
@@ -2415,11 +2415,11 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( 1, col.getSched().deck_due_tree().children.size() );
          c.load();
          assertEquals( 1, c.ivl );
-         assertEquals( col.getSched(, c.due ).today + 1);
+         assertEquals( col.getSched(, c.getDue() ).today + 1);
          // make it due
          col.reset();
          assertEquals( (0, 0, 0, col.getSched().counts() ));
-         c.due = -5;
+         c.getDue() = -5;
          c.ivl = 100;
          c.flush();
          col.reset();
@@ -2437,7 +2437,7 @@ assertEquals( 9, col.getSched().newCount );
          c2.Collection col = c.Collection col = col;
          c2.getId() = 0;
          c2.ord = 1;
-         c2.due = 325;
+         c2.getDue() = 325;
          c2.Collection col = c.col;
          c2.flush();
          // should be able to answer it
@@ -2453,7 +2453,7 @@ assertEquals( 9, col.getSched().newCount );
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         oldDue = note.cards().get(0).due;
+         oldDue = note.cards().get(0).getDue();
          long did = col.getDecks().newDyn("Cram");
          col.getSched().rebuildDyn(did);
          col.reset();
@@ -2461,12 +2461,12 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().answerCard(c, 2);
          // answering the card will put it in the learning queue
          assertEquals( CARD_TYPE_LRN and c.queue == QUEUE_TYPE_LRN, c.type );
-         assertNotEquals(c.due, oldDue);
+         assertNotEquals(c.getDue(), oldDue);
          // if we terminate cramming prematurely it should be set back to new
          col.getSched().emptyDyn(did);
          c.load();
          assertEquals( CARD_TYPE_NEW and c.queue == QUEUE_TYPE_NEW, c.type );
-         assertEquals( oldDue, c.due );
+         assertEquals( oldDue, c.getDue() );
      }
 
      @Test
@@ -2496,7 +2496,7 @@ assertEquals( 9, col.getSched().newCount );
          c.ivl = 100;
          c.queue = CARD_TYPE_REV;
          c.type = QUEUE_TYPE_REV;
-         c.due = col.getSched().today + 25;
+         c.getDue() = col.getSched().today + 25;
          c.factor = STARTING_FACTOR;
          c.flush();
          cardcopy = copy.copy(c);
@@ -2508,7 +2508,7 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( 0, ni(c, 3) );
          col.getSched().answerCard(c, 2);
          assertEquals( 100, c.ivl );
-         assertEquals( col.getSched(, c.due ).today + 25);
+         assertEquals( col.getSched(, c.getDue() ).today + 25);
          // check failure too
          Card c = cardcopy;
          c.flush();
@@ -2519,7 +2519,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().emptyDyn(did);
          c.load();
          assertEquals( 100, c.ivl );
-         assertEquals( col.getSched(, c.due ).today + 25);
+         assertEquals( col.getSched(, c.getDue() ).today + 25);
          // fail+grad early
          Card c = cardcopy;
          c.flush();
@@ -2531,10 +2531,10 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().emptyDyn(did);
          c.load();
          assertEquals( 100, c.ivl );
-         assertEquals( col.getSched(, c.due ).today + 25);
+         assertEquals( col.getSched(, c.getDue() ).today + 25);
          // due cards - pass
          Card c = cardcopy;
-         c.due = -25;
+         c.getDue() = -25;
          c.flush();
          col.getSched().rebuildDyn(did);
          col.reset();
@@ -2543,10 +2543,10 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().emptyDyn(did);
          c.load();
          assertEquals( 100, c.ivl );
-         assertEquals( -25, c.due );
+         assertEquals( -25, c.getDue() );
          // fail
          Card c = cardcopy;
-         c.due = -25;
+         c.getDue() = -25;
          c.flush();
          col.getSched().rebuildDyn(did);
          col.reset();
@@ -2555,10 +2555,10 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().emptyDyn(did);
          c.load();
          assertEquals( 100, c.ivl );
-         assertEquals( -25, c.due );
+         assertEquals( -25, c.getDue() );
          // fail with normal grad
          Card c = cardcopy;
-         c.due = -25;
+         c.getDue() = -25;
          c.flush();
          col.getSched().rebuildDyn(did);
          col.reset();
@@ -2567,7 +2567,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().answerCard(c, 3);
          c.load();
          assertEquals( 100, c.ivl );
-         assertEquals( -25, c.due );
+         assertEquals( -25, c.getDue() );
          // lapsed card pulled into cram
          // col.getSched()._cardConf(c)['lapse']['mult']=0.5
          // col.getSched().answerCard(c, 1)
@@ -2677,7 +2677,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
-         c.due = col.getSched().today;
+         c.getDue() = col.getSched().today;
          c.flush();
          col.reset();
          assertEquals( (0, 0, 1, col.getSched().counts() ));
@@ -2697,7 +2697,7 @@ assertEquals( 9, col.getSched().newCount );
              Card c = note.cards().get(0);
              c.type = CARD_TYPE_REV;
              c.queue = QUEUE_TYPE_REV;
-             c.due = 0;
+             c.getDue() = 0;
              c.flush();
          // fail the first one
          col.reset();
@@ -2753,7 +2753,7 @@ assertEquals( 9, col.getSched().newCount );
          // make it a review card
          Card c = note.cards().get(0);
          c.queue = QUEUE_TYPE_REV;
-         c.due = 0;
+         c.getDue() = 0;
          c.flush();
          // add one more with a new deck
          Note note = col.newNote();
@@ -2822,19 +2822,19 @@ assertEquals( 9, col.getSched().newCount );
          Note note2 = col.newNote();
          note2.setItem("Front","two");
          col.addNote(note2);
-         assertEquals( 2, note2.cards().get(0).due );
+         assertEquals( 2, note2.cards().get(0).getDue() );
          found = false;
          // 50/50 chance of being reordered
          for (int i=0; i < 2; i++0) {
              col.getSched().randomizeCards(1);
-             if (note.cards().get(0).due != note.getId()) {
+             if (note.cards().get(0).getDue() != note.getId()) {
                  found = true;
                  break;
              }
          }
          assertTrue(found);
          col.getSched().orderCards(1);
-         assertEquals( 1, note.cards().get(0).due );
+         assertEquals( 1, note.cards().get(0).getDue() );
          // shifting
          note3 = col.newNote();
          note3.setItem("Front","three");
@@ -2842,15 +2842,15 @@ assertEquals( 9, col.getSched().newCount );
          note4 = col.newNote();
          note4.setItem("Front","four");
          col.addNote(note4);
-         assertEquals( 1, note.cards().get(0).due );
-         assertEquals( 2, note2.cards().get(0).due );
-         assertEquals( 3, note3.cards().get(0).due );
-         assertEquals( 4, note4.cards().get(0).due );
+         assertEquals( 1, note.cards().get(0).getDue() );
+         assertEquals( 2, note2.cards().get(0).getDue() );
+         assertEquals( 3, note3.cards().get(0).getDue() );
+         assertEquals( 4, note4.cards().get(0).getDue() );
          col.getSched().sortCards([note3.cards().get(0).getId(), note4.cards().get(0).getId()], start=1, shift=true);
-         assertEquals( 3, note.cards().get(0).due );
-         assertEquals( 4, note2.cards().get(0).due );
-         assertEquals( 1, note3.cards().get(0).due );
-         assertEquals( 2, note4.cards().get(0).due );
+         assertEquals( 3, note.cards().get(0).getDue() );
+         assertEquals( 4, note2.cards().get(0).getDue() );
+         assertEquals( 1, note3.cards().get(0).getDue() );
+         assertEquals( 2, note4.cards().get(0).getDue() );
      }
 
      @Test
@@ -2863,7 +2863,7 @@ assertEquals( 9, col.getSched().newCount );
          c.queue = QUEUE_TYPE_REV;
          c.type = CARD_TYPE_REV;
          c.ivl = 100;
-         c.due = 0;
+         c.getDue() = 0;
          c.flush();
          col.reset();
          assertEquals( (0, 0, 1, col.getSched().counts() ));
@@ -2881,12 +2881,12 @@ assertEquals( 9, col.getSched().newCount );
          Card c = note.cards().get(0);
          col.getSched().reschedCards([c.getId()], 0, 0);
          c.load();
-         assertEquals( col.getSched(, c.due ).today);
+         assertEquals( col.getSched(, c.getDue() ).today);
          assertEquals( 1, c.ivl );
          assertEquals( CARD_TYPE_REV and c.type == QUEUE_TYPE_REV, c.queue );
          col.getSched().reschedCards([c.getId()], 1, 1);
          c.load();
-         assertEquals( col.getSched(, c.due ).today + 1);
+         assertEquals( col.getSched(, c.getDue() ).today + 1);
          assertEquals( +1, c.ivl );
      }
 
@@ -2900,7 +2900,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
-         c.due = 0;
+         c.getDue() = 0;
          c.factor = STARTING_FACTOR;
          c.reps = 3;
          c.lapses = 1;
@@ -2924,7 +2924,7 @@ assertEquals( 9, col.getSched().newCount );
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
          c.ivl = 100;
-         c.due = col.getSched().today - c.ivl;
+         c.getDue() = col.getSched().today - c.ivl;
          c.factor = STARTING_FACTOR;
          c.reps = 3;
          c.lapses = 1;
@@ -2990,7 +2990,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().answerCard(c, 1);
          assertEquals( QUEUE_TYPE_LRN, c.queue );
          assertEquals( CARD_TYPE_LRN, c.type );
-         assertTrue(c.due >= t);
+         assertTrue(c.getDue() >= t);
 
          // disabled for now, as the learn fudging makes this randomly fail
          // // the default order should ensure siblings are not seen together, and
@@ -3090,12 +3090,12 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( 3, c.left % 1000 );
          assertEquals( , c.left // 1000 )3
          // it should by due in 30 seconds
-         JSONObject t = round(c.due - time.time());
+         JSONObject t = round(c.getDue() - time.time());
                 assertTrue(t >= 25 and t <= 40);
          // pass it once
          col.getSched().answerCard(c, 3);
          // it should by due in 3 minutes
-         dueIn = c.due - time.time();
+         dueIn = c.getDue() - time.time();
                 assertTrue(178 <= dueIn <= 180 * 1.25);
                       assertEquals( 2, c.left % 1000 );
                       assertEquals( , c.left // 1000 )2
@@ -3107,7 +3107,7 @@ assertEquals( 9, col.getSched().newCount );
          // pass again
          col.getSched().answerCard(c, 3);
          // it should by due in 10 minutes
-         dueIn = c.due - time.time();
+         dueIn = c.getDue() - time.time();
                        assertTrue(599 <= dueIn <= 600 * 1.25);
                                    assertEquals( 1, c.left % 1000 );
                                    assertEquals( , c.left // 1000 )1
@@ -3118,7 +3118,7 @@ assertEquals( 9, col.getSched().newCount );
                                                 assertEquals( QUEUE_TYPE_REV, c.queue );
                                                 assertEquals( CARD_TYPE_REV, c.type );
          // should be due tomorrow, with an interval of 1
-                                                assertEquals( col.getSched(, c.due ).today + 1);
+                                                assertEquals( col.getSched(, c.getDue() ).today + 1);
                                                 assertEquals( 1, c.ivl );
          // or normal removal
          c.type = 0;
@@ -3139,7 +3139,7 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          Card c = note.cards().get(0);
          c.ivl = 100;
-         c.due = col.getSched().today;
+         c.getDue() = col.getSched().today;
          c.queue = CARD_TYPE_REV;
          c.type = QUEUE_TYPE_REV;
          c.flush();
@@ -3156,7 +3156,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().answerCard(c, 4);
          assertEquals( CARD_TYPE_REV and c.type == QUEUE_TYPE_REV, c.queue );
          assertEquals( 2, c.ivl );
-         assertEquals( col.getSched(, c.due ).today + c.ivl);
+         assertEquals( col.getSched(, c.getDue() ).today + c.ivl);
      }
 
      @Test
@@ -3167,7 +3167,7 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          Card c = note.cards().get(0);
          c.ivl = 100;
-         c.due = col.getSched().today;
+         c.getDue() = col.getSched().today;
          c.queue = CARD_TYPE_REV;
          c.type = QUEUE_TYPE_REV;
          c.flush();
@@ -3234,11 +3234,11 @@ assertEquals( 9, col.getSched().newCount );
                       assertEquals( 86400, ni(c, 3) );
          // answering it will place it in queue 3
          col.getSched().answerCard(c, 3);
-                      assertEquals( col.getSched(, c.due ).today + 1);
+                      assertEquals( col.getSched(, c.getDue() ).today + 1);
                       assertEquals( QUEUE_TYPE_DAY_LEARN_RELEARN, c.queue );
                 assertFalse(col.getSched().getCard());
          // for testing, move it back a day
-         c.due -= 1;
+         c.getDue() -= 1;
          c.flush();
          col.reset();
                       assertEquals( (0, 1, 0, col.getSched().counts() ));
@@ -3253,7 +3253,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 3);
          // simulate the passing of another two days
-         c.due -= 2;
+         c.getDue() -= 2;
          c.flush();
          col.reset();
          // the last pass should graduate it into a review card
@@ -3262,7 +3262,7 @@ assertEquals( 9, col.getSched().newCount );
                       assertEquals( CARD_TYPE_REV and c.type == QUEUE_TYPE_REV, c.queue );
          // if the lapse step is tomorrow, failing it should handle the counts
          // correctly
-         c.due = 0;
+         c.getDue() = 0;
          c.flush();
          col.reset();
                       assertEquals( (0, 0, 1, col.getSched().counts() ));
@@ -3287,7 +3287,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
-         c.due = col.getSched().today - 8;
+         c.getDue() = col.getSched().today - 8;
          c.factor = STARTING_FACTOR;
          c.reps = 3;
          c.lapses = 1;
@@ -3305,7 +3305,7 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( QUEUE_TYPE_REV, c.queue );
          // the new interval should be (100) * 1.2 = 120
          assertTrue(checkRevIvl(col, c, 120));
-         assertEquals( col.getSched(, c.due ).today + c.ivl);
+         assertEquals( col.getSched(, c.getDue() ).today + c.ivl);
          // factor should have been decremented
          assertEquals( 2350, c.factor );
          // check counters
@@ -3318,7 +3318,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().answerCard(c, 3);
          // the new interval should be (100 + 8/2) * 2.5 = 260
          assertTrue(checkRevIvl(col, c, 260));
-         assertEquals( col.getSched(, c.due ).today + c.ivl);
+         assertEquals( col.getSched(, c.getDue() ).today + c.ivl);
          // factor should have been left alone
          assertEquals( STARTING_FACTOR, c.factor );
          // ease 4
@@ -3328,7 +3328,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().answerCard(c, 4);
          // the new interval should be (100 + 8) * 2.5 * 1.3 = 351
          assertTrue(checkRevIvl(col, c, 351));
-         assertEquals( col.getSched(, c.due ).today + c.ivl);
+         assertEquals( col.getSched(, c.getDue() ).today + c.ivl);
          // factor should have been increased
          assertEquals( 2650, c.factor );
          // leech handling
@@ -3386,7 +3386,7 @@ assertEquals( 9, col.getSched().newCount );
              Card c = note.cards().get(0);
              c.queue = CARD_TYPE_REV;
              c.type = QUEUE_TYPE_REV;
-             c.due = 0;
+             c.getDue() = 0;
              c.flush();
 
          tree = col.getSched().deck_due_tree().children;
@@ -3419,7 +3419,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
-         c.due = col.getSched().today;
+         c.getDue() = col.getSched().today;
          c.reps = 1;
          c.ivl = 1;
          c.startTimer();
@@ -3451,7 +3451,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = 1;
-         c.due = -1;
+         c.getDue() = -1;
          c.odue = -1;
          c.factor = STARTING_FACTOR;
          c.left = 2002;
@@ -3465,7 +3465,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 3);
          // it should be due tomorrow
-         assertEquals( col.getSched(, c.due ).today + 1);
+         assertEquals( col.getSched(, c.getDue() ).today + 1);
          // revert to before
          col.rollback();
          col.getSched()._clearOverdue = true;
@@ -3623,7 +3623,7 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
          assertTrue(col.getSched().getCard());
          // should cope with rev cards being relearnt
-         c.due = 0;
+         c.getDue() = 0;
          c.ivl = 100;
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
@@ -3631,8 +3631,8 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
-         assertTrue(c.due >= time.time());
-         due = c.due;
+         assertTrue(c.getDue() >= time.time());
+         due = c.getDue();
          assertEquals( QUEUE_TYPE_LRN, c.queue );
          assertEquals( CARD_TYPE_RELEARNING, c.type );
          col.getSched().suspendCards([c.getId()]);
@@ -3640,18 +3640,18 @@ assertEquals( 9, col.getSched().newCount );
          c.load();
          assertEquals( QUEUE_TYPE_LRN, c.queue );
          assertEquals( CARD_TYPE_RELEARNING, c.type );
-         assertEquals( due, c.due );
+         assertEquals( due, c.getDue() );
          // should cope with cards in cram decks
-         c.due = 1;
+         c.getDue() = 1;
          c.flush();
          cram = col.getDecks().newDyn("tmp");
          col.getSched().rebuildDyn();
          c.load();
-         assertNotEquals(1, c.due);
+         assertNotEquals(1, c.getDue());
          assertNotEquals(1, c.getDid());
          col.getSched().suspendCards([c.getId()]);
          c.load();
-         assertNotEquals(1, c.due);
+         assertNotEquals(1, c.getDue());
          assertNotEquals(1, c.getDid());
          assertEquals( 1, c.odue );
      }
@@ -3667,7 +3667,7 @@ assertEquals( 9, col.getSched().newCount );
          c.queue = CARD_TYPE_REV;
          c.type = QUEUE_TYPE_REV;
          // due in 25 days, so it's been waiting 75 days
-         c.due = col.getSched().today + 25;
+         c.getDue() = col.getSched().today + 25;
          c.setMod(1);
          c.factor = STARTING_FACTOR;
          c.startTimer();
@@ -3693,7 +3693,7 @@ assertEquals( 9, col.getSched().newCount );
          // answer 'good'
          col.getSched().answerCard(c, 3);
          checkRevIvl(col, c, 90);
-         assertEquals( col.getSched(, c.due ).today + c.ivl);
+         assertEquals( col.getSched(, c.getDue() ).today + c.ivl);
          assertFalse(c.odue);
          // should not be in learning
          assertEquals( QUEUE_TYPE_REV, c.queue );
@@ -3702,7 +3702,7 @@ assertEquals( 9, col.getSched().newCount );
 
          // due in 75 days, so it's been waiting 25 days
          c.ivl = 100;
-         c.due = col.getSched().today + 75;
+         c.getDue() = col.getSched().today + 75;
          c.flush();
          col.getSched().rebuildDyn(did);
          col.reset();
@@ -3748,14 +3748,14 @@ assertEquals( 9, col.getSched().newCount );
          // should be able to advance learning steps
          col.getSched().answerCard(c, 3);
          // should be due at least an hour in the future
-         assertTrue(c.due - intTime() > 60 * 60);
+         assertTrue(c.getDue() - intTime() > 60 * 60);
 
          // emptying the deck preserves learning state
          col.getSched().emptyDyn(did);
          c.load();
          assertEquals( CARD_TYPE_LRN and c.queue == QUEUE_TYPE_LRN, c.type );
          assertEquals( 1001, c.left );
-         assertTrue(c.due - intTime() > 60 * 60);
+         assertTrue(c.getDue() - intTime() > 60 * 60);
      }
 
      @Test
@@ -3783,9 +3783,9 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( 600, col.getSched().nextIvl(c, 1) );
          assertEquals( 0, col.getSched().nextIvl(c, 2) );
          // failing it will push its due time back
-         due = c.due;
+         due = c.getDue();
          col.getSched().answerCard(c, 1);
-         assertNotEquals(c.due, due);
+         assertNotEquals(c.getDue(), due);
 
          // the other card should come next
          c2 = col.getSched().getCard();
@@ -3908,7 +3908,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
-         c.due = col.getSched().today;
+         c.getDue() = col.getSched().today;
          c.flush();
          col.reset();
          assertEquals( (0, 0, 1, col.getSched().counts() ));
@@ -3928,7 +3928,7 @@ assertEquals( 9, col.getSched().newCount );
              Card c = note.cards().get(0);
              c.type = CARD_TYPE_REV;
              c.queue = QUEUE_TYPE_REV;
-             c.due = 0;
+             c.getDue() = 0;
              c.flush();
          // fail the first one
          col.reset();
@@ -3938,7 +3938,7 @@ assertEquals( 9, col.getSched().newCount );
          c2 = col.getSched().getCard();
          assertEquals( QUEUE_TYPE_REV, c2.queue );
          // if the failed card becomes due, it should show first
-         c.due = intTime() - 1;
+         c.getDue() = intTime() - 1;
          c.flush();
          col.reset();
          Card c = col.getSched().getCard();
@@ -3976,7 +3976,7 @@ assertEquals( 9, col.getSched().newCount );
          // make it a review card
          Card c = note.cards().get(0);
          c.queue = QUEUE_TYPE_REV;
-         c.due = 0;
+         c.getDue() = 0;
          c.flush();
          // add one more with a new deck
          Note note = col.newNote();
@@ -4056,19 +4056,19 @@ assertEquals( 9, col.getSched().newCount );
          Note note2 = col.newNote();
          note2.setItem("Front","two");
          col.addNote(note2);
-         assertEquals( 2, note2.cards().get(0).due );
+         assertEquals( 2, note2.cards().get(0).getDue() );
          found = false;
          // 50/50 chance of being reordered
          for (int i=0; i < 20; i++) {
              col.getSched().randomizeCards(1);
-             if (note.cards().get(0).due != note.getId()) {
+             if (note.cards().get(0).getDue() != note.getId()) {
                  found = true;
                  break;
              }
          }
          assertTrue(found);
          col.getSched().orderCards(1);
-         assertEquals( 1, note.cards().get(0).due );
+         assertEquals( 1, note.cards().get(0).getDue() );
          // shifting
          note3 = col.newNote();
          note3.setItem("Front","three")b;
@@ -4076,15 +4076,15 @@ assertEquals( 9, col.getSched().newCount );
          note4 = col.newNote();
          note4.setItem("Front","four");
          col.addNote(note4);
-         assertEquals( 1, note.cards().get(0).due );
-         assertEquals( 2, note2.cards().get(0).due );
-         assertEquals( 3, note3.cards().get(0).due );
-         assertEquals( 4, note4.cards().get(0).due );
+         assertEquals( 1, note.cards().get(0).getDue() );
+         assertEquals( 2, note2.cards().get(0).getDue() );
+         assertEquals( 3, note3.cards().get(0).getDue() );
+         assertEquals( 4, note4.cards().get(0).getDue() );
          col.getSched().sortCards([note3.cards().get(0).getId(), note4.cards().get(0).getId()], start=1, shift=true);
-         assertEquals( 3, note.cards().get(0).due );
-         assertEquals( 4, note2.cards().get(0).due );
-         assertEquals( 1, note3.cards().get(0).due );
-         assertEquals( 2, note4.cards().get(0).due );
+         assertEquals( 3, note.cards().get(0).getDue() );
+         assertEquals( 4, note2.cards().get(0).getDue() );
+         assertEquals( 1, note3.cards().get(0).getDue() );
+         assertEquals( 2, note4.cards().get(0).getDue() );
      }
 
      @Test
@@ -4097,7 +4097,7 @@ assertEquals( 9, col.getSched().newCount );
          c.queue = QUEUE_TYPE_REV;
          c.type = CARD_TYPE_REV;
          c.ivl = 100;
-         c.due = 0;
+         c.getDue() = 0;
          c.flush();
          col.reset();
          assertEquals( (0, 0, 1, col.getSched().counts() ));
@@ -4115,12 +4115,12 @@ assertEquals( 9, col.getSched().newCount );
          Card c = note.cards().get(0);
          col.getSched().reschedCards([c.getId()], 0, 0);
          c.load();
-         assertEquals( col.getSched(, c.due ).today);
+         assertEquals( col.getSched(, c.getDue() ).today);
          assertEquals( 1, c.ivl );
          assertEquals( QUEUE_TYPE_REV and c.type == CARD_TYPE_REV, c.queue );
          col.getSched().reschedCards([c.getId()], 1, 1);
          c.load();
-         assertEquals( col.getSched(, c.due ).today + 1);
+         assertEquals( col.getSched(, c.getDue() ).today + 1);
          assertEquals( +1, c.ivl );
      }
 
@@ -4134,7 +4134,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
-         c.due = 0;
+         c.getDue() = 0;
          c.factor = STARTING_FACTOR;
          c.reps = 3;
          c.lapses = 1;
@@ -4158,7 +4158,7 @@ assertEquals( 9, col.getSched().newCount );
          c.type = CARD_TYPE_REV;
          c.queue = QUEUE_TYPE_REV;
          c.ivl = 100;
-         c.due = col.getSched().today - c.ivl;
+         c.getDue() = col.getSched().today - c.ivl;
          c.factor = STARTING_FACTOR;
          c.reps = 3;
          c.lapses = 1;
@@ -4219,7 +4219,7 @@ assertEquals( 9, col.getSched().newCount );
          // card with 100 day interval, answering again
          col.getSched().reschedCards([c.getId()], 100, 100);
          c.load();
-         c.due = 0;
+         c.getDue() = 0;
          c.flush();
          conf = col.getSched()._cardConf(c);
          conf["lapse"].put("mult", 0.5);
@@ -4230,7 +4230,7 @@ assertEquals( 9, col.getSched().newCount );
          // due should be correctly set when removed from learning early
          col.changeSchedulerVer(1);
          c.load();
-         assertEquals( 50, c.due );
+         assertEquals( 50, c.getDue() );
      }
 
      // cards with a due date earlier than the collection should retain
@@ -4245,7 +4245,7 @@ assertEquals( 9, col.getSched().newCount );
          note.setItem("Back","two");
          col.addNote(note);
          Card c = note.cards().get(0);
-         c.due = -5;
+         c.getDue() = -5;
          c.queue = QUEUE_TYPE_REV;
          c.ivl = 5;
          c.flush();
@@ -4257,7 +4257,7 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
 
          c.load();
-         assertEquals( -5, c.due );
+         assertEquals( -5, c.getDue() );
      }
 
 
@@ -4277,7 +4277,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().answerCard(c, 2);
          // should be due in ~ 5.5 mins
          expected = time.time() + 5.5 * 60;
-         assertTrue(expected - 10 < c.due < expected * 1.25);
+         assertTrue(expected - 10 < c.getDue() < expected * 1.25);
 
          ivl = col.getDb().scalar("select ivl from revlog");
          assertEquals( -5.5 * 60, ivl );
