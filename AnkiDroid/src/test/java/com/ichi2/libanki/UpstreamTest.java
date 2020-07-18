@@ -233,7 +233,7 @@ public class UpstreamTest extends RobolectricTest {
          // should be canonified
          col.getTags().bulkAdd(Arrays.asList(new Long [] {note.getId()}), "foo aaa");
          note.load();
-         assertEquals( "aaa", note.getTags()[0] );
+         assertEquals( "aaa", note.getTags().get(0) );
          assertEquals( 2, note.getTags().size() );
      }
 
