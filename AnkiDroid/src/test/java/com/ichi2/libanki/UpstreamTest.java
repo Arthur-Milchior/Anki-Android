@@ -416,11 +416,11 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(deckNames() == ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"]);
 
          // Can drag a col back to the top level
-         col.decks.renameForDragAndDrop(chinese_did, None);
+         col.decks.renameForDragAndDrop(chinese_did, null);
          assertTrue(deckNames() == ["Chinese", "Chinese::HSK", "Languages"]);
 
          // Dragging a top level col to the top level is a no-op
-         col.decks.renameForDragAndDrop(chinese_did, None);
+         col.decks.renameForDragAndDrop(chinese_did, null);
          assertTrue(deckNames() == ["Chinese", "Chinese::HSK", "Languages"]);
 
          // decks are renamed if necessary
@@ -593,7 +593,7 @@ public class UpstreamTest extends RobolectricTest {
       *****************/
      class DummyCollection:
          def weakref(self):
-             return None;
+             return null;
      }
 
      @Test
@@ -1638,7 +1638,7 @@ note.setItem("Back","abc2");
          col.addNote(note);
          // switch fields
          map = {0: 1, 1: 0}
-         col.getModels().change(basic, [note.getId()], basic, map, None);
+         col.getModels().change(basic, [note.getId()], basic, map, null);
          note.load();
          assertTrue(note.setItem("Front","b123"));
          assertTrue(note.setItem("Back","note"));
@@ -1649,7 +1649,7 @@ note.setItem("Back","abc2");
          assertTrue("note" in c1.q());
          assertTrue(c0.ord == 0);
          assertTrue(c1.ord == 1);
-         col.getModels().change(basic, [note.getId()], basic, None, map);
+         col.getModels().change(basic, [note.getId()], basic, null, map);
          note.load();
          c0.load();
          c1.load();
@@ -1660,11 +1660,11 @@ note.setItem("Back","abc2");
          // .cards() returns cards in order
          assertTrue(note.cards().get(0).getId() == c1.getId());
          // delete first card
-         map = {0: None, 1: 1}
+         map = {0: null, 1: 1}
          if isWin:
              // The low precision timer on Windows reveals a race condition
              time.sleep(0.05);
-         col.getModels().change(basic, [note.getId()], basic, None, map);
+         col.getModels().change(basic, [note.getId()], basic, null, map);
          note.load();
          c0.load();
          // the card was deleted
@@ -1678,7 +1678,7 @@ note.setItem("Back","abc2");
          // an unmapped field becomes blank
              assertTrue(note.setItem("Front","b123"));
              assertTrue(note.setItem("Back","note"));
-         col.getModels().change(basic, [note.getId()], basic, map, None);
+         col.getModels().change(basic, [note.getId()], basic, map, null);
          note.load();
          assertTrue(note.setItem("Front",""));
          assertTrue(note.setItem("Back","note"));
@@ -1729,7 +1729,7 @@ note.setItem("Back","abc2");
          opt["tmpls"][1].put("qfmt", "{{Back}}{{Add Reverse}}");
          mm.save(opt, templates=true);
          assertTrue(opt["req"][1] == [1, "any", [1, 2]]);
-         // testing None
+         // testing null
          opt["tmpls"][1].put("qfmt", "{{^Add Reverse}}{{/Add Reverse}}");
          mm.save(opt, templates=true);
          assertTrue(opt["req"][1] == [1, "none", []]);
@@ -2425,7 +2425,7 @@ note.setItem("Back","abc2");
          c.load();
          assertTrue(col.getSched().answerButtons(c) == 4);
          // add a sibling so we can test minSpace, etc
-         c.Collection col = None;
+         c.Collection col = null;
          c2 = copy.deepcopy(c);
          c2.Collection col = c.Collection col = col;
          c2.getId() = 0;
