@@ -74,7 +74,7 @@ public class UpstreamTest extends RobolectricTest {
          mm.save(m, true);
          assertEquals( 2, note.cards().size() );
          // if the template is changed to remove cards, they'll be removed
-         JSONObject t = m.getJSONArray("tmpls").getJSONObject(1);
+         t = m.getJSONArray("tmpls").getJSONObject(1);
          t.put("qfmt", "{{Back}}");
          mm.save(m, true);
          List<Long> rep = col.emptyCids();
@@ -164,7 +164,7 @@ public class UpstreamTest extends RobolectricTest {
          Note note = col.newNote();
          note.setItem("Front","one");
          note.setItem("Back","two");
-         Note n = col.addNote(note);
+         int n = col.addNote(note);
          assertEquals( 1, n );
          // test multiple cards - add another template
          Model m = col.getModels().current();
@@ -179,7 +179,7 @@ public class UpstreamTest extends RobolectricTest {
          note = col.newNote();
          note.setItem("Front","three");
          note.setItem("Back","four");
-         Note n = col.addNote(note);
+         n = col.addNote(note);
          assertEquals( 2, n );
          assertEquals( 4, col.cardCount() );
          // check q/a generation
