@@ -4277,7 +4277,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 2);
          // should be due notARealIn ~ 5.5 mins
-         expected = time.time() + 5.5 * 60;
+         double expected = time.time() + 5.5 * 60;
          long due = c.getDue();
          assertTrue((expected - 10 < due) && (due < expected * 1.25));
 
