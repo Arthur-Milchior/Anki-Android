@@ -62,14 +62,14 @@ public class UpstreamTest extends RobolectricTest {
          Models mm = col.getModels();
          // adding a new template should automatically create cards
          JSONObject t = mm.newTemplate("rev");
-         t["qfmt"] = "{{Front}}";
-         t["afmt"] = "";
+         t.put("qfmt", "{{Front}}");
+         t.put("afmt", "");
          mm.addTemplate(m, t);
          mm.save(m, templates=True);
          assertTrue(note.cards().size() == 2);
          // if the template is changed to remove cards, they'll be removed
          JSONObject t = m["tmpls"][1];
-         t["qfmt"] = "{{Back}}";
+         t.put("qfmt", "{{Back}}");
          mm.save(m, templates=True);
          rep = col.backend.get_empty_cards();
          rep = col.backend.get_empty_cards();
@@ -95,7 +95,7 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(note.cards().get(0).did == 1);
          // set the model to a new default col
          long newid = col.decks.getId()("new");
-         cloze["did"] = newId;
+         cloze.put("did", newId);
          col.getModels().save(cloze, updateReqs=False);
          // a newly generated card should share the first card's col
          note.setItem("Text","{{c2::two}}");
@@ -164,8 +164,8 @@ public class UpstreamTest extends RobolectricTest {
          Model m = col.getModels().current();
          Models mm = col.getModels();
          JSONObject t = mm.newTemplate("Reverse");
-         t["qfmt"] = "{{Back}}";
-         t["afmt"] = "{{Front}}";
+         t.put("qfmt", "{{Back}}");
+         t.put("afmt", "{{Front}}");
          mm.addTemplate(m, t);
          mm.save(m);
          assertTrue(col.cardCount() == 2);
@@ -242,19 +242,19 @@ public class UpstreamTest extends RobolectricTest {
          Models mm = col.getModels();
          Model m = mm.current();
          // filter should work
-         m["tmpls"][0]["qfmt"] = "{{kana:Front}}";
+         m["tmpls"][0].put("qfmt", "{{kana:Front}}");
          mm.save(m);
          Note n = col.newNote();
-         n["Front"] = "foo[abc]";
+         n.put("Front", "foo[abc]");
          col.addNote(n);
          Card c = n.cards().get(0);
          assertTrue(c.q().endswith("abc"));
          // and should avoid sound
-         n["Front"] = "foo[sound:abc.mp3]";
+         n.put("Front", "foo[sound:abc.mp3]");
          n.flush();
          assertTrue("anki:play" in c.q(reload=True));
          // it shouldn't throw an error while people are editing
-         m["tmpls"][0]["qfmt"] = "{{kana:}}";
+         m["tmpls"][0].put("qfmt", "{{kana:}}");
          mm.save(m);
          c.q(reload=True);
      }
@@ -322,10 +322,10 @@ public class UpstreamTest extends RobolectricTest {
          // parents with a different case should be handled correctly
          col.decks.getId()("ONE");
          Model m = col.getModels().current();
-         m["did"] = col.decks.getId()("one::two");
+         m.put("did", col.decks.getId()("one::two"));
          col.getModels().save(m, updateReqs=False);
          Note n = col.newNote();
-         n["Front"] = "abc";
+         n.put("Front", "abc");
          col.addNote(n);
      }
 
@@ -336,7 +336,7 @@ public class UpstreamTest extends RobolectricTest {
          long deck1 = col.decks.getId()("deck1");
          Note note = col.newNote();
          note.setItem("Front","1");
-         note.model()["did"] = deck1;
+         note.model().put("did", deck1);
          col.addNote(note);
          Card c = note.cards().get(0);
          assertTrue(c.did == deck1);
@@ -449,7 +449,7 @@ public class UpstreamTest extends RobolectricTest {
          Note note = col.newNote();
          note.setItem("Front","baz");
          note.setItem("Back","qux");
-         note.model()["did"] = col.decks.getId()("new col");
+         note.model().put("did", col.decks.getId()("new col"));
          col.addNote(note);
      }
 
@@ -465,7 +465,7 @@ public class UpstreamTest extends RobolectricTest {
          Deck dobj = col.decks.get(did);
          long confId = col.decks.add_config_returning_id("newconf");
          DeckConfig conf = col.decks.get_config(confId);
-         conf["new"]["perDay"] = 5;
+         conf["new"].put("perDay", 5);
          col.decks.save(conf);
          col.decks.setConf(dobj, confId);
          // export
@@ -485,10 +485,10 @@ public class UpstreamTest extends RobolectricTest {
          long did = col2.decks.getId()("test", create=False);
          assertTrue(did);
          conf2 = col2.decks.confForDid(did);
-         assertTrue(conf2["new"]["perDay"] == 20);
+         assertTrue(conf2["new"].put("perDay",= 20));
          Deck dobj = col2.decks.get(did);
          // conf should be 1
-         assertTrue(dobj["conf"] == 1);
+         assertTrue(dobj.put("conf",= 1));
          // try again, limited to a deck
          fd, newname = tempfile.mkstemp(prefix="ankitest", suffix=".anki2");
          newname = str(newname);
@@ -507,7 +507,7 @@ public class UpstreamTest extends RobolectricTest {
          with open(os.path.join(col.media.dir(), "今日.mp3"), "w") as note:
              note.write("test");
          Note n = col.newNote();
-         n["Front"] = "[sound:今日.mp3]";
+         n.put("Front", "[sound:今日.mp3]");
          col.addNote(n);
          AnkiPackageExporter e = AnkiPackageExporter(col);
          fd, newname = tempfile.mkstemp(prefix="ankitest", suffix=".apkg");
@@ -621,8 +621,8 @@ public class UpstreamTest extends RobolectricTest {
          Model m = col.getModels().copy(m);
          Models mm = col.getModels();
          JSONObject t = mm.newTemplate("Reverse");
-         t["qfmt"] = "{{Back}}";
-         t["afmt"] = "{{Front}}";
+         t.put("qfmt", "{{Back}}");
+         t.put("afmt", "{{Front}}");
          mm.addTemplate(m, t);
          mm.save(m);
          Note note = col.newNote();
@@ -693,19 +693,19 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(col.findCards("front:do").size() == 0);
          assertTrue(col.findCards("front:*").size() == 5);
          // ordering
-         col.conf["sortType"] = "noteCrt";
+         col.conf.put("sortType", "noteCrt");
          col.flush();
          assertTrue(col.findCards("front:*", order=True)[-1] in latestCardIds);
          assertTrue(col.findCards("", order=True)[-1] in latestCardIds);
-         col.conf["sortType"] = "noteFld";
+         col.conf.put("sortType", "noteFld");
          col.flush();
          assertTrue(col.findCards("", order=True)[0] == catCard.getId());
          assertTrue(col.findCards("", order=True)[-1] in latestCardIds);
-         col.conf["sortType"] = "cardMod";
+                  col.conf.put("sortType", "cardMod");
          col.flush();
          assertTrue(col.findCards("", order=True)[-1] in latestCardIds);
          assertTrue(col.findCards("", order=True)[0] == firstCardId);
-         col.conf["sortBackwards"] = True;
+                  col.conf.put("sortBackwards", True);
          col.flush();
          assertTrue(col.findCards("", order=True)[0] in latestCardIds);
          assertTrue(();
@@ -901,7 +901,7 @@ note.setItem("Back","abc2");
          Collection col = getCol();
          // add a note that references a sound
          Note n = tmp.newNote();
-         n["Front"] = "[sound:foo.mp3]";
+         n.put("Front", "[sound:foo.mp3]");
          mid = n.model().getLong("id");
          col.addNote(n);
          // add that sound to media folder
@@ -1062,9 +1062,9 @@ note.setItem("Back","abc2");
          mm.addField(m, note);
          mm.save(m);
          Note n = col.newNote();
-         n["Front"] = "1";
-         n["Back"] = "2";
-         n["Three"] = "3";
+         n.put("Front", "1");
+         n.put("Back", "2");
+         n.put("Three", "3");
          col.addNote(n);
          // an update with unmapped fields should not clobber those fields
          file = str(os.path.join(testDir, "support/text-update.txt"));
@@ -1072,9 +1072,9 @@ note.setItem("Back","abc2");
          i.initMapping();
          i.run();
          n.load();
-         assertTrue(n["Front"] == "1");
-         assertTrue(n["Back"] == "x");
-         assertTrue(n["Three"] == "3");
+         assertTrue(n.put("Front",= "1"));
+         assertTrue(n.put("Back",= "x"));
+         assertTrue(n.put("Three",= "3"));
          col.close();
      }
 
@@ -1087,9 +1087,9 @@ note.setItem("Back","abc2");
          mm.addField(m, note);
          mm.save(m);
          Note n = col.newNote();
-         n["Front"] = "1";
-         n["Back"] = "2";
-         n["Top"] = "3";
+         n.put("Front", "1");
+         n.put("Back", "2");
+         n.put("Top", "3");
          n.addTag("four");
          col.addNote(n);
 
@@ -1104,9 +1104,9 @@ note.setItem("Back","abc2");
              clear_tempfile(tf);
 
          n.load();
-         assertTrue(n["Front"] == "1");
-         assertTrue(n["Back"] == "b");
-         assertTrue(n["Top"] == "c");
+         assertTrue(n.put("Front",= "1"));
+         assertTrue(n.put("Back",= "b"));
+         assertTrue(n.put("Top",= "c"));
          assertTrue("four" in n.tags);
          assertTrue("boom" in n.tags);
          assertTrue(n.tags.size() == 2);
@@ -1124,9 +1124,9 @@ note.setItem("Back","abc2");
          mm.addField(m, note);
          mm.save(m);
          Note n = col.newNote();
-         n["Front"] = "1";
-         n["Back"] = "2";
-         n["Top"] = "3";
+         n.put("Front", "1");
+         n.put("Back", "2");
+         n.put("Top", "3");
          n.addTag("four");
          n.addTag("five");
          col.addNote(n);
@@ -1142,9 +1142,9 @@ note.setItem("Back","abc2");
              clear_tempfile(tf);
 
          n.load();
-         assertTrue(n["Front"] == "1");
-         assertTrue(n["Back"] == "b");
-         assertTrue(n["Top"] == "c");
+         assertTrue(n.put("Front",= "1"));
+         assertTrue(n.put("Back",= "b"));
+         assertTrue(n.put("Top",= "c"));
          assertTrue(list(sorted(n.tags)) == list(sorted(["four", "five", "six"])));
 
          col.close();
@@ -1159,9 +1159,9 @@ note.setItem("Back","abc2");
          mm.addField(m, note);
          mm.save(m);
          Note n = col.newNote();
-         n["Front"] = "1";
-         n["Back"] = "2";
-         n["Left"] = "3";
+         n.put("Front", "1");
+         n.put("Back", "2");
+         n.put("Left", "3");
          col.addNote(n);
 
          // https://stackoverflow.com/questions/23212435/permission-denied-to-write-to-my-temporary-file
@@ -1218,8 +1218,8 @@ note.setItem("Back","abc2");
      public void test_flags(){
          Collection col = getCol();
          Note n = col.newNote();
-         n["Front"] = "one";
-         n["Back"] = "two";
+         n.put("Front", "one");
+         n.put("Back", "two");
          int cnt = col.addNote(n);
          Card c = n.cards().get(0);
          // make sure higher bits are preserved
@@ -1354,7 +1354,7 @@ note.setItem("Back","abc2");
          Collection col = getCol();
          Model m = col.getModels().current();
          Model m2 = col.getModels().copy(m);
-         assertTrue(m2["name"] == "Basic copy");
+         assertTrue(m2.put("name",= "Basic copy"));
          assertTrue(m2.getLong("id") != m.getLong("id"));
          assertTrue(m2["flds"].size() == 2);
          assertTrue(m["flds"].size() == 2);
@@ -1384,7 +1384,7 @@ note.setItem("Back","abc2");
          // rename it
          Note note = m["flds"][2];
          col.getModels().renameField(m, note, "bar");
-         assertTrue(col.getNote(col.getModels().nids(m)[0])["bar"] == "");
+         assertTrue(col.getNote(col.getModels().nids(m)[0]).put("bar",= ""));
          // delete back
          col.getModels().remField(m, m["flds"][1]);
          assertTrue(col.getNote(col.getModels().nids(m)[0]).fields == ["1", ""]);
@@ -1418,8 +1418,8 @@ note.setItem("Back","abc2");
          Model m = col.getModels().current();
          Models mm = col.getModels();
          JSONObject t = mm.newTemplate("Reverse");
-         t["qfmt"] = "{{Back}}";
-         t["afmt"] = "{{Front}}";
+         t.put("qfmt", "{{Back}}");
+         t.put("afmt", "{{Front}}");
          mm.addTemplate(m, t);
          mm.save(m);
          Note note = col.newNote();
@@ -1465,8 +1465,8 @@ note.setItem("Back","abc2");
 
          // We replace the default Cloze template
          JSONObject t = mm.newTemplate("ChainedCloze");
-         t["qfmt"] = "{{text:cloze:Text}}";
-         t["afmt"] = "{{text:cloze:Text}}";
+         t.put("qfmt", "{{text:cloze:Text}}");
+         t.put("afmt", "{{text:cloze:Text}}");
          mm.addTemplate(m, t);
          mm.save(m);
          col.getModels().remTemplate(m, m["tmpls"][0]);
@@ -1485,7 +1485,7 @@ note.setItem("Back","abc2");
      public void test_text(){
          Collection col = getCol();
          Model m = col.getModels().current();
-         m["tmpls"][0]["qfmt"] = "{{text:Front}}";
+         m["tmpls"][0].put("qfmt", "{{text:Front}}");
          col.getModels().save(m);
          Note note = col.newNote();
          note.setItem("Front","hello<b>world");
@@ -1498,7 +1498,7 @@ note.setItem("Back","abc2");
          Collection col = getCol();
          col.getModels().setCurrent(col.getModels().byName("Cloze"));
          Note note = col.newNote();
-         assertTrue(note.model()["name"] == "Cloze");
+         assertTrue(note.model().put("name",= "Cloze"));
          // a cloze model with no clozes is not empty
          note.setItem("Text","nothing");
          assertTrue(col.addNote(note));
@@ -1574,7 +1574,7 @@ note.setItem("Back","abc2");
          Collection col = getCol();
          Model m = col.getModels().byName("Cloze");
          col.getModels().setCurrent(m);
-         m["tmpls"][0]["qfmt"] = "{{cloze:Text}}{{type:cloze:Text}}";
+         m["tmpls"][0].put("qfmt", "{{cloze:Text}}{{type:cloze:Text}}");
          col.getModels().save(m);
          Note note = col.newNote();
          note.setItem("Text","hello {{c1::world}}");
@@ -1591,8 +1591,8 @@ note.setItem("Back","abc2");
 
          // We replace the default Cloze template
          JSONObject t = mm.newTemplate("ChainedCloze");
-         t["qfmt"] = "{{cloze:text:Text}}";
-         t["afmt"] = "{{cloze:text:Text}}";
+         t.put("qfmt", "{{cloze:text:Text}}");
+         t.put("afmt", "{{cloze:text:Text}}");
          mm.addTemplate(m, t);
          mm.save(m);
          col.getModels().remTemplate(m, m["tmpls"][0]);
@@ -1627,8 +1627,8 @@ note.setItem("Back","abc2");
          Model m = col.getModels().current();
          Models mm = col.getModels();
          JSONObject t = mm.newTemplate("Reverse");
-         t["qfmt"] = "{{Back}}";
-         t["afmt"] = "{{Front}}";
+         t.put("qfmt", "{{Back}}");
+         t.put("afmt", "{{Front}}");
          mm.addTemplate(m, t);
          mm.save(m);
          basiCard c = m;
@@ -1706,7 +1706,7 @@ note.setItem("Back","abc2");
      @Test
      public void test_req(){
          def reqSize(model):
-             if model["type"] == MODEL_CLOZE:
+         if model.put("type",= MODEL_CLOZE):
                  return;
              assertTrue(model["tmpls"].size() == model["req"].size());
 
@@ -1726,11 +1726,11 @@ note.setItem("Back","abc2");
          assertTrue(r[2] == [0]);
          assertTrue(opt["req"][1] == [1, "all", [1, 2]]);
          // testing any
-         opt["tmpls"][1]["qfmt"] = "{{Back}}{{Add Reverse}}";
+         opt["tmpls"][1].put("qfmt", "{{Back}}{{Add Reverse}}");
          mm.save(opt, templates=True);
          assertTrue(opt["req"][1] == [1, "any", [1, 2]]);
          // testing None
-         opt["tmpls"][1]["qfmt"] = "{{^Add Reverse}}{{/Add Reverse}}";
+         opt["tmpls"][1].put("qfmt", "{{^Add Reverse}}{{/Add Reverse}}");
          mm.save(opt, templates=True);
          assertTrue(opt["req"][1] == [1, "none", []]);
 
@@ -1836,13 +1836,13 @@ note.setItem("Back","abc2");
          assertTrue(c.long did == 1);
          // limit the parent to 10 cards, meaning we get 10 in total
          conf1 = col.decks.confForDid(1);
-         conf1["new"]["perDay"] = 10;
+         conf1["new"].put("perDay", 10);
          col.decks.save(conf1);
          col.reset();
          assertTrue(col.getSched().newCount == 10);
          // if we limit child to 4, we should get 9
          conf2 = col.decks.confForDid(deck2);
-         conf2["new"]["perDay"] = 4;
+         conf2["new"].put("perDay", 4);
          col.decks.save(conf2);
          col.reset();
          assertTrue(col.getSched().newCount == 9);
@@ -1857,11 +1857,11 @@ note.setItem("Back","abc2");
          col.reset();
          Card c = col.getSched().getCard();
          conf = col.getSched()._cardConf(c);
-         conf["new"]["delays"] = [1, 2, 3, 4, 5];
+         conf["new"].put("delays", [1, 2, 3, 4, 5]);
          col.decks.save(conf);
          col.getSched().answerCard(c, 2);
          // should handle gracefully
-         conf["new"]["delays"] = [1];
+         conf["new"].put("delays", [1]);
          col.decks.save(conf);
          col.getSched().answerCard(c, 2);
      }
@@ -1881,7 +1881,7 @@ note.setItem("Back","abc2");
          Card c = col.getSched().getCard();
          assertTrue(c);
          conf = col.getSched()._cardConf(c);
-         conf["new"]["delays"] = [0.5, 3, 10];
+         conf["new"].put("delays", [0.5, 3, 10]);
          col.decks.save(conf);
          // fail it
          col.getSched().answerCard(c, 1);
@@ -1983,7 +1983,7 @@ note.setItem("Back","abc2");
          col.getSched().reset();
          Card c = col.getSched().getCard();
          conf = col.getSched()._cardConf(c);
-         conf["new"]["delays"] = [1, 10, 1440, 2880];
+         conf["new"].put("delays", [1, 10, 1440, 2880]);
          col.decks.save(conf);
          // pass it
          col.getSched().answerCard(c, 2);
@@ -2029,7 +2029,7 @@ note.setItem("Back","abc2");
          col.reset();
                 assertTrue(col.getSched().counts() == (0, 0, 1));
          conf = col.getSched()._cardConf(c);
-         conf["lapse"]["delays"] = [1440];
+                    conf["lapse"].put("delays", [1440]);
          col.decks.save(conf);
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
@@ -2063,7 +2063,7 @@ note.setItem("Back","abc2");
          // different delay to new
          col.reset();
          conf = col.getSched()._cardConf(c);
-         conf["lapse"]["delays"] = [2, 20];
+         conf["lapse"].put("delays", [2, 20]);
          col.decks.save(conf);
          col.getSched().answerCard(c, 1);
          assertTrue(c.queue == QUEUE_TYPE_LRN);
@@ -2210,8 +2210,8 @@ note.setItem("Back","abc2");
          col.addNote(note);
          col.reset();
          conf = col.decks.confForDid(1);
-         conf["new"]["delays"] = [0.5, 3, 10];
-         conf["lapse"]["delays"] = [1, 5, 9];
+         conf["new"].put("delays", [0.5, 3, 10]);
+         conf["lapse"].put("delays", [1, 5, 9]);
          col.decks.save(conf);
          Card c = col.getSched().getCard();
          // new cards
@@ -2250,7 +2250,7 @@ note.setItem("Back","abc2");
          // failing it should put it at 60s
          assertTrue(ni(c, 1) == 60);
          // or 1 day if relearn is false
-         conf["lapse"]["delays"] = [];
+         conf["lapse"].put("delays", []);
          col.decks.save(conf);
          assertTrue(ni(c, 1) == 1 * 86400);
          // (* 100 1.2 86400)10368000.0
@@ -2360,7 +2360,7 @@ note.setItem("Back","abc2");
          assertTrue(col.getSched().nextIvl(c, 1) == 600);
          assertTrue(col.getSched().nextIvl(c, 2) == 138 * 60 * 60 * 24);
          cram = col.decks.get(did);
-         cram["delays"] = [1, 10];
+         cram.put("delays", [1, 10]);
          col.decks.save(cram);
          assertTrue(col.getSched().answerButtons(c) == 3);
          assertTrue(col.getSched().nextIvl(c, 1) == 60);
@@ -2472,7 +2472,7 @@ note.setItem("Back","abc2");
          // cram deck
          long did = col.decks.newDyn("Cram");
          cram = col.decks.get(did);
-         cram["resched"] = False;
+         cram.put("resched", False);
          col.decks.save(cram);
          col.getSched().rebuildDyn(did);
          col.reset();
@@ -2578,12 +2578,12 @@ note.setItem("Back","abc2");
          Model m = col.getModels().current();
          Models mm = col.getModels();
          JSONObject t = mm.newTemplate("Reverse");
-         t["qfmt"] = "{{Back}}";
-         t["afmt"] = "{{Front}}";
+         t.put("qfmt", "{{Back}}");
+         t.put("afmt", "{{Front}}");
          mm.addTemplate(m, t);
          JSONObject t = mm.newTemplate("f2");
-         t["qfmt"] = "{{Front}}";
-         t["afmt"] = "{{Back}}";
+         t.put("qfmt", "{{Front}}");
+         t.put("afmt", "{{Back}}");
          mm.addTemplate(m, t);
          mm.save(m);
          // create a new note; it should have 3 cards
@@ -2740,7 +2740,7 @@ note.setItem("Back","abc2");
          // and one that's a child
          Note note = col.newNote();
          note.setItem("Front","two");
-         default1 = note.model()["did"] = col.decks.getId()("Default::1");
+         default1 = note.model().put("did", col.decks.getId()("Default::1"));
          col.addNote(note);
          // make it a review card
          Card c = note.cards().get(0);
@@ -2750,12 +2750,12 @@ note.setItem("Back","abc2");
          // add one more with a new deck
          Note note = col.newNote();
          note.setItem("Front","two");
-         foobar = note.model()["did"] = col.decks.getId()("foo::bar");
+         foobar = note.model().put("did", col.decks.getId()("foo::bar"));
          col.addNote(note);
          // and one that's a sibling
          Note note = col.newNote();
          note.setItem("Front","three");
-         foobaz = note.model()["did"] = col.decks.getId()("foo::baz");
+         foobaz = note.model().put("did", col.decks.getId()("foo::baz"));
          col.addNote(note);
          col.reset();
          assertTrue(col.decks.all_names_and_ids().size() == 5);
@@ -2787,19 +2787,19 @@ note.setItem("Back","abc2");
          // and one that's a child
          Note note = col.newNote();
          note.setItem("Front","two");
-         default1 = note.model()["did"] = col.decks.getId()("Default::2");
+         default1 = note.model().put("did", col.decks.getId()("Default::2"));
          col.addNote(note);
          // and another that's higher up
          Note note = col.newNote();
          note.setItem("Front","three");
-         default1 = note.model()["did"] = col.decks.getId()("Default::1");
+         default1 = note.model().put("did", col.decks.getId()("Default::1"));
          col.addNote(note);
          // should get top level one first, then ::1, then ::2
          col.reset();
          assertTrue(col.getSched().counts() == (3, 0, 0));
          for i in "one", "three", "two":
              Card c = col.getSched().getCard();
-             assertTrue(c.note()["Front"] == i);
+         assertTrue(c.note().put("Front",= i));
              col.getSched().answerCard(c, 2);
      }
 
@@ -2898,7 +2898,7 @@ note.setItem("Back","abc2");
          c.flush();
          col.reset();
          col.getSched().answerCard(c, 1);
-         col.getSched()._cardConf(c)["lapse"]["delays"] = [];
+         col.getSched()._cardConf(c)["lapse"].put("delays", []);
          col.getSched().answerCard(c, 1);
      }
 
@@ -2920,7 +2920,7 @@ note.setItem("Back","abc2");
          c.startTimer();
          c.flush();
          conf = col.getSched()._cardConf(c);
-         conf["lapse"]["mult"] = 0.5;
+         conf["lapse"].put("mult", 0.5);
          col.decks.save(conf);
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
@@ -3023,13 +3023,13 @@ note.setItem("Back","abc2");
          assertTrue(c.long did == 1);
          // limit the parent to 10 cards, meaning we get 10 in total
          conf1 = col.decks.confForDid(1);
-         conf1["new"]["perDay"] = 10;
+         conf1["new"].put("perDay", 10);
          col.decks.save(conf1);
          col.reset();
          assertTrue(col.getSched().newCount == 10);
          // if we limit child to 4, we should get 9
          conf2 = col.decks.confForDid(deck2);
-         conf2["new"]["perDay"] = 4;
+         conf2["new"].put("perDay", 4);
          col.decks.save(conf2);
          col.reset();
          assertTrue(col.getSched().newCount == 9);
@@ -3044,11 +3044,11 @@ note.setItem("Back","abc2");
          col.reset();
          Card c = col.getSched().getCard();
          conf = col.getSched()._cardConf(c);
-         conf["new"]["delays"] = [1, 2, 3, 4, 5];
+         conf["new"].put("delays", [1, 2, 3, 4, 5]);
          col.decks.save(conf);
          col.getSched().answerCard(c, 2);
          // should handle gracefully
-         conf["new"]["delays"] = [1];
+         conf["new"].put("delays", [1]);
          col.decks.save(conf);
          col.getSched().answerCard(c, 2);
      }
@@ -3068,7 +3068,7 @@ note.setItem("Back","abc2");
          Card c = col.getSched().getCard();
          assertTrue(c);
          conf = col.getSched()._cardConf(c);
-         conf["new"]["delays"] = [0.5, 3, 10];
+         conf["new"].put("delays", [0.5, 3, 10]);
          col.decks.save(conf);
          // fail it
          col.getSched().answerCard(c, 1);
@@ -3159,7 +3159,7 @@ note.setItem("Back","abc2");
          c.flush();
 
          conf = col.decks.confForDid(1);
-         conf["lapse"]["delays"] = [];
+         conf["lapse"].put("delays", []);
          col.decks.save(conf);
 
          // fail the card
@@ -3207,7 +3207,7 @@ note.setItem("Back","abc2");
          col.getSched().reset();
          Card c = col.getSched().getCard();
          conf = col.getSched()._cardConf(c);
-         conf["new"]["delays"] = [1, 10, 1440, 2880];
+         conf["new"].put("delays", [1, 10, 1440, 2880]);
          col.decks.save(conf);
          // pass it
          col.getSched().answerCard(c, 3);
@@ -3253,7 +3253,7 @@ note.setItem("Back","abc2");
          col.reset();
                 assertTrue(col.getSched().counts() == (0, 0, 1));
          conf = col.getSched()._cardConf(c);
-         conf["lapse"]["delays"] = [1440];
+                    conf["lapse"].put("delays", [1440]);
          col.decks.save(conf);
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
@@ -3320,7 +3320,7 @@ note.setItem("Back","abc2");
          // leech handling
      ////////////////////////////////////////////////////////////////////////////////////////////////////
          conf = col.decks.getConf(1);
-         conf["lapse"]["leechAction"] = LEECH_SUSPEND;
+         conf["lapse"].put("leechAction", LEECH_SUSPEND);
          col.decks.save(conf);
          Card c = copy.copy(cardcopy);
          c.lapses = 7;
@@ -3349,15 +3349,15 @@ note.setItem("Back","abc2");
          pconf = col.decks.get_config(col.decks.add_config_returning_id("parentConf"));
          cconf = col.decks.get_config(col.decks.add_config_returning_id("childConf"));
 
-         pconf["rev"]["perDay"] = 5;
+         pconf["rev"].put("perDay", 5);
          col.decks.update_config(pconf);
          col.decks.setConf(parent, pconf.getLong("id"));
-         cconf["rev"]["perDay"] = 10;
+         cconf["rev"].put("perDay", 10);
          col.decks.update_config(cconf);
          col.decks.setConf(child, cconf.getLong("id"));
 
          Model m = col.getModels().current();
-         m["did"] = child.getLong("id");
+         m.put("did", child.getLong("id"));
          col.getModels().save(m, updateReqs=False);
 
          // add some cards
@@ -3418,7 +3418,7 @@ note.setItem("Back","abc2");
 
          // if hard factor is <= 1, then hard may not increase
          conf = col.decks.confForDid(1);
-         conf["rev"]["hardFactor"] = 1;
+         conf["rev"].put("hardFactor", 1);
          col.decks.save(conf);
          assertTrue(wo(ni(c, 2)) == "1d");
      }
@@ -3491,8 +3491,8 @@ note.setItem("Back","abc2");
          col.addNote(note);
          col.reset();
          conf = col.decks.confForDid(1);
-         conf["new"]["delays"] = [0.5, 3, 10];
-         conf["lapse"]["delays"] = [1, 5, 9];
+         conf["new"].put("delays", [0.5, 3, 10]);
+         conf["lapse"].put("delays", [1, 5, 9]);
          col.decks.save(conf);
          Card c = col.getSched().getCard();
          // new cards
@@ -3534,7 +3534,7 @@ note.setItem("Back","abc2");
          // failing it should put it at 60s
                               assertTrue(ni(c, 1) == 60);
          // or 1 day if relearn is false
-         conf["lapse"]["delays"] = [];
+                                  conf["lapse"].put("delays", []);
          col.decks.save(conf);
                               assertTrue(ni(c, 1) == 1 * 86400);
          // (* 100 1.2 86400)10368000.0
@@ -3709,7 +3709,7 @@ note.setItem("Back","abc2");
          // fail the card outside filtered deck
          Card c = col.getSched().getCard();
          conf = col.getSched()._cardConf(c);
-         conf["new"]["delays"] = [1, 10, 61];
+         conf["new"].put("delays", [1, 10, 61]);
          col.decks.save(conf);
 
          col.getSched().answerCard(c, 1);
@@ -3758,7 +3758,7 @@ note.setItem("Back","abc2");
          // cram deck
          long did = col.decks.newDyn("Cram");
          cram = col.decks.get(did);
-         cram["resched"] = False;
+         cram.put("resched", False);
          col.decks.save(cram);
          col.getSched().rebuildDyn(did);
          col.reset();
@@ -3801,12 +3801,12 @@ note.setItem("Back","abc2");
          Model m = col.getModels().current();
          Models mm = col.getModels();
          JSONObject t = mm.newTemplate("Reverse");
-         t["qfmt"] = "{{Back}}";
-         t["afmt"] = "{{Front}}";
+         t.put("qfmt", "{{Back}}");
+         t.put("afmt", "{{Front}}");
          mm.addTemplate(m, t);
          JSONObject t = mm.newTemplate("f2");
-         t["qfmt"] = "{{Front}}";
-         t["afmt"] = "{{Back}}";
+         t.put("qfmt", "{{Front}}");
+         t.put("afmt", "{{Back}}");
          mm.addTemplate(m, t);
          mm.save(m);
          // create a new note; it should have 3 cards
@@ -3955,7 +3955,7 @@ note.setItem("Back","abc2");
          // and one that's a child
          Note note = col.newNote();
          note.setItem("Front","two");
-         default1 = note.model()["did"] = col.decks.getId()("Default::1");
+         default1 = note.model().put("did", col.decks.getId()("Default::1"));
          col.addNote(note);
          // make it a review card
          Card c = note.cards().get(0);
@@ -3965,12 +3965,12 @@ note.setItem("Back","abc2");
          // add one more with a new deck
          Note note = col.newNote();
          note.setItem("Front","two");
-         foobar = note.model()["did"] = col.decks.getId()("foo::bar");
+         foobar = note.model().put("did", col.decks.getId()("foo::bar"));
          col.addNote(note);
          // and one that's a sibling
          Note note = col.newNote();
          note.setItem("Front","three");
-         foobaz = note.model()["did"] = col.decks.getId()("foo::baz");
+         foobaz = note.model().put("did", col.decks.getId()("foo::baz"));
          col.addNote(note);
          col.reset();
          assertTrue(col.decks.all_names_and_ids().size() == 5);
@@ -4013,19 +4013,19 @@ note.setItem("Back","abc2");
          // and one that's a child
          Note note = col.newNote();
          note.setItem("Front","two");
-         default1 = note.model()["did"] = col.decks.getId()("Default::2");
+         default1 = note.model().put("did", col.decks.getId()("Default::2"));
          col.addNote(note);
          // and another that's higher up
          Note note = col.newNote();
          note.setItem("Front","three");
-         default1 = note.model()["did"] = col.decks.getId()("Default::1");
+         default1 = note.model().put("did", col.decks.getId()("Default::1"));
          col.addNote(note);
          // should get top level one first, then ::1, then ::2
          col.reset();
          assertTrue(col.getSched().counts() == (3, 0, 0));
          for i in "one", "three", "two":
              Card c = col.getSched().getCard();
-             assertTrue(c.note()["Front"] == i);
+         assertTrue(c.note().put("Front",= i));
              col.getSched().answerCard(c, 3);
      }
 
@@ -4124,7 +4124,7 @@ note.setItem("Back","abc2");
          c.flush();
          col.reset();
          col.getSched().answerCard(c, 1);
-         col.getSched()._cardConf(c)["lapse"]["delays"] = [];
+         col.getSched()._cardConf(c)["lapse"].put("delays", []);
          col.getSched().answerCard(c, 1);
      }
 
@@ -4146,7 +4146,7 @@ note.setItem("Back","abc2");
          c.startTimer();
          c.flush();
          conf = col.getSched()._cardConf(c);
-         conf["lapse"]["mult"] = 0.5;
+         conf["lapse"].put("mult", 0.5);
          col.decks.save(conf);
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
@@ -4161,7 +4161,7 @@ note.setItem("Back","abc2");
          col.changeSchedulerVer(1);
 
          Note n = col.newNote();
-         n["Front"] = "one";
+         n.put("Front", "one");
          col.addNote(n);
 
          // make it a learning card
@@ -4203,7 +4203,7 @@ note.setItem("Back","abc2");
          c.due = 0;
          c.flush();
          conf = col.getSched()._cardConf(c);
-         conf["lapse"]["mult"] = 0.5;
+         conf["lapse"].put("mult", 0.5);
          col.decks.save(conf);
          col.getSched().reset();
          Card c = col.getSched().getCard();
@@ -4307,7 +4307,7 @@ note.setItem("Back","abc2");
      public void test_deferred_frontside(){
          Collection col = getCol();
          Model m = col.getModels().current();
-         m["tmpls"][0]["qfmt"] = "{{custom:Front}}";
+         m["tmpls"][0].put("qfmt", "{{custom:Front}}");
          col.getModels().save(m);
 
          Note note = col.newNote();
@@ -4333,7 +4333,7 @@ note.setItem("Back","abc2");
          assertTrue(not col.undoName());
          // let's adjust a study option
          col.save("studyopts");
-         col.conf["abc"] = 5;
+         col.conf.put("abc", 5);
          // it should be listed as undoable
          assertTrue(col.undoName() == "studyopts");
          // with about 5 minutes until it's clobbered
@@ -4362,7 +4362,7 @@ note.setItem("Back","abc2");
      @Test
      public void test_review(){
          Collection col = getCol();
-         col.conf["counts"] = COUNT_REMAINING;
+         col.conf.put("counts", COUNT_REMAINING);
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
