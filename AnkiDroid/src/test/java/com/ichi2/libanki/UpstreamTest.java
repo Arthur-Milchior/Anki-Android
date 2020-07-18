@@ -256,12 +256,12 @@ public class UpstreamTest extends RobolectricTest {
          m.getJSONArray("tmpls").getJSONObject(0).put("qfmt", "{{kana:Front}}");
          mm.save(m);
          Note n = col.newNote();
-         n.put("Front", "foo[abc]");
+         n.setItem("Front", "foo[abc]");
          col.addNote(n);
          Card c = n.cards().get(0);
          assertTrue(c.q().endswith("abc"));
          // and should avoid sound
-         n.put("Front", "foo[sound:abc.mp3]");
+         n.setItem("Front", "foo[sound:abc.mp3]");
          n.flush();
          assertTrue(c.q(reload=true).contains("anki:play"));
          // it shouldn't throw an error while people are editing
@@ -336,7 +336,7 @@ public class UpstreamTest extends RobolectricTest {
          m.put("did", col.getDecks().id("one::two"));
          col.getModels().save(m, false);
          Note n = col.newNote();
-         n.put("Front", "abc");
+         n.setItem("Front", "abc");
          col.addNote(n);
      }
 
@@ -516,7 +516,7 @@ public class UpstreamTest extends RobolectricTest {
          with open(os.path.join(col.media.dir(), "今日.mp3"), "w") as note:
              note.write("test");
          Note n = col.newNote();
-         n.put("Front", "[sound:今日.mp3]");
+         n.setItem("Front", "[sound:今日.mp3]");
          col.addNote(n);
          AnkiPackageExporter e = AnkiPackageExporter(col);
          fd, newname = tempfile.mkstemp(prefix="ankitest", suffix=".apkg");
@@ -907,7 +907,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          Collection col = getCol();
          // add a note that references a sound
          Note n = tmp.newNote();
-         n.put("Front", "[sound:foo.mp3]");
+         n.setItem("Front", "[sound:foo.mp3]");
          mid = n.model().getLong("id");
          col.addNote(n);
          // add that sound to media folder
@@ -1068,9 +1068,9 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          mm.addField(m, note);
          mm.save(m);
          Note n = col.newNote();
-         n.put("Front", "1");
-         n.put("Back", "2");
-         n.put("Three", "3");
+         n.setItem("Front", "1");
+         n.setItem("Back", "2");
+         n.setItem("Three", "3");
          col.addNote(n);
          // an update with unmapped fields should not clobber those fields
          file = str(os.path.join(testDir, "support/text-update.txt"));
@@ -1078,9 +1078,9 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          i.initMapping();
          i.run();
          n.load();
-         assertTrue(n.put("Front",= "1"));
-         assertTrue(n.put("Back",= "x"));
-         assertTrue(n.put("Three",= "3"));
+         assertTrue(n.setItem("Front",= "1"));
+         assertTrue(n.setItem("Back",= "x"));
+         assertTrue(n.setItem("Three",= "3"));
          col.close();
      }
 
@@ -1093,9 +1093,9 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          mm.addField(m, note);
          mm.save(m);
          Note n = col.newNote();
-         n.put("Front", "1");
-         n.put("Back", "2");
-         n.put("Top", "3");
+         n.setItem("Front", "1");
+         n.setItem("Back", "2");
+         n.setItem("Top", "3");
          n.addTag("four");
          col.addNote(n);
 
@@ -1110,9 +1110,9 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
              clear_tempfile(tf);
 
          n.load();
-         assertTrue(n.put("Front",= "1"));
-         assertTrue(n.put("Back",= "b"));
-         assertTrue(n.put("Top",= "c"));
+         assertTrue(n.setItem("Front",= "1"));
+         assertTrue(n.setItem("Back",= "b"));
+         assertTrue(n.setItem("Top",= "c"));
          assertTrue(n.getTags().contains("four"));
          assertTrue(n.getTags().contains("boom"));
          assertEquals( 2, n.getTags().size() );
@@ -1130,9 +1130,9 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          mm.addField(m, note);
          mm.save(m);
          Note n = col.newNote();
-         n.put("Front", "1");
-         n.put("Back", "2");
-         n.put("Top", "3");
+         n.setItem("Front", "1");
+         n.setItem("Back", "2");
+         n.setItem("Top", "3");
          n.addTag("four");
          n.addTag("five");
          col.addNote(n);
@@ -1148,9 +1148,9 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
              clear_tempfile(tf);
 
          n.load();
-         assertTrue(n.put("Front",= "1"));
-         assertTrue(n.put("Back",= "b"));
-         assertTrue(n.put("Top",= "c"));
+         assertTrue(n.setItem("Front",= "1"));
+         assertTrue(n.setItem("Back",= "b"));
+         assertTrue(n.setItem("Top",= "c"));
          assertEquals( list(sorted(new [] {"four", "five", "six"}, list(sorted(n.getTags())) )));
 
          col.close();
@@ -1165,9 +1165,9 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          mm.addField(m, note);
          mm.save(m);
          Note n = col.newNote();
-         n.put("Front", "1");
-         n.put("Back", "2");
-         n.put("Left", "3");
+         n.setItem("Front", "1");
+         n.setItem("Back", "2");
+         n.setItem("Left", "3");
          col.addNote(n);
 
          // https://stackoverflow.com/questions/23212435/permission-denied-to-write-to-my-temporary-file
@@ -1224,8 +1224,8 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
      public void test_flags(){
          Collection col = getCol();
          Note n = col.newNote();
-         n.put("Front", "one");
-         n.put("Back", "two");
+         n.setItem("Front", "one");
+         n.setItem("Back", "two");
          int cnt = col.addNote(n);
          Card c = n.cards().get(0);
          // make sure higher bits are preserved
@@ -4181,7 +4181,7 @@ assertEquals( 9, col.getSched().newCount );
          col.changeSchedulerVer(1);
 
          Note n = col.newNote();
-         n.put("Front", "one");
+         n.setItem("Front", "one");
          col.addNote(n);
 
          // make it a learning card
