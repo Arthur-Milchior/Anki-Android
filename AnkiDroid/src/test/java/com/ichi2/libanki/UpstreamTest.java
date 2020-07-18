@@ -94,7 +94,7 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(col.cardCount() == 1);
          assertTrue(note.cards().get(0).did == 1);
          // set the model to a new default col
-         long newid = col.getDecks().getId()("new");
+         long newid = col.getDecks().id("new");
          cloze.put("did", newId);
          col.getModels().save(cloze, updateReqs=false);
          // a newly generated card should share the first card's col
@@ -297,11 +297,11 @@ public class UpstreamTest extends RobolectricTest {
          // it should have an id of 1
          assertTrue(col.getDecks().name(1));
          // create a new col
-         long parentId = col.getDecks().getId()("new deck");
+         long parentId = col.getDecks().id("new deck");
          assertTrue(parentId);
          assertTrue(col.getDecks().all_names_and_ids().size() == 2);
          // should get the same id
-         assertTrue(col.getDecks().getId()("new deck") == parentId);
+         assertTrue(col.getDecks().id("new deck") == parentId);
          // we start with the default col selected
          assertTrue(col.getDecks().selected() == 1);
          assertTrue(col.getDecks().active() == [1]);
@@ -310,7 +310,7 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(col.getDecks().selected() == parentId);
          assertTrue(col.getDecks().active() == [parentId]);
          // let's create a child
-         long childId = col.getDecks().getId()("new deck::child");
+         long childId = col.getDecks().id("new deck::child");
          col.getSched().reset();
          // it should have been added to the active list
          assertTrue(col.getDecks().selected() == parentId);
@@ -320,9 +320,9 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(col.getDecks().selected() == childId);
          assertTrue(col.getDecks().active() == [childId]);
          // parents with a different case should be handled correctly
-         col.getDecks().getId()("ONE");
+         col.getDecks().id("ONE");
          Model m = col.getModels().current();
-         m.put("did", col.getDecks().getId()("one::two"));
+         m.put("did", col.getDecks().id("one::two"));
          col.getModels().save(m, updateReqs=false);
          Note n = col.newNote();
          n.put("Front", "abc");
@@ -333,7 +333,7 @@ public class UpstreamTest extends RobolectricTest {
      public void test_remove(){
          Collection col = getCol();
          // create a new col, and add a note/card to it
-         long deck1 = col.getDecks().getId()("deck1");
+         long deck1 = col.getDecks().id("deck1");
          Note note = col.newNote();
          note.setItem("Front","1");
          note.model().put("did", deck1);
@@ -350,7 +350,7 @@ public class UpstreamTest extends RobolectricTest {
      @Test
      public void test_rename(){
          Collection col = getCol();
-         long id = col.getDecks().getId()("hello::world");
+         long id = col.getDecks().id("hello::world");
          // should be able to rename into a completely different branch, creating
          // parents as necessary
          col.getDecks().rename(col.getDecks().get(id), "foo::bar");
@@ -359,14 +359,14 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue("foo::bar" in names);
          assertTrue("hello::world" not in names);
          // create another col
-         long id = col.getDecks().getId()("tmp");
+         long id = col.getDecks().id("tmp");
          // automatically adjusted if a duplicate name
          col.getDecks().rename(col.getDecks().get(id), "FOO");
          names = [n.name for n in col.getDecks().all_names_and_ids()];
          assertTrue("FOO+" in names);
          // when renaming, the children should be renamed too
-         col.getDecks().getId()("one::two::three");
-         long id = col.getDecks().getId()("one");
+         col.getDecks().id("one::two::three");
+         long id = col.getDecks().id("one");
          col.getDecks().rename(col.getDecks().get(id), "yo");
          names = [n.name for n in col.getDecks().all_names_and_ids()];
          for n in "yo", "yo::two", "yo::two::three":
@@ -374,7 +374,7 @@ public class UpstreamTest extends RobolectricTest {
          // over filtered
          long filteredId = col.getDecks().newDyn("filtered");
          Deck filtered = col.getDecks().get(filteredId);
-         long childId = col.getDecks().getId()("child");
+         long childId = col.getDecks().id("child");
          Deck child = col.getDecks().get(childId);
          assertException(DeckRenameError, lambda: col.getDecks().rename(child, "filtered::child"));
          assertException(DeckRenameError, lambda: col.getDecks().rename(child, "FILTERED::child"));
@@ -387,9 +387,9 @@ public class UpstreamTest extends RobolectricTest {
          def deckNames():
              return [n.name for n in col.getDecks().all_names_and_ids(skip_empty_default=true)];
 
-         long languages_did = col.getDecks().getId()("Languages");
-         long chinese_did = col.getDecks().getId()("Chinese");
-         long hsk_did = col.getDecks().getId()("Chinese::HSK");
+         long languages_did = col.getDecks().id("Languages");
+         long chinese_did = col.getDecks().id("Chinese");
+         long hsk_did = col.getDecks().id("Chinese::HSK");
 
          // Renaming also renames children
          col.getDecks().renameForDragAndDrop(chinese_did, languages_did);
@@ -424,7 +424,7 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(deckNames() == ["Chinese", "Chinese::HSK", "Languages"]);
 
          // decks are renamed if necessary
-         long new_hsk_did = col.getDecks().getId()("hsk");
+         long new_hsk_did = col.getDecks().id("hsk");
          col.getDecks().renameForDragAndDrop(new_hsk_did, chinese_did);
          assertTrue(deckNames() == ["Chinese", "Chinese::HSK", "Chinese::hsk+", "Languages"]);
          col.getDecks().rem(new_hsk_did);
@@ -449,7 +449,7 @@ public class UpstreamTest extends RobolectricTest {
          Note note = col.newNote();
          note.setItem("Front","baz");
          note.setItem("Back","qux");
-         note.model().put("did", col.getDecks().getId()("new col"));
+         note.model().put("did", col.getDecks().id("new col"));
          col.addNote(note);
      }
 
@@ -461,7 +461,7 @@ public class UpstreamTest extends RobolectricTest {
      public void test_export_anki(){
          setup1();
          // create a new col with its own conf to test conf copying
-         long did = col.getDecks().getId()("test");
+         long did = col.getDecks().id("test");
          Deck dobj = col.getDecks().get(did);
          long confId = col.getDecks().add_config_returning_id("newconf");
          DeckConfig conf = col.getDecks().get_config(confId);
@@ -482,7 +482,7 @@ public class UpstreamTest extends RobolectricTest {
          Collection col2 = aopen(newname);
          assertTrue(col2.cardCount() == 2);
          // as scheduling was reset, should also revert decks to default conf
-         long did = col2.getDecks().getId()("test", create=false);
+         long did = col2.getDecks().id("test", create=false);
          assertTrue(did);
          conf2 = col2.getDecks().confForDid(did);
          assertTrue(conf2["new"].put("perDay",= 20));
@@ -747,7 +747,7 @@ public class UpstreamTest extends RobolectricTest {
          // should be able to limit to parent col, no children
  long id = col.getDb().scalar("select id from cards limit 1");
          col.getDb().execute(;
-             "update cards set long did = ? where long id = ?", col.getDecks().getId()("Default::Child"), id;
+             "update cards set long did = ? where long id = ?", col.getDecks().id("Default::Child"), id;
      );
          col.save();
          assertTrue(col.findCards("deck:default").size() == 7);
@@ -1820,7 +1820,7 @@ note.setItem("Back","abc2");
      public void test_newLimits(){
          Collection col = getCol();
          // add some notes
-         deck2 = col.getDecks().getId()("Default::foo");
+         deck2 = col.getDecks().id("Default::foo");
          for i in range(30):
              Note note = col.newNote();
          note.setItem("Front","did")] = deck2;
@@ -2740,7 +2740,7 @@ note.setItem("Back","abc2");
          // and one that's a child
          Note note = col.newNote();
          note.setItem("Front","two");
-         default1 = note.model().put("did", col.getDecks().getId()("Default::1"));
+         default1 = note.model().put("did", col.getDecks().id("Default::1"));
          col.addNote(note);
          // make it a review card
          Card c = note.cards().get(0);
@@ -2750,12 +2750,12 @@ note.setItem("Back","abc2");
          // add one more with a new deck
          Note note = col.newNote();
          note.setItem("Front","two");
-         foobar = note.model().put("did", col.getDecks().getId()("foo::bar"));
+         foobar = note.model().put("did", col.getDecks().id("foo::bar"));
          col.addNote(note);
          // and one that's a sibling
          Note note = col.newNote();
          note.setItem("Front","three");
-         foobaz = note.model().put("did", col.getDecks().getId()("foo::baz"));
+         foobaz = note.model().put("did", col.getDecks().id("foo::baz"));
          col.addNote(note);
          col.reset();
          assertTrue(col.getDecks().all_names_and_ids().size() == 5);
@@ -2787,12 +2787,12 @@ note.setItem("Back","abc2");
          // and one that's a child
          Note note = col.newNote();
          note.setItem("Front","two");
-         default1 = note.model().put("did", col.getDecks().getId()("Default::2"));
+         default1 = note.model().put("did", col.getDecks().id("Default::2"));
          col.addNote(note);
          // and another that's higher up
          Note note = col.newNote();
          note.setItem("Front","three");
-         default1 = note.model().put("did", col.getDecks().getId()("Default::1"));
+         default1 = note.model().put("did", col.getDecks().id("Default::1"));
          col.addNote(note);
          // should get top level one first, then ::1, then ::2
          col.reset();
@@ -3007,7 +3007,7 @@ note.setItem("Back","abc2");
      public void test_newLimits(){
          Collection col = getCol();
          // add some notes
-         deck2 = col.getDecks().getId()("Default::foo");
+         deck2 = col.getDecks().id("Default::foo");
          for i in range(30):
              Note note = col.newNote();
          note.setItem("Front","did")] = deck2;
@@ -3343,8 +3343,8 @@ note.setItem("Back","abc2");
      public void test_review_limits(){
          Collection col = getCol();
 
-         parent = col.getDecks().get(col.getDecks().getId()("parent"));
-         child = col.getDecks().get(col.getDecks().getId()("parent::child"));
+         parent = col.getDecks().get(col.getDecks().id("parent"));
+         child = col.getDecks().get(col.getDecks().id("parent::child"));
 
          pconf = col.getDecks().get_config(col.getDecks().add_config_returning_id("parentConf"));
          cconf = col.getDecks().get_config(col.getDecks().add_config_returning_id("childConf"));
@@ -3955,7 +3955,7 @@ note.setItem("Back","abc2");
          // and one that's a child
          Note note = col.newNote();
          note.setItem("Front","two");
-         default1 = note.model().put("did", col.getDecks().getId()("Default::1"));
+         default1 = note.model().put("did", col.getDecks().id("Default::1"));
          col.addNote(note);
          // make it a review card
          Card c = note.cards().get(0);
@@ -3965,12 +3965,12 @@ note.setItem("Back","abc2");
          // add one more with a new deck
          Note note = col.newNote();
          note.setItem("Front","two");
-         foobar = note.model().put("did", col.getDecks().getId()("foo::bar"));
+         foobar = note.model().put("did", col.getDecks().id("foo::bar"));
          col.addNote(note);
          // and one that's a sibling
          Note note = col.newNote();
          note.setItem("Front","three");
-         foobaz = note.model().put("did", col.getDecks().getId()("foo::baz"));
+         foobaz = note.model().put("did", col.getDecks().id("foo::baz"));
          col.addNote(note);
          col.reset();
          assertTrue(col.getDecks().all_names_and_ids().size() == 5);
@@ -3995,8 +3995,8 @@ note.setItem("Back","abc2");
      @Test
      public void test_deckTree(){
          Collection col = getCol();
-         col.getDecks().getId()("new::b::c");
-         col.getDecks().getId()("new2");
+         col.getDecks().id("new::b::c");
+         col.getDecks().id("new2");
          // new should not appear twice in tree
          names = [x.name for x in col.getSched().deck_due_tree().children];
          names.remove("new");
@@ -4013,12 +4013,12 @@ note.setItem("Back","abc2");
          // and one that's a child
          Note note = col.newNote();
          note.setItem("Front","two");
-         default1 = note.model().put("did", col.getDecks().getId()("Default::2"));
+         default1 = note.model().put("did", col.getDecks().id("Default::2"));
          col.addNote(note);
          // and another that's higher up
          Note note = col.newNote();
          note.setItem("Front","three");
-         default1 = note.model().put("did", col.getDecks().getId()("Default::1"));
+         default1 = note.model().put("did", col.getDecks().id("Default::1"));
          col.addNote(note);
          // should get top level one first, then ::1, then ::2
          col.reset();
