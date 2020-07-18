@@ -64,7 +64,7 @@ public class UpstreamTest extends RobolectricTest {
          JSONObject t = mm.newTemplate("rev");
          t.put("qfmt", "{{Front}}");
          t.put("afmt", "");
-         mm.addTemplate(m, t);
+         mm.addTemplateModChanged(m, t);
          mm.save(m, templates=true);
          assertTrue(note.cards().size() == 2);
          // if the template is changed to remove cards, they'll be removed
