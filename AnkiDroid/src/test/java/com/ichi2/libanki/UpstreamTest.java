@@ -130,7 +130,7 @@ public class UpstreamTest extends RobolectricTest {
          }
          Collection col = aopen(path);
          // for open()
-         String newPath = col.path;
+         String newPath = col.getPath();
          long newMod = col.mod;
          col.close();
          del col;
@@ -912,12 +912,12 @@ note.setItem("Back","abc2");
          col.close();
          // it should be imported correctly into an empty deck
          Collection empty = getCol();
-         Anki2Importer imp = Anki2Importer(empty, col.path);
+         Anki2Importer imp = Anki2Importer(empty, col.getPath());
          imp.run();
          assertTrue(os.listdir(empty.media.dir()) == ["foo.mp3"]);
          // and importing again will not duplicate, as the file content matches
          empty.remove_cards_and_orphaned_notes(empty.getDb().list("select id from cards"));
-         Anki2Importer imp = Anki2Importer(empty, col.path);
+         Anki2Importer imp = Anki2Importer(empty, col.getPath());
          imp.run();
          assertTrue(os.listdir(empty.media.dir()) == ["foo.mp3"]);
          Note n = empty.getNote(empty.getDb().scalar("select id from notes"));
@@ -927,7 +927,7 @@ note.setItem("Back","abc2");
          empty.remove_cards_and_orphaned_notes(empty.getDb().list("select id from cards"));
          with open(os.path.join(empty.media.dir(), "foo.mp3"), "w") as note:
              note.write("bar");
-         Anki2Importer imp = Anki2Importer(empty, col.path);
+         Anki2Importer imp = Anki2Importer(empty, col.getPath());
          imp.run();
          assertTrue(sorted(os.listdir(empty.media.dir())) == ["foo.mp3", "foo_%s.mp3" % mid]);
          Note n = empty.getNote(empty.getDb().scalar("select id from notes"));
@@ -937,7 +937,7 @@ note.setItem("Back","abc2");
          empty.remove_cards_and_orphaned_notes(empty.getDb().list("select id from cards"));
          with open(os.path.join(empty.media.dir(), "foo.mp3"), "w") as note:
              note.write("bar");
-         Anki2Importer imp = Anki2Importer(empty, col.path);
+         Anki2Importer imp = Anki2Importer(empty, col.getPath());
          imp.run();
          assertTrue(sorted(os.listdir(empty.media.dir())) == ["foo.mp3", "foo_%s.mp3" % mid]);
          assertTrue(sorted(os.listdir(empty.media.dir())) == ["foo.mp3", "foo_%s.mp3" % mid]);
