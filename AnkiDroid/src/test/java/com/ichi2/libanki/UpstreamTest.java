@@ -83,9 +83,7 @@ public class UpstreamTest extends RobolectricTest {
          t.put("qfmt", "{{Back}}");
          mm.save(m, true);
          List<Long> rep = col.emptyCids();
-         for (Note n: rep.notes) {
-             col.remove_cards_and_orphaned_notes(n.card_ids);
-         }
+         col.remove_cards_and_orphaned_notes(rep);
          assertEquals( 1, note.cards().size() );
          // if we add to the note, a card should be automatically generated
          note.load();
