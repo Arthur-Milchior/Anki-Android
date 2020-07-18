@@ -188,7 +188,7 @@ public class UpstreamTest extends RobolectricTest {
          // it should not be a duplicate
          assertFalse(note.dupeOrEmpty());
          // now let's make a duplicate
-         note2 = col.newNote();
+         Note note2 = col.newNote();
          note2.setItem("Front","one");
          note2.setItem("Back","");
          assertTrue(note2.dupeOrEmpty());
@@ -217,7 +217,7 @@ public class UpstreamTest extends RobolectricTest {
          Note note = col.newNote();
          note.setItem("Front","1");
          col.addNote(note);
-         note2 = col.newNote();
+         Note note2 = col.newNote();
          note2.setItem("Front","2");
          col.addNote(note2);
          // adding for a given id
