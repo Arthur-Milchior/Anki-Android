@@ -588,12 +588,7 @@ public class Collection {
     public void remNotes(long[] ids) {
         ArrayList<Long> list = mDb
                 .queryColumn(Long.class, "SELECT id FROM cards WHERE nid IN " + Utils.ids2str(ids), 0);
-        long[] cids = new long[list.size()];
-        int i = 0;
-        for (long l : list) {
-            cids[i++] = l;
-        }
-        remCards(cids);
+        remCards(Utils.arrayList2array(list));
     }
 
 
