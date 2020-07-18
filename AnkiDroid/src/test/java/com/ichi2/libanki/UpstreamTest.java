@@ -8,6 +8,9 @@ import com.ichi2.utils.JSONObject;
 import org.apache.http.util.Asserts;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.List;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import static org.hamcrest.MatcherAssert.*;
@@ -71,8 +74,7 @@ public class UpstreamTest extends RobolectricTest {
          JSONObject t = m["tmpls"][1];
          t.put("qfmt", "{{Back}}");
          mm.save(m, true);
-         rep = col.backend.get_empty_cards();
-         rep = col.backend.get_empty_cards();
+         List<Long> rep = col.emptyCids();
          for n in rep.notes:
              col.remove_cards_and_orphaned_notes(n.card_ids);
          assertTrue(note.cards().size() == 1);
