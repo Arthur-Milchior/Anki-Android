@@ -131,13 +131,13 @@ public class UpstreamTest extends RobolectricTest {
          Collection col = aopen(path);
          // for open()
          String newPath = col.getPath();
-         long newMod = col.mod;
+         long newMod = col.getMod();
          col.close();
          del col;
 
          // reopen
          Collection col = aopen(newPath);
-         assertTrue(col.mod == newMod);
+         assertTrue(col.getMod() == newMod);
          col.close();
 
          // non-writeable dir
@@ -2341,7 +2341,7 @@ note.setItem("Back","abc2");
          c.type = QUEUE_TYPE_REV;
          // due in 25 days, so it's been waiting 75 days
          c.due = col.getSched().today + 25;
-         c.mod = 1;
+         c.setMod(1);
          c.factor = STARTING_FACTOR;
          c.startTimer();
          c.flush();
@@ -3655,7 +3655,7 @@ note.setItem("Back","abc2");
          c.type = QUEUE_TYPE_REV;
          // due in 25 days, so it's been waiting 75 days
          c.due = col.getSched().today + 25;
-         c.mod = 1;
+         c.setMod(1);
          c.factor = STARTING_FACTOR;
          c.startTimer();
          c.flush();
