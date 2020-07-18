@@ -204,11 +204,11 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Front","new");
          note.setItem("Back","new2");
          col.addNote(note);
-         assertEquals(0xc2a6b03f, col.getDb().scalar("select csum from notes") );
+         assertEquals(0xc2a6b03f, col.getDb().queryLongScalar("select csum from notes") );
          // changing the val should change the checksum
          note.setItem("Front","newx");
          note.flush();
-         assertEquals(0x302811ae, col.getDb().scalar("select csum from notes"));
+         assertEquals(0x302811ae, col.getDb().queryLongScalar("select csum from notes"));
      }
 
      @Test
@@ -746,7 +746,7 @@ assertEquals( 0, col.findCards("helloworld").size() );
          with pytest.raises(Exception):
              col.findCards("is:invalid").size();
          // should be able to limit to parent col, no children
- long id = col.getDb().scalar("select id from cards limit 1");
+ long id = col.getDb().queryLongScalar("select id from cards limit 1");
          col.getDb().execute(;
              "update cards set long did = ? where long id = ?", col.getDecks().id("Default::Child"), id;
      );
@@ -755,7 +755,7 @@ assertEquals( 7, col.findCards("deck:default").size() );
 assertEquals( 1, col.findCards("deck:default::child").size() );
 assertEquals( 6, col.findCards("deck:default -deck:default::*").size() );
          // properties
- long id = col.getDb().scalar("select id from cards limit 1");
+ long id = col.getDb().queryLongScalar("select id from cards limit 1");
          col.getDb().execute(;
              "update cards set queue=2, ivl=10, reps=20, due=30, factor=2200 ";
              "where long id = ?",;
@@ -920,7 +920,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          Anki2Importer imp = Anki2Importer(empty, col.getPath());
          imp.run();
          assertEquals( ["foo.mp3"], os.listdir(empty.media.dir()) );
-         Note n = empty.getNote(empty.getDb().scalar("select id from notes"));
+         Note n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
          assertTrue(n.fields[0].contains("foo.mp3"));
          // if the local file content is different, and import should trigger a
          // rename
@@ -930,7 +930,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          Anki2Importer imp = Anki2Importer(empty, col.getPath());
          imp.run();
          assertEquals( ["foo.mp3", "foo_%s.mp3" % mid], sorted(os.listdir(empty.media.dir())) );
-         Note n = empty.getNote(empty.getDb().scalar("select id from notes"));
+         Note n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
          assertTrue(n.fields[0].contains("_"));
          // if the localized media file already exists, we rewrite the note and
          // media
@@ -941,7 +941,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          imp.run();
          assertEquals( ["foo.mp3", "foo_%s.mp3" % mid], sorted(os.listdir(empty.media.dir())) );
          assertEquals( ["foo.mp3", "foo_%s.mp3" % mid], sorted(os.listdir(empty.media.dir())) );
-         Note n = empty.getNote(empty.getDb().scalar("select id from notes"));
+         Note n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
          assertTrue(n.fields[0].contains("_"));
      }
 
@@ -1008,7 +1008,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertEquals( 0, imp.updated );
          // importing a newer note should update
          assertEquals( 1, dst.noteCount() );
-         assertTrue(dst.getDb().scalar("select flds from notes").startswith("hello"));
+         assertTrue(dst.getDb().queryLongScalar("select flds from notes").startswith("hello"));
          Collection col = getUpgradeDeckPath("update2.apkg");
          imp = AnkiPackageImporter(dst, col);
          imp.run();
@@ -1016,7 +1016,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertEquals( 0, imp.added );
          assertEquals( 1, imp.updated );
          assertEquals( 1, dst.noteCount() );
-         assertTrue(dst.getDb().scalar("select flds from notes").startswith("goodbye"));
+         assertTrue(dst.getDb().queryLongScalar("select flds from notes").startswith("goodbye"));
      }
 
      @Test
@@ -1035,7 +1035,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertEquals( 10, i.log.size() );
          assertEquals( 5, i.total );
          // but importing should not clobber tags if they're unmapped
-         Note n = col.getNote(col.getDb().scalar("select id from notes"));
+         Note n = col.getNote(col.getDb().queryLongScalar("select id from notes"));
          n.addTag("test");
          n.flush();
          i.run();
@@ -1192,7 +1192,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          // i.META.logToStdOutput = true
          i.run();
          assertEquals( 1, i.total );
-         long cid = col.getDb().scalar("select id from cards");
+         long cid = col.getDb().queryLongScalar("select id from cards");
          Card c = col.getCard(cid);
          // Applies A Factor-to-E Factor conversion
          assertEquals( 2879, c.factor );
@@ -1451,7 +1451,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          mm.addTemplateModChanged(m, t);
          col.getModels().remTemplate(m, m.getJSONArray("tmpls").getJSONObject(0));
          assertTrue(();
-             col.getDb().scalar(;
+             col.getDb().queryLongScalar(;
                  "select count() from cards where nid not in (select id from notes)";
          );
              == 0;
@@ -2378,7 +2378,7 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( 138, c.odue );
          assertEquals( QUEUE_TYPE_LRN, c.queue );
          // should be logged as a cram rep
-         assertEquals( 3, col.getDb().scalar("select type from revlog order by id desc limit 1") );
+         assertEquals( 3, col.getDb().queryLongScalar("select type from revlog order by id desc limit 1") );
          // check ivls again
          assertEquals( 60, col.getSched().nextIvl(c, 1) );
          assertEquals( 138 * 60 * 60 * 24, col.getSched().nextIvl(c, 2) );
@@ -3695,7 +3695,7 @@ assertEquals( 9, col.getSched().newCount );
          // should not be notARealIn learning
          assertEquals( QUEUE_TYPE_REV, c.queue );
          // should be logged as a cram rep
-         assertEquals( 3, col.getDb().scalar("select type from revlog order by id desc limit 1") );
+         assertEquals( 3, col.getDb().queryLongScalar("select type from revlog order by id desc limit 1") );
 
          // due notARealIn 75 days, so it's been waiting 25 days
          c.ivl = 100;
@@ -4276,7 +4276,7 @@ assertEquals( 9, col.getSched().newCount );
          expected = time.time() + 5.5 * 60;
          assertTrue(expected - 10 < c.getDue() < expected * 1.25);
 
-         ivl = col.getDb().scalar("select ivl from revlog");
+         ivl = col.getDb().queryLongScalar("select ivl from revlog");
          assertEquals( -5.5 * 60, ivl );
      }
      /*****************
