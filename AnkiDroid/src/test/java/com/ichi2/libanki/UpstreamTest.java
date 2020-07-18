@@ -94,7 +94,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Text","{{c1::one}}");
          col.addNote(note);
          assertTrue(col.cardCount() == 1);
-         assertTrue(note.cards().get(0).did == 1);
+         assertTrue(note.cards().get(0).getDid() == 1);
          // set the model to a new default col
          long newid = col.getDecks().id("new");
          cloze.put("did", newId);
@@ -102,11 +102,11 @@ public class UpstreamTest extends RobolectricTest {
          // a newly generated card should share the first card's col
          note.setItem("Text","{{c2::two}}");
          note.flush();
-         assertTrue(note.cards()[1].did == 1);
+         assertTrue(note.cards()[1].getDid() == 1);
          // and same with multiple cards
          note.setItem("Text","{{c3::three}}");
          note.flush();
-         assertTrue(note.cards()[2].did == 1);
+         assertTrue(note.cards()[2].getDid() == 1);
          // if one of the cards is in a different col, it should revert to the
          // model default
          Card c = note.cards()[1];
@@ -114,7 +114,7 @@ public class UpstreamTest extends RobolectricTest {
          c.flush();
          note.setItem("Text","{{c4::four}}");
          note.flush();
-         assertTrue(note.cards()[3].did == newId);
+         assertTrue(note.cards()[3].getDid() == newId);
      }
      /*****************
       ** Collection   *
@@ -341,12 +341,12 @@ public class UpstreamTest extends RobolectricTest {
          note.model().put("did", deck1);
          col.addNote(note);
          Card c = note.cards().get(0);
-         assertTrue(c.did == deck1);
+         assertTrue(c.getDid() == deck1);
          assertTrue(col.cardCount() == 1);
          col.getDecks().rem(deck1);
          assertTrue(col.cardCount() == 0);
          // if we try to get it, we get the default
-         assertTrue(col.getDecks().name(c.did) == "[no deck]");
+         assertTrue(col.getDecks().name(c.getDid()) == "[no deck]");
      }
 
      @Test
@@ -2322,7 +2322,7 @@ note.setItem("Back","abc2");
          col.getSched().rebuildDyn();
          c.load();
          assertTrue(c.due != 1);
-         assertTrue(c.did != 1);
+         assertTrue(c.getDid() != 1);
          col.getSched().suspendCards([c.getId()]);
          c.load();
          assertTrue(c.due == 1);
@@ -3635,11 +3635,11 @@ note.setItem("Back","abc2");
          col.getSched().rebuildDyn();
          c.load();
          assertTrue(c.due != 1);
-         assertTrue(c.did != 1);
+         assertTrue(c.getDid() != 1);
          col.getSched().suspendCards([c.getId()]);
          c.load();
          assertTrue(c.due != 1);
-         assertTrue(c.did != 1);
+         assertTrue(c.getDid() != 1);
          assertTrue(c.odue == 1);
      }
 
