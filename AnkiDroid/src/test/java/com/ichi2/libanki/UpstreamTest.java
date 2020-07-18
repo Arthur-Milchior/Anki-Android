@@ -482,7 +482,7 @@ public class UpstreamTest extends RobolectricTest {
          e.exportInto(newname);
          // exporting should not have changed conf for original deck
          conf = col.getDecks().confForDid(did);
-         assertTrue(conf.getLong("id") != 1);
+         assertNotEquals(conf.getLong("id") != 1);
          // connect to new deck
          Collection col2 = aopen(newname);
          assertEquals( 2, col2.cardCount() );
@@ -1382,7 +1382,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          Note note = col.getModels().newField("foo");
          col.getModels().addField(m, note);
          assertEquals( ["1", "2", ""], col.getNote(col.getModels().nids(m)[0]).fields );
-         assertTrue(col.getModels().scmhash(m) != h);
+         assertNotEquals( h, col.getModels().scmhash(m) );
          // rename it
          Note note = m["flds"][2];
          col.getModels().renameField(m, note, "bar");
@@ -2326,8 +2326,8 @@ assertEquals( 9, col.getSched().newCount );
          cram = col.getDecks().newDyn("tmp");
          col.getSched().rebuildDyn();
          c.load();
-         assertTrue(c.due != 1);
-         assertTrue(c.getDid() != 1);
+         assertNotEquals( 1, c.due );
+         assertNotEquals( 1, c.getDid() );
          col.getSched().suspendCards([c.getId()]);
          c.load();
          assertEquals( 1, c.due );
@@ -2461,7 +2461,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().answerCard(c, 2);
          // answering the card will put it in the learning queue
          assertEquals( CARD_TYPE_LRN and c.queue == QUEUE_TYPE_LRN, c.type );
-         assertTrue(c.due != oldDue);
+         assertNotEquals(c.due, oldDue);
          // if we terminate cramming prematurely it should be set back to new
          col.getSched().emptyDyn(did);
          c.load();
@@ -3647,12 +3647,12 @@ assertEquals( 9, col.getSched().newCount );
          cram = col.getDecks().newDyn("tmp");
          col.getSched().rebuildDyn();
          c.load();
-         assertTrue(c.due != 1);
-         assertTrue(c.getDid() != 1);
+         assertNotEquals(1, c.due);
+         assertNotEquals(1, c.getDid());
          col.getSched().suspendCards([c.getId()]);
          c.load();
-         assertTrue(c.due != 1);
-         assertTrue(c.getDid() != 1);
+         assertNotEquals(1, c.due);
+         assertNotEquals(1, c.getDid());
          assertEquals( 1, c.odue );
      }
 
@@ -3785,11 +3785,11 @@ assertEquals( 9, col.getSched().newCount );
          // failing it will push its due time back
          due = c.due;
          col.getSched().answerCard(c, 1);
-         assertTrue(c.due != due);
+         assertNotEquals(c.due, due);
 
          // the other card should come next
          c2 = col.getSched().getCard();
-         assertTrue(c2.getId() != c.getId());
+         assertNotEquals(c2.getId(), c.getId());
 
          // passing it will remove it
          col.getSched().answerCard(c2, 2);
@@ -4402,7 +4402,7 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( (1, 0, 0, col.getSched().counts() ));
          c.load();
          assertEquals( QUEUE_TYPE_NEW, c.queue );
-         assertTrue(c.left != 1001);
+         assertNotEquals(1001, c.left);
          assertFalse(col.undoName());
          // we should be able to undo multiple answers too
          Note note = col.newNote();
