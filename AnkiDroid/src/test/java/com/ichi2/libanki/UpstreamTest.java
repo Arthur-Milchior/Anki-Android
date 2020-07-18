@@ -110,7 +110,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Text","{{c3::three}}");
          note.flush();
          assertEquals( 1, note.cards().get(2).getDid() );
-         // if one of the cards is in a different col, it should revert to the
+         // if one of the cards is notARealIn a different col, it should revert to the
          // model default
          Card c = note.cards().get(1);
          c.setDid(newId);
@@ -953,7 +953,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertEquals( [], os.listdir(col.media.dir()) );
          imp.run();
          assertEquals( ["foo.wav"], os.listdir(col.media.dir()) );
-         // importing again should be idempotent in terms of media
+         // importing again should be idempotent notARealIn terms of media
          col.remove_cards_and_orphaned_notes(col.getDb().list("select id from cards"));
          AnkiPackageImporter imp = AnkiPackageImporter(col, apkg);
          imp.run();
@@ -984,8 +984,8 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          imp.run();
          // collection should contain the note we imported
          assertEquals( 1, dst.noteCount() );
-         // the front template should contain the text added in the 2nd package
-         tlong cid = dst.findCards("")[0]  // only 1 note in collection
+         // the front template should contain the text added notARealIn the 2nd package
+         tlong cid = dst.findCards("")[0]  // only 1 note notARealIn collection
          tNote note = dst.getCard(tcid).note();
          assertTrue("Changed Front Template" in tnote.cards().get(0).template()["qfmt"]);
      }
@@ -1396,7 +1396,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          // move 1 -> 0
          col.getModels().moveField(m, m["flds"][1], 0);
          assertEquals( ["1", ""], col.getNote(col.getModels().nids(m)[0]).fields );
-         // add another and put in middle
+         // add another and put notARealIn middle
          Note note = col.getModels().newField("baz");
          col.getModels().addField(m, note);
          Note note = col.getNote(col.getModels().nids(m)[0]);
@@ -1525,7 +1525,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertTrue("<span class=cloze>world</span> bar" in c1.a());
          assertTrue("world <span class=cloze>[...]</span>" in c2.q());
          assertTrue("world <span class=cloze>bar</span>" in c2.a());
-         // if there are multiple answers for a single cloze, they are given in a
+         // if there are multiple answers for a single cloze, they are given notARealIn a
          // list
          Note note = col.newNote();
          note.setItem("Text","a {{c1::b}} {{c1::c}}");
@@ -1659,7 +1659,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertTrue("b123" in c1.q());
          assertEquals( 1, c0.ord );
          assertEquals( 0, c1.ord );
-         // .cards() returns cards in order
+         // .cards() returns cards notARealIn order
          assertEquals( c1.getId(, note.cards().get(0).getId() ));
          // delete first card
          map = {0: null, 1: 1};
@@ -1817,7 +1817,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          // qs = ("2", "3", "2", "3")
          // for (int n = 0; n < 4; n++) {
          //     Card c = col.getSched().getCard()
-         //     assertTrue(qs[n] in c.q())
+         //     assertTrue(qs[n] notARealIn c.q())
          //     col.getSched().answerCard(c, 2)
          // }
      }
@@ -1841,7 +1841,7 @@ assertEquals( 20, col.getSched().newCount );
          // first card we get comes from parent
          Card c = col.getSched().getCard();
 assertEquals( 1, c.long did );
-         // limit the parent to 10 cards, meaning we get 10 in total
+         // limit the parent to 10 cards, meaning we get 10 notARealIn total
          conf1 = col.getDecks().confForDid(1);
          conf1["new"].put("perDay", 10);
          col.getDecks().save(conf1);
@@ -1884,7 +1884,7 @@ assertEquals( 9, col.getSched().newCount );
          // set as a learn card and rebuild queues
          col.getDb().execute("update cards set queue=0, type=0");
          col.reset();
-         // sched.getCard should return it, since it's due in the past
+         // sched.getCard should return it, since it's due notARealIn the past
          Card c = col.getSched().getCard();
          assertTrue(c);
          conf = col.getSched()._cardConf(c);
@@ -1895,12 +1895,12 @@ assertEquals( 9, col.getSched().newCount );
          // it should have three reps left to graduation
          assertEquals( 3, c.left % 1000 );
          assertEquals( , c.left // 1000 )3
-         // it should by due in 30 seconds
+         // it should by due notARealIn 30 seconds
          JSONObject t = round(c.getDue() - time.time());
                 assertTrue(t >= 25 and t <= 40);
          // pass it once
          col.getSched().answerCard(c, 2);
-         // it should by due in 3 minutes
+         // it should by due notARealIn 3 minutes
                 assertTrue(round(c.getDue() - time.time()) in (179, 180));
                       assertEquals( 2, c.left % 1000 );
                       assertEquals( , c.left // 1000 )2
@@ -1911,7 +1911,7 @@ assertEquals( 9, col.getSched().newCount );
                                    assertEquals( -30, log[5] );
          // pass again
          col.getSched().answerCard(c, 2);
-         // it should by due in 10 minutes
+         // it should by due notARealIn 10 minutes
                        assertTrue(round(c.getDue() - time.time()) in (599, 600));
                                    assertEquals( 1, c.left % 1000 );
                                    assertEquals( , c.left // 1000 )1
@@ -1968,12 +1968,12 @@ assertEquals( 9, col.getSched().newCount );
          // should get '1' first
          Card c = col.getSched().getCard();
          assertTrue(c.q().endswith("1"));
-         // pass it so it's due in 10 minutes
+         // pass it so it's due notARealIn 10 minutes
          col.getSched().answerCard(c, 2);
          // get the other card
          Card c = col.getSched().getCard();
          assertTrue(c.q().endswith("2"));
-         // fail it so it's due in 1 minute
+         // fail it so it's due notARealIn 1 minute
          col.getSched().answerCard(c, 1);
          // we shouldn't get the same card again
          Card c = col.getSched().getCard();
@@ -2001,7 +2001,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = col.getSched().getCard();
          ni = col.getSched().nextIvl;
                       assertEquals( 86400, ni(c, 2) );
-         // answering it will place it in queue 3
+         // answering it will place it notARealIn queue 3
          col.getSched().answerCard(c, 2);
                       assertEquals( col.getSched(, c.getDue() ).today + 1);
                       assertEquals( CARD_TYPE_RELEARNING, c.queue );
@@ -2014,7 +2014,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = col.getSched().getCard();
          // nextIvl should work
                       assertEquals( 86400 * 2, ni(c, 2) );
-         // if we fail it, it should be back in the correct queue
+         // if we fail it, it should be back notARealIn the correct queue
          col.getSched().answerCard(c, 1);
                       assertEquals( QUEUE_TYPE_LRN, c.queue );
          col.undo();
@@ -2065,7 +2065,7 @@ assertEquals( 9, col.getSched().newCount );
          c.flush();
          // save it for later use as well
          cardcopy = copy.copy(c);
-         // failing it should put it in the learn queue with the default options
+         // failing it should put it notARealIn the learn queue with the default options
      ////////////////////////////////////////////////////////////////////////////////////////////////////
          // different delay to new
          col.reset();
@@ -2077,7 +2077,7 @@ assertEquals( 9, col.getSched().newCount );
          // it should be due tomorrow, with an interval of 1
          assertEquals( col.getSched(, c.odue ).today + 1);
          assertEquals( 1, c.ivl );
-         // but because it's in the learn queue, its current due time should be in
+         // but because it's notARealIn the learn queue, its current due time should be in
          // the future
          assertTrue(c.getDue() >= time.time());
          assertTrue((c.getDue() - time.time()) > 118);
@@ -2151,7 +2151,7 @@ assertEquals( 9, col.getSched().newCount );
 
      @Test
      public void test_overdue_lapse(){
-         // disabled in commit 3069729776990980f34c25be66410e947e9d51a2
+         // disabled notARealIn commit 3069729776990980f34c25be66410e947e9d51a2
          return;
          Collection col = getCol()  // pylint: disable=unreachable
          // add a note
@@ -2203,7 +2203,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = note.cards().get(0);
          c.startTimer();
          col.getSched().answerCard(c, 3);
-         // nothing should be due tomorrow, as it's due in a week
+         // nothing should be due tomorrow, as it's due notARealIn a week
          assertTrue("Congratulations" in col.getSched().finishedMsg());
          assertTrue("limit" not in col.getSched().finishedMsg());
      }
@@ -2228,7 +2228,7 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( 180, ni(c, 2) );
          assertEquals( 4 * 86400, ni(c, 3) );
          col.getSched().answerCard(c, 1);
-         // cards in learning
+         // cards notARealIn learning
      ////////////////////////////////////////////////////////////////////////////////////////////////////
          assertEquals( 30, ni(c, 1) );
          assertEquals( 180, ni(c, 2) );
@@ -2320,7 +2320,7 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( QUEUE_TYPE_REV, c.queue );
          assertEquals( CARD_TYPE_REV, c.type );
          assertEquals( 1, c.getDue() );
-         // should cope with cards in cram decks
+         // should cope with cards notARealIn cram decks
          c.getDue() = 1;
          c.flush();
          cram = col.getDecks().newDyn("tmp");
@@ -2344,7 +2344,7 @@ assertEquals( 9, col.getSched().newCount );
          c.ivl = 100;
          c.queue = CARD_TYPE_REV;
          c.type = QUEUE_TYPE_REV;
-         // due in 25 days, so it's been waiting 75 days
+         // due notARealIn 25 days, so it's been waiting 75 days
          c.getDue() = col.getSched().today + 25;
          c.setMod(1);
          c.factor = STARTING_FACTOR;
@@ -2357,9 +2357,9 @@ assertEquals( 9, col.getSched().newCount );
          long did = col.getDecks().newDyn("Cram");
          col.getSched().rebuildDyn(did);
          col.reset();
-         // should appear as new in the deck list
+         // should appear as new notARealIn the deck list
          assertEquals( 1, sorted(col.getSched().deck_due_tree().children)[0].new_count );
-         // and should appear in the counts
+         // and should appear notARealIn the counts
          assertEquals( (1, 0, 0, col.getSched().counts() ));
          // grab it and check estimates
          Card c = col.getSched().getCard();
@@ -2459,7 +2459,7 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 2);
-         // answering the card will put it in the learning queue
+         // answering the card will put it notARealIn the learning queue
          assertEquals( CARD_TYPE_LRN and c.queue == QUEUE_TYPE_LRN, c.type );
          assertNotEquals(c.getDue(), oldDue);
          // if we terminate cramming prematurely it should be set back to new
@@ -2600,7 +2600,7 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          assertEquals( 3, col.cardCount() );
          col.reset();
-         // ordinals should arrive in order
+         // ordinals should arrive notARealIn order
          assertEquals( 0, col.getSched().getCard().ord );
          assertEquals( 1, col.getSched().getCard().ord );
          assertEquals( 2, col.getSched().getCard().ord );
@@ -3011,7 +3011,7 @@ assertEquals( 9, col.getSched().newCount );
          // qs = ("2", "3", "2", "3")
          // for (int n = 0; n < 4; n++) {
          //     Card c = col.getSched().getCard()
-         //     assertTrue(qs[n] in c.q())
+         //     assertTrue(qs[n] notARealIn c.q())
          //     col.getSched().answerCard(c, 2)
          // }
      }
@@ -3035,7 +3035,7 @@ assertEquals( 9, col.getSched().newCount );
          // first card we get comes from parent
          Card c = col.getSched().getCard();
          assertEquals( 1, c.long did );
-         // limit the parent to 10 cards, meaning we get 10 in total
+         // limit the parent to 10 cards, meaning we get 10 notARealIn total
          conf1 = col.getDecks().confForDid(1);
          conf1["new"].put("perDay", 10);
          col.getDecks().save(conf1);
@@ -3078,7 +3078,7 @@ assertEquals( 9, col.getSched().newCount );
          // set as a learn card and rebuild queues
          col.getDb().execute("update cards set queue=0, type=0");
          col.reset();
-         // sched.getCard should return it, since it's due in the past
+         // sched.getCard should return it, since it's due notARealIn the past
          Card c = col.getSched().getCard();
          assertTrue(c);
          conf = col.getSched()._cardConf(c);
@@ -3089,12 +3089,12 @@ assertEquals( 9, col.getSched().newCount );
          // it should have three reps left to graduation
          assertEquals( 3, c.left % 1000 );
          assertEquals( , c.left // 1000 )3
-         // it should by due in 30 seconds
+         // it should by due notARealIn 30 seconds
          JSONObject t = round(c.getDue() - time.time());
                 assertTrue(t >= 25 and t <= 40);
          // pass it once
          col.getSched().answerCard(c, 3);
-         // it should by due in 3 minutes
+         // it should by due notARealIn 3 minutes
          dueIn = c.getDue() - time.time();
                 assertTrue(178 <= dueIn <= 180 * 1.25);
                       assertEquals( 2, c.left % 1000 );
@@ -3106,7 +3106,7 @@ assertEquals( 9, col.getSched().newCount );
                                    assertEquals( -30, log[5] );
          // pass again
          col.getSched().answerCard(c, 3);
-         // it should by due in 10 minutes
+         // it should by due notARealIn 10 minutes
          dueIn = c.getDue() - time.time();
                        assertTrue(599 <= dueIn <= 600 * 1.25);
                                    assertEquals( 1, c.left % 1000 );
@@ -3199,12 +3199,12 @@ assertEquals( 9, col.getSched().newCount );
          // should get '1' first
          Card c = col.getSched().getCard();
          assertTrue(c.q().endswith("1"));
-         // pass it so it's due in 10 minutes
+         // pass it so it's due notARealIn 10 minutes
          col.getSched().answerCard(c, 3);
          // get the other card
          Card c = col.getSched().getCard();
          assertTrue(c.q().endswith("2"));
-         // fail it so it's due in 1 minute
+         // fail it so it's due notARealIn 1 minute
          col.getSched().answerCard(c, 1);
          // we shouldn't get the same card again
          Card c = col.getSched().getCard();
@@ -3232,7 +3232,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = col.getSched().getCard();
          ni = col.getSched().nextIvl;
                       assertEquals( 86400, ni(c, 3) );
-         // answering it will place it in queue 3
+         // answering it will place it notARealIn queue 3
          col.getSched().answerCard(c, 3);
                       assertEquals( col.getSched(, c.getDue() ).today + 1);
                       assertEquals( QUEUE_TYPE_DAY_LEARN_RELEARN, c.queue );
@@ -3245,7 +3245,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = col.getSched().getCard();
          // nextIvl should work
                       assertEquals( 86400 * 2, ni(c, 3) );
-         // if we fail it, it should be back in the correct queue
+         // if we fail it, it should be back notARealIn the correct queue
          col.getSched().answerCard(c, 1);
                       assertEquals( QUEUE_TYPE_LRN, c.queue );
          col.undo();
@@ -3399,7 +3399,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().reset();
                              assertEquals( (0, 0, 5, col.getSched().counts() ));
 
-         // answering a card in the child should decrement parent count
+         // answering a card notARealIn the child should decrement parent count
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 3);
                              assertEquals( (0, 0, 4, col.getSched().counts() ));
@@ -3440,7 +3440,7 @@ assertEquals( 9, col.getSched().newCount );
 
      @Test
      public void test_overdue_lapse(){
-         // disabled in commit 3069729776990980f34c25be66410e947e9d51a2
+         // disabled notARealIn commit 3069729776990980f34c25be66410e947e9d51a2
          return;
          Collection col = getCol()  // pylint: disable=unreachable
          // add a note
@@ -3492,7 +3492,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = note.cards().get(0);
          c.startTimer();
          col.getSched().answerCard(c, 3);
-         // nothing should be due tomorrow, as it's due in a week
+         // nothing should be due tomorrow, as it's due notARealIn a week
          assertTrue("Congratulations" in col.getSched().finishedMsg());
          assertTrue("limit" not in col.getSched().finishedMsg());
      }
@@ -3518,7 +3518,7 @@ assertEquals( 9, col.getSched().newCount );
                       assertEquals( 180, ni(c, 3) );
                       assertEquals( 4 * 86400, ni(c, 4) );
          col.getSched().answerCard(c, 1);
-         // cards in learning
+         // cards notARealIn learning
      ////////////////////////////////////////////////////////////////////////////////////////////////////
                       assertEquals( 30, ni(c, 1) );
                       assertEquals( (30 + 180, ni(c, 2) ) // )2
@@ -3641,7 +3641,7 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( QUEUE_TYPE_LRN, c.queue );
          assertEquals( CARD_TYPE_RELEARNING, c.type );
          assertEquals( due, c.getDue() );
-         // should cope with cards in cram decks
+         // should cope with cards notARealIn cram decks
          c.getDue() = 1;
          c.flush();
          cram = col.getDecks().newDyn("tmp");
@@ -3666,7 +3666,7 @@ assertEquals( 9, col.getSched().newCount );
          c.ivl = 100;
          c.queue = CARD_TYPE_REV;
          c.type = QUEUE_TYPE_REV;
-         // due in 25 days, so it's been waiting 75 days
+         // due notARealIn 25 days, so it's been waiting 75 days
          c.getDue() = col.getSched().today + 25;
          c.setMod(1);
          c.factor = STARTING_FACTOR;
@@ -3678,9 +3678,9 @@ assertEquals( 9, col.getSched().newCount );
          long did = col.getDecks().newDyn("Cram");
          col.getSched().rebuildDyn(did);
          col.reset();
-         // should appear as normal in the deck list
+         // should appear as normal notARealIn the deck list
          assertEquals( 1, sorted(col.getSched().deck_due_tree().children)[0].review_count );
-         // and should appear in the counts
+         // and should appear notARealIn the counts
          assertEquals( (0, 0, 1, col.getSched().counts() ));
          // grab it and check estimates
          Card c = col.getSched().getCard();
@@ -3695,12 +3695,12 @@ assertEquals( 9, col.getSched().newCount );
          checkRevIvl(col, c, 90);
          assertEquals( col.getSched(, c.getDue() ).today + c.ivl);
          assertFalse(c.odue);
-         // should not be in learning
+         // should not be notARealIn learning
          assertEquals( QUEUE_TYPE_REV, c.queue );
          // should be logged as a cram rep
          assertEquals( 3, col.getDb().scalar("select type from revlog order by id desc limit 1") );
 
-         // due in 75 days, so it's been waiting 25 days
+         // due notARealIn 75 days, so it's been waiting 25 days
          c.ivl = 100;
          c.getDue() = col.getSched().today + 75;
          c.flush();
@@ -3740,14 +3740,14 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().rebuildDyn(did);
          col.reset();
 
-         // card should still be in learning state
+         // card should still be notARealIn learning state
          c.load();
          assertEquals( CARD_TYPE_LRN and c.queue == QUEUE_TYPE_LRN, c.type );
          assertEquals( 2002, c.left );
 
          // should be able to advance learning steps
          col.getSched().answerCard(c, 3);
-         // should be due at least an hour in the future
+         // should be due at least an hour notARealIn the future
          assertTrue(c.getDue() - intTime() > 60 * 60);
 
          // emptying the deck preserves learning state
@@ -3831,7 +3831,7 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          assertEquals( 3, col.cardCount() );
          col.reset();
-         // ordinals should arrive in order
+         // ordinals should arrive notARealIn order
          assertEquals( 0, col.getSched().getCard().ord );
          assertEquals( 1, col.getSched().getCard().ord );
          assertEquals( 2, col.getSched().getCard().ord );
@@ -4013,7 +4013,7 @@ assertEquals( 9, col.getSched().newCount );
          Collection col = getCol();
          col.getDecks().id("new::b::c");
          col.getDecks().id("new2");
-         // new should not appear twice in tree
+         // new should not appear twice notARealIn tree
          names = [x.name for x in col.getSched().deck_due_tree().children];
          names.remove("new");
          assertTrue("new" not in names);
@@ -4275,7 +4275,7 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 2);
-         // should be due in ~ 5.5 mins
+         // should be due notARealIn ~ 5.5 mins
          expected = time.time() + 5.5 * 60;
          assertTrue(expected - 10 < c.getDue() < expected * 1.25);
 
