@@ -1805,10 +1805,11 @@ note.setItem("Back","abc2");
          // col.addNote(note)
          // col.reset()
          // qs = ("2", "3", "2", "3")
-         // for n in range(4):
+         // for (int n = 0; n < 4; n++) {
          //     Card c = col.getSched().getCard()
          //     assertTrue(qs[n] in c.q())
          //     col.getSched().answerCard(c, 2)
+         // }
      }
 
      @Test
@@ -1816,8 +1817,9 @@ note.setItem("Back","abc2");
          Collection col = getCol();
          // add some notes
          deck2 = col.getDecks().id("Default::foo");
-         for i in range(30):
+         for (i =0; i < 30; i++) {
              Note note = col.newNote();
+         }
          note.setItem("Front","did")] = deck2;
              col.addNote(note);
          // give the child deck a different configuration
@@ -2677,8 +2679,9 @@ note.setItem("Back","abc2");
      public void test_timing(){
          Collection col = getCol();
          // add a few review cards, due today
-         for i in range(5):
+         for (int i=0; i < 5; i++) {
              Note note = col.newNote();
+         }
          note.setItem("Front","num") + str(i);
              col.addNote(note);
              Card c = note.cards().get(0);
@@ -2811,12 +2814,13 @@ note.setItem("Back","abc2");
          assertTrue(note2.cards().get(0).due == 2);
          found = false;
          // 50/50 chance of being reordered
-         for i in range(20):
+         for (int i=0; i < 2; i++0 {:
              col.getSched().randomizeCards(1);
              if note.cards().get(0).due != note.getId():
                  found = true;
                  break;
                  assertTrue(found);
+         }
          col.getSched().orderCards(1);
          assertTrue(note.cards().get(0).due == 1);
          // shifting
@@ -2992,10 +2996,11 @@ note.setItem("Back","abc2");
          // col.addNote(note)
          // col.reset()
          // qs = ("2", "3", "2", "3")
-         // for n in range(4):
+         // for (int n = 0; n < 4; n++) {
          //     Card c = col.getSched().getCard()
          //     assertTrue(qs[n] in c.q())
          //     col.getSched().answerCard(c, 2)
+         // }
      }
 
      @Test
@@ -3003,8 +3008,9 @@ note.setItem("Back","abc2");
          Collection col = getCol();
          // add some notes
          deck2 = col.getDecks().id("Default::foo");
-         for i in range(30):
+         for (int i=0; i < 30; i++) {
              Note note = col.newNote();
+         }
          note.setItem("Front","did")] = deck2;
              col.addNote(note);
          // give the child deck a different configuration
@@ -3356,8 +3362,9 @@ note.setItem("Back","abc2");
          col.getModels().save(m, false);
 
          // add some cards
-         for i in range(20):
+         for (int i=0; i < 20; i++) {
              Note note = col.newNote();
+         }
          note.setItem("Front","one");
          note.setItem("Back","two");
              col.addNote(note);
@@ -3900,8 +3907,9 @@ note.setItem("Back","abc2");
      public void test_timing(){
          Collection col = getCol();
          // add a few review cards, due today
-         for i in range(5):
+         for (int i=0; i < 5; i++) {
              Note note = col.newNote();
+         }
          note.setItem("Front","num") + str(i);
              col.addNote(note);
              Card c = note.cards().get(0);
@@ -4037,12 +4045,13 @@ note.setItem("Back","abc2");
          assertTrue(note2.cards().get(0).due == 2);
          found = false;
          // 50/50 chance of being reordered
-         for i in range(20):
+         for (int i=0; i < 20; i++) {:
              col.getSched().randomizeCards(1);
              if note.cards().get(0).due != note.getId():
                  found = true;
                  break;
                  assertTrue(found);
+         }
          col.getSched().orderCards(1);
          assertTrue(note.cards().get(0).due == 1);
          // shifting
