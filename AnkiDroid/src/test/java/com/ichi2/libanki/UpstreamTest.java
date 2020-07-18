@@ -137,10 +137,9 @@ public class UpstreamTest extends RobolectricTest {
          String newPath = col.getPath();
          long newMod = col.getMod();
          col.close();
-         del col;
 
          // reopen
-         Collection col = aopen(newPath);
+         col = aopen(newPath);
          assertEquals( newMod, col.getMod() );
          col.close();
 
