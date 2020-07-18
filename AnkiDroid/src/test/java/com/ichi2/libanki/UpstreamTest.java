@@ -201,11 +201,11 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Front","new");
          note.setItem("Back","new2");
          col.addNote(note);
-         assertTrue(col.getDb().scalar("select csum from notes") == int("c2a6b03f", 16));
+         assertTrue(col.getDb().scalar("select csum from notes") == 0xc2a6b03f);
          // changing the val should change the checksum
          note.setItem("Front","newx");
          note.flush();
-         assertTrue(col.getDb().scalar("select csum from notes") == int("302811ae", 16));
+         assertTrue(col.getDb().scalar("select csum from notes") == 0x302811ae);
      }
 
      @Test
