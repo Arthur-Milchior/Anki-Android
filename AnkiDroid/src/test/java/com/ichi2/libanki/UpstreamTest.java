@@ -16,6 +16,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
@@ -185,7 +186,7 @@ public class UpstreamTest extends RobolectricTest {
          Card c0 = note.cards().get(0);
          assertTrue("three" in c0.q());
          // it should not be a duplicate
-         assertTrue(not note.dupeOrEmpty());
+         assertFalse(note.dupeOrEmpty());
          // now let's make a duplicate
          note2 = col.newNote();
          note2.setItem("Front","one");
@@ -638,7 +639,7 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 1, col.findCards("tag:\\%").size() );
          assertEquals( 2, col.findCards("tag:animal_1").size() );
          assertEquals( 1, col.findCards("tag:animal\\_1").size() );
-         assertTrue(not col.findCards("tag:donkey"));
+         assertFalse(col.findCards("tag:donkey"));
          assertEquals( 1, col.findCards("tag:sheep").size() );
          assertEquals( 1, col.findCards("tag:sheep tag:goat").size() );
          assertEquals( 0, col.findCards("tag:sheep tag:monkey").size() );
@@ -879,7 +880,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertEquals( 3, r[0][1].size() );
          // excludes everything
          r = col.findDupes("Back", "invalid");
-         assertTrue(not r);
+         assertFalse(r);
          // front isn't dupe
          assertEquals( [], col.findDupes("Front") );
      }
@@ -1770,7 +1771,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
      public void test_basics(){
          Collection col = getCol();
          col.reset();
-         assertTrue(not col.getSched().getCard());
+         assertFalse(col.getSched().getCard());
      }
 
      @Test
@@ -1976,7 +1977,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().answerCard(c, 1);
          // we shouldn't get the same card again
          Card c = col.getSched().getCard();
-         assertTrue(not c.q().endswith("2"));
+         assertFalse(c.q().endswith("2"));
      }
 
      @Test
@@ -2004,7 +2005,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().answerCard(c, 2);
                       assertEquals( col.getSched(, c.due ).today + 1);
                       assertEquals( CARD_TYPE_RELEARNING, c.queue );
-                assertTrue(not col.getSched().getCard());
+                assertFalse(col.getSched().getCard());
          // for testing, move it back a day
          c.due -= 1;
          c.flush();
@@ -2278,7 +2279,7 @@ assertEquals( 9, col.getSched().newCount );
          // burying
          col.getSched().buryNote(c.nid);
          col.reset();
-         assertTrue(not col.getSched().getCard());
+         assertFalse(col.getSched().getCard());
          col.getSched().unburyCards();
          col.reset();
          assertTrue(col.getSched().getCard());
@@ -2296,7 +2297,7 @@ assertEquals( 9, col.getSched().newCount );
          assertTrue(col.getSched().getCard());
          col.getSched().suspendCards([c.getId()]);
          col.reset();
-         assertTrue(not col.getSched().getCard());
+         assertFalse(col.getSched().getCard());
          // unsuspending
          col.getSched().unsuspendCards([c.getId()]);
          col.reset();
@@ -2734,7 +2735,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().answerCard(c, 1);
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 3);
-         assertTrue(not col.getSched().getCard());
+         assertFalse(col.getSched().getCard());
      }
 
      @Test
@@ -2964,7 +2965,7 @@ assertEquals( 9, col.getSched().newCount );
      public void test_basics(){
          Collection col = getCol();
          col.reset();
-         assertTrue(not col.getSched().getCard());
+         assertFalse(col.getSched().getCard());
      }
 
      @Test
@@ -3207,7 +3208,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().answerCard(c, 1);
          // we shouldn't get the same card again
          Card c = col.getSched().getCard();
-         assertTrue(not c.q().endswith("2"));
+         assertFalse(c.q().endswith("2"));
      }
 
      @Test
@@ -3235,7 +3236,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().answerCard(c, 3);
                       assertEquals( col.getSched(, c.due ).today + 1);
                       assertEquals( QUEUE_TYPE_DAY_LEARN_RELEARN, c.queue );
-                assertTrue(not col.getSched().getCard());
+                assertFalse(col.getSched().getCard());
          // for testing, move it back a day
          c.due -= 1;
          c.flush();
@@ -3580,7 +3581,7 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( QUEUE_TYPE_SIBLING_BURIED, c2.queue );
 
          col.reset();
-         assertTrue(not col.getSched().getCard());
+         assertFalse(col.getSched().getCard());
 
          col.getSched().unburyCardsForDeck(  // pylint: disable=unexpected-keyword-arg
              type="manual";
@@ -3616,7 +3617,7 @@ assertEquals( 9, col.getSched().newCount );
          assertTrue(col.getSched().getCard());
          col.getSched().suspendCards([c.getId()]);
          col.reset();
-         assertTrue(not col.getSched().getCard());
+         assertFalse(col.getSched().getCard());
          // unsuspending
          col.getSched().unsuspendCards([c.getId()]);
          col.reset();
@@ -3693,7 +3694,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().answerCard(c, 3);
          checkRevIvl(col, c, 90);
          assertEquals( col.getSched(, c.due ).today + c.ivl);
-         assertTrue(not c.odue);
+         assertFalse(c.odue);
          // should not be in learning
          assertEquals( QUEUE_TYPE_REV, c.queue );
          // should be logged as a cram rep
@@ -3957,7 +3958,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().answerCard(c, 1);
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 4);
-         assertTrue(not col.getSched().getCard());
+         assertFalse(col.getSched().getCard());
      }
 
      @Test
@@ -4348,7 +4349,7 @@ assertEquals( 9, col.getSched().newCount );
      public void test_op(){
          Collection col = getCol();
          // should have no undo by default
-         assertTrue(not col.undoName());
+         assertFalse(col.undoName());
          // let's adjust a study option
          col.save("studyopts");
          col.conf.put("abc", 5);
@@ -4358,13 +4359,13 @@ assertEquals( 9, col.getSched().newCount );
          assertTrue(time.time() - col._lastSave < 1);
          // undoing should restore the old value
          col.undo();
-         assertTrue(not col.undoName());
+         assertFalse(col.undoName());
          assertTrue("abc" not in col..getConf());
          // an (auto)save will clear the undo
          col.save("foo");
          assertEquals( "foo", col.undoName() );
          col.save();
-         assertTrue(not col.undoName());
+         assertFalse(col.undoName());
          // and a review will, too
          col.save("add");
          Note note = col.newNote();
@@ -4385,7 +4386,7 @@ assertEquals( 9, col.getSched().newCount );
          note.setItem("Front","one");
          col.addNote(note);
          col.reset();
-         assertTrue(not col.undoName());
+         assertFalse(col.undoName());
          // answer
          assertEquals( (1, 0, 0, col.getSched().counts() ));
          Card c = col.getSched().getCard();
@@ -4402,7 +4403,7 @@ assertEquals( 9, col.getSched().newCount );
          c.load();
          assertEquals( QUEUE_TYPE_NEW, c.queue );
          assertTrue(c.left != 1001);
-         assertTrue(not col.undoName());
+         assertFalse(col.undoName());
          // we should be able to undo multiple answers too
          Note note = col.newNote();
          note.setItem("Front","two");
