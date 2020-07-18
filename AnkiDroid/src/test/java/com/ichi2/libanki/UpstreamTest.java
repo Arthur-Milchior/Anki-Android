@@ -691,19 +691,19 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(col.findCards("front:do").size() == 0);
          assertTrue(col.findCards("front:*").size() == 5);
          // ordering
-         col.conf.put("sortType", "noteCrt");
+         col..getConf().put("sortType", "noteCrt");
          col.flush();
          assertTrue(col.findCards("front:*", order=true)[-1] in latestCardIds);
          assertTrue(col.findCards("", order=true)[-1] in latestCardIds);
-         col.conf.put("sortType", "noteFld");
+         col..getConf().put("sortType", "noteFld");
          col.flush();
          assertTrue(col.findCards("", order=true)[0] == catCard.getId());
          assertTrue(col.findCards("", order=true)[-1] in latestCardIds);
-                  col.conf.put("sortType", "cardMod");
+                  col..getConf().put("sortType", "cardMod");
          col.flush();
          assertTrue(col.findCards("", order=true)[-1] in latestCardIds);
          assertTrue(col.findCards("", order=true)[0] == firstCardId);
-                  col.conf.put("sortBackwards", true);
+                  col..getConf().put("sortBackwards", true);
          col.flush();
          assertTrue(col.findCards("", order=true)[0] in latestCardIds);
          assertTrue(();
@@ -4339,7 +4339,7 @@ note.setItem("Back","abc2");
          // undoing should restore the old value
          col.undo();
          assertTrue(not col.undoName());
-         assertTrue("abc" not in col.conf);
+         assertTrue("abc" not in col..getConf());
          // an (auto)save will clear the undo
          col.save("foo");
          assertTrue(col.undoName() == "foo");
@@ -4360,7 +4360,7 @@ note.setItem("Back","abc2");
      @Test
      public void test_review(){
          Collection col = getCol();
-         col.conf.put("counts", COUNT_REMAINING);
+         col.getConf().put("counts", COUNT_REMAINING);
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
