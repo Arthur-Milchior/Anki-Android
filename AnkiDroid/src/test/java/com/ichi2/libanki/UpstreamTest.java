@@ -1,5 +1,7 @@
 package com.ichi2.libanki;
 
+import android.util.Pair;
+
 import com.ichi2.anki.RobolectricTest;
 import com.ichi2.libanki.sched.AbstractSched;
 import com.ichi2.utils.Assert;
@@ -9,6 +11,8 @@ import org.apache.http.util.Asserts;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -36,7 +40,7 @@ public class UpstreamTest extends RobolectricTest {
          long cid = note.cards().get(0).getId();
          col.reset();
          col.getSched().answerCard(col.getSched().getCard(), 2);
-         col.remove_cards_and_orphaned_notes([cid]);
+         col.remove_cards_and_orphaned_notes(new [] {cid});
          assertEquals( 0, col.cardCount() );
          assertEquals( 0, col.noteCount() );
          assertEquals( 0, col.getDb().queryScalar("select count() from notes") );
@@ -221,13 +225,13 @@ public class UpstreamTest extends RobolectricTest {
          note2.setItem("Front","2");
          col.addNote(note2);
          // adding for a given id
-         col.getTags().bulkAdd([note.getId()], "foo");
+         col.getTags().bulkAdd(Arrays.asList(new Long[] {note.getId()}), "foo");
          note.load();
          note2.load();
          assertTrue(note.getTags().contains("foo"));
          assertTrue(!note2.getTags().contains("foo"));
          // should be canonified
-         col.getTags().bulkAdd([note.getId()], "foo aaa");
+         col.getTags().bulkAdd(Arrays.asList(new Long [] {note.getId()}), "foo aaa");
          note.load();
          assertEquals( "aaa", note.getTags()[0] );
          assertEquals( 2, note.getTags().size() );
@@ -282,12 +286,12 @@ public class UpstreamTest extends RobolectricTest {
      @Test
      public void test_db_named_args(capsys):
          sql = "select a, 2+:test5 from b where arg =:foo and x = :test5";
-         args = [];
+    args = new Objet [] {};
          kwargs = dict(test5=5, foo="blah");
 
          s, a = emulate_named_args(sql, args, kwargs);
     assertEquals( "select a, 2+?1 from b where arg =?2 and x = ?1", s );
-    assertEquals( [5, "blah"], a );
+    assertEquals( new Object [] {5, "blah"}, a );
 
          // swallow the warning
          _ = capsys.readouterr();
@@ -311,21 +315,21 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( parentId, col.getDecks().id("new deck") );
          // we start with the default col selected
          assertEquals( 1, col.getDecks().selected() );
-         assertEquals( [1], col.getDecks().active() );
+         assertEquals( new long [] {1}, col.getDecks().active() );
          // we can select a different col
          col.getDecks().select(parentId);
          assertEquals( parentId, col.getDecks().selected() );
-         assertEquals( [parentId], col.getDecks().active() );
+         assertEquals( new long [] {parentId}, col.getDecks().active() );
          // let's create a child
          long childId = col.getDecks().id("new deck::child");
          col.getSched().reset();
          // it should have been added to the active list
          assertEquals( parentId, col.getDecks().selected() );
-         assertEquals( [parentId, childId], col.getDecks().active() );
+         assertEquals( new long [] {parentId, childId}, col.getDecks().active() );
          // we can select the child individually too
          col.getDecks().select(childId);
          assertEquals( childId, col.getDecks().selected() );
-         assertEquals( [childId], col.getDecks().active() );
+         assertEquals( new long [] {childId}, col.getDecks().active() );
          // parents with a different case should be handled correctly
          col.getDecks().id("ONE");
          Model m = col.getModels().current();
@@ -376,7 +380,7 @@ public class UpstreamTest extends RobolectricTest {
          long id = col.getDecks().id("one");
          col.getDecks().rename(col.getDecks().get(id), "yo");
          names =  col.getDecks().allNames();
-         for (String n: new String [] {"yo", "yo::two", "yo::two::three"}) {
+         for (String n: new String[] {"yo", "yo::two", "yo::two::three"}) {
              assertTrue(names.contains(n));
          }
          // over filtered
@@ -398,45 +402,45 @@ public class UpstreamTest extends RobolectricTest {
 
          // Renaming also renames children
          col.getDecks().renameForDragAndDrop(chinese_did, languages_did);
-         assertEquals( ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"], col.getDecks().allNames() );
+         assertEquals( new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames() );
 
          // Dragging a col onto itself is a no-op
          col.getDecks().renameForDragAndDrop(languages_did, languages_did);
-         assertEquals( ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"], col.getDecks().allNames() );
+         assertEquals( new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames() );
 
          // Dragging a col onto its parent is a no-op
          col.getDecks().renameForDragAndDrop(hsk_did, chinese_did);
-         assertEquals( ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"], col.getDecks().allNames() );
+         assertEquals( new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames() );
 
          // Dragging a col onto a descendant is a no-op
          col.getDecks().renameForDragAndDrop(languages_did, hsk_did);
-         assertEquals( ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"], col.getDecks().allNames() );
+         assertEquals( new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames() );
 
          // Can drag a grandchild onto its grandparent.  It becomes a child
          col.getDecks().renameForDragAndDrop(hsk_did, languages_did);
-         assertEquals( ["Languages", "Languages::Chinese", "Languages::HSK"], col.getDecks().allNames() );
+         assertEquals( new String [] {"Languages", "Languages::Chinese", "Languages::HSK"}, col.getDecks().allNames() );
 
          // Can drag a col onto its sibling
          col.getDecks().renameForDragAndDrop(hsk_did, chinese_did);
-         assertEquals( ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"], col.getDecks().allNames() );
+         assertEquals( new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames() );
 
          // Can drag a col back to the top level
          col.getDecks().renameForDragAndDrop(chinese_did, null);
-         assertEquals( ["Chinese", "Chinese::HSK", "Languages"], col.getDecks().allNames() );
+         assertEquals( new String [] {"Chinese", "Chinese::HSK", "Languages"}, col.getDecks().allNames() );
 
          // Dragging a top level col to the top level is a no-op
          col.getDecks().renameForDragAndDrop(chinese_did, null);
-         assertEquals( ["Chinese", "Chinese::HSK", "Languages"], col.getDecks().allNames() );
+         assertEquals( new String [] {"Chinese", "Chinese::HSK", "Languages"}, col.getDecks().allNames() );
 
          // decks are renamed if necessary
          long new_hsk_did = col.getDecks().id("hsk");
          col.getDecks().renameForDragAndDrop(new_hsk_did, chinese_did);
-         assertEquals( ["Chinese", "Chinese::HSK", "Chinese::hsk+", "Languages"], col.getDecks().allNames() );
+         assertEquals( new String [] {"Chinese", "Chinese::HSK", "Chinese::hsk+", "Languages"}, col.getDecks().allNames() );
          col.getDecks().rem(new_hsk_did);
 
          // '' is a convenient alias for the top level DID
          col.getDecks().renameForDragAndDrop(hsk_did, "");
-         assertEquals( ["Chinese", "HSK", "Languages"], col.getDecks().allNames() );
+         assertEquals( new String [] {"Chinese", "HSK", "Languages"}, col.getDecks().allNames() );
       }
 
      /*****************
@@ -448,7 +452,7 @@ public class UpstreamTest extends RobolectricTest {
          Note note = col.newNote();
          note.setItem("Front","foo");
          note.setItem("Back","bar<br>");
-         note.tags = ["tag", "tag2"];
+         note.tags = new String [] {"tag", "tag2"};
          col.addNote(note);
          // with a different col
          Note note = col.newNote();
@@ -661,22 +665,22 @@ public class UpstreamTest extends RobolectricTest {
          // card states
          Card c = note.cards().get(0);
          c.queue = c.type = CARD_TYPE_REV;
-         assertEquals( [], col.findCards("is:review") );
+         assertEquals( new Card [] {}, col.findCards("is:review") );
          c.flush();
-         assertEquals( [c.getId(, col.findCards("is:review") )]);
-         assertEquals( [], col.findCards("is:due") );
+         assertEquals( new long [] {c.getId(, col.findCards("is:review") )});
+         assertEquals( new Card [] {}, col.findCards("is:due") );
          c.getDue() = 0;
          c.queue = QUEUE_TYPE_REV;
          c.flush();
-         assertEquals( [c.getId(, col.findCards("is:due") )]);
+         assertEquals( new long [] {c.getId(, col.findCards("is:due") )});
          assertEquals( 4, col.findCards("-is:due").size() );
          c.queue = -1;
          // ensure this card gets a later mod time
          c.flush();
          col.getDb().execute("update cards set mod = mod + 1 where long id = ?", c.getId());
-         assertEquals( [c.getId(, col.findCards("is:suspended") )]);
+         assertEquals( new long [] {c.getId(, col.findCards("is:suspended") )});
          // nids
-         assertEquals( [], col.findCards("nid:54321") );
+         assertEquals( new Card [] {}, col.findCards("nid:54321") );
          assertEquals( 2, col.findCards(f"nid:{note.getId()}").size() );
          assertEquals( 2, col.findCards(f"nid:{f1id},{f2id}").size() );
          // templates
@@ -696,19 +700,19 @@ public class UpstreamTest extends RobolectricTest {
          // ordering
          col..getConf().put("sortType", "noteCrt");
          col.flush();
-         assertTrue(col.findCards("front:*", order=true)latestCardIds.contains([-1]));
-         assertTrue(col.findCards("", order=true)latestCardIds.contains([-1]));
+    assertTrue(col.findCards("front:*", order=true)latestCardIds.contains(new [] {-1}));
+    assertTrue(col.findCards("", order=true)latestCardIds.contains(new [] {-1}));
          col..getConf().put("sortType", "noteFld");
          col.flush();
          assertEquals( catCard.getId(, col.findCards("", order=true)[0] ));
-         assertTrue(col.findCards("", order=true)latestCardIds.contains([-1]));
+    assertTrue(col.findCards("", order=true)latestCardIds.contains(new [] {-1}));
                   col..getConf().put("sortType", "cardMod");
          col.flush();
-         assertTrue(col.findCards("", order=true)latestCardIds.contains([-1]));
+    assertTrue(col.findCards("", order=true)latestCardIds.contains(new [] {-1}));
          assertEquals( firstCardId, col.findCards("", order=true)[0] );
                   col..getConf().put("sortBackwards", true);
          col.flush();
-         assertTrue(col.findCards("", order=true)latestCardIds.contains([0]));
+    assertTrue(col.findCards("", order=true)latestCardIds.contains(new [] {0}));
          assertTrue(();
              col.find_cards("", order=BuiltinSortKind.CARD_DUE, reverse=false)[0];
              == firstCardId;
@@ -828,7 +832,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          note2.setItem("Front","baz");
          note2.setItem("Back","foo");
          col.addNote(note2);
-         nids = [note.getId(), note2.getId()];
+         nids = new long [] {note.getId(), note2.getId()};
          // should do nothing
          assertEquals( 0, col.findReplace(nids, "abc", "123") );
          // global replace
@@ -882,7 +886,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          r = col.findDupes("Back", "invalid");
          assertFalse(r);
          // front isn't dupe
-         assertEquals( [], col.findDupes("Front") );
+         assertEquals( new Pair<String, List<Long>>[] {}, col.findDupes("Front") );
      }
 
       /*****************
@@ -914,12 +918,12 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          Collection empty = getCol();
          Anki2Importer imp = Anki2Importer(empty, col.getPath());
          imp.run();
-         assertEquals( ["foo.mp3"], os.listdir(empty.media.dir()) );
+         assertEquals( new String [] {"foo.mp3"}, os.listdir(empty.media.dir()) );
          // and importing again will not duplicate, as the file content matches
          empty.remove_cards_and_orphaned_notes(empty.getDb().list("select id from cards"));
          Anki2Importer imp = Anki2Importer(empty, col.getPath());
          imp.run();
-         assertEquals( ["foo.mp3"], os.listdir(empty.media.dir()) );
+         assertEquals( new String [] {"foo.mp3"}, os.listdir(empty.media.dir()) );
          Note n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
          assertTrue(n.fields[0].contains("foo.mp3"));
          // if the local file content is different, and import should trigger a
@@ -929,7 +933,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
              note.write("bar");
          Anki2Importer imp = Anki2Importer(empty, col.getPath());
          imp.run();
-         assertEquals( ["foo.mp3", "foo_%s.mp3" % mid], sorted(os.listdir(empty.media.dir())) );
+         assertEquals( new String [] {"foo.mp3", "foo_%s.mp3" % mid}, sorted(os.listdir(empty.media.dir())) );
          Note n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
          assertTrue(n.fields[0].contains("_"));
          // if the localized media file already exists, we rewrite the note and
@@ -939,8 +943,8 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
              note.write("bar");
          Anki2Importer imp = Anki2Importer(empty, col.getPath());
          imp.run();
-         assertEquals( ["foo.mp3", "foo_%s.mp3" % mid], sorted(os.listdir(empty.media.dir())) );
-         assertEquals( ["foo.mp3", "foo_%s.mp3" % mid], sorted(os.listdir(empty.media.dir())) );
+         assertEquals( new String [] {"foo.mp3", "foo_%s.mp3" % mid}, sorted(os.listdir(empty.media.dir())) );
+         assertEquals( new String [] {"foo.mp3", "foo_%s.mp3" % mid}, sorted(os.listdir(empty.media.dir())) );
          Note n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
          assertTrue(n.fields[0].contains("_"));
      }
@@ -950,14 +954,14 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          Collection col = getCol();
          String apkg = str(os.path.join(testDir, "support/media.apkg"));
          AnkiPackageImporter imp = AnkiPackageImporter(col, apkg);
-         assertEquals( [], os.listdir(col.media.dir()) );
+         assertEquals( new String [] {}, os.listdir(col.media.dir()) );
          imp.run();
-         assertEquals( ["foo.wav"], os.listdir(col.media.dir()) );
+         assertEquals( new String [] {"foo.wav"}, os.listdir(col.media.dir()) );
          // importing again should be idempotent notARealIn terms of media
          col.remove_cards_and_orphaned_notes(col.getDb().list("select id from cards"));
          AnkiPackageImporter imp = AnkiPackageImporter(col, apkg);
          imp.run();
-         assertEquals( ["foo.wav"], os.listdir(col.media.dir()) );
+         assertEquals( new String [] {"foo.wav"}, os.listdir(col.media.dir()) );
          // but if the local file has different data, it will rename
          col.remove_cards_and_orphaned_notes(col.getDb().list("select id from cards"));
          with open(os.path.join(col.media.dir(), "foo.wav"), "w") as note:
@@ -1040,7 +1044,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          n.flush();
          i.run();
          n.load();
-         assertEquals( ["test"], n.tags );
+         assertEquals( new String [] {"test"}, n.tags );
          // if add-only mode, count will be 0
          i.importMode = 1;
          i.run();
@@ -1147,7 +1151,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertTrue(n.put("Front",= "1"));
          assertTrue(n.put("Back",= "b"));
          assertTrue(n.put("Top",= "c"));
-         assertEquals( list(sorted(["four", "five", "six"], list(sorted(n.getTags())) )));
+         assertEquals( list(sorted(new [] {"four", "five", "six"}, list(sorted(n.getTags())) )));
 
          col.close();
      }
@@ -1177,7 +1181,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
              clear_tempfile(tf);
 
          n.load();
-         assertEquals( [], n.tags );
+         assertEquals( new String [] {}, n.tags );
          assertEquals( 0, i.updateCount );
 
          col.close();
@@ -1233,7 +1237,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertEquals( 1, col.findCards("flag:0").size() );
          assertEquals( 0, col.findCards("flag:1").size() );
          // set flag 2
-         col.setUserFlag(2, [c.getId()]);
+         col.setUserFlag(2, new long [] {c.getId()});
          c.load();
          assertEquals( 2, c.userFlag() );
          assertEquals( origBits, c.flags & origBits );
@@ -1241,11 +1245,11 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertEquals( 1, col.findCards("flag:2").size() );
          assertEquals( 0, col.findCards("flag:3").size() );
          // change to 3
-         col.setUserFlag(3, [c.getId()]);
+         col.setUserFlag(3, new long [] {c.getId()});
          c.load();
          assertEquals( 3, c.userFlag() );
          // unset
-         col.setUserFlag(0, [c.getId()]);
+         col.setUserFlag(0, new long [] {c.getId()});
          c.load();
          assertEquals( 0, c.userFlag() );
 
@@ -1284,21 +1288,21 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          Collection col = getCol();
          mf = col.media.filesInStr;
          mid = col.getModels().current().getLong("id");
-         assertEquals( [], mf(mid, "aoeu") );
-         assertEquals( ["foo.jpg"], mf(mid, "aoeu<img src='foo.jpg'>ao") );
-         assertEquals( ["foo.jpg"], mf(mid, "aoeu<img src='foo.jpg' style='test'>ao") );
-         assertEquals( [, mf(mid, "aoeu<img src='foo.jpg'><img src=\"bar.jpg\">ao") );
+         assertEquals( new String [] {}, mf(mid, "aoeu") );
+         assertEquals( new String [] {"foo.jpg"}, mf(mid, "aoeu<img src='foo.jpg'>ao") );
+         assertEquals( new String [] {"foo.jpg"}, mf(mid, "aoeu<img src='foo.jpg' style='test'>ao") );
+         assertEquals( new String [] {, mf(mid, "aoeu<img src='foo.jpg'><img src=\"bar.jpg\">ao") };
              "foo.jpg",;
              "bar.jpg",;
      ];
-         assertEquals( ["foo.jpg"], mf(mid, "aoeu<img src=foo.jpg style=bar>ao") );
-         assertEquals( ["one", "two"], mf(mid, "<img src=one><img src=two>") );
-         assertEquals( ["foo.jpg"], mf(mid, 'aoeu<img src="foo.jpg">ao') );
-         assertEquals( [, mf(mid, 'aoeu<img src="foo.jpg"><img class=yo src=fo>ao') );
+         assertEquals( new String [] {"foo.jpg"}, mf(mid, "aoeu<img src=foo.jpg style=bar>ao") );
+         assertEquals( new String [] {"one", "two"}, mf(mid, "<img src=one><img src=two>") );
+         assertEquals( new String [] {"foo.jpg"}, mf(mid, 'aoeu<img src="foo.jpg">ao') );
+         assertEquals( new String [] {, mf(mid, 'aoeu<img src="foo.jpg"><img class=yo src=fo>ao') };
              "foo.jpg",;
              "fo",;
      ];
-         assertEquals( ["foo.mp3"], mf(mid, "aou[sound:foo.mp3]aou") );
+         assertEquals( new String [] {"foo.mp3"}, mf(mid, "aou[sound:foo.mp3]aou") );
          sp = col.media.strip;
          assertEquals( "aoeu", sp("aoeu") );
          assertEquals( "aoeuaoeu", sp("aoeu[sound:foo.mp3]aoeu") );
@@ -1332,8 +1336,8 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
              note.write("test");
          // check media
          ret = col.media.check();
-         assertEquals( ["fake2.png"], ret.missing );
-         assertEquals( ["foo.jpg"], ret.unused );
+         assertEquals( new String [] {"fake2.png"}, ret.missing );
+         assertEquals( new String [] {"foo.jpg"}, ret.unused );
      }
      /*****************
       ** Models       *
@@ -1381,7 +1385,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          // add a field
          Note note = col.getModels().newField("foo");
          col.getModels().addField(m, note);
-         assertEquals( ["1", "2", ""], col.getNote(col.getModels().nids(m)[0]).fields );
+         assertEquals( new String [] {"1", "2", ""}, col.getNote(col.getModels().nids(m)[0]).fields );
          assertNotEquals( h, col.getModels().scmhash(m) );
          // rename it
          Note note = m["flds"][2];
@@ -1389,29 +1393,29 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertTrue(col.getNote(col.getModels().nids(m)[0]).put("bar",= ""));
          // delete back
          col.getModels().remField(m, m["flds"][1]);
-         assertEquals( ["1", ""], col.getNote(col.getModels().nids(m)[0]).fields );
+         assertEquals( new String [] {"1", ""}, col.getNote(col.getModels().nids(m)[0]).fields );
          // move 0 -> 1
          col.getModels().moveField(m, m["flds"][0], 1);
-         assertEquals( ["", "1"], col.getNote(col.getModels().nids(m)[0]).fields );
+         assertEquals( new String [] {"", "1"}, col.getNote(col.getModels().nids(m)[0]).fields );
          // move 1 -> 0
          col.getModels().moveField(m, m["flds"][1], 0);
-         assertEquals( ["1", ""], col.getNote(col.getModels().nids(m)[0]).fields );
+         assertEquals( new String [] {"1", ""}, col.getNote(col.getModels().nids(m)[0]).fields );
          // add another and put notARealIn middle
          Note note = col.getModels().newField("baz");
          col.getModels().addField(m, note);
          Note note = col.getNote(col.getModels().nids(m)[0]);
          note.setItem("baz","2");
          note.flush();
-         assertEquals( ["1", "", "2"], col.getNote(col.getModels().nids(m)[0]).fields );
+         assertEquals( new String [] {"1", "", "2"}, col.getNote(col.getModels().nids(m)[0]).fields );
          // move 2 -> 1
          col.getModels().moveField(m, m["flds"][2], 1);
-         assertEquals( ["1", "2", ""], col.getNote(col.getModels().nids(m)[0]).fields );
+         assertEquals( new String [] {"1", "2", ""}, col.getNote(col.getModels().nids(m)[0]).fields );
          // move 0 -> 2
          col.getModels().moveField(m, m["flds"][0], 2);
-         assertEquals( ["2", "", "1"], col.getNote(col.getModels().nids(m)[0]).fields );
+         assertEquals( new String [] {"2", "", "1"}, col.getNote(col.getModels().nids(m)[0]).fields );
          // move 0 -> 1
          col.getModels().moveField(m, m["flds"][0], 1);
-         assertEquals( ["", "2", "1"], col.getNote(col.getModels().nids(m)[0]).fields );
+         assertEquals( new String [] {"", "2", "1"}, col.getNote(col.getModels().nids(m)[0]).fields );
      }
 
      @Test
@@ -1567,7 +1571,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertTrue(();
              note.cards().get(0);
              .q();
-             .endswith(r"\(a\) <span class=cloze>[...]</span> \[ [...] \]");
+             .endswith(r"\(a\) <span class=cloze>[...]</span> \[ new [] {...} \]");
      );
      }
 
@@ -1637,7 +1641,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          col.addNote(note);
          // switch fields
          map = {0: 1, 1: 0}
-         col.getModels().change(basic, [note.getId()], basic, map, null);
+         col.getModels().change(basic,new long []note.getId()}, basic, map, null);
          note.load();
          assertTrue(note.setItem("Front","b123"));
          assertTrue(note.setItem("Back","note"));
@@ -1648,7 +1652,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertTrue(c1.q().contains("note"));
          assertEquals( 0, c0.ord );
          assertEquals( 1, c1.ord );
-         col.getModels().change(basic, [note.getId()], basic, null, map);
+         col.getModels().change(basic,new long []note.getId()}, basic, null, map);
          note.load();
          c0.load();
          c1.load();
@@ -1664,7 +1668,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
              // The low precision timer on Windows reveals a race condition
              time.sleep(0.05);
          }
-         col.getModels().change(basic, [note.getId()], basic, null, map);
+         col.getModels().change(basic,new long []note.getId()}, basic, null, map);
          note.load();
          c0.load();
          // the card was deleted
@@ -1678,7 +1682,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          // an unmapped field becomes blank
              assertTrue(note.setItem("Front","b123"));
              assertTrue(note.setItem("Back","note"));
-         col.getModels().change(basic, [note.getId()], basic, map, null);
+         col.getModels().change(basic,new long []note.getId()}, basic, map, null);
          note.load();
          assertTrue(note.setItem("Front",""));
          assertTrue(note.setItem("Back","note"));
@@ -1691,7 +1695,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertEquals( "Basic", next(c.use_count for counts if c.name ) == 2.contains(c));
          assertEquals( "Cloze", next(c.use_count for counts if c.name ) == 0.contains(c));
          map = {0: 0, 1: 1}
-         col.getModels().change(basic, [note.getId()], cloze, map, map);
+             col.getModels().change(basic,new long []note.getId()}, cloze, map, map);
          note.load();
          assertTrue(note.setItem("Text","f2"));
          assertEquals( 2, note.cards().size() );
@@ -1699,7 +1703,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          col.getModels().remTemplate(basic, basic.getJSONArray("tmpls").getJSONObject(1));
          assertEquals( 2, col.getDb().queryScalar("select count() from cards where nid = ?", note.getId()) );
          map = {0: 0}
-         col.getModels().change(cloze, [note.getId()], basic, map, map);
+             col.getModels().change(cloze,new long []note.getId()}, basic, map, map);
          assertEquals( 1, col.getDb().queryScalar("select count() from cards where nid = ?", note.getId()) );
      }
 
@@ -1718,28 +1722,28 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          reqSize(basic);
          r = basic["req"][0];
          assertEquals( 0, r[0] );
-         assertTrue(r("any", "all").contains([1]));
-         assertEquals( [0], r[2] );
+         assertTrue(r("any", "all").contains(new [] {1}));
+         assertEquals(new long []0}, r[2] );
          opt = mm.byName("Basic (optional reversed card)");
          reqSize(opt);
          r = opt["req"][0];
-         assertTrue(r("any", "all").contains([1]));
-         assertEquals( [0], r[2] );
-         assertEquals( [1, "all", [1, 2]], opt["req"][1] );
+        assertTrue(r("any", "all").contains(new [] {1}));
+         assertEquals(new long []0}, r[2] );
+         assertEquals(new long []1, "all", [1, 2]}, opt["req"][1] );
          // testing any
          opt.getJSONArray("tmpls").getJSONObject(1).put("qfmt", "{{Back}}{{Add Reverse}}");
          mm.save(opt, true);
-         assertEquals( [1, "any", [1, 2]], opt["req"][1] );
+         assertEquals(new long []1, "any", [1, 2]}, opt["req"][1] );
          // testing null
          opt.getJSONArray("tmpls").getJSONObject(1).put("qfmt", "{{^Add Reverse}}{{/Add Reverse}}");
          mm.save(opt, true);
-         assertEquals( [1, "none", []], opt["req"][1] );
+         assertEquals(new long []1, "none", []}, opt["req"][1] );
 
          opt = mm.byName("Basic (the answer)".contains(type));
          reqSize(opt);
          r = opt["req"][0];
-         assertTrue(r("any", "all").contains([1]));
-         assertEquals( [0, 1], r[2] );
+         assertTrue(r("any", "all").contains(new [] {1}));
+         assertEquals(new long []0, 1}, r[2] );
      }
 
      /*****************
@@ -1861,11 +1865,11 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
          Card c = col.getSched().getCard();
          conf = col.getSched()._cardConf(c);
-         conf["new"].put("delays", [1, 2, 3, 4, 5]);
+         conf["new"].put("delays", new JSONArray(new double [] {1, 2, 3, 4, 5}));
          col.getDecks().save(conf);
          col.getSched().answerCard(c, 2);
          // should handle gracefully
-         conf["new"].put("delays", [1]);
+         conf["new"].put("delays", new JSONArray(new double [] {1}));
          col.getDecks().save(conf);
          col.getSched().answerCard(c, 2);
      }
@@ -1885,7 +1889,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = col.getSched().getCard();
          assertTrue(c);
          conf = col.getSched()._cardConf(c);
-         conf["new"].put("delays", [0.5, 3, 10]);
+         conf["new"].put("delays", new JSONArray(new double [] {0.5, 3, 10}));
          col.getDecks().save(conf);
          // fail it
          col.getSched().answerCard(c, 1);
@@ -1987,7 +1991,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().reset();
          Card c = col.getSched().getCard();
          conf = col.getSched()._cardConf(c);
-         conf["new"].put("delays", [1, 10, 1440, 2880]);
+         conf["new"].put("delays", new JSONArray(new double [] {1, 10, 1440, 2880}));
          col.getDecks().save(conf);
          // pass it
          col.getSched().answerCard(c, 2);
@@ -2033,7 +2037,7 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
                       assertEquals( (0, 0, 1, col.getSched().counts() ));
          conf = col.getSched()._cardConf(c);
-                    conf["lapse"].put("delays", [1440]);
+                       conf["lapse"].put("delays", new JSONArray(new double [] {1440}));
          col.getDecks().save(conf);
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
@@ -2067,7 +2071,7 @@ assertEquals( 9, col.getSched().newCount );
          // different delay to new
          col.reset();
          conf = col.getSched()._cardConf(c);
-         conf["lapse"].put("delays", [2, 20]);
+         conf["lapse"].put("delays", new JSONArray(new double [] {2, 20}));
          col.getDecks().save(conf);
          col.getSched().answerCard(c, 1);
          assertEquals( QUEUE_TYPE_LRN, c.queue );
@@ -2214,8 +2218,8 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          col.reset();
          conf = col.getDecks().confForDid(1);
-         conf["new"].put("delays", [0.5, 3, 10]);
-         conf["lapse"].put("delays", [1, 5, 9]);
+         conf["new"].put("delays", new JSONArray(new double [] {0.5, 3, 10}));
+         conf["lapse"].put("delays", new JSONArray(new double [] {1, 5, 9}));
          col.getDecks().save(conf);
          Card c = col.getSched().getCard();
          // new cards
@@ -2254,7 +2258,7 @@ assertEquals( 9, col.getSched().newCount );
          // failing it should put it at 60s
          assertEquals( 60, ni(c, 1) );
          // or 1 day if relearn is false
-         conf["lapse"].put("delays", []);
+         conf["lapse"].put("delays", new JSONArray(new double [] {}));
          col.getDecks().save(conf);
          assertEquals( 1 * 86400, ni(c, 1) );
          // (* 100 1.2 86400)10368000.0
@@ -2292,11 +2296,11 @@ assertEquals( 9, col.getSched().newCount );
          // suspending
          col.reset();
          assertTrue(col.getSched().getCard());
-         col.getSched().suspendCards([c.getId()]);
+         col.getSched().suspendCards(new [] {c.getId()});
          col.reset();
          assertFalse(col.getSched().getCard());
          // unsuspending
-         col.getSched().unsuspendCards([c.getId()]);
+         col.getSched().unsuspendCards(new [] {c.getId()});
          col.reset();
          assertTrue(col.getSched().getCard());
          // should cope with rev cards being relearnt
@@ -2311,8 +2315,8 @@ assertEquals( 9, col.getSched().newCount );
          assertTrue(c.getDue() >= time.time());
          assertEquals( QUEUE_TYPE_LRN, c.queue );
          assertEquals( CARD_TYPE_REV, c.type );
-         col.getSched().suspendCards([c.getId()]);
-         col.getSched().unsuspendCards([c.getId()]);
+         col.getSched().suspendCards(new [] {c.getId()});
+         col.getSched().unsuspendCards(new [] {c.getId()});
          c.load();
          assertEquals( QUEUE_TYPE_REV, c.queue );
          assertEquals( CARD_TYPE_REV, c.type );
@@ -2325,7 +2329,7 @@ assertEquals( 9, col.getSched().newCount );
          c.load();
          assertNotEquals( 1, c.getDue() );
          assertNotEquals( 1, c.getDid() );
-         col.getSched().suspendCards([c.getId()]);
+         col.getSched().suspendCards(new [] {c.getId()});
          c.load();
          assertEquals( 1, c.getDue() );
          assertEquals( 1, c.long did );
@@ -2364,7 +2368,7 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( 600, col.getSched().nextIvl(c, 1) );
          assertEquals( 138 * 60 * 60 * 24, col.getSched().nextIvl(c, 2) );
          cram = col.getDecks().get(did);
-         cram.put("delays", [1, 10]);
+         cram.put("delays", new JSONArray(new double [] {1, 10}));
          col.getDecks().save(cram);
          assertEquals( 3, col.getSched().answerButtons(c) );
          assertEquals( 60, col.getSched().nextIvl(c, 1) );
@@ -2843,7 +2847,7 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( 2, note2.cards().get(0).getDue() );
          assertEquals( 3, note3.cards().get(0).getDue() );
          assertEquals( 4, note4.cards().get(0).getDue() );
-         col.getSched().sortCards([note3.cards().get(0).getId(), note4.cards().get(0).getId()], start=1, shift=true);
+         col.getSched().sortCards(new [] {note3.cards().get(0).getId(), note4.cards().get(0).getId()}, start=1, shift=true);
          assertEquals( 3, note.cards().get(0).getDue() );
          assertEquals( 4, note2.cards().get(0).getDue() );
          assertEquals( 1, note3.cards().get(0).getDue() );
@@ -2864,7 +2868,7 @@ assertEquals( 9, col.getSched().newCount );
          c.flush();
          col.reset();
          assertEquals( (0, 0, 1, col.getSched().counts() ));
-         col.getSched().forgetCards([c.getId()]);
+         col.getSched().forgetCards(new [] {c.getId()});
          col.reset();
          assertEquals( (1, 0, 0, col.getSched().counts() ));
      }
@@ -2876,12 +2880,12 @@ assertEquals( 9, col.getSched().newCount );
          note.setItem("Front","one");
          col.addNote(note);
          Card c = note.cards().get(0);
-         col.getSched().reschedCards([c.getId()], 0, 0);
+         col.getSched().reschedCards(new [] {c.getId()}, 0, 0);
          c.load();
          assertEquals( col.getSched(, c.getDue() ).today);
          assertEquals( 1, c.ivl );
          assertEquals( CARD_TYPE_REV and c.type == QUEUE_TYPE_REV, c.queue );
-         col.getSched().reschedCards([c.getId()], 1, 1);
+         col.getSched().reschedCards(new [] {c.getId()}, 1, 1);
          c.load();
          assertEquals( col.getSched(, c.getDue() ).today + 1);
          assertEquals( +1, c.ivl );
@@ -2906,7 +2910,7 @@ assertEquals( 9, col.getSched().newCount );
          c.flush();
          col.reset();
          col.getSched().answerCard(c, 1);
-         col.getSched()._cardConf(c)["lapse"].put("delays", []);
+         col.getSched()._cardConf(c)["lapse"].put("delays", new JSONArray(new double [] {}));
          col.getSched().answerCard(c, 1);
      }
 
@@ -3055,11 +3059,11 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
          Card c = col.getSched().getCard();
          conf = col.getSched()._cardConf(c);
-         conf["new"].put("delays", [1, 2, 3, 4, 5]);
+         conf["new"].put("delays", new JSONArray(new double [] {1, 2, 3, 4, 5}));
          col.getDecks().save(conf);
          col.getSched().answerCard(c, 2);
          // should handle gracefully
-         conf["new"].put("delays", [1]);
+         conf["new"].put("delays", new JSONArray(new double [] {1}));
          col.getDecks().save(conf);
          col.getSched().answerCard(c, 2);
      }
@@ -3079,7 +3083,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = col.getSched().getCard();
          assertTrue(c);
          conf = col.getSched()._cardConf(c);
-         conf["new"].put("delays", [0.5, 3, 10]);
+         conf["new"].put("delays", new JSONArray(new double [] {0.5, 3, 10}));
          col.getDecks().save(conf);
          // fail it
          col.getSched().answerCard(c, 1);
@@ -3170,7 +3174,7 @@ assertEquals( 9, col.getSched().newCount );
          c.flush();
 
          conf = col.getDecks().confForDid(1);
-         conf["lapse"].put("delays", []);
+         conf["lapse"].put("delays", new JSONArray(new double [] {}));
          col.getDecks().save(conf);
 
          // fail the card
@@ -3218,7 +3222,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().reset();
          Card c = col.getSched().getCard();
          conf = col.getSched()._cardConf(c);
-         conf["new"].put("delays", [1, 10, 1440, 2880]);
+         conf["new"].put("delays", new JSONArray(new double [] {1, 10, 1440, 2880}));
          col.getDecks().save(conf);
          // pass it
          col.getSched().answerCard(c, 3);
@@ -3264,7 +3268,7 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
                       assertEquals( (0, 0, 1, col.getSched().counts() ));
          conf = col.getSched()._cardConf(c);
-                    conf["lapse"].put("delays", [1440]);
+                       conf["lapse"].put("delays", new JSONArray(new double [] {1440}));
          col.getDecks().save(conf);
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
@@ -3337,7 +3341,7 @@ assertEquals( 9, col.getSched().newCount );
          c.lapses = 7;
          c.flush();
          // steup hook
-         hooked = [];
+         hooked = new [] {};
 
          def onLeech(card):
              hooked.append(1);
@@ -3503,8 +3507,8 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          col.reset();
          conf = col.getDecks().confForDid(1);
-         conf["new"].put("delays", [0.5, 3, 10]);
-         conf["lapse"].put("delays", [1, 5, 9]);
+         conf["new"].put("delays", new JSONArray(new double [] {0.5, 3, 10}));
+         conf["lapse"].put("delays", new JSONArray(new double [] {1, 5, 9}));
          col.getDecks().save(conf);
          Card c = col.getSched().getCard();
          // new cards
@@ -3546,7 +3550,7 @@ assertEquals( 9, col.getSched().newCount );
          // failing it should put it at 60s
                                                 assertEquals( 60, ni(c, 1) );
          // or 1 day if relearn is false
-                                  conf["lapse"].put("delays", []);
+                                                 conf["lapse"].put("delays", new JSONArray(new double [] {}));
          col.getDecks().save(conf);
                                                 assertEquals( 1 * 86400, ni(c, 1) );
          // (* 100 1.2 86400)10368000.0
@@ -3570,10 +3574,10 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          c2 = note.cards().get(0);
          // burying
-         col.getSched().buryCards([c.getId()], manual=true)  // pylint: disable=unexpected-keyword-arg
+         col.getSched().buryCards(new [] {c.getId()}, manual=true)  // pylint: disable=unexpected-keyword-arg
          c.load();
          assertEquals( QUEUE_TYPE_MANUALLY_BURIED, c.queue );
-         col.getSched().buryCards([c2.getId()], manual=false)  // pylint: disable=unexpected-keyword-arg
+         col.getSched().buryCards(new [] {c2.getId()}, manual=false)  // pylint: disable=unexpected-keyword-arg
          c2.load();
          assertEquals( QUEUE_TYPE_SIBLING_BURIED, c2.queue );
 
@@ -3594,7 +3598,7 @@ assertEquals( 9, col.getSched().newCount );
          c2.load();
          assertEquals( QUEUE_TYPE_NEW, c2.queue );
 
-         col.getSched().buryCards([c.getId(), c2.getId()]);
+         col.getSched().buryCards(new [] {c.getId(), c2.getId()});
          col.getSched().unburyCardsForDeck(type="all")  // pylint: disable=unexpected-keyword-arg
 
          col.reset();
@@ -3612,11 +3616,11 @@ assertEquals( 9, col.getSched().newCount );
          // suspending
          col.reset();
          assertTrue(col.getSched().getCard());
-         col.getSched().suspendCards([c.getId()]);
+         col.getSched().suspendCards(new [] {c.getId()});
          col.reset();
          assertFalse(col.getSched().getCard());
          // unsuspending
-         col.getSched().unsuspendCards([c.getId()]);
+         col.getSched().unsuspendCards(new [] {c.getId()});
          col.reset();
          assertTrue(col.getSched().getCard());
          // should cope with rev cards being relearnt
@@ -3632,8 +3636,8 @@ assertEquals( 9, col.getSched().newCount );
          due = c.getDue();
          assertEquals( QUEUE_TYPE_LRN, c.queue );
          assertEquals( CARD_TYPE_RELEARNING, c.type );
-         col.getSched().suspendCards([c.getId()]);
-         col.getSched().unsuspendCards([c.getId()]);
+         col.getSched().suspendCards(new [] {c.getId()});
+         col.getSched().unsuspendCards(new [] {c.getId()});
          c.load();
          assertEquals( QUEUE_TYPE_LRN, c.queue );
          assertEquals( CARD_TYPE_RELEARNING, c.type );
@@ -3646,7 +3650,7 @@ assertEquals( 9, col.getSched().newCount );
          c.load();
          assertNotEquals(1, c.getDue());
          assertNotEquals(1, c.getDid());
-         col.getSched().suspendCards([c.getId()]);
+         col.getSched().suspendCards(new [] {c.getId()});
          c.load();
          assertNotEquals(1, c.getDue());
          assertNotEquals(1, c.getDid());
@@ -3721,7 +3725,7 @@ assertEquals( 9, col.getSched().newCount );
          // fail the card outside filtered deck
          Card c = col.getSched().getCard();
          conf = col.getSched()._cardConf(c);
-         conf["new"].put("delays", [1, 10, 61]);
+         conf["new"].put("delays", new JSONArray(new double [] {1, 10, 61}));
          col.getDecks().save(conf);
 
          col.getSched().answerCard(c, 1);
@@ -4011,7 +4015,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getDecks().id("new::b::c");
          col.getDecks().id("new2");
          // new should not appear twice notARealIn tree
-         names = [x.name for col.getSched().deck_due_tree().children.contains(x)];
+         names =new String []x.name for col.getSched().deck_due_tree().children.contains(x)};
          names.remove("new");
          assertTrue(!names.contains("new"));
      }
@@ -4077,7 +4081,7 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( 2, note2.cards().get(0).getDue() );
          assertEquals( 3, note3.cards().get(0).getDue() );
          assertEquals( 4, note4.cards().get(0).getDue() );
-         col.getSched().sortCards([note3.cards().get(0).getId(), note4.cards().get(0).getId()], start=1, shift=true);
+         col.getSched().sortCards(new [] {note3.cards().get(0).getId(), note4.cards().get(0).getId()}, start=1, shift=true);
          assertEquals( 3, note.cards().get(0).getDue() );
          assertEquals( 4, note2.cards().get(0).getDue() );
          assertEquals( 1, note3.cards().get(0).getDue() );
@@ -4098,7 +4102,7 @@ assertEquals( 9, col.getSched().newCount );
          c.flush();
          col.reset();
          assertEquals( (0, 0, 1, col.getSched().counts() ));
-         col.getSched().forgetCards([c.getId()]);
+         col.getSched().forgetCards(new [] {c.getId()});
          col.reset();
          assertEquals( (1, 0, 0, col.getSched().counts() ));
      }
@@ -4110,12 +4114,12 @@ assertEquals( 9, col.getSched().newCount );
          note.setItem("Front","one");
          col.addNote(note);
          Card c = note.cards().get(0);
-         col.getSched().reschedCards([c.getId()], 0, 0);
+         col.getSched().reschedCards(new [] {c.getId()}, 0, 0);
          c.load();
          assertEquals( col.getSched(, c.getDue() ).today);
          assertEquals( 1, c.ivl );
          assertEquals( QUEUE_TYPE_REV and c.type == CARD_TYPE_REV, c.queue );
-         col.getSched().reschedCards([c.getId()], 1, 1);
+         col.getSched().reschedCards(new [] {c.getId()}, 1, 1);
          c.load();
          assertEquals( col.getSched(, c.getDue() ).today + 1);
          assertEquals( +1, c.ivl );
@@ -4140,7 +4144,7 @@ assertEquals( 9, col.getSched().newCount );
          c.flush();
          col.reset();
          col.getSched().answerCard(c, 1);
-         col.getSched()._cardConf(c)["lapse"].put("delays", []);
+         col.getSched()._cardConf(c)["lapse"].put("delays", new JSONArray(new double [] {}));
          col.getSched().answerCard(c, 1);
      }
 
@@ -4195,7 +4199,7 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
-         col.getSched().buryCards([c.getId()]);
+         col.getSched().buryCards(new [] {c.getId()});
          c.load();
          assertEquals( QUEUE_TYPE_MANUALLY_BURIED, c.queue );
 
@@ -4214,7 +4218,7 @@ assertEquals( 9, col.getSched().newCount );
          // make sure relearning cards transition correctly to v1
          col.changeSchedulerVer(2);
          // card with 100 day interval, answering again
-         col.getSched().reschedCards([c.getId()], 100, 100);
+         col.getSched().reschedCards(new [] {c.getId()}, 100, 100);
          c.load();
          c.getDue() = 0;
          c.flush();
