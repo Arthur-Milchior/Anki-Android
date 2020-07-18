@@ -75,7 +75,7 @@ public class UpstreamTest extends RobolectricTest {
          t.put("qfmt", "{{Back}}");
          mm.save(m, true);
          List<Long> rep = col.emptyCids();
-         for n in rep.notes:
+         for (Note n: rep.notes):
              col.remove_cards_and_orphaned_notes(n.card_ids);
          assertTrue(note.cards().size() == 1);
          // if we add to the note, a card should be automatically generated
@@ -233,8 +233,9 @@ public class UpstreamTest extends RobolectricTest {
      public void test_timestamps(){
          Collection col = getCol();
          assertTrue(col.getModels().all_names_and_ids().size() == get_stock_notetypes(col).size());
-         for i in range(100):
+         for (int i = 0; i < 100; i++) {
              addBasicModel(col);
+         }
          assertTrue(col.getModels().all_names_and_ids().size() == 100 + get_stock_notetypes(col).size());
      }
 
@@ -356,7 +357,7 @@ public class UpstreamTest extends RobolectricTest {
          // should be able to rename into a completely different branch, creating
          // parents as necessary
          col.getDecks().rename(col.getDecks().get(id), "foo::bar");
-         names = [n.name for n in col.getDecks().all_names_and_ids()];
+         List<String> names =  col.getDecks().allNames();
          assertTrue("foo" in names);
          assertTrue("foo::bar" in names);
          assertTrue("hello::world" not in names);
@@ -364,15 +365,16 @@ public class UpstreamTest extends RobolectricTest {
          long id = col.getDecks().id("tmp");
          // automatically adjusted if a duplicate name
          col.getDecks().rename(col.getDecks().get(id), "FOO");
-         names = [n.name for n in col.getDecks().all_names_and_ids()];
+         names =  col.getDecks().allNames();
          assertTrue("FOO+" in names);
          // when renaming, the children should be renamed too
          col.getDecks().id("one::two::three");
          long id = col.getDecks().id("one");
          col.getDecks().rename(col.getDecks().get(id), "yo");
-         names = [n.name for n in col.getDecks().all_names_and_ids()];
-         for n in "yo", "yo::two", "yo::two::three":
-         assertTrue(n in names);
+         names =  col.getDecks().allNames();
+         for (String n: new String [] {"yo", "yo::two", "yo::two::three"}) {
+             assertTrue(n in names);
+         }
          // over filtered
          long filteredId = col.getDecks().newDyn("filtered");
          Deck filtered = col.getDecks().get(filteredId);
@@ -2795,8 +2797,9 @@ note.setItem("Back","abc2");
          // should get top level one first, then ::1, then ::2
          col.reset();
          assertTrue(col.getSched().counts() == (3, 0, 0));
-         for i in "one", "three", "two":
+         for (String i: "one", "three", "two") {
              Card c = col.getSched().getCard();
+         }
          assertTrue(c.note().put("Front",= i));
              col.getSched().answerCard(c, 2);
      }
@@ -4026,8 +4029,9 @@ note.setItem("Back","abc2");
          // should get top level one first, then ::1, then ::2
          col.reset();
          assertTrue(col.getSched().counts() == (3, 0, 0));
-         for i in "one", "three", "two":
+         for (String  i: "one", "three", "two") {
              Card c = col.getSched().getCard();
+         }
          assertTrue(c.note().put("Front",= i));
              col.getSched().answerCard(c, 3);
      }
