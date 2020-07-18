@@ -75,8 +75,9 @@ public class UpstreamTest extends RobolectricTest {
          t.put("qfmt", "{{Back}}");
          mm.save(m, true);
          List<Long> rep = col.emptyCids();
-         for (Note n: rep.notes):
+         for (Note n: rep.notes) {
              col.remove_cards_and_orphaned_notes(n.card_ids);
+         }
          assertTrue(note.cards().size() == 1);
          // if we add to the note, a card should be automatically generated
          note.load();
@@ -2817,7 +2818,7 @@ note.setItem("Back","abc2");
          assertTrue(note2.cards().get(0).due == 2);
          found = false;
          // 50/50 chance of being reordered
-         for (int i=0; i < 2; i++0 {:
+         for (int i=0; i < 2; i++0 {
              col.getSched().randomizeCards(1);
              if note.cards().get(0).due != note.getId():
                  found = true;
@@ -4049,7 +4050,7 @@ note.setItem("Back","abc2");
          assertTrue(note2.cards().get(0).due == 2);
          found = false;
          // 50/50 chance of being reordered
-         for (int i=0; i < 20; i++) {:
+         for (int i=0; i < 20; i++) {
              col.getSched().randomizeCards(1);
              if note.cards().get(0).due != note.getId():
                  found = true;
