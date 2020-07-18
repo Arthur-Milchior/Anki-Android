@@ -386,54 +386,51 @@ public class UpstreamTest extends RobolectricTest {
      public void test_renameForDragAndDrop(){
          Collection col = getCol();
 
-         def deckNames():
-             return [n.name for n in col.getDecks().all_names_and_ids(skip_empty_default=true)];
-
          long languages_did = col.getDecks().id("Languages");
          long chinese_did = col.getDecks().id("Chinese");
          long hsk_did = col.getDecks().id("Chinese::HSK");
 
          // Renaming also renames children
          col.getDecks().renameForDragAndDrop(chinese_did, languages_did);
-         assertTrue(deckNames() == ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"]);
+         assertTrue(col.getDecks().allNames() == ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"]);
 
          // Dragging a col onto itself is a no-op
          col.getDecks().renameForDragAndDrop(languages_did, languages_did);
-         assertTrue(deckNames() == ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"]);
+         assertTrue(col.getDecks().allNames() == ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"]);
 
          // Dragging a col onto its parent is a no-op
          col.getDecks().renameForDragAndDrop(hsk_did, chinese_did);
-         assertTrue(deckNames() == ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"]);
+         assertTrue(col.getDecks().allNames() == ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"]);
 
          // Dragging a col onto a descendant is a no-op
          col.getDecks().renameForDragAndDrop(languages_did, hsk_did);
-         assertTrue(deckNames() == ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"]);
+         assertTrue(col.getDecks().allNames() == ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"]);
 
          // Can drag a grandchild onto its grandparent.  It becomes a child
          col.getDecks().renameForDragAndDrop(hsk_did, languages_did);
-         assertTrue(deckNames() == ["Languages", "Languages::Chinese", "Languages::HSK"]);
+         assertTrue(col.getDecks().allNames() == ["Languages", "Languages::Chinese", "Languages::HSK"]);
 
          // Can drag a col onto its sibling
          col.getDecks().renameForDragAndDrop(hsk_did, chinese_did);
-         assertTrue(deckNames() == ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"]);
+         assertTrue(col.getDecks().allNames() == ["Languages", "Languages::Chinese", "Languages::Chinese::HSK"]);
 
          // Can drag a col back to the top level
          col.getDecks().renameForDragAndDrop(chinese_did, null);
-         assertTrue(deckNames() == ["Chinese", "Chinese::HSK", "Languages"]);
+         assertTrue(col.getDecks().allNames() == ["Chinese", "Chinese::HSK", "Languages"]);
 
          // Dragging a top level col to the top level is a no-op
          col.getDecks().renameForDragAndDrop(chinese_did, null);
-         assertTrue(deckNames() == ["Chinese", "Chinese::HSK", "Languages"]);
+         assertTrue(col.getDecks().allNames() == ["Chinese", "Chinese::HSK", "Languages"]);
 
          // decks are renamed if necessary
          long new_hsk_did = col.getDecks().id("hsk");
          col.getDecks().renameForDragAndDrop(new_hsk_did, chinese_did);
-         assertTrue(deckNames() == ["Chinese", "Chinese::HSK", "Chinese::hsk+", "Languages"]);
+         assertTrue(col.getDecks().allNames() == ["Chinese", "Chinese::HSK", "Chinese::hsk+", "Languages"]);
          col.getDecks().rem(new_hsk_did);
 
          // '' is a convenient alias for the top level DID
          col.getDecks().renameForDragAndDrop(hsk_did, "");
-         assertTrue(deckNames() == ["Chinese", "HSK", "Languages"]);
+         assertTrue(col.getDecks().allNames() == ["Chinese", "HSK", "Languages"]);
       }
 
      /*****************
