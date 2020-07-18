@@ -110,7 +110,7 @@ public class UpstreamTest extends RobolectricTest {
          // if one of the cards is in a different col, it should revert to the
          // model default
          Card c = note.cards()[1];
-         c.did = newId;
+         c.setDid(newId);
          c.flush();
          note.setItem("Text","{{c4::four}}");
          note.flush();
