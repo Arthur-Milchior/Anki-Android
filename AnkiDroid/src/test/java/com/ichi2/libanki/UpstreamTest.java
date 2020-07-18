@@ -123,11 +123,11 @@ public class UpstreamTest extends RobolectricTest {
      @Test
      public void test_create_open(){
          (fd, path) = tempfile.mkstemp(suffix=".anki2", prefix="test_attachNew");
-         try:
+         try {
              os.close(fd);
              os.unlink(path);
-         except OSError:
-             pass;
+         } catch ( OSError) {
+         }
          Collection col = aopen(path);
          // for open()
          String newPath = col.path;
@@ -891,11 +891,11 @@ note.setItem("Back","abc2");
       private void clear_tempfile(tf) {
              ;
          """ https://stackoverflow.com/questions/23212435/permission-denied-to-write-to-my-temporary-file """;
-         try:
+         try {
              tf.close();
              os.unlink(tf.name);
-         except:
-             pass;
+         } catch () {
+         }
      }
 
      @Test
@@ -1670,11 +1670,11 @@ note.setItem("Back","abc2");
          note.load();
          c0.load();
          // the card was deleted
-         try:
+         try{
              c1.load();
              assertTrue(0);
-         except NotFoundError:
-             pass;
+         } catch ( NotFoundError) {
+         }
          // but we have two cards, as a new one was generated
              assertTrue(note.cards().size() == 2);
          // an unmapped field becomes blank
