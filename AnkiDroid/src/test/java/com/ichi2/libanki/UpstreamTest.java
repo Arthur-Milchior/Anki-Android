@@ -447,8 +447,7 @@ public class UpstreamTest extends RobolectricTest {
      /*****************
       ** Exporting    *
       *****************/
-     private void setup1(){
-         global col;
+     private Collection setup1(){
          Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","foo");
@@ -461,6 +460,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Back","qux");
          note.model().put("did", col.getDecks().id("new col"));
          col.addNote(note);
+         return col;
      }
 
              /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
@@ -469,7 +469,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_export_anki(){
-         setup1();
+         Collection col = setup1();
          // create a new col with its own conf to test conf copying
          long did = col.getDecks().id("test");
          Deck dobj = col.getDecks().get(did);
@@ -512,7 +512,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_export_ankipkg(){
-         setup1();
+         Collection col = setup1();
          // add a test file to the media folder
          with open(os.path.join(col.media.dir(), "今日.mp3"), "w") as note:
              note.write("test");
@@ -531,7 +531,7 @@ public class UpstreamTest extends RobolectricTest {
      @errorsAfterMidnight
      @Test
      public void test_export_anki_due(){
-         setup1();
+         Collection col = setup1();
          Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","foo");
@@ -566,7 +566,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_export_textcard(){
-     //     setup1()
+     //     Collection col = setup1()
      //     e = TextCardExporter(col)
      //     Note note = unicode(tempfile.mkstemp(prefix="ankitest")[1])
      //     os.unlink(note)
@@ -579,7 +579,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_export_textnote(){
-         setup1();
+         Collection col = setup1();
          e = TextNoteExporter(col);
          fd, Note note = tempfile.mkstemp(prefix="ankitest");
          Note note = str(note);
