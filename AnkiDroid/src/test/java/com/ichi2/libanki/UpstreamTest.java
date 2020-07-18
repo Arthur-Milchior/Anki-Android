@@ -455,7 +455,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setTagsFromStr("tag, tag2");
          col.addNote(note);
          // with a different col
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","baz");
          note.setItem("Back","qux");
          note.model().put("did", col.getDecks().id("new col"));
@@ -474,7 +474,7 @@ public class UpstreamTest extends RobolectricTest {
          long did = col.getDecks().id("test");
          Deck dobj = col.getDecks().get(did);
          long confId = col.getDecks().add_config_returning_id("newconf");
-         DeckConfig conf = col.getDecks().get_config(confId);
+         DeckConfig conf = col.getDecks().getConf(confId);
          conf["new"].put("perDay", 5);
          col.getDecks().save(conf);
          col.getDecks().setConf(dobj, confId);
@@ -3362,8 +3362,8 @@ assertEquals( 9, col.getSched().newCount );
          parent = col.getDecks().get(col.getDecks().id("parent"));
          child = col.getDecks().get(col.getDecks().id("parent::child"));
 
-         pconf = col.getDecks().get_config(col.getDecks().add_config_returning_id("parentConf"));
-         cconf = col.getDecks().get_config(col.getDecks().add_config_returning_id("childConf"));
+         pconf = col.getDecks().getConf(col.getDecks().add_config_returning_id("parentConf"));
+         cconf = col.getDecks().getConf(col.getDecks().add_config_returning_id("childConf"));
 
          pconf["rev"].put("perDay", 5);
          col.getDecks().update_config(pconf);
