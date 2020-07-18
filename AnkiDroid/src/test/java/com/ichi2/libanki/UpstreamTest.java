@@ -168,7 +168,7 @@ public class UpstreamTest extends RobolectricTest {
          JSONObject t = mm.newTemplate("Reverse");
          t.put("qfmt", "{{Back}}");
          t.put("afmt", "{{Front}}");
-         mm.addTemplate(m, t);
+         mm.addTemplateModChanged(m, t);
          mm.save(m);
          assertTrue(col.cardCount() == 2);
          // creating new notes should use both cards
@@ -621,7 +621,7 @@ public class UpstreamTest extends RobolectricTest {
          JSONObject t = mm.newTemplate("Reverse");
          t.put("qfmt", "{{Back}}");
          t.put("afmt", "{{Front}}");
-         mm.addTemplate(m, t);
+         mm.addTemplateModChanged(m, t);
          mm.save(m);
          Note note = col.newNote();
          note.setItem("Front","test");
@@ -1418,7 +1418,7 @@ note.setItem("Back","abc2");
          JSONObject t = mm.newTemplate("Reverse");
          t.put("qfmt", "{{Back}}");
          t.put("afmt", "{{Front}}");
-         mm.addTemplate(m, t);
+         mm.addTemplateModChanged(m, t);
          mm.save(m);
          Note note = col.newNote();
          note.setItem("Front","1");
@@ -1444,7 +1444,7 @@ note.setItem("Back","abc2");
          assertTrue(stripHTML(c.q()) == "1");
          // it shouldn't be possible to orphan notes by removing templates
          JSONObject t = mm.newTemplate("template name");
-         mm.addTemplate(m, t);
+         mm.addTemplateModChanged(m, t);
          col.getModels().remTemplate(m, m["tmpls"][0]);
          assertTrue(();
              col.getDb().scalar(;
@@ -1465,7 +1465,7 @@ note.setItem("Back","abc2");
          JSONObject t = mm.newTemplate("ChainedCloze");
          t.put("qfmt", "{{text:cloze:Text}}");
          t.put("afmt", "{{text:cloze:Text}}");
-         mm.addTemplate(m, t);
+         mm.addTemplateModChanged(m, t);
          mm.save(m);
          col.getModels().remTemplate(m, m["tmpls"][0]);
 
@@ -1591,7 +1591,7 @@ note.setItem("Back","abc2");
          JSONObject t = mm.newTemplate("ChainedCloze");
          t.put("qfmt", "{{cloze:text:Text}}");
          t.put("afmt", "{{cloze:text:Text}}");
-         mm.addTemplate(m, t);
+         mm.addTemplateModChanged(m, t);
          mm.save(m);
          col.getModels().remTemplate(m, m["tmpls"][0]);
 
@@ -1627,7 +1627,7 @@ note.setItem("Back","abc2");
          JSONObject t = mm.newTemplate("Reverse");
          t.put("qfmt", "{{Back}}");
          t.put("afmt", "{{Front}}");
-         mm.addTemplate(m, t);
+         mm.addTemplateModChanged(m, t);
          mm.save(m);
          basiCard c = m;
          Note note = col.newNote();
@@ -1798,7 +1798,7 @@ note.setItem("Back","abc2");
          // JSONObject t = mm.newTemplate("Reverse")
          // t['qfmt'] = "{{Back}}"
          // t['afmt'] = "{{Front}}"
-         // mm.addTemplate(m, t)
+         // mm.addTemplateModChanged(m, t)
          // mm.save(m)
          // Note note = col.newNote()
          // note['Front'] = u"2"; note['Back'] = u"2"
@@ -2578,11 +2578,11 @@ note.setItem("Back","abc2");
          JSONObject t = mm.newTemplate("Reverse");
          t.put("qfmt", "{{Back}}");
          t.put("afmt", "{{Front}}");
-         mm.addTemplate(m, t);
+         mm.addTemplateModChanged(m, t);
          JSONObject t = mm.newTemplate("f2");
          t.put("qfmt", "{{Front}}");
          t.put("afmt", "{{Back}}");
-         mm.addTemplate(m, t);
+         mm.addTemplateModChanged(m, t);
          mm.save(m);
          // create a new note; it should have 3 cards
          Note note = col.newNote();
@@ -2985,7 +2985,7 @@ note.setItem("Back","abc2");
          // JSONObject t = mm.newTemplate("Reverse")
          // t['qfmt'] = "{{Back}}"
          // t['afmt'] = "{{Front}}"
-         // mm.addTemplate(m, t)
+         // mm.addTemplateModChanged(m, t)
          // mm.save(m)
          // Note note = col.newNote()
          // note['Front'] = u"2"; note['Back'] = u"2"
@@ -3801,11 +3801,11 @@ note.setItem("Back","abc2");
          JSONObject t = mm.newTemplate("Reverse");
          t.put("qfmt", "{{Back}}");
          t.put("afmt", "{{Front}}");
-         mm.addTemplate(m, t);
+         mm.addTemplateModChanged(m, t);
          JSONObject t = mm.newTemplate("f2");
          t.put("qfmt", "{{Front}}");
          t.put("afmt", "{{Back}}");
-         mm.addTemplate(m, t);
+         mm.addTemplateModChanged(m, t);
          mm.save(m);
          // create a new note; it should have 3 cards
          Note note = col.newNote();
