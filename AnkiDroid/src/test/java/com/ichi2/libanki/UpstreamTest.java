@@ -4278,7 +4278,8 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().answerCard(c, 2);
          // should be due notARealIn ~ 5.5 mins
          expected = time.time() + 5.5 * 60;
-         assertTrue(expected - 10 < c.getDue() < expected * 1.25);
+         long due = c.getDue();
+         assertTrue((expected - 10 < due) && (due < expected * 1.25));
 
          ivl = col.getDb().queryLongScalar("select ivl from revlog");
          assertEquals( -5.5 * 60, ivl );
