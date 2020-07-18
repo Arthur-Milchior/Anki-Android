@@ -74,7 +74,7 @@ public class UpstreamTest extends RobolectricTest {
          mm.save(m, true);
          assertEquals( 2, note.cards().size() );
          // if the template is changed to remove cards, they'll be removed
-         JSONObject t = m.getJSONArray("tmpls")[1];
+         JSONObject t = m.getJSONArray("tmpls").getJSONObject(1);
          t.put("qfmt", "{{Back}}");
          mm.save(m, true);
          List<Long> rep = col.emptyCids();
@@ -249,7 +249,7 @@ public class UpstreamTest extends RobolectricTest {
          Models mm = col.getModels();
          Model m = mm.current();
          // filter should work
-         m.getJSONArray("tmpls")[0].put("qfmt", "{{kana:Front}}");
+         m.getJSONArray("tmpls").getJSONObject(0).put("qfmt", "{{kana:Front}}");
          mm.save(m);
          Note n = col.newNote();
          n.put("Front", "foo[abc]");
@@ -261,7 +261,7 @@ public class UpstreamTest extends RobolectricTest {
          n.flush();
          assertTrue(c.q(reload=true).contains("anki:play"));
          // it shouldn't throw an error while people are editing
-         m.getJSONArray("tmpls")[0].put("qfmt", "{{kana:}}");
+         m.getJSONArray("tmpls").getJSONObject(0).put("qfmt", "{{kana:}}");
          mm.save(m);
          c.q(reload=true);
      }
@@ -1376,7 +1376,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          Model m = col.getModels().current();
          // make sure renaming a field updates the templates
          col.getModels().renameField(m, m["flds"][0], "NewFront");
-         assertTrue(m.getJSONArray("tmpls")[0]["qfmt"].contains("{{NewFront}}"));
+         assertTrue(m.getJSONArray("tmpls").getJSONObject(0)["qfmt"].contains("{{NewFront}}"));
          String h = col.getModels().scmhash(m);
          // add a field
          Note note = col.getModels().newField("foo");
@@ -1440,7 +1440,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertEquals( 1, c.ord );
          assertEquals( 0, c2.ord );
          // removing a template should delete its cards
-         col.getModels().remTemplate(m, m.getJSONArray("tmpls")[0]);
+         col.getModels().remTemplate(m, m.getJSONArray("tmpls").getJSONObject(0));
          assertEquals( 1, col.cardCount() );
          // and should have updated the other cards' ordinals
          Card c = note.cards().get(0);
@@ -1449,7 +1449,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          // it shouldn't be possible to orphan notes by removing templates
          JSONObject t = mm.newTemplate("template name");
          mm.addTemplateModChanged(m, t);
-         col.getModels().remTemplate(m, m.getJSONArray("tmpls")[0]);
+         col.getModels().remTemplate(m, m.getJSONArray("tmpls").getJSONObject(0));
          assertTrue(();
              col.getDb().scalar(;
                  "select count() from cards where nid not in (select id from notes)";
@@ -1471,7 +1471,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          t.put("afmt", "{{text:cloze:Text}}");
          mm.addTemplateModChanged(m, t);
          mm.save(m);
-         col.getModels().remTemplate(m, m.getJSONArray("tmpls")[0]);
+         col.getModels().remTemplate(m, m.getJSONArray("tmpls").getJSONObject(0));
 
          Note note = col.newNote();
          note.setItem("Text","{{c1::firstQ::firstA}}{{c2::secondQ::secondA}}");
@@ -1487,7 +1487,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
      public void test_text(){
          Collection col = getCol();
          Model m = col.getModels().current();
-         m.getJSONArray("tmpls")[0].put("qfmt", "{{text:Front}}");
+         m.getJSONArray("tmpls").getJSONObject(0).put("qfmt", "{{text:Front}}");
          col.getModels().save(m);
          Note note = col.newNote();
          note.setItem("Front","hello<b>world");
@@ -1576,7 +1576,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          Collection col = getCol();
          Model m = col.getModels().byName("Cloze");
          col.getModels().setCurrent(m);
-         m.getJSONArray("tmpls")[0].put("qfmt", "{{cloze:Text}}{{type:cloze:Text}}");
+         m.getJSONArray("tmpls").getJSONObject(0).put("qfmt", "{{cloze:Text}}{{type:cloze:Text}}");
          col.getModels().save(m);
          Note note = col.newNote();
          note.setItem("Text","hello {{c1::world}}");
@@ -1597,7 +1597,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          t.put("afmt", "{{cloze:text:Text}}");
          mm.addTemplateModChanged(m, t);
          mm.save(m);
-         col.getModels().remTemplate(m, m.getJSONArray("tmpls")[0]);
+         col.getModels().remTemplate(m, m.getJSONArray("tmpls").getJSONObject(0));
 
          Note note = col.newNote();
          q1 = '<span style="color:red">phrase</span>';
@@ -1696,7 +1696,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertTrue(note.setItem("Text","f2"));
          assertEquals( 2, note.cards().size() );
          // back the other way, with deletion of second ord
-         col.getModels().remTemplate(basic, basic.getJSONArray("tmpls")[1]);
+         col.getModels().remTemplate(basic, basic.getJSONArray("tmpls").getJSONObject(1));
          assertEquals( 2, col.getDb().queryScalar("select count() from cards where nid = ?", note.getId()) );
          map = {0: 0}
          col.getModels().change(cloze, [note.getId()], basic, map, map);
@@ -1727,11 +1727,11 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertEquals( [0], r[2] );
          assertEquals( [1, "all", [1, 2]], opt["req"][1] );
          // testing any
-         opt.getJSONArray("tmpls")[1].put("qfmt", "{{Back}}{{Add Reverse}}");
+         opt.getJSONArray("tmpls").getJSONObject(1).put("qfmt", "{{Back}}{{Add Reverse}}");
          mm.save(opt, true);
          assertEquals( [1, "any", [1, 2]], opt["req"][1] );
          // testing null
-         opt.getJSONArray("tmpls")[1].put("qfmt", "{{^Add Reverse}}{{/Add Reverse}}");
+         opt.getJSONArray("tmpls").getJSONObject(1).put("qfmt", "{{^Add Reverse}}{{/Add Reverse}}");
          mm.save(opt, true);
          assertEquals( [1, "none", []], opt["req"][1] );
 
@@ -4323,7 +4323,7 @@ assertEquals( 9, col.getSched().newCount );
      public void test_deferred_frontside(){
          Collection col = getCol();
          Model m = col.getModels().current();
-         m.getJSONArray("tmpls")[0].put("qfmt", "{{custom:Front}}");
+         m.getJSONArray("tmpls").getJSONObject(0).put("qfmt", "{{custom:Front}}");
          col.getModels().save(m);
 
          Note note = col.newNote();
