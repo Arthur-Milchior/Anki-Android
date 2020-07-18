@@ -305,13 +305,13 @@ public class UpstreamTest extends RobolectricTest {
      public void test_basic(){
          Collection col = getCol();
          // we start with a standard col
-         assertEquals( 1, col.getDecks().all_names_and_ids().size() );
+         assertEquals( 1, col.getDecks().allNames().size() );
          // it should have an id of 1
          assertNotNull(col.getDecks().name(1));
          // create a new col
          long parentId = col.getDecks().id("new deck");
          assertNotEquals(parentId, 0);
-         assertEquals( 2, col.getDecks().all_names_and_ids().size() );
+         assertEquals( 2, col.getDecks().allNames().size() );
          // should get the same id
          assertEquals( parentId, (long) col.getDecks().id("new deck") );
          // we start with the default col selected
@@ -2768,7 +2768,7 @@ assertEquals( 9, col.getSched().newCount );
          foobaz = note.model().put("did", col.getDecks().id("foo::baz"));
          col.addNote(note);
          col.reset();
-         assertEquals( 5, col.getDecks().all_names_and_ids().size() );
+         assertEquals( 5, col.getDecks().allNames().size() );
          tree = col.getSched().deck_due_tree().children;
          assertEquals( "Default", tree[0].name );
          // sum of child and parent
@@ -3991,7 +3991,7 @@ assertEquals( 9, col.getSched().newCount );
          foobaz = note.model().put("did", col.getDecks().id("foo::baz"));
          col.addNote(note);
          col.reset();
-         assertEquals( 5, col.getDecks().all_names_and_ids().size() );
+         assertEquals( 5, col.getDecks().allNames().size() );
          tree = col.getSched().deck_due_tree().children;
          assertEquals( "Default", tree[0].name );
          // sum of child and parent
