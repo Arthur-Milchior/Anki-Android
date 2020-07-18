@@ -65,12 +65,12 @@ public class UpstreamTest extends RobolectricTest {
          t.put("qfmt", "{{Front}}");
          t.put("afmt", "");
          mm.addTemplateModChanged(m, t);
-         mm.save(m, templates=true);
+         mm.save(m, true);
          assertTrue(note.cards().size() == 2);
          // if the template is changed to remove cards, they'll be removed
          JSONObject t = m["tmpls"][1];
          t.put("qfmt", "{{Back}}");
-         mm.save(m, templates=true);
+         mm.save(m, true);
          rep = col.backend.get_empty_cards();
          rep = col.backend.get_empty_cards();
          for n in rep.notes:
@@ -1727,11 +1727,11 @@ note.setItem("Back","abc2");
          assertTrue(opt["req"][1] == [1, "all", [1, 2]]);
          // testing any
          opt["tmpls"][1].put("qfmt", "{{Back}}{{Add Reverse}}");
-         mm.save(opt, templates=true);
+         mm.save(opt, true);
          assertTrue(opt["req"][1] == [1, "any", [1, 2]]);
          // testing null
          opt["tmpls"][1].put("qfmt", "{{^Add Reverse}}{{/Add Reverse}}");
-         mm.save(opt, templates=true);
+         mm.save(opt, true);
          assertTrue(opt["req"][1] == [1, "none", []]);
 
          opt = mm.byName("Basic (type in the answer)");
