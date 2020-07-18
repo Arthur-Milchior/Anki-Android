@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
@@ -306,13 +307,13 @@ public class UpstreamTest extends RobolectricTest {
          // we start with a standard col
          assertEquals( 1, col.getDecks().all_names_and_ids().size() );
          // it should have an id of 1
-         assertTrue(col.getDecks().name(1));
+         assertNotNull(col.getDecks().name(1));
          // create a new col
          long parentId = col.getDecks().id("new deck");
-         assertTrue(parentId);
+         assertNotEquals(parentId, 0);
          assertEquals( 2, col.getDecks().all_names_and_ids().size() );
          // should get the same id
-         assertEquals( parentId, col.getDecks().id("new deck") );
+         assertEquals( parentId, (long) col.getDecks().id("new deck") );
          // we start with the default col selected
          assertEquals( 1, col.getDecks().selected() );
          assertEquals( new long [] {1}, col.getDecks().active() );
