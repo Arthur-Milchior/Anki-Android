@@ -220,13 +220,13 @@ public class UpstreamTest extends RobolectricTest {
          col.getTags().bulkAdd([note.getId()], "foo");
          note.load();
          note2.load();
-         assertTrue("foo" in note.tags);
-         assertTrue("foo" not in note2.tags);
+         assertTrue("foo" in note.getTags());
+         assertTrue("foo" not in note2.getTags());
          // should be canonified
          col.getTags().bulkAdd([note.getId()], "foo aaa");
          note.load();
-         assertTrue(note.tags[0] == "aaa");
-         assertTrue(note.tags.size() == 2);
+         assertTrue(note.getTags()[0] == "aaa");
+         assertTrue(note.getTags().size() == 2);
      }
 
      @Test
@@ -1105,9 +1105,9 @@ note.setItem("Back","abc2");
          assertTrue(n.put("Front",= "1"));
          assertTrue(n.put("Back",= "b"));
          assertTrue(n.put("Top",= "c"));
-         assertTrue("four" in n.tags);
-         assertTrue("boom" in n.tags);
-         assertTrue(n.tags.size() == 2);
+         assertTrue("four" in n.getTags());
+         assertTrue("boom" in n.getTags());
+         assertTrue(n.getTags().size() == 2);
          assertTrue(i.updateCount == 1);
 
          col.close();
@@ -1143,7 +1143,7 @@ note.setItem("Back","abc2");
          assertTrue(n.put("Front",= "1"));
          assertTrue(n.put("Back",= "b"));
          assertTrue(n.put("Top",= "c"));
-         assertTrue(list(sorted(n.tags)) == list(sorted(["four", "five", "six"])));
+         assertTrue(list(sorted(n.getTags())) == list(sorted(["four", "five", "six"])));
 
          col.close();
      }
