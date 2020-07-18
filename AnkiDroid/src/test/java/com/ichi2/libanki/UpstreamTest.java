@@ -452,7 +452,7 @@ public class UpstreamTest extends RobolectricTest {
          Note note = col.newNote();
          note.setItem("Front","foo");
          note.setItem("Back","bar<br>");
-         note.tags = new String [] {"tag", "tag2"};
+         note.setTagsFromStr("tag, tag2");
          col.addNote(note);
          // with a different col
          Note note = col.newNote();
