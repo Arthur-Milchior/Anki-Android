@@ -593,10 +593,6 @@ public class UpstreamTest extends RobolectricTest {
      /*****************
       ** Find         *
       *****************/
-     class DummyCollection:
-         def weakref(self):
-             return null;
-     }
 
      @Test
      public void test_findCards(){
