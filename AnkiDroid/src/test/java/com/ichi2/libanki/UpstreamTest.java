@@ -96,25 +96,25 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(col.cardCount() == 1);
          assertTrue(note.cards().get(0).getDid() == 1);
          // set the model to a new default col
-         long newid = col.getDecks().id("new");
+         long newId = col.getDecks().id("new");
          cloze.put("did", newId);
          col.getModels().save(cloze, false);
          // a newly generated card should share the first card's col
          note.setItem("Text","{{c2::two}}");
          note.flush();
-         assertTrue(note.cards()[1].getDid() == 1);
+         assertTrue(note.cards().get(1).getDid() == 1);
          // and same with multiple cards
          note.setItem("Text","{{c3::three}}");
          note.flush();
-         assertTrue(note.cards()[2].getDid() == 1);
+         assertTrue(note.cards().get(2).getDid() == 1);
          // if one of the cards is in a different col, it should revert to the
          // model default
-         Card c = note.cards()[1];
+         Card c = note.cards().get(1);
          c.setDid(newId);
          c.flush();
          note.setItem("Text","{{c4::four}}");
          note.flush();
-         assertTrue(note.cards()[3].getDid() == newId);
+         assertTrue(note.cards().get(3).getDid() == newId);
      }
      /*****************
       ** Collection   *
@@ -1555,10 +1555,10 @@ note.setItem("Back","abc2");
          assertTrue(col.addNote(note));
          assertTrue(note.cards().size() == 5);
          assertTrue("class=cloze" in note.cards().get(0).q());
-         assertTrue("class=cloze" in note.cards()[1].q());
-         assertTrue("class=cloze" not in note.cards()[2].q());
-         assertTrue("class=cloze" in note.cards()[3].q());
-         assertTrue("class=cloze" in note.cards()[4].q());
+         assertTrue("class=cloze" in note.cards().get(1).q());
+         assertTrue("class=cloze" not in note.cards().get(2).q());
+         assertTrue("class=cloze" in note.cards().get(3).q());
+         assertTrue("class=cloze" in note.cards().get(4).q());
 
          Note note = col.newNote();
          note.setItem("Text","\(a\) {{c1::b}} \[ {{c1::c}} \]");
@@ -1646,7 +1646,7 @@ note.setItem("Back","abc2");
          assertTrue(note.setItem("Back","note"));
          // switch cards
          Card c0 = note.cards().get(0);
-         Card c1 = note.cards()[1];
+         Card c1 = note.cards().get(1);
          assertTrue("b123" in c0.q());
          assertTrue("note" in c1.q());
          assertTrue(c0.ord == 0);
