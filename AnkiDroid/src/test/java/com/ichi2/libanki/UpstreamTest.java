@@ -217,13 +217,13 @@ public class UpstreamTest extends RobolectricTest {
          note2.setItem("Front","2");
          col.addNote(note2);
          // adding for a given id
-         col.tags.bulkAdd([note.getId()], "foo");
+         col.getTags().bulkAdd([note.getId()], "foo");
          note.load();
          note2.load();
          assertTrue("foo" in note.tags);
          assertTrue("foo" not in note2.tags);
          // should be canonified
-         col.tags.bulkAdd([note.getId()], "foo aaa");
+         col.getTags().bulkAdd([note.getId()], "foo aaa");
          note.load();
          assertTrue(note.tags[0] == "aaa");
          assertTrue(note.tags.size() == 2);
@@ -643,9 +643,9 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(col.findCards("tag:monkey").size() == 1);
          assertTrue(col.findCards("tag:sheep -tag:monkey").size() == 1);
          assertTrue(col.findCards("-tag:sheep").size() == 4);
-         col.tags.bulkAdd(col.getDb().list("select id from notes"), "foo bar");
+         col.getTags().bulkAdd(col.getDb().list("select id from notes"), "foo bar");
          assertTrue(col.findCards("tag:foo").size() == col.findCards("tag:bar").size() == 5);
-         col.tags.bulkRem(col.getDb().list("select id from notes"), "foo");
+         col.getTags().bulkRem(col.getDb().list("select id from notes"), "foo");
          assertTrue(col.findCards("tag:foo").size() == 0);
          assertTrue(col.findCards("tag:bar").size() == 5);
          // text searches
@@ -1203,7 +1203,7 @@ note.setItem("Back","abc2");
          MnemosyneImporter i = MnemosyneImporter(col, file);
          i.run();
          assertTrue(col.cardCount() == 7);
-         assertTrue("a_longer_tag" in col.tags.all());
+         assertTrue("a_longer_tag" in col.getTags().all());
          assertTrue(col.getDb().queryScalar("select count() from cards where type = 0") == 1);
          col.close();
      }
