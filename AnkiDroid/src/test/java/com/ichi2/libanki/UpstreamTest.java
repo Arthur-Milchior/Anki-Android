@@ -600,14 +600,14 @@ public class UpstreamTest extends RobolectricTest {
          Note note = col.newNote();
          note.setItem("Front","dog");
          note.setItem("Back","cat");
-         note.tags.append("monkey animal_1 * %");
+         note.addTag("monkey animal_1 * %");
          col.addNote(note);
          long f1id = note.getId();
          firstCarlong did = note.cards().get(0).getId();
          Note note = col.newNote();
          note.setItem("Front","goats are fun");
          note.setItem("Back","sheep");
-         note.tags.append("sheep goat horse animal11");
+         note.addTag("sheep goat horse animal11");
          col.addNote(note);
          long f2id = note.getId();
          Note note = col.newNote();
