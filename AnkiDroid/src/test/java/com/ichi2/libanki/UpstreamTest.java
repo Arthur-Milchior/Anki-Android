@@ -65,12 +65,12 @@ public class UpstreamTest extends RobolectricTest {
          t.put("qfmt", "{{Front}}");
          t.put("afmt", "");
          mm.addTemplate(m, t);
-         mm.save(m, templates=True);
+         mm.save(m, templates=true);
          assertTrue(note.cards().size() == 2);
          // if the template is changed to remove cards, they'll be removed
          JSONObject t = m["tmpls"][1];
          t.put("qfmt", "{{Back}}");
-         mm.save(m, templates=True);
+         mm.save(m, templates=true);
          rep = col.backend.get_empty_cards();
          rep = col.backend.get_empty_cards();
          for n in rep.notes:
@@ -96,7 +96,7 @@ public class UpstreamTest extends RobolectricTest {
          // set the model to a new default col
          long newid = col.decks.getId()("new");
          cloze.put("did", newId);
-         col.getModels().save(cloze, updateReqs=False);
+         col.getModels().save(cloze, updateReqs=false);
          // a newly generated card should share the first card's col
          note.setItem("Text","{{c2::two}}");
          note.flush();
@@ -252,11 +252,11 @@ public class UpstreamTest extends RobolectricTest {
          // and should avoid sound
          n.put("Front", "foo[sound:abc.mp3]");
          n.flush();
-         assertTrue("anki:play" in c.q(reload=True));
+         assertTrue("anki:play" in c.q(reload=true));
          // it shouldn't throw an error while people are editing
          m["tmpls"][0].put("qfmt", "{{kana:}}");
          mm.save(m);
-         c.q(reload=True);
+         c.q(reload=true);
      }
 
      @Test
@@ -323,7 +323,7 @@ public class UpstreamTest extends RobolectricTest {
          col.decks.getId()("ONE");
          Model m = col.getModels().current();
          m.put("did", col.decks.getId()("one::two"));
-         col.getModels().save(m, updateReqs=False);
+         col.getModels().save(m, updateReqs=false);
          Note n = col.newNote();
          n.put("Front", "abc");
          col.addNote(n);
@@ -385,7 +385,7 @@ public class UpstreamTest extends RobolectricTest {
          Collection col = getCol();
 
          def deckNames():
-             return [n.name for n in col.decks.all_names_and_ids(skip_empty_default=True)];
+             return [n.name for n in col.decks.all_names_and_ids(skip_empty_default=true)];
 
          long languages_did = col.decks.getId()("Languages");
          long chinese_did = col.decks.getId()("Chinese");
@@ -482,7 +482,7 @@ public class UpstreamTest extends RobolectricTest {
          Collection col2 = aopen(newname);
          assertTrue(col2.cardCount() == 2);
          // as scheduling was reset, should also revert decks to default conf
-         long did = col2.decks.getId()("test", create=False);
+         long did = col2.decks.getId()("test", create=false);
          assertTrue(did);
          conf2 = col2.decks.confForDid(did);
          assertTrue(conf2["new"].put("perDay",= 20));
@@ -539,7 +539,7 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(c.due - col.getSched().today == 1);
          // export
          AnkiPackageExporter e = AnkiExporter(col);
-         e.includeSched = True;
+         e.includeSched = true;
          fd, newname = tempfile.mkstemp(prefix="ankitest", suffix=".anki2");
          String newname = str(newname);
          os.close(fd);
@@ -561,7 +561,7 @@ public class UpstreamTest extends RobolectricTest {
      //     Note note = unicode(tempfile.mkstemp(prefix="ankitest")[1])
      //     os.unlink(note)
      //     e.exportInto(note)
-     //     e.includeTags = True
+     //     e.includeTags = true
      //     e.exportInto(note)
 
 
@@ -578,8 +578,8 @@ public class UpstreamTest extends RobolectricTest {
          e.exportInto(note);
          with open(note) as file:
              assertTrue(file.readline() == "foo\tbar<br>\ttag tag2\n");
-         e.includeTags = False;
-         e.includeHTML = False;
+         e.includeTags = false;
+         e.includeHTML = false;
          e.exportInto(note);
          with open(note) as file:
              assertTrue(file.readline() == "foo\tbar\n");
@@ -695,25 +695,25 @@ public class UpstreamTest extends RobolectricTest {
          // ordering
          col.conf.put("sortType", "noteCrt");
          col.flush();
-         assertTrue(col.findCards("front:*", order=True)[-1] in latestCardIds);
-         assertTrue(col.findCards("", order=True)[-1] in latestCardIds);
+         assertTrue(col.findCards("front:*", order=true)[-1] in latestCardIds);
+         assertTrue(col.findCards("", order=true)[-1] in latestCardIds);
          col.conf.put("sortType", "noteFld");
          col.flush();
-         assertTrue(col.findCards("", order=True)[0] == catCard.getId());
-         assertTrue(col.findCards("", order=True)[-1] in latestCardIds);
+         assertTrue(col.findCards("", order=true)[0] == catCard.getId());
+         assertTrue(col.findCards("", order=true)[-1] in latestCardIds);
                   col.conf.put("sortType", "cardMod");
          col.flush();
-         assertTrue(col.findCards("", order=True)[-1] in latestCardIds);
-         assertTrue(col.findCards("", order=True)[0] == firstCardId);
-                  col.conf.put("sortBackwards", True);
+         assertTrue(col.findCards("", order=true)[-1] in latestCardIds);
+         assertTrue(col.findCards("", order=true)[0] == firstCardId);
+                  col.conf.put("sortBackwards", true);
          col.flush();
-         assertTrue(col.findCards("", order=True)[0] in latestCardIds);
+         assertTrue(col.findCards("", order=true)[0] in latestCardIds);
          assertTrue(();
-             col.find_cards("", order=BuiltinSortKind.CARD_DUE, reverse=False)[0];
+             col.find_cards("", order=BuiltinSortKind.CARD_DUE, reverse=false)[0];
              == firstCardId;
      );
          assertTrue(();
-             col.find_cards("", order=BuiltinSortKind.CARD_DUE, reverse=True)[0];
+             col.find_cards("", order=BuiltinSortKind.CARD_DUE, reverse=true)[0];
              != firstCardId;
      );
          // model
@@ -734,13 +734,13 @@ public class UpstreamTest extends RobolectricTest {
          col.addNote(note);
          // as it's the sort field, it matches
          assertTrue(col.findCards("helloworld").size() == 2);
-         // assertTrue(col.findCards("helloworld", full=True).size() == )2
+         // assertTrue(col.findCards("helloworld", full=true).size() == )2
          // if we put it on the back, it won't
          (note.setItem("Front","Back")]) = (note.setItem("Back","Front")]);
          note.flush();
          assertTrue(col.findCards("helloworld").size() == 0);
-         // assertTrue(col.findCards("helloworld", full=True).size() == )2
-         // assertTrue(col.findCards("back:helloworld", full=True).size() == )2
+         // assertTrue(col.findCards("helloworld", full=true).size() == )2
+         // assertTrue(col.findCards("back:helloworld", full=true).size() == )2
          // searching for an invalid special tag should not error
          with pytest.raises(Exception):
              col.findCards("is:invalid").size();
@@ -845,7 +845,7 @@ note.setItem("Back","abc2");
          assertTrue(col.findReplace(nids, "B.r", "reg") == 0);
          note.load();
          assertTrue(note.setItem("Back","reg"));
-         assertTrue(col.findReplace(nids, "B.r", "reg", regex=True) == 1);
+         assertTrue(col.findReplace(nids, "B.r", "reg", regex=true) == 1);
          note.load();
          assertTrue(note.setItem("Back","reg"));
      }
@@ -973,12 +973,12 @@ note.setItem("Back","abc2");
          // import the first version of the model
          Collection col = getUpgradeDeckPath("diffmodeltemplates-1.apkg");
          AnkiPackageImporter imp = AnkiPackageImporter(dst, col);
-         imp.dupeOnSchemaChange = True;
+         imp.dupeOnSchemaChange = true;
          imp.run();
          // then the version with updated template
          Collection col = getUpgradeDeckPath("diffmodeltemplates-2.apkg");
          imp = AnkiPackageImporter(dst, col);
-         imp.dupeOnSchemaChange = True;
+         imp.dupeOnSchemaChange = true;
          imp.run();
          // collection should contain the note we imported
          assertTrue(dst.noteCount() == 1);
@@ -1094,7 +1094,7 @@ note.setItem("Back","abc2");
          col.addNote(n);
 
          // https://stackoverflow.com/questions/23212435/permission-denied-to-write-to-my-temporary-file
-         with NamedTemporaryFile(mode="w", delete=False) as tf:
+         with NamedTemporaryFile(mode="w", delete=false) as tf:
              tf.write("1\tb\tc\n");
              tf.flush();
              TextImporter i = TextImporter(col, tf.name);
@@ -1132,7 +1132,7 @@ note.setItem("Back","abc2");
          col.addNote(n);
 
          // https://stackoverflow.com/questions/23212435/permission-denied-to-write-to-my-temporary-file
-         with NamedTemporaryFile(mode="w", delete=False) as tf:
+         with NamedTemporaryFile(mode="w", delete=false) as tf:
              tf.write("1\tb\tc\n");
              tf.flush();
              TextImporter i = TextImporter(col, tf.name);
@@ -1165,7 +1165,7 @@ note.setItem("Back","abc2");
          col.addNote(n);
 
          // https://stackoverflow.com/questions/23212435/permission-denied-to-write-to-my-temporary-file
-         with NamedTemporaryFile(mode="w", delete=False) as tf:
+         with NamedTemporaryFile(mode="w", delete=false) as tf:
              tf.write("1,2,3\n");
              tf.flush();
              TextImporter i = TextImporter(col, tf.name);
@@ -1187,7 +1187,7 @@ note.setItem("Back","abc2");
          Collection col = getCol();
          String file = str(os.path.join(testDir, "support/supermemo1.xml"));
          SupermemoXmlImporter i = SupermemoXmlImporter(col, file);
-         // i.META.logToStdOutput = True
+         // i.META.logToStdOutput = true
          i.run();
          assertTrue(i.total == 1);
          long cid = col.getDb().scalar("select id from cards");
@@ -1727,11 +1727,11 @@ note.setItem("Back","abc2");
          assertTrue(opt["req"][1] == [1, "all", [1, 2]]);
          // testing any
          opt["tmpls"][1].put("qfmt", "{{Back}}{{Add Reverse}}");
-         mm.save(opt, templates=True);
+         mm.save(opt, templates=true);
          assertTrue(opt["req"][1] == [1, "any", [1, 2]]);
          // testing None
          opt["tmpls"][1].put("qfmt", "{{^Add Reverse}}{{/Add Reverse}}");
-         mm.save(opt, templates=True);
+         mm.save(opt, templates=true);
          assertTrue(opt["req"][1] == [1, "none", []]);
 
          opt = mm.byName("Basic (type in the answer)");
@@ -2161,7 +2161,7 @@ note.setItem("Back","abc2");
          c.left = 2002;
          c.ivl = 0;
          c.flush();
-         col.getSched()._clearOverdue = False;
+         col.getSched()._clearOverdue = false;
          // checkpoint
          col.save();
          col.getSched().reset();
@@ -2172,7 +2172,7 @@ note.setItem("Back","abc2");
          assertTrue(c.due == col.getSched().today + 1);
          // revert to before
          col.rollback();
-         col.getSched()._clearOverdue = True;
+         col.getSched()._clearOverdue = true;
          // with the default settings, the overdue card should be removed from the
          // learning queue
          col.getSched().reset();
@@ -2472,7 +2472,7 @@ note.setItem("Back","abc2");
          // cram deck
          long did = col.decks.newDyn("Cram");
          cram = col.decks.get(did);
-         cram.put("resched", False);
+         cram.put("resched", false);
          col.decks.save(cram);
          col.getSched().rebuildDyn(did);
          col.reset();
@@ -2814,12 +2814,12 @@ note.setItem("Back","abc2");
          note2.setItem("Front","two");
          col.addNote(note2);
          assertTrue(note2.cards().get(0).due == 2);
-         found = False;
+         found = false;
          // 50/50 chance of being reordered
          for i in range(20):
              col.getSched().randomizeCards(1);
              if note.cards().get(0).due != note.getId():
-                 found = True;
+                 found = true;
                  break;
                  assertTrue(found);
          col.getSched().orderCards(1);
@@ -2835,7 +2835,7 @@ note.setItem("Back","abc2");
          assertTrue(note2.cards().get(0).due == 2);
          assertTrue(note3.cards().get(0).due == 3);
          assertTrue(note4.cards().get(0).due == 4);
-         col.getSched().sortCards([note3.cards().get(0).getId(), note4.cards().get(0).getId()], start=1, shift=True);
+         col.getSched().sortCards([note3.cards().get(0).getId(), note4.cards().get(0).getId()], start=1, shift=true);
          assertTrue(note.cards().get(0).due == 3);
          assertTrue(note2.cards().get(0).due == 4);
          assertTrue(note3.cards().get(0).due == 1);
@@ -3358,7 +3358,7 @@ note.setItem("Back","abc2");
 
          Model m = col.getModels().current();
          m.put("did", child.getLong("id"));
-         col.getModels().save(m, updateReqs=False);
+         col.getModels().save(m, updateReqs=false);
 
          // add some cards
          for i in range(20):
@@ -3442,7 +3442,7 @@ note.setItem("Back","abc2");
          c.left = 2002;
          c.ivl = 0;
          c.flush();
-         col.getSched()._clearOverdue = False;
+         col.getSched()._clearOverdue = false;
          // checkpoint
          col.save();
          col.getSched().reset();
@@ -3453,7 +3453,7 @@ note.setItem("Back","abc2");
          assertTrue(c.due == col.getSched().today + 1);
          // revert to before
          col.rollback();
-         col.getSched()._clearOverdue = True;
+         col.getSched()._clearOverdue = true;
          // with the default settings, the overdue card should be removed from the
          // learning queue
          col.getSched().reset();
@@ -3558,10 +3558,10 @@ note.setItem("Back","abc2");
          col.addNote(note);
          c2 = note.cards().get(0);
          // burying
-         col.getSched().buryCards([c.getId()], manual=True)  // pylint: disable=unexpected-keyword-arg
+         col.getSched().buryCards([c.getId()], manual=true)  // pylint: disable=unexpected-keyword-arg
          c.load();
          assertTrue(c.queue == QUEUE_TYPE_MANUALLY_BURIED);
-         col.getSched().buryCards([c2.getId()], manual=False)  // pylint: disable=unexpected-keyword-arg
+         col.getSched().buryCards([c2.getId()], manual=false)  // pylint: disable=unexpected-keyword-arg
          c2.load();
          assertTrue(c2.queue == QUEUE_TYPE_SIBLING_BURIED);
 
@@ -3758,7 +3758,7 @@ note.setItem("Back","abc2");
          // cram deck
          long did = col.decks.newDyn("Cram");
          cram = col.decks.get(did);
-         cram.put("resched", False);
+         cram.put("resched", false);
          col.decks.save(cram);
          col.getSched().rebuildDyn(did);
          col.reset();
@@ -4040,12 +4040,12 @@ note.setItem("Back","abc2");
          note2.setItem("Front","two");
          col.addNote(note2);
          assertTrue(note2.cards().get(0).due == 2);
-         found = False;
+         found = false;
          // 50/50 chance of being reordered
          for i in range(20):
              col.getSched().randomizeCards(1);
              if note.cards().get(0).due != note.getId():
-                 found = True;
+                 found = true;
                  break;
                  assertTrue(found);
          col.getSched().orderCards(1);
@@ -4061,7 +4061,7 @@ note.setItem("Back","abc2");
          assertTrue(note2.cards().get(0).due == 2);
          assertTrue(note3.cards().get(0).due == 3);
          assertTrue(note4.cards().get(0).due == 4);
-         col.getSched().sortCards([note3.cards().get(0).getId(), note4.cards().get(0).getId()], start=1, shift=True);
+         col.getSched().sortCards([note3.cards().get(0).getId(), note4.cards().get(0).getId()], start=1, shift=true);
          assertTrue(note.cards().get(0).due == 3);
          assertTrue(note2.cards().get(0).due == 4);
          assertTrue(note3.cards().get(0).due == 1);
