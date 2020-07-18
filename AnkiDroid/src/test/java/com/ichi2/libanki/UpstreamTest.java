@@ -22,7 +22,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_delete(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","1");
          note.setItem("Back","2");
@@ -40,7 +40,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_misc(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","1");
          note.setItem("Back","2");
@@ -52,7 +52,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_genrem(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","1");
          note.setItem("Back","");
@@ -85,7 +85,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_gendeck(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Model cloze = col.getModels().byName("Cloze");
          col.getModels().setCurrent(cloze);
          Note note = col.newNote();
@@ -153,7 +153,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_noteAddDelete(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a note
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -193,7 +193,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_fieldChecksum(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","new");
          note.setItem("Back","new2");
@@ -207,7 +207,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_addDelTags(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","1");
          col.addNote(note);
@@ -229,7 +229,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_timestamps(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          assertTrue(col.getModels().all_names_and_ids().size() == get_stock_notetypes(col).size());
          for i in range(100):
              addBasicModel(col);
@@ -238,7 +238,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_furigana(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Models mm = col.getModels();
          Model m = mm.current();
          // filter should work
@@ -261,7 +261,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_translate(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          no_uni = without_unicode_isolation;
 
          assertTrue(();
@@ -291,7 +291,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_basic(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // we start with a standard col
          assertTrue(col.decks.all_names_and_ids().size() == 1);
          // it should have an id of 1
@@ -331,7 +331,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_remove(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // create a new col, and add a note/card to it
          long deck1 = col.decks.getId()("deck1");
          Note note = col.newNote();
@@ -349,7 +349,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_rename(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          long id = col.decks.getId()("hello::world");
          // should be able to rename into a completely different branch, creating
          // parents as necessary
@@ -382,7 +382,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_renameForDragAndDrop(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
 
          def deckNames():
              return [n.name for n in col.decks.all_names_and_ids(skip_empty_default=True)];
@@ -439,7 +439,7 @@ public class UpstreamTest extends RobolectricTest {
       *****************/
      private void setup1(){
          global col;
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","foo");
          note.setItem("Back","bar<br>");
@@ -522,7 +522,7 @@ public class UpstreamTest extends RobolectricTest {
      @Test
      public void test_export_anki_due(){
          setup1();
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","foo");
          col.addNote(note);
@@ -546,7 +546,7 @@ public class UpstreamTest extends RobolectricTest {
          os.unlink(newname);
          e.exportInto(newname);
          // importing into a new deck, the due date should be equivalent
-         col2 = getEmptyCol();
+         col2 = getCol();
          imp = Anki2Importer(col2, newname);
          imp.run();
          Card c = col2.getCard(c.getId());
@@ -598,7 +598,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_findCards(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","dog");
          note.setItem("Back","cat");
@@ -817,7 +817,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_findReplace(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","foo");
          note.setItem("Back","bar");
@@ -852,7 +852,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_findDupes(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","foo");
          note.setItem("Back","bar");
@@ -898,7 +898,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_anki2_mediadupes(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a note that references a sound
          Note n = tmp.newNote();
          n["Front"] = "[sound:foo.mp3]";
@@ -909,7 +909,7 @@ note.setItem("Back","abc2");
              note.write("foo");
          col.close();
          // it should be imported correctly into an empty deck
-         Collection empty = getEmptyCol();
+         Collection empty = getCol();
          Anki2Importer imp = Anki2Importer(empty, col.path);
          imp.run();
          assertTrue(os.listdir(empty.media.dir()) == ["foo.mp3"]);
@@ -945,7 +945,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_apkg(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          String apkg = str(os.path.join(testDir, "support/media.apkg"));
          AnkiPackageImporter imp = AnkiPackageImporter(col, apkg);
          assertTrue(os.listdir(col.media.dir()) == []);
@@ -969,7 +969,7 @@ note.setItem("Back","abc2");
      public void test_anki2_diffmodel_templates(){
          // different from the above as this one tests only the template text being
          // changed, not the number of cards/fields
-         Collection dst = getEmptyCol();
+         Collection dst = getCol();
          // import the first version of the model
          Collection col = getUpgradeDeckPath("diffmodeltemplates-1.apkg");
          AnkiPackageImporter imp = AnkiPackageImporter(dst, col);
@@ -991,7 +991,7 @@ note.setItem("Back","abc2");
      @Test
      public void test_anki2_updates(){
          // create a new empty deck
-         dst = getEmptyCol();
+         dst = getCol();
          Collection col = getUpgradeDeckPath("update1.apkg");
          AnkiPackageImporter imp = AnkiPackageImporter(dst, col);
          imp.run();
@@ -1019,7 +1019,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_csv(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          file = str(os.path.join(testDir, "support/text-2fields.txt"));
          i = TextImporter(col, file);
          i.initMapping();
@@ -1055,7 +1055,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_csv2(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Models mm = col.getModels();
          Model m = mm.current();
          Note note = mm.newField("Three");
@@ -1080,7 +1080,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_tsv_tag_modified(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Models mm = col.getModels();
          Model m = mm.current();
          Note note = mm.newField("Top");
@@ -1117,7 +1117,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_tsv_tag_multiple_tags(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Models mm = col.getModels();
          Model m = mm.current();
          Note note = mm.newField("Top");
@@ -1152,7 +1152,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_csv_tag_only_if_modified(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Models mm = col.getModels();
          Model m = mm.current();
          Note note = mm.newField("Left");
@@ -1184,7 +1184,7 @@ note.setItem("Back","abc2");
      @pytest.mark.filterwarnings("ignore:Using or importing the ABCs")
      @Test
      public void test_supermemo_xml_01_unicode(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          String file = str(os.path.join(testDir, "support/supermemo1.xml"));
          SupermemoXmlImporter i = SupermemoXmlImporter(col, file);
          // i.META.logToStdOutput = True
@@ -1200,7 +1200,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_mnemo(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          String file = str(os.path.join(testDir, "support/mnemo.getDb()"));
          MnemosyneImporter i = MnemosyneImporter(col, file);
          i.run();
@@ -1216,7 +1216,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_flags(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note n = col.newNote();
          n["Front"] = "one";
          n["Back"] = "two";
@@ -1262,7 +1262,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_add(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          String dir = tempfile.mkdtemp(prefix="anki");
          String path = os.path.join(dir, "foo.jpg");
          with open(path, "w") as note:
@@ -1279,7 +1279,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_strings(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          mf = col.media.filesInStr;
          mid = col.getModels().current().getLong("id");
          assertTrue(mf(mid, "aoeu") == []);
@@ -1309,7 +1309,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_deckIntegration(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // create a media dir
          col.media.dir();
          // put a file into it
@@ -1339,7 +1339,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_modelDelete(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","1");
          note.setItem("Back","2");
@@ -1351,7 +1351,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_modelCopy(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Model m = col.getModels().current();
          Model m2 = col.getModels().copy(m);
          assertTrue(m2["name"] == "Basic copy");
@@ -1366,7 +1366,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_fields(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","1");
          note.setItem("Back","2");
@@ -1414,7 +1414,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_templates(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Model m = col.getModels().current();
          Models mm = col.getModels();
          JSONObject t = mm.newTemplate("Reverse");
@@ -1458,7 +1458,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_cloze_ordinals(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          col.getModels().setCurrent(col.getModels().byName("Cloze"));
          Model m = col.getModels().current();
          Models mm = col.getModels();
@@ -1483,7 +1483,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_text(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Model m = col.getModels().current();
          m["tmpls"][0]["qfmt"] = "{{text:Front}}";
          col.getModels().save(m);
@@ -1495,7 +1495,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_cloze(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          col.getModels().setCurrent(col.getModels().byName("Cloze"));
          Note note = col.newNote();
          assertTrue(note.model()["name"] == "Cloze");
@@ -1544,7 +1544,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_cloze_mathjax(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          col.getModels().setCurrent(col.getModels().byName("Cloze"));
          Note note = col.newNote();
          note[;
@@ -1571,7 +1571,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_typecloze(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Model m = col.getModels().byName("Cloze");
          col.getModels().setCurrent(m);
          m["tmpls"][0]["qfmt"] = "{{cloze:Text}}{{type:cloze:Text}}";
@@ -1584,7 +1584,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_chained_mods(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          col.getModels().setCurrent(col.getModels().byName("Cloze"));
          Model m = col.getModels().current();
          Models mm = col.getModels();
@@ -1621,7 +1621,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_modelChange(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Model cloze = col.getModels().byName("Cloze");
          // enable second template and add a note
          Model m = col.getModels().current();
@@ -1710,7 +1710,7 @@ note.setItem("Back","abc2");
                  return;
              assertTrue(model["tmpls"].size() == model["req"].size());
 
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Models mm = col.getModels();
          basiCard c = mm.byName("Basic");
          assertTrue("req" in basic);
@@ -1744,15 +1744,15 @@ note.setItem("Back","abc2");
      /*****************
           ** SchedV1      *
       *****************/
-     private Collection getEmptyCol(){
-         Collection col = getEmptyColOrig();
+     private Collection getCol(){
+         Collection col = getColOrig();
          col.changeSchedulerVer(1);
          return col;
      }
 
      @Test
      public void test_clock(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          if (col.getSched().dayCutoff - intTime()) < 10 * 60:
              raise Exception("Unit tests will fail around the day rollover.");
      }
@@ -1764,14 +1764,14 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_basics(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          col.reset();
          assertTrue(not col.getSched().getCard());
      }
 
      @Test
      public void test_new(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          col.reset();
          assertTrue(col.getSched().newCount == 0);
          // add a note
@@ -1818,7 +1818,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_newLimits(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add some notes
          deck2 = col.decks.getId()("Default::foo");
          for i in range(30):
@@ -1850,7 +1850,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_newBoxes(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -1868,7 +1868,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_learn(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a note
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -1947,7 +1947,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_learn_collapsed(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add 2 notes
          Note note = col.newNote();
          note.setItem("Front","1");
@@ -1975,7 +1975,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_learn_day(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a note
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -2039,7 +2039,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_reviews(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a note
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -2121,7 +2121,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_button_spacing(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -2146,7 +2146,7 @@ note.setItem("Back","abc2");
      public void test_overdue_lapse(){
          // disabled in commit 3069729776990980f34c25be66410e947e9d51a2
          return;
-         Collection col = getEmptyCol()  // pylint: disable=unreachable
+         Collection col = getCol()  // pylint: disable=unreachable
          // add a note
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -2181,7 +2181,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_finished(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // nothing due
          assertTrue("Congratulations" in col.getSched().finishedMsg());
          assertTrue("limit" not in col.getSched().finishedMsg());
@@ -2203,7 +2203,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_nextIvl(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          note.setItem("Back","two");
@@ -2264,7 +2264,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_misc(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -2280,7 +2280,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_suspend(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -2329,7 +2329,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_cram(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -2442,7 +2442,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_cram_rem(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -2465,7 +2465,7 @@ note.setItem("Back","abc2");
      @Test
      public void test_cram_resched(){
          // add card
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -2573,7 +2573,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_ordcycle(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add two more templates and set second active
          Model m = col.getModels().current();
          Models mm = col.getModels();
@@ -2601,7 +2601,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_counts_idx(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          note.setItem("Back","two");
@@ -2626,7 +2626,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_repCounts(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -2680,7 +2680,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_timing(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a few review cards, due today
          for i in range(5):
              Note note = col.newNote();
@@ -2716,7 +2716,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_collapse(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a note
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -2732,7 +2732,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_deckDue(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a note with default deck
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -2779,7 +2779,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_deckFlow(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a note with default deck
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -2805,7 +2805,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_reorder(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a note with default deck
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -2844,7 +2844,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_forget(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -2863,7 +2863,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_resched(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -2881,7 +2881,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_norelearn(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a note
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -2904,7 +2904,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_failmult(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          note.setItem("Back","two");
@@ -2931,15 +2931,15 @@ note.setItem("Back","abc2");
      /*****************
           ** SchedV2      *
       *****************/
-     private Collection getEmptyCol(){
-         Collection col = getEmptyColOrig();
+     private Collection getCol(){
+         Collection col = getColOrig();
          col.changeSchedulerVer(2);
          return col;
      }
 
      @Test
      public void test_clock(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          if (col.getSched().dayCutoff - intTime()) < 10 * 60:
              raise Exception("Unit tests will fail around the day rollover.");
 
@@ -2951,14 +2951,14 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_basics(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          col.reset();
          assertTrue(not col.getSched().getCard());
      }
 
      @Test
      public void test_new(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          col.reset();
          assertTrue(col.getSched().newCount == 0);
          // add a note
@@ -3005,7 +3005,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_newLimits(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add some notes
          deck2 = col.decks.getId()("Default::foo");
          for i in range(30):
@@ -3037,7 +3037,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_newBoxes(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -3055,7 +3055,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_learn(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a note
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -3119,7 +3119,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_relearn(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -3147,7 +3147,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_relearn_no_steps(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -3171,7 +3171,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_learn_collapsed(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add 2 notes
          Note note = col.newNote();
          note.setItem("Front","1");
@@ -3199,7 +3199,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_learn_day(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a note
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -3263,7 +3263,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_reviews(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a note
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -3341,7 +3341,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_review_limits(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
 
          parent = col.decks.get(col.decks.getId()("parent"));
          child = col.decks.get(col.decks.getId()("parent::child"));
@@ -3396,7 +3396,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_button_spacing(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -3427,7 +3427,7 @@ note.setItem("Back","abc2");
      public void test_overdue_lapse(){
          // disabled in commit 3069729776990980f34c25be66410e947e9d51a2
          return;
-         Collection col = getEmptyCol()  // pylint: disable=unreachable
+         Collection col = getCol()  // pylint: disable=unreachable
          // add a note
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -3462,7 +3462,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_finished(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // nothing due
          assertTrue("Congratulations" in col.getSched().finishedMsg());
          assertTrue("limit" not in col.getSched().finishedMsg());
@@ -3484,7 +3484,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_nextIvl(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          note.setItem("Back","two");
@@ -3548,7 +3548,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_bury(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -3592,7 +3592,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_suspend(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -3643,7 +3643,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_filt_reviewing_early_normal(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -3700,7 +3700,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_filt_keep_lrn_state(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
 
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -3746,7 +3746,7 @@ note.setItem("Back","abc2");
      @Test
      public void test_preview(){
          // add cards
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -3796,7 +3796,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_ordcycle(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add two more templates and set second active
          Model m = col.getModels().current();
          Models mm = col.getModels();
@@ -3824,7 +3824,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_counts_idx(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          note.setItem("Back","two");
@@ -3849,7 +3849,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_repCounts(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -3903,7 +3903,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_timing(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a few review cards, due today
          for i in range(5):
              Note note = col.newNote();
@@ -3931,7 +3931,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_collapse(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a note
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -3947,7 +3947,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_deckDue(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a note with default deck
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -3994,7 +3994,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_deckTree(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          col.decks.getId()("new::b::c");
          col.decks.getId()("new2");
          // new should not appear twice in tree
@@ -4005,7 +4005,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_deckFlow(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a note with default deck
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -4031,7 +4031,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_reorder(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a note with default deck
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -4070,7 +4070,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_forget(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -4089,7 +4089,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_resched(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
@@ -4107,7 +4107,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_norelearn(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // add a note
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -4130,7 +4130,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_failmult(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          note.setItem("Back","two");
@@ -4157,7 +4157,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_moveVersions(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          col.changeSchedulerVer(1);
 
          Note n = col.newNote();
@@ -4218,7 +4218,7 @@ note.setItem("Back","abc2");
      // their due date when removed
      @Test
      public void test_negativeDueFilter(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
 
          // card due prior to collection date
          Note note = col.newNote();
@@ -4247,7 +4247,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_initial_repeat(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","one");
          note.setItem("Back","two");
@@ -4269,7 +4269,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_stats(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","foo");
          col.addNote(note);
@@ -4285,14 +4285,14 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_graphs_empty(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          assertTrue(col.stats().report());
      }
 
      @Test
      public void test_graphs(){
          dir = tempfile.gettempdir();
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          g = col.stats();
          rep = g.report();
          with open(os.path.join(dir, "test.html"), "w", encoding="UTF-8") as note:
@@ -4305,7 +4305,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_deferred_frontside(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          Model m = col.getModels().current();
          m["tmpls"][0]["qfmt"] = "{{custom:Front}}";
          col.getModels().save(m);
@@ -4320,15 +4320,15 @@ note.setItem("Back","abc2");
      /*****************
           ** Undo         *
       *****************/
-     private Collection getEmptyCol(){
-         Collection col = getEmptyColOrig();
+     private Collection getCol(){
+         Collection col = getColOrig();
          col.changeSchedulerVer(2);
          return col;
      }
 
      @Test
      public void test_op(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          // should have no undo by default
          assertTrue(not col.undoName());
          // let's adjust a study option
@@ -4361,7 +4361,7 @@ note.setItem("Back","abc2");
 
      @Test
      public void test_review(){
-         Collection col = getEmptyCol();
+         Collection col = getCol();
          col.conf["counts"] = COUNT_REMAINING;
          Note note = col.newNote();
          note.setItem("Front","one");
