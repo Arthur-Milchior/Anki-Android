@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
@@ -176,7 +177,7 @@ public class UpstreamTest extends RobolectricTest {
          mm.save(m);
          assertEquals( 2, col.cardCount() );
          // creating new notes should use both cards
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","three");
          note.setItem("Back","four");
          Note n = col.addNote(note);
@@ -186,15 +187,15 @@ public class UpstreamTest extends RobolectricTest {
          Card c0 = note.cards().get(0);
          assertTrue("three" in c0.q());
          // it should not be a duplicate
-         assertFalse(note.dupeOrEmpty());
+         assertEquals(note.dupeOrEmpty(), Note.DupeOrEmpty.CORRECT);
          // now let's make a duplicate
          Note note2 = col.newNote();
          note2.setItem("Front","one");
          note2.setItem("Back","");
-         assertTrue(note2.dupeOrEmpty());
+         assertNotEquals(note2.dupeOrEmpty(), Note.DupeOrEmpty.CORRECT);
          // empty first field should not be permitted either
          note2.setItem("Front"," ");
-         assertTrue(note2.dupeOrEmpty());
+         assertNotEquals(note2.dupeOrEmpty(), Note.DupeOrEmpty.CORRECT);
      }
 
      @Test
