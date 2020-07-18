@@ -475,7 +475,7 @@ public class UpstreamTest extends RobolectricTest {
          Deck dobj = col.getDecks().get(did);
          long confId = col.getDecks().add_config_returning_id("newconf");
          DeckConfig conf = col.getDecks().getConf(confId);
-         conf["new"].put("perDay", 5);
+         conf.getJSONObject("new").put("perDay", 5);
          col.getDecks().save(conf);
          col.getDecks().setConf(dobj, confId);
          // export
@@ -1866,11 +1866,11 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
          Card c = col.getSched().getCard();
          DeckConfig conf = col.getSched()._cardConf(c);
-         conf["new"].put("delays", new JSONArray(new double [] {1, 2, 3, 4, 5}));
+         conf.getJSONObject("new").put("delays", new JSONArray(new double [] {1, 2, 3, 4, 5}));
          col.getDecks().save(conf);
          col.getSched().answerCard(c, 2);
          // should handle gracefully
-         conf["new"].put("delays", new JSONArray(new double [] {1}));
+         conf.getJSONObject("new").put("delays", new JSONArray(new double [] {1}));
          col.getDecks().save(conf);
          col.getSched().answerCard(c, 2);
      }
@@ -1890,7 +1890,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = col.getSched().getCard();
          assertTrue(c);
          DeckConfig conf = col.getSched()._cardConf(c);
-         conf["new"].put("delays", new JSONArray(new double [] {0.5, 3, 10}));
+         conf.getJSONObject("new").put("delays", new JSONArray(new double [] {0.5, 3, 10}));
          col.getDecks().save(conf);
          // fail it
          col.getSched().answerCard(c, 1);
@@ -1992,7 +1992,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().reset();
          Card c = col.getSched().getCard();
          DeckConfig conf = col.getSched()._cardConf(c);
-         conf["new"].put("delays", new JSONArray(new double [] {1, 10, 1440, 2880}));
+         conf.getJSONObject("new").put("delays", new JSONArray(new double [] {1, 10, 1440, 2880}));
          col.getDecks().save(conf);
          // pass it
          col.getSched().answerCard(c, 2);
@@ -2038,7 +2038,7 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
                       assertEquals( (0, 0, 1, col.getSched().counts() ));
          DeckConfig conf = col.getSched()._cardConf(c);
-                       conf["lapse"].put("delays", new JSONArray(new double [] {1440}));
+                       conf.getJSONObject("lapse").put("delays", new JSONArray(new double [] {1440}));
          col.getDecks().save(conf);
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
@@ -2072,7 +2072,7 @@ assertEquals( 9, col.getSched().newCount );
          // different delay to new
          col.reset();
          DeckConfig conf = col.getSched()._cardConf(c);
-         conf["lapse"].put("delays", new JSONArray(new double [] {2, 20}));
+         conf.getJSONObject("lapse").put("delays", new JSONArray(new double [] {2, 20}));
          col.getDecks().save(conf);
          col.getSched().answerCard(c, 1);
          assertEquals( QUEUE_TYPE_LRN, c.queue );
@@ -2219,8 +2219,8 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          col.reset();
          DeckConfig conf = col.getDecks().confForDid(1);
-         conf["new"].put("delays", new JSONArray(new double [] {0.5, 3, 10}));
-         conf["lapse"].put("delays", new JSONArray(new double [] {1, 5, 9}));
+         conf.getJSONObject("new").put("delays", new JSONArray(new double [] {0.5, 3, 10}));
+         conf.getJSONObject("lapse").put("delays", new JSONArray(new double [] {1, 5, 9}));
          col.getDecks().save(conf);
          Card c = col.getSched().getCard();
          // new cards
@@ -2259,7 +2259,7 @@ assertEquals( 9, col.getSched().newCount );
          // failing it should put it at 60s
          assertEquals( 60, ni(c, 1) );
          // or 1 day if relearn is false
-         conf["lapse"].put("delays", new JSONArray(new double [] {}));
+         conf.getJSONObject("lapse").put("delays", new JSONArray(new double [] {}));
          col.getDecks().save(conf);
          assertEquals( 1 * 86400, ni(c, 1) );
          // (* 100 1.2 86400)10368000.0
@@ -2706,7 +2706,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = col.getSched().getCard();
          // set a a fail delay of 4 seconds
          DeckConfig conf = col.getSched()._cardConf(c);
-         conf["lapse"]["delays"][0] = 1 / 15.0;
+         conf.getJSONObject("lapse")["delays"][0] = 1 / 15.0;
          col.getDecks().save(conf);
          col.getSched().answerCard(c, 1);
          // the next card should be another review
@@ -2933,7 +2933,7 @@ assertEquals( 9, col.getSched().newCount );
          c.startTimer();
          c.flush();
          DeckConfig conf = col.getSched()._cardConf(c);
-         conf["lapse"].put("mult", 0.5);
+         conf.getJSONObject("lapse").put("mult", 0.5);
          col.getDecks().save(conf);
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
@@ -3060,11 +3060,11 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
          Card c = col.getSched().getCard();
          DeckConfig conf = col.getSched()._cardConf(c);
-         conf["new"].put("delays", new JSONArray(new double [] {1, 2, 3, 4, 5}));
+         conf.getJSONObject("new").put("delays", new JSONArray(new double [] {1, 2, 3, 4, 5}));
          col.getDecks().save(conf);
          col.getSched().answerCard(c, 2);
          // should handle gracefully
-         conf["new"].put("delays", new JSONArray(new double [] {1}));
+         conf.getJSONObject("new").put("delays", new JSONArray(new double [] {1}));
          col.getDecks().save(conf);
          col.getSched().answerCard(c, 2);
      }
@@ -3084,7 +3084,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = col.getSched().getCard();
          assertTrue(c);
          DeckConfig conf = col.getSched()._cardConf(c);
-         conf["new"].put("delays", new JSONArray(new double [] {0.5, 3, 10}));
+         conf.getJSONObject("new").put("delays", new JSONArray(new double [] {0.5, 3, 10}));
          col.getDecks().save(conf);
          // fail it
          col.getSched().answerCard(c, 1);
@@ -3175,7 +3175,7 @@ assertEquals( 9, col.getSched().newCount );
          c.flush();
 
          DeckConfig conf = col.getDecks().confForDid(1);
-         conf["lapse"].put("delays", new JSONArray(new double [] {}));
+         conf.getJSONObject("lapse").put("delays", new JSONArray(new double [] {}));
          col.getDecks().save(conf);
 
          // fail the card
@@ -3223,7 +3223,7 @@ assertEquals( 9, col.getSched().newCount );
          col.getSched().reset();
          Card c = col.getSched().getCard();
          DeckConfig conf = col.getSched()._cardConf(c);
-         conf["new"].put("delays", new JSONArray(new double [] {1, 10, 1440, 2880}));
+         conf.getJSONObject("new").put("delays", new JSONArray(new double [] {1, 10, 1440, 2880}));
          col.getDecks().save(conf);
          // pass it
          col.getSched().answerCard(c, 3);
@@ -3269,7 +3269,7 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
                       assertEquals( (0, 0, 1, col.getSched().counts() ));
          DeckConfig conf = col.getSched()._cardConf(c);
-                       conf["lapse"].put("delays", new JSONArray(new double [] {1440}));
+                       conf.getJSONObject("lapse").put("delays", new JSONArray(new double [] {1440}));
          col.getDecks().save(conf);
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
@@ -3336,7 +3336,7 @@ assertEquals( 9, col.getSched().newCount );
          // leech handling
      ////////////////////////////////////////////////////////////////////////////////////////////////////
          DeckConfig conf = col.getDecks().getConf(1);
-         conf["lapse"].put("leechAction", LEECH_SUSPEND);
+         conf.getJSONObject("lapse").put("leechAction", LEECH_SUSPEND);
          col.getDecks().save(conf);
          Card c = copy.copy(cardcopy);
          c.lapses = 7;
@@ -3365,10 +3365,10 @@ assertEquals( 9, col.getSched().newCount );
          pconf = col.getDecks().getConf(col.getDecks().add_config_returning_id("parentConf"));
          cconf = col.getDecks().getConf(col.getDecks().add_config_returning_id("childConf"));
 
-         pconf["rev"].put("perDay", 5);
+         pconf.getJSONObject("rev").put("perDay", 5);
          col.getDecks().update_config(pconf);
          col.getDecks().setConf(parent, pconf.getLong("id"));
-         cconf["rev"].put("perDay", 10);
+         cconf.getJSONObject("rev").put("perDay", 10);
          col.getDecks().update_config(cconf);
          col.getDecks().setConf(child, cconf.getLong("id"));
 
@@ -3435,7 +3435,7 @@ assertEquals( 9, col.getSched().newCount );
 
          // if hard factor is <= 1, then hard may not increase
          DeckConfig conf = col.getDecks().confForDid(1);
-         conf["rev"].put("hardFactor", 1);
+         conf.getJSONObject("rev").put("hardFactor", 1);
          col.getDecks().save(conf);
          assertEquals( "1d", wo(ni(c, 2)) );
      }
@@ -3508,8 +3508,8 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          col.reset();
          DeckConfig conf = col.getDecks().confForDid(1);
-         conf["new"].put("delays", new JSONArray(new double [] {0.5, 3, 10}));
-         conf["lapse"].put("delays", new JSONArray(new double [] {1, 5, 9}));
+         conf.getJSONObject("new").put("delays", new JSONArray(new double [] {0.5, 3, 10}));
+         conf.getJSONObject("lapse").put("delays", new JSONArray(new double [] {1, 5, 9}));
          col.getDecks().save(conf);
          Card c = col.getSched().getCard();
          // new cards
@@ -3551,7 +3551,7 @@ assertEquals( 9, col.getSched().newCount );
          // failing it should put it at 60s
                                                 assertEquals( 60, ni(c, 1) );
          // or 1 day if relearn is false
-                                                 conf["lapse"].put("delays", new JSONArray(new double [] {}));
+                                                 conf.getJSONObject("lapse").put("delays", new JSONArray(new double [] {}));
          col.getDecks().save(conf);
                                                 assertEquals( 1 * 86400, ni(c, 1) );
          // (* 100 1.2 86400)10368000.0
@@ -3726,7 +3726,7 @@ assertEquals( 9, col.getSched().newCount );
          // fail the card outside filtered deck
          Card c = col.getSched().getCard();
          DeckConfig conf = col.getSched()._cardConf(c);
-         conf["new"].put("delays", new JSONArray(new double [] {1, 10, 61}));
+         conf.getJSONObject("new").put("delays", new JSONArray(new double [] {1, 10, 61}));
          col.getDecks().save(conf);
 
          col.getSched().answerCard(c, 1);
@@ -4167,7 +4167,7 @@ assertEquals( 9, col.getSched().newCount );
          c.startTimer();
          c.flush();
          DeckConfig conf = col.getSched()._cardConf(c);
-         conf["lapse"].put("mult", 0.5);
+         conf.getJSONObject("lapse").put("mult", 0.5);
          col.getDecks().save(conf);
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 1);
@@ -4224,7 +4224,7 @@ assertEquals( 9, col.getSched().newCount );
          c.getDue() = 0;
          c.flush();
          DeckConfig conf = col.getSched()._cardConf(c);
-         conf["lapse"].put("mult", 0.5);
+         conf.getJSONObject("lapse").put("mult", 0.5);
          col.getDecks().save(conf);
          col.getSched().reset();
          Card c = col.getSched().getCard();
