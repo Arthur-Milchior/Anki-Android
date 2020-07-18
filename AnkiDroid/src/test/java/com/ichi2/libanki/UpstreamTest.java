@@ -142,10 +142,11 @@ public class UpstreamTest extends RobolectricTest {
          col.close();
 
          // non-writeable dir
-         if isWin:
+         if (isWin) {
              String dir = "c:\root.anki2";
-         else:
+         } else {
              String dir = "/attachroot.anki2";
+         }
          assertException(Exception, lambda: aopen(dir));
          // reuse tmp file from before, test non-writeable file
          os.chmod(newPath, 0);
@@ -774,9 +775,9 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(col.findCards("prop:ease>2").size() == 1);
          assertTrue(col.findCards("-prop:ease>2").size() > 1);
          // recently failed
-         if not isNearCutoff():
-         assertTrue(col.findCards("rated:1:1").size() == 0);
-         assertTrue(col.findCards("rated:1:2").size() == 0);
+         if (not isNearCutoff()) {
+             assertTrue(col.findCards("rated:1:1").size() == 0);
+             assertTrue(col.findCards("rated:1:2").size() == 0);
              Card c = col.getSched().getCard();
              col.getSched().answerCard(c, 2);
              assertTrue(col.findCards("rated:1:1").size() == 0);
@@ -793,8 +794,9 @@ public class UpstreamTest extends RobolectricTest {
              col.getDb().execute("update cards set long id = id - 86400*1000 where long id = ?", id);
              assertTrue(col.findCards("added:1").size() == col.cardCount() - 1);
              assertTrue(col.findCards("added:2").size() == col.cardCount());
-         else:
+         } else {
              print("some find tests disabled near cutoff");
+         }
          // empty field
              assertTrue(col.findCards("front:").size() == 0);
          Note note = col.newNote();
@@ -1658,10 +1660,11 @@ note.setItem("Back","abc2");
          // .cards() returns cards in order
          assertTrue(note.cards().get(0).getId() == c1.getId());
          // delete first card
-         map = {0: null, 1: 1}
-         if isWin:
+         map = {0: null, 1: 1};
+         if (isWin) {
              // The low precision timer on Windows reveals a race condition
              time.sleep(0.05);
+         }
          col.getModels().change(basic, [note.getId()], basic, null, map);
          note.load();
          c0.load();
@@ -1704,9 +1707,10 @@ note.setItem("Back","abc2");
      @Test
      public void test_req(){
          def reqSize(model):
-         if model.put("type",= MODEL_CLOZE):
-                 return;
-             assertTrue(model["tmpls"].size() == model["req"].size());
+         if (model.put("type",= MODEL_CLOZE)) {
+             return;
+         }
+         assertTrue(model["tmpls"].size() == model["req"].size());
 
          Collection col = getCol();
          Models mm = col.getModels();
@@ -1751,8 +1755,9 @@ note.setItem("Back","abc2");
      @Test
      public void test_clock(){
          Collection col = getCol();
-         if (col.getSched().dayCutoff - intTime()) < 10 * 60:
+         if ((col.getSched().dayCutoff - intTime()) < 10 * 60) {
              raise Exception("Unit tests will fail around the day rollover.");
+         }
      }
 
      private boolean checkRevIvl(col, c, targetIvl) {
@@ -2818,13 +2823,14 @@ note.setItem("Back","abc2");
          assertTrue(note2.cards().get(0).due == 2);
          found = false;
          // 50/50 chance of being reordered
-         for (int i=0; i < 2; i++0 {
+         for (int i=0; i < 2; i++0) {
              col.getSched().randomizeCards(1);
-             if note.cards().get(0).due != note.getId():
+             if (note.cards().get(0).due != note.getId()) {
                  found = true;
                  break;
-                 assertTrue(found);
+             }
          }
+         assertTrue(found);
          col.getSched().orderCards(1);
          assertTrue(note.cards().get(0).due == 1);
          // shifting
@@ -2943,8 +2949,9 @@ note.setItem("Back","abc2");
      @Test
      public void test_clock(){
          Collection col = getCol();
-         if (col.getSched().dayCutoff - intTime()) < 10 * 60:
+         if ((col.getSched().dayCutoff - intTime()) < 10 * 60) {
              raise Exception("Unit tests will fail around the day rollover.");
+         }
 
 
      private boolean checkRevIvl(col, c, targetIvl):
@@ -4052,11 +4059,12 @@ note.setItem("Back","abc2");
          // 50/50 chance of being reordered
          for (int i=0; i < 20; i++) {
              col.getSched().randomizeCards(1);
-             if note.cards().get(0).due != note.getId():
+             if (note.cards().get(0).due != note.getId()) {
                  found = true;
                  break;
-                 assertTrue(found);
+             }
          }
+         assertTrue(found);
          col.getSched().orderCards(1);
          assertTrue(note.cards().get(0).due == 1);
          // shifting
