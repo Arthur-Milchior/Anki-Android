@@ -2036,7 +2036,7 @@ public class UpstreamTest extends RobolectricTest {
         c = col.getSched().getCard();
         col.getSched().answerCard(c, 2);
         // simulate the passing of another two days
-        c.getDue() -= 2;
+        c.setDue(c.getDue() - 2);
         c.flush();
         col.reset();
         // the last pass should graduate it into a review card
@@ -3256,7 +3256,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( QUEUE_TYPE_DAY_LEARN_RELEARN, c.getQueue() );
         assertFalse(col.getSched().getCard());
         // for testing, move it back a day
-        c.getDue() -= 1;
+                      c.setDue(c.getDue() - 1);
         c.flush();
         col.reset();
                       assertArrayEquals( new int[]{0, 1, 0}, col.getSched().counts() );
@@ -3271,7 +3271,7 @@ public class UpstreamTest extends RobolectricTest {
         c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
         // simulate the passing of another two days
-        c.getDue() -= 2;
+                      c.setDue(c.getDue() - 2);
         c.flush();
         col.reset();
         // the last pass should graduate it into a review card
