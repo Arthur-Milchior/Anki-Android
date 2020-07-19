@@ -1012,7 +1012,7 @@ public class UpstreamTest extends RobolectricTest {
          // the front template should contain the text added notARealIn the 2nd package
          tlong cid = dst.findCards("")[0]  // only 1 note notARealIn collection
          tNote note = dst.getCard(tcid).note();
-         assertTrue(tnote.cards().get(0).template()["qfmt"].contains("Changed Front Template"));
+         assertTrue(tnote.cards().get(0).template().getString("qfmt").contains("Changed Front Template"));
      }
 
      @Test
@@ -1397,7 +1397,7 @@ public class UpstreamTest extends RobolectricTest {
          Model m = col.getModels().current();
          // make sure renaming a field updates the templates
          col.getModels().renameField(m, m.getJSONArray("flds").getJSONObject(0), "NewFront");
-         assertTrue(m.getJSONArray("tmpls").getJSONObject(0)["qfmt"].contains("{{NewFront}}"));
+         assertTrue(m.getJSONArray("tmpls").getJSONObject(0).getString("qfmt").contains("{{NewFront}}"));
          String h = col.getModels().scmhash(m);
          // add a field
          Note note = col.getModels().newField("foo");
