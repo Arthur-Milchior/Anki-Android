@@ -243,7 +243,7 @@ public class UpstreamTest extends RobolectricTest {
          int stdModelSize = StdModels.stdModels.length;
          assertEquals(col.getModels().all().size(), stdModelSize);
          for (int i = 0; i < 100; i++) {
-             StdModels.addBasicModel(col);
+             StdModels.basicModel.add(col);
          }
          assertEquals(col.getModels().all().size(), 100 + stdModelSize);
      }
