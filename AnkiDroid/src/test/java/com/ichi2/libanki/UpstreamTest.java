@@ -9,6 +9,7 @@ import com.ichi2.anki.exception.ConfirmModSchemaException;
 import com.ichi2.anki.exception.DeckRenameException;
 import com.ichi2.libanki.sched.AbstractSched;
 import com.ichi2.utils.Assert;
+import com.ichi2.utils.JSONArray;
 import com.ichi2.utils.JSONObject;
 
 import org.apache.http.util.Asserts;
@@ -1739,30 +1740,37 @@ public class UpstreamTest extends RobolectricTest {
          Model basic = mm.byName("Basic");
          assertTrue(basic.has("req"));
          reqSize(basic);
-         r = basic.getJSONArray("req")[0];
-         assertEquals( 0, r[0] );
-         assertTrue(r("any", "all").contains(new [] {1}));
-         assertEquals(new long []0}, r[2] );
-         opt = mm.byName("Basic (optional reversed card)");
+         JSONArray r = basic.getJSONArray("req").getJSONArray(0);
+         assertEquals( 0, r.getInt(0) );
+         assertTrue(Arrays.asList(new String[]{"any", "all"}).contains(r.getString(1)));
+         assertEquals(1, r.getJSONArray(2).length());
+         assertEquals(0, r.getJSONArray(2).getInt(0));
+
+         Model opt = mm.byName("Basic (optional reversed card)");
          reqSize(opt);
-         r = opt.getJSONArray("req")[0];
-        assertTrue(r("any", "all").contains(new [] {1}));
-         assertEquals(new long []0}, r[2] );
-         assertEquals(new long []1, "all", [1, 2]}, opt.getJSONArray("req")[1] );
+
+         r = opt.getJSONArray("req").getJSONArray(0);
+         assertTrue(Arrays.asList(new String[]{"any", "all"}).contains(r.getString(1)));
+         assertEquals(1, r.getJSONArray(2).length());
+         assertEquals(0, r.getJSONArray(2).getInt(0));
+
+
+         assertEquals(new JSONArray("[1,\"all\",[1,2]]"), opt.getJSONArray("req").getJSONArray(1));
+
          // testing any
          opt.getJSONArray("tmpls").getJSONObject(1).put("qfmt", "{{Back}}{{Add Reverse}}");
          mm.save(opt, true);
-         assertEquals(new long []1, "any", [1, 2]}, opt.getJSONArray("req")[1] );
+         assertEquals(new JSONArray("[1, \"any\", [1, 2]]"), opt.getJSONArray("req").getJSONArray(1) );
          // testing null
          opt.getJSONArray("tmpls").getJSONObject(1).put("qfmt", "{{^Add Reverse}}{{/Add Reverse}}");
          mm.save(opt, true);
-         assertEquals(new long []1, "none", []}, opt.getJSONArray("req")[1] );
+         assertEquals(new JSONArray("[1, \"none\", []]"), opt.getJSONArray("req").getJSONArray(1) );
 
-         opt = mm.byName("Basic (the answer)".contains(type));
+         opt = mm.byName("Basic (type in the answer)");
          reqSize(opt);
-         r = opt.getJSONArray("req")[0];
-         assertTrue(r("any", "all").contains(new [] {1}));
-         assertEquals(new long []0, 1}, r[2] );
+         r = opt.getJSONArray("req").getJSONArray(0);
+         assertTrue(Arrays.asList(new String[]{"any", "all"}).contains(r.getString(1)));
+         assertEquals(new JSONArray("[0, 1]"), r.getJSONArray(2) );
      }
 
      /*****************
