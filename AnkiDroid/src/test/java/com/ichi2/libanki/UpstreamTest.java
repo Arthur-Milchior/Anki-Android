@@ -2099,7 +2099,7 @@ public class UpstreamTest extends RobolectricTest {
         // factor should have been decremented
         assertEquals( 2300, c.getFactor() );
         // check counters
-        assertEquals( 2, c.lapses );
+        assertEquals( 2, c.getLapses() );
         assertEquals( 4, c.reps );
         // check ests.
         
@@ -2117,7 +2117,7 @@ public class UpstreamTest extends RobolectricTest {
         // factor should have been decremented
         assertEquals( 2350, c.getFactor() );
         // check counters
-        assertEquals( 1, c.lapses );
+        assertEquals( 1, c.getLapses() );
         assertEquals( 4, c.reps );
         // ease 3
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3327,7 +3327,7 @@ public class UpstreamTest extends RobolectricTest {
         // factor should have been decremented
         assertEquals( 2350, c.getFactor() );
         // check counters
-        assertEquals( 1, c.lapses );
+        assertEquals( 1, c.getLapses() );
         assertEquals( 4, c.reps );
         // ease 3
         ////////////////////////////////////////////////////////////////////////////////////////////////////
