@@ -9,6 +9,7 @@ import com.ichi2.anki.RobolectricTest;
 import com.ichi2.anki.exception.ConfirmModSchemaException;
 import com.ichi2.anki.exception.DeckRenameException;
 import com.ichi2.libanki.sched.AbstractSched;
+import com.ichi2.libanki.sched.Sched;
 import com.ichi2.utils.Assert;
 import com.ichi2.utils.JSONArray;
 import com.ichi2.utils.JSONObject;
@@ -1959,7 +1960,7 @@ public class UpstreamTest extends RobolectricTest {
         c.setQueue(QUEUE_TYPE_LRN);
         c.setODue(321);
         c.flush();
-        col.getSched().removeLrn();
+        ((Sched)col.getSched()).removeLrn();
         c.load();
         assertEquals( QUEUE_TYPE_REV, c.getQueue() );
         assertEquals( 321, c.getDue() );
