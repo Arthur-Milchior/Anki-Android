@@ -1559,11 +1559,9 @@ public class UpstreamTest extends RobolectricTest {
          note = col.newNote();
          note.setItem("Text","a {{c1::b}} {{c1::c}}");
          assertEquals( 1, col.addNote(note) );
-         assertTrue((.contains("<span class=cloze>b</span> <span class=cloze>c</span>"));
-             note.cards().get(0).a();
-     );
+         assertTrue(note.cards().get(0).a().contains("<span class=cloze>b</span> <span class=cloze>c</span>"));
          // if we add another cloze, a card should be generated
-         cnt = col.cardCount();
+         int cnt = col.cardCount();
          note.setItem("Text","{{c2::hello}} {{c1::foo}}");
          note.flush();
          assertEquals( cnt + 1, col.cardCount() );
