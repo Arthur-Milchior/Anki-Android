@@ -1,5 +1,6 @@
 package com.ichi2.libanki;
 
+import android.icu.util.Calendar;
 import android.util.Pair;
 
 import com.ichi2.anki.RobolectricTest;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import timber.log.Timber;
 
 import static com.ichi2.libanki.Consts.*;
 import static org.hamcrest.MatcherAssert.*;
@@ -608,6 +610,11 @@ public class UpstreamTest extends RobolectricTest {
       ** Find         *
       *****************/
 
+     public boolean isNearCutoff() {
+         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+         return hour >= 2 && hour < 4;
+     }
+
      @Test
      public void test_findCards(){
          Collection col = getCol();
@@ -813,7 +820,7 @@ public class UpstreamTest extends RobolectricTest {
              assertEquals( col.cardCount(, col.findCards("added:1").size() ) - 1);
              assertEquals( col.cardCount(, col.findCards("added:2").size() ));
          } else {
-             print("some find tests disabled near cutoff");
+             Timber.w("some find tests disabled near cutoff");
          }
          // empty field
          assertEquals( 0, col.findCards("front:").size() );
