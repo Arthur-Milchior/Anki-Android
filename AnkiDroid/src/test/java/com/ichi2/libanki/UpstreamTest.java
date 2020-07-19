@@ -1888,7 +1888,7 @@ public class UpstreamTest extends RobolectricTest {
     }
      
      @Test
-     public void test_learn()  throws Exception {
+     public void test_learnV1()  throws Exception {
         Collection col = getColV1();
         // add a note
         Note note = col.newNote();
@@ -1967,7 +1967,7 @@ public class UpstreamTest extends RobolectricTest {
     }
      
      @Test
-     public void test_learn_collapsed() throws Exception{
+     public void test_learn_collapsedV1() throws Exception{
         Collection col = getColV1();
         // add 2 notes
         Note note = col.newNote();
@@ -3086,7 +3086,7 @@ public class UpstreamTest extends RobolectricTest {
     }
      
     @Test
-    public void test_learn()  throws Exception throws Exception {
+    public void test_learnV2()  throws Exception throws Exception {
         Collection col = getColV2();
         // add a note
         Note note = col.newNote();
@@ -3201,8 +3201,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( CARD_TYPE_REV && c.setType( QUEUE_TYPE_REV, c.getQueue() ));
     }
         
-        @Test
-            public void test_learn_collapsed() throws Exception {
+    @Test
+    public void test_learn_collapsedV2() throws Exception {
         Collection col = getColV2();
         // add 2 notes
         Note note = col.newNote();
