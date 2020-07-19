@@ -1723,13 +1723,16 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 1, col.getDb().queryScalar("select count() from cards where nid = ?", new Object[] {note.getId()}));
      }
 
+
+    private void reqSize(Model model) {
+        if (model.getInt("type") == MODEL_CLOZE) {
+            return;
+        }
+        assertEquals(model.getJSONArray("req").length(), model.getJSONArray("tmpls").length());
+    }
+
      @Test
      public void test_req(){
-         def reqSize(model):
-         if (model.put("type",= MODEL_CLOZE)) {
-             return;
-         }
-         assertEquals( model["req"].size(, model.getJSONArray("tmpls").size() ));
 
          Collection col = getCol();
          Models mm = col.getModels();
