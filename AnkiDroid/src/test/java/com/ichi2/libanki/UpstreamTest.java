@@ -1967,7 +1967,7 @@ public class UpstreamTest extends RobolectricTest {
     }
      
      @Test
-         public void test_learn_collapsed(){
+     public void test_learn_collapsed() throws Exception{
         Collection col = getColV1();
         // add 2 notes
         Note note = col.newNote();
@@ -1995,7 +1995,7 @@ public class UpstreamTest extends RobolectricTest {
     }
      
      @Test
-         public void test_learn_day(){
+     public void test_learn_day() throws Exception{
         Collection col = getColV1();
         // add a note
         Note note = col.newNote();
@@ -2059,8 +2059,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( (0, 0, 0, col.getSched().counts() ));
     }
             
-            @Test
-            public void test_reviews(){
+    @Test
+    public void test_reviews() throws Exception{
         Collection col = getColV1();
         // add a note
         Note note = col.newNote();
@@ -2141,8 +2141,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 2650, c.factor );
     }
         
-        @Test
-            public void test_button_spacing(){
+    @Test
+    public void test_button_spacing() throws Exception{
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2164,8 +2164,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( "4d", wo(ni(c, 4)) );
     }
         
-        @Test
-            public void test_overdue_lapse(){
+    @Test
+    public void test_overdue_lapse() throws Exception {
         // disabled notARealIn commit 3069729776990980f34c25be66410e947e9d51a2
         return;
         Collection col = getColV1()  // pylint: disable=unreachable
@@ -2201,8 +2201,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( (0, 0, 1, col.getSched().counts() ));
     }
         
-        @Test
-            public void test_finished(){
+    @Test
+    public void test_finished() throws Exception {
         Collection col = getColV1();
         // nothing due
         assertTrue(col.getSched().finishedMsg().contains("Congratulations"));
@@ -2223,8 +2223,8 @@ public class UpstreamTest extends RobolectricTest {
         assertFalse(col.getSched().finishedMsg().contains("limit"));
     }
         
-        @Test
-            public void test_nextIvl(){
+    @Test
+    public void test_nextIvl() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2284,8 +2284,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( "10.8mo", without_unicode_isolation(col.getSched().nextIvlStr(c, 4)) );
     }
         
-        @Test
-            public void test_misc(){
+    @Test
+        public void test_misc() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2300,8 +2300,8 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(col.getSched().getCard());
     }
         
-        @Test
-            public void test_suspend(){
+    @Test
+        public void test_suspend() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2350,7 +2350,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_cram(){
+            public void test_cram() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2463,7 +2463,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_cram_rem(){
+            public void test_cram_rem() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2487,7 +2487,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_cram_resched(){
+            public void test_cram_resched() throws Exception {
         // add card
         Collection col = getColV1();
         Note note = col.newNote();
@@ -2597,7 +2597,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_ordcycle(){
+            public void test_ordcycle() throws Exception {
         Collection col = getColV1();
         // add two more templates and set second active
         Model m = col.getModels().current();
@@ -2625,7 +2625,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_counts_idx(){
+            public void test_counts_idx() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2650,7 +2650,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_repCounts(){
+            public void test_repCounts() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2704,7 +2704,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_timing(){
+            public void test_timing() throws Exception {
         Collection col = getColV1();
         // add a few review cards, due today
         for (int i=0; i < 5; i++) {
@@ -2741,7 +2741,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_collapse(){
+            public void test_collapse() throws Exception {
         Collection col = getColV1();
         // add a note
         Note note = col.newNote();
@@ -2757,7 +2757,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_deckDue(){
+            public void test_deckDue() throws Exception {
         Collection col = getColV1();
         // add a note with default deck
         Note note = col.newNote();
@@ -2804,7 +2804,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_deckFlow(){
+            public void test_deckFlow() throws Exception {
         Collection col = getColV1();
         // add a note with default deck
         Note note = col.newNote();
@@ -2831,7 +2831,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_reorder(){
+            public void test_reorder() throws Exception {
         Collection col = getColV1();
         // add a note with default deck
         Note note = col.newNote();
@@ -2872,7 +2872,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_forget(){
+            public void test_forget() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2891,7 +2891,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_resched(){
+            public void test_resched() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2910,7 +2910,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_norelearn(){
+            public void test_norelearn() throws Exception {
         Collection col = getColV1();
         // add a note
         Note note = col.newNote();
@@ -2933,7 +2933,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_failmult()  {
+            public void test_failmult()   throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2968,7 +2968,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_clock() throws Exception {
+            public void test_clock() throws Exception  throws Exception {
         Collection col = getColV2();
         if ((col.getSched().getDayCutoff() - intTime()) < 10 * 60) {
         throw new Exception("Unit tests will fail around the day rollover.");
@@ -2981,14 +2981,14 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_basics() throws Exception {
+            public void test_basics() throws Exception  throws Exception {
         Collection col = getColV1();
         col.reset();
         assertNull(col.getSched().getCard());
     }
         
         @Test
-            public void test_new_v2()  throws Exception{
+            public void test_new_v2()  throws Exception throws Exception {
         Collection col = getColV2();
         col.reset();
         // assertEquals( 0, col.getSched().newCount );TODO: newCount getter
@@ -3036,7 +3036,7 @@ public class UpstreamTest extends RobolectricTest {
             }
         
         @Test
-            public void test_newLimits_V2()  throws Exception{
+            public void test_newLimits_V2()  throws Exception throws Exception {
         Collection col = getColV2();
         // add some notes
         deck2 = col.getDecks().id("Default::foo");
@@ -3069,7 +3069,7 @@ public class UpstreamTest extends RobolectricTest {
     }
      
      @Test
-         public void test_newBoxes_v2()  throws Exception{
+         public void test_newBoxes_v2()  throws Exception throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3086,8 +3086,8 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 2);
     }
      
-     @Test
-         public void test_learn()  throws Exception{
+    @Test
+    public void test_learn()  throws Exception throws Exception {
         Collection col = getColV2();
         // add a note
         Note note = col.newNote();
@@ -3151,7 +3151,7 @@ public class UpstreamTest extends RobolectricTest {
     }
             
             @Test
-            public void test_relearn(){
+            public void test_relearn() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3179,7 +3179,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_relearn_no_steps(){
+            public void test_relearn_no_steps() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3203,7 +3203,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_learn_collapsed(){
+            public void test_learn_collapsed() throws Exception {
         Collection col = getColV2();
         // add 2 notes
         Note note = col.newNote();
@@ -3231,7 +3231,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-     public void test_learn_day(){
+     public void test_learn_day() throws Exception {
         Collection col = getColV2();
         // add a note
         Note note = col.newNote();
@@ -3295,7 +3295,7 @@ public class UpstreamTest extends RobolectricTest {
     }
             
             @Test
-            public void test_reviews(){
+            public void test_reviews() throws Exception {
         Collection col = getColV2();
         // add a note
         Note note = col.newNote();
@@ -3373,7 +3373,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_review_limits(){
+            public void test_review_limits() throws Exception {
         Collection col=getColV2();
         
         parent=col.getDecks().get(col.getDecks().id("parent"));
@@ -3429,7 +3429,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_button_spacing(){
+     public void test_button_spacing() throws Exception {
          Collection col = getColV2();
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -3458,7 +3458,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_overdue_lapse(){
+     public void test_overdue_lapse() throws Exception {
          // disabled notARealIn commit 3069729776990980f34c25be66410e947e9d51a2
          return;
          Collection col = getColV2()  // pylint: disable=unreachable
@@ -3495,7 +3495,7 @@ public class UpstreamTest extends RobolectricTest {
     }
      
      @Test
-         public void test_finished(){
+         public void test_finished() throws Exception {
         Collection col = getColV2();
         // nothing due
         assertTrue(col.getSched().finishedMsg().contains("Congratulations"));
@@ -3517,7 +3517,7 @@ public class UpstreamTest extends RobolectricTest {
     }
      
      @Test
-         public void test_nextIvl(){
+         public void test_nextIvl() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3581,7 +3581,7 @@ public class UpstreamTest extends RobolectricTest {
     }
             
             @Test
-            public void test_bury(){
+            public void test_bury() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3625,7 +3625,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_suspend(){
+            public void test_suspend() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3676,7 +3676,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_filt_reviewing_early_normal(){
+            public void test_filt_reviewing_early_normal() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3733,7 +3733,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_filt_keep_lrn_state(){
+            public void test_filt_keep_lrn_state() throws Exception {
         Collection col = getColV2();
         
         Note note = col.newNote();
@@ -3778,7 +3778,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_preview(){
+            public void test_preview() throws Exception {
         // add cards
         Collection col = getColV2();
         Note note = col.newNote();
@@ -3829,7 +3829,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_ordcycle(){
+            public void test_ordcycle() throws Exception {
         Collection col = getColV2();
         // add two more templates and set second active
         Model m = col.getModels().current();
@@ -3857,7 +3857,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_counts_idx(){
+            public void test_counts_idx() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3882,7 +3882,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_repCounts(){
+            public void test_repCounts() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3936,7 +3936,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_timing(){
+            public void test_timing() throws Exception {
         Collection col = getColV2();
         // add a few review cards, due today
         for (int i=0; i < 5; i++){
@@ -3965,7 +3965,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_collapse(){
+            public void test_collapse() throws Exception {
         Collection col = getColV2();
         // add a note
         Note note = col.newNote();
@@ -3981,7 +3981,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_deckDue(){
+            public void test_deckDue() throws Exception {
         Collection col = getColV2();
         // add a note with default deck
         Note note = col.newNote();
@@ -4028,7 +4028,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_deckTree(){
+            public void test_deckTree() throws Exception {
         Collection col = getColV2();
         col.getDecks().id("new::b::c");
         col.getDecks().id("new2");
@@ -4039,7 +4039,7 @@ public class UpstreamTest extends RobolectricTest {
     }
             
             @Test
-            public void test_deckFlow(){
+            public void test_deckFlow() throws Exception {
         Collection col = getColV2();
         // add a note with default deck
         Note note = col.newNote();
@@ -4066,7 +4066,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_reorder(){
+            public void test_reorder() throws Exception {
         Collection col = getColV2();
         // add a note with default deck
         Note note = col.newNote();
@@ -4107,7 +4107,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_forget(){
+            public void test_forget() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -4126,7 +4126,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_resched(){
+            public void test_resched() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -4144,7 +4144,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_norelearn(){
+            public void test_norelearn() throws Exception {
         Collection col = getColV2();
         // add a note
         Note note = col.newNote();
@@ -4167,7 +4167,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_failmult(){
+            public void test_failmult() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -4194,7 +4194,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_moveVersions(){
+            public void test_moveVersions() throws Exception {
         Collection col = getColV2();
         col.changeSchedulerVer(1);
         
@@ -4255,7 +4255,7 @@ public class UpstreamTest extends RobolectricTest {
         // cards with a due date earlier than the collection should retain
         // their due date when removed
         @Test
-            public void test_negativeDueFilter(){
+            public void test_negativeDueFilter() throws Exception {
         Collection col = getColV2();
         
         // card due prior to collection date
@@ -4284,7 +4284,7 @@ public class UpstreamTest extends RobolectricTest {
         // and it should be logged properly
         
         @Test
-            public void test_initial_repeat(){
+            public void test_initial_repeat() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -4307,7 +4307,7 @@ public class UpstreamTest extends RobolectricTest {
         *****************/
         
         @Test
-            public void test_stats(){
+            public void test_stats() throws Exception {
         Collection col = getCol();
         Note note = col.newNote();
         note.setItem("Front","foo");
@@ -4323,13 +4323,13 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_graphs_empty(){
+            public void test_graphs_empty() throws Exception {
         Collection col = getCol();
         assertTrue(col.stats().report());
     }
         
         @Test
-            public void test_graphs(){
+            public void test_graphs() throws Exception {
         dir = tempfile.gettempdir();
         Collection col = getCol();
         g = col.stats();
@@ -4343,7 +4343,7 @@ public class UpstreamTest extends RobolectricTest {
         *****************/
         
         @Test
-            public void test_deferred_frontside(){
+            public void test_deferred_frontside() throws Exception {
         Collection col = getCol();
         Model m = col.getModels().current();
         m.getJSONArray("tmpls").getJSONObject(0).put("qfmt", "{{custom:Front}}");
@@ -4359,15 +4359,9 @@ public class UpstreamTest extends RobolectricTest {
         /*****************
         ** Undo         *
         *****************/
-        private Collection getCol(){
-        Collection col = getColOrig();
-        col.changeSchedulerVer(2);
-        return col;
-    }
-        
         @Test
-            public void test_op(){
-        Collection col = getCol();
+            public void test_op() throws Exception {
+        Collection col = getColV2();
         // should have no undo by default
         assertFalse(col.undoName());
         // let's adjust a study option
@@ -4399,8 +4393,8 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_review(){
-        Collection col = getCol();
+            public void test_review() throws Exception {
+        Collection col = getColV2);
         col.getConf().put("counts", COUNT_REMAINING);
         Note note = col.newNote();
         note.setItem("Front","one");
