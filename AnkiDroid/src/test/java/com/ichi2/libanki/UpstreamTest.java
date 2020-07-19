@@ -1226,7 +1226,7 @@ public class UpstreamTest extends RobolectricTest {
         long cid = col.getDb().queryLongScalar("select id from cards");
         Card c = col.getCard(cid);
         // Applies A Factor-to-E Factor conversion
-        assertEquals( 2879, c.factor );
+        assertEquals( 2879, c.getFactor() );
         assertEquals( 7, c.reps );
         col.close();
     }
@@ -2097,7 +2097,7 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(c.getDue() >= Utils.now());
         assertTrue((c.getDue() - Utils.now()) > 118);
         // factor should have been decremented
-        assertEquals( 2300, c.factor );
+        assertEquals( 2300, c.getFactor() );
         // check counters
         assertEquals( 2, c.lapses );
         assertEquals( 4, c.reps );
@@ -2115,7 +2115,7 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(checkRevIvl(col, c, 122));
         assertEquals( col.getSched(, c.getDue() ).getToday() + c.getIvl());
         // factor should have been decremented
-        assertEquals( 2350, c.factor );
+        assertEquals( 2350, c.getFactor() );
         // check counters
         assertEquals( 1, c.lapses );
         assertEquals( 4, c.reps );
@@ -2128,7 +2128,7 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(checkRevIvl(col, c, 260));
         assertEquals( col.getSched(, c.getDue() ).getToday() + c.getIvl());
         // factor should have been left alone
-        assertEquals( STARTING_FACTOR, c.factor );
+        assertEquals( STARTING_FACTOR, c.getFactor() );
         // ease 4
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         c = copy.copy(cardcopy);
@@ -2138,7 +2138,7 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(checkRevIvl(col, c, 351));
         assertEquals( col.getSched(, c.getDue() ).getToday() + c.getIvl());
         // factor should have been increased
-        assertEquals( 2650, c.factor );
+        assertEquals( 2650, c.getFactor() );
     }
         
     @Test
@@ -3325,7 +3325,7 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(checkRevIvl(col, c, 120));
         assertEquals( col.getSched(, c.getDue() ).getToday() + c.getIvl());
         // factor should have been decremented
-        assertEquals( 2350, c.factor );
+        assertEquals( 2350, c.getFactor() );
         // check counters
         assertEquals( 1, c.lapses );
         assertEquals( 4, c.reps );
@@ -3338,7 +3338,7 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(checkRevIvl(col, c, 260));
         assertEquals( col.getSched(, c.getDue() ).getToday() + c.getIvl());
         // factor should have been left alone
-        assertEquals( STARTING_FACTOR, c.factor );
+        assertEquals( STARTING_FACTOR, c.getFactor() );
         // ease 4
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         c = copy.copy(cardcopy);
@@ -3348,7 +3348,7 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(checkRevIvl(col, c, 351));
         assertEquals( col.getSched(, c.getDue() ).getToday() + c.getIvl());
         // factor should have been increased
-        assertEquals( 2650, c.factor );
+        assertEquals( 2650, c.getFactor() );
         // leech handling
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         DeckConfig conf = col.getDecks().getConf(1);
