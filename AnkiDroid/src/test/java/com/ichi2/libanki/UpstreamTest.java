@@ -1388,7 +1388,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_fields(){
+     public void test_fields() throws ConfirmModSchemaException {
          Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","1");
@@ -1400,13 +1400,13 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(m.getJSONArray("tmpls").getJSONObject(0).getString("qfmt").contains("{{NewFront}}"));
          String h = col.getModels().scmhash(m);
          // add a field
-         Note note = col.getModels().newField("foo");
-         col.getModels().addField(m, note);
+         JSONObject field = col.getModels().newField("foo");
+         col.getModels().addField(m, field);
          assertEquals( new String [] {"1", "2", ""}, col.getNote(col.getModels().nids(m)[0]).fields );
          assertNotEquals( h, col.getModels().scmhash(m) );
          // rename it
-         Note note = m.getJSONArray("flds").getJSONObject(2);
-         col.getModels().renameField(m, note, "bar");
+         field = m.getJSONArray("flds").getJSONObject(2);
+         col.getModels().renameField(m, field, "bar");
          assertTrue(col.getNote(col.getModels().nids(m)[0]).put("bar",= ""));
          // delete back
          col.getModels().remField(m, m.getJSONArray("flds").getJSONObject(1));
@@ -1418,9 +1418,9 @@ public class UpstreamTest extends RobolectricTest {
          col.getModels().moveField(m, m.getJSONArray("flds").getJSONObject(1), 0);
          assertEquals( new String [] {"1", ""}, col.getNote(col.getModels().nids(m)[0]).fields );
          // add another and put notARealIn middle
-         Note note = col.getModels().newField("baz");
-         col.getModels().addField(m, note);
-         Note note = col.getNote(col.getModels().nids(m)[0]);
+         field = col.getModels().newField("baz");
+         col.getModels().addField(m, field);
+         note = col.getNote(col.getModels().nids(m)[0]);
          note.setItem("baz","2");
          note.flush();
          assertEquals( new String [] {"1", "", "2"}, col.getNote(col.getModels().nids(m)[0]).fields );
