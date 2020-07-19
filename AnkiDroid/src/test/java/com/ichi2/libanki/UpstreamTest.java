@@ -1456,20 +1456,20 @@ public class UpstreamTest extends RobolectricTest {
          Card c = cards.get(0);
          Card c2 = cards.get(1);
          // first card should have first ord
-         assertEquals( 0, c.ord );
-         assertEquals( 1, c2.ord );
+         assertEquals( 0, c.getOrd() );
+         assertEquals( 1, c2.getOrd() );
          // switch templates
          col.getModels().moveTemplate(m, c.template(), 1);
          c.load();
          c2.load();
-         assertEquals( 1, c.ord );
-         assertEquals( 0, c2.ord );
+         assertEquals( 1, c.getOrd() );
+         assertEquals( 0, c2.getOrd() );
          // removing a template should delete its cards
          col.getModels().remTemplate(m, m.getJSONArray("tmpls").getJSONObject(0));
          assertEquals( 1, col.cardCount() );
          // and should have updated the other cards' ordinals
          c = note.cards().get(0);
-         assertEquals( 0, c.ord );
+         assertEquals( 0, c.getOrd() );
          assertEquals( "1", stripHTML(c.q()) );
          // it shouldn't be possible to orphan notes by removing templates
          JSONObject t = mm.newTemplate("template name");
@@ -1507,8 +1507,8 @@ public class UpstreamTest extends RobolectricTest {
          Card c = cards.get(0);
          Card c2 = cards.get(1);
          // first card should have first ord
-         assertEquals( 0, c.ord );
-         assertEquals( 1, c2.ord );
+         assertEquals( 0, c.getOrd() );
+         assertEquals( 1, c2.getOrd() );
      }
 
      @Test
@@ -1677,16 +1677,16 @@ public class UpstreamTest extends RobolectricTest {
          Card c1 = note.cards().get(1);
          assertTrue(c0.q().contains("b123"));
          assertTrue(c1.q().contains("note"));
-         assertEquals( 0, c0.ord );
-         assertEquals( 1, c1.ord );
+         assertEquals( 0, c0.getOrd() );
+         assertEquals( 1, c1.getOrd() );
          col.getModels().change(basic,new long []note.getId()}, basic, null, map);
          note.load();
          c0.load();
          c1.load();
          assertTrue(c0.q().contains("note"));
          assertTrue(c1.q().contains("b123"));
-         assertEquals( 1, c0.ord );
-         assertEquals( 0, c1.ord );
+         assertEquals( 1, c0.getOrd() );
+         assertEquals( 0, c1.getOrd() );
          // .cards() returns cards notARealIn order
          assertEquals( c1.getId(, note.cards().get(0).getId() ));
          // delete first card
@@ -2464,7 +2464,7 @@ public class UpstreamTest extends RobolectricTest {
          c2 = copy.deepcopy(c);
          c2.Collection col = c.Collection col = col;
          c2.getId() = 0;
-         c2.ord = 1;
+         c2.getOrd() = 1;
          c2.setDue(3)25;
          c2.Collection col = c.col;
          c2.flush();
@@ -2629,9 +2629,9 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 3, col.cardCount() );
          col.reset();
          // ordinals should arrive notARealIn order
-         assertEquals( 0, col.getSched().getCard().ord );
-         assertEquals( 1, col.getSched().getCard().ord );
-         assertEquals( 2, col.getSched().getCard().ord );
+         assertEquals( 0, col.getSched().getCard().getOrd() );
+         assertEquals( 1, col.getSched().getCard().getOrd() );
+         assertEquals( 2, col.getSched().getCard().getOrd() );
      }
 
      @Test
@@ -3860,9 +3860,9 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 3, col.cardCount() );
          col.reset();
          // ordinals should arrive notARealIn order
-         assertEquals( 0, col.getSched().getCard().ord );
-         assertEquals( 1, col.getSched().getCard().ord );
-         assertEquals( 2, col.getSched().getCard().ord );
+         assertEquals( 0, col.getSched().getCard().getOrd() );
+         assertEquals( 1, col.getSched().getCard().getOrd() );
+         assertEquals( 2, col.getSched().getCard().getOrd() );
      }
 
      @Test
