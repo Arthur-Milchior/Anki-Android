@@ -2076,7 +2076,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setDue(c)ol.getSched().today - 8;
          c.factor = STARTING_FACTOR;
          c.setReps(3);
-         c.lapses = 1;
+         c.setLapses(1);
          c.setIvl(100);
          c.startTimer();
          c.flush();
@@ -2920,7 +2920,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setDue(0);
          c.factor = STARTING_FACTOR;
          c.setReps(3);
-         c.lapses = 1;
+         c.setLapses(1);
          c.setIvl(100);
          c.startTimer();
          c.flush();
@@ -2944,7 +2944,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setDue(c)ol.getSched().today - c.getIvl();
          c.factor = STARTING_FACTOR;
          c.setReps(3);
-         c.lapses = 1;
+         c.setLapses(1);
          c.startTimer();
          c.flush();
          DeckConfig conf = col.getSched()._cardConf(c);
@@ -3307,7 +3307,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setDue(c)ol.getSched().today - 8;
          c.factor = STARTING_FACTOR;
          c.setReps(3);
-         c.lapses = 1;
+         c.setLapses(1);
          c.setIvl(100);
          c.startTimer();
          c.flush();
@@ -3354,7 +3354,7 @@ public class UpstreamTest extends RobolectricTest {
          conf.getJSONObject("lapse").put("leechAction", LEECH_SUSPEND);
          col.getDecks().save(conf);
          Card c = copy.copy(cardcopy);
-         c.lapses = 7;
+         c.setLapses(7);
          c.flush();
          // steup hook
          hooked = new [] {};
@@ -4154,7 +4154,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setDue(0);
          c.factor = STARTING_FACTOR;
          c.setReps(3);
-         c.lapses = 1;
+         c.setLapses(1);
          c.setIvl(100);
          c.startTimer();
          c.flush();
@@ -4178,7 +4178,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setDue(c)ol.getSched().today - c.getIvl();
          c.factor = STARTING_FACTOR;
          c.setReps(3);
-         c.lapses = 1;
+         c.setLapses(1);
          c.startTimer();
          c.flush();
          DeckConfig conf = col.getSched()._cardConf(c);
