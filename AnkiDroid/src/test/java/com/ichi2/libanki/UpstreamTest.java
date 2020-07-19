@@ -2151,7 +2151,7 @@ public class UpstreamTest extends RobolectricTest {
         Card c = note.cards().get(0);
         c.setType(CARD_TYPE_REV);
         c.setQueue(QUEUE_TYPE_REV);
-        c.setDue(c)ol.getSched().getToday();
+        c.setDue(col.getSched().getToday());
         c.setReps(1);
         c.setIvl(1);
         c.startTimer();
@@ -2359,7 +2359,7 @@ public class UpstreamTest extends RobolectricTest {
         c.setQueue(CARD_TYPE_REV);
         c.setType(QUEUE_TYPE_REV);
         // due notARealIn 25 days, so it's been waiting 75 days
-        c.setDue(c)ol.getSched().getToday() + 25;
+        c.setDue(col.getSched().getToday() + 25);
         c.setMod(1);
         c.setFactor(STARTING_FACTOR);
         c.startTimer();
@@ -2513,7 +2513,7 @@ public class UpstreamTest extends RobolectricTest {
         c.setIvl(100);
         c.setQueue(CARD_TYPE_REV);
         c.setType(QUEUE_TYPE_REV);
-        c.setDue(c)ol.getSched().getToday() + 25;
+        c.setDue(col.getSched().getToday() + 25);
         c.setFactor(STARTING_FACTOR);
         c.flush();
         cardcopy = c.clone();
@@ -2694,7 +2694,7 @@ public class UpstreamTest extends RobolectricTest {
         Card c = note.cards().get(0);
         c.setType(CARD_TYPE_REV);
         c.setQueue(QUEUE_TYPE_REV);
-        c.setDue(c)ol.getSched().getToday();
+        c.setDue(col.getSched().getToday());
         c.flush();
         col.reset();
         assertArrayEquals( new int[]{0, 0, 1}, col.getSched().counts() );
@@ -3157,7 +3157,7 @@ public class UpstreamTest extends RobolectricTest {
         col.addNote(note);
         Card c = note.cards().get(0);
         c.setIvl(100);
-        c.setDue(c)ol.getSched().getToday();
+        c.setDue(col.getSched().getToday());
         c.setQueue(CARD_TYPE_REV);
         c.setType(QUEUE_TYPE_REV);
         c.flush();
@@ -3185,7 +3185,7 @@ public class UpstreamTest extends RobolectricTest {
         col.addNote(note);
         Card c = note.cards().get(0);
         c.setIvl(100);
-        c.setDue(c)ol.getSched().getToday();
+        c.setDue(col.getSched().getToday());
         c.setQueue(CARD_TYPE_REV);
         c.setType(QUEUE_TYPE_REV);
         c.flush();
@@ -3305,7 +3305,7 @@ public class UpstreamTest extends RobolectricTest {
         Card c = note.cards().get(0);
         c.setType(CARD_TYPE_REV);
         c.setQueue(QUEUE_TYPE_REV);
-        c.setDue(c)ol.getSched().getToday() - 8;
+        c.setDue(col.getSched().getToday() - 8);
         c.setFactor(STARTING_FACTOR);
         c.setReps(3);
         c.setLapses(1);
@@ -3437,7 +3437,7 @@ public class UpstreamTest extends RobolectricTest {
          Card c = note.cards().get(0);
          c.setType(CARD_TYPE_REV);
          c.setQueue(QUEUE_TYPE_REV);
-         c.setDue(c)ol.getSched().getToday();
+         c.setDue(col.getSched().getToday());
          c.setReps(1);
          c.setIvl(1);
          c.startTimer();
@@ -3684,7 +3684,7 @@ public class UpstreamTest extends RobolectricTest {
         c.setQueue(CARD_TYPE_REV);
         c.setType(QUEUE_TYPE_REV);
         // due notARealIn 25 days, so it's been waiting 75 days
-        c.setDue(c)ol.getSched().getToday() + 25;
+        c.setDue(col.getSched().getToday() + 25);
         c.setMod(1);
         c.setFactor(STARTING_FACTOR);
         c.startTimer();
@@ -3719,7 +3719,7 @@ public class UpstreamTest extends RobolectricTest {
         
         // due notARealIn 75 days, so it's been waiting 25 days
         c.setIvl(100);
-        c.setDue(c)ol.getSched().getToday() + 75;
+        c.setDue(col.getSched().getToday() + 75);
         c.flush();
         col.getSched().rebuildDyn(did);
         col.reset();
@@ -3925,7 +3925,7 @@ public class UpstreamTest extends RobolectricTest {
         Card c = note.cards().get(0);
         c.setType(CARD_TYPE_REV);
         c.setQueue(QUEUE_TYPE_REV);
-        c.setDue(c)ol.getSched().getToday();
+        c.setDue(col.getSched().getToday());
         c.flush();
         col.reset();
         assertArrayEquals( new int[]{0, 0, 1}, col.getSched().counts() );
@@ -4175,7 +4175,7 @@ public class UpstreamTest extends RobolectricTest {
         c.setType(CARD_TYPE_REV);
         c.setQueue(QUEUE_TYPE_REV);
         c.setIvl(100);
-        c.setDue(c)ol.getSched().getToday() - c.getIvl();
+        c.setDue(col.getSched().getToday() - c.getIvl());
         c.setFactor(STARTING_FACTOR);
         c.setReps(3);
         c.setLapses(1);
