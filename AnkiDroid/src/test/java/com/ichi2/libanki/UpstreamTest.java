@@ -774,8 +774,7 @@ public class UpstreamTest extends RobolectricTest {
          // properties
          id = col.getDb().queryLongScalar("select id from cards limit 1");
          col.getDb().execute(
-             "update cards set queue=2, ivl=10, reps=20, due=30, factor=2200 "
-             "where long id = ?",
+             "update cards set queue=2, ivl=10, reps=20, due=30, factor=2200 where long id = ?",
              new Object[]{id}
          );
          assertEquals( 1, col.findCards("prop:ivl>5").size() );
