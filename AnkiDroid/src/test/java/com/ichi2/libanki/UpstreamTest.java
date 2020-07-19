@@ -1408,7 +1408,7 @@ public class UpstreamTest extends RobolectricTest {
          // rename it
          field = m.getJSONArray("flds").getJSONObject(2);
          col.getModels().renameField(m, field, "bar");
-         assertTrue(col.getNote(col.getModels().nids(m).get(0)).put("bar",= ""));
+         assertEquals("", col.getNote(col.getModels().nids(m).get(0)).getItem("bar"));
          // delete back
          col.getModels().remField(m, m.getJSONArray("flds").getJSONObject(1));
          assertArrayEquals( new String [] {"1", ""}, col.getNote(col.getModels().nids(m).get(0)).getFields() );
