@@ -676,7 +676,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setType(CARD_TYPE_REV);
          assertEquals( new Card [] {}, col.findCards("is:review") );
          c.flush();
-         assertEquals( new long [] {c.getId(, col.findCards("is:review") )});
+         assertEquals(new Long[] {c.getId()}, col.findCards("is:review"));
          assertEquals( new Card [] {}, col.findCards("is:due") );
          c.setDue(0);
          c.setQueue(QUEUE_TYPE_REV);
