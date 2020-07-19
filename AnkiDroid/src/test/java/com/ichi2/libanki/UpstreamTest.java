@@ -1786,7 +1786,7 @@ public class UpstreamTest extends RobolectricTest {
      @Test
      public void test_clock() throws ConfirmModSchemaException {
          Collection col = getColV1();
-         if ((col.getSched().dayCutoff - intTime()) < 10 * 60) {
+         if ((col.getSched().getDayCutoff() - intTime()) < 10 * 60) {
              raise Exception("Unit tests will fail around the day rollover.");
          }
      }
@@ -2981,7 +2981,7 @@ public class UpstreamTest extends RobolectricTest {
      @Test
      public void test_clock()   throws ConfirmModSchemaException{
          Collection col = getColV2();
-         if ((col.getSched().dayCutoff - intTime()) < 10 * 60) {
+         if ((col.getSched().getDayCutoff() - intTime()) < 10 * 60) {
              raise Exception("Unit tests will fail around the day rollover.");
          }
 
