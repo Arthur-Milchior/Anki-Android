@@ -24,6 +24,7 @@ import timber.log.Timber;
 import static com.ichi2.libanki.Consts.*;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -1402,7 +1403,7 @@ public class UpstreamTest extends RobolectricTest {
          // add a field
          JSONObject field = col.getModels().newField("foo");
          col.getModels().addField(m, field);
-         assertEquals( new String [] {"1", "2", ""}, col.getNote(col.getModels().nids(m).get(0)).getFields());
+         assertArrayEquals( new String [] {"1", "2", ""}, col.getNote(col.getModels().nids(m).get(0)).getFields());
          assertNotEquals( h, col.getModels().scmhash(m) );
          // rename it
          field = m.getJSONArray("flds").getJSONObject(2);
@@ -1410,29 +1411,29 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(col.getNote(col.getModels().nids(m).get(0)).put("bar",= ""));
          // delete back
          col.getModels().remField(m, m.getJSONArray("flds").getJSONObject(1));
-         assertEquals( new String [] {"1", ""}, col.getNote(col.getModels().nids(m).get(0)).getFields() );
+         assertArrayEquals( new String [] {"1", ""}, col.getNote(col.getModels().nids(m).get(0)).getFields() );
          // move 0 -> 1
          col.getModels().moveField(m, m.getJSONArray("flds").getJSONObject(0), 1);
-         assertEquals( new String [] {"", "1"}, col.getNote(col.getModels().nids(m).get(0)).getFields() );
+         assertArrayEquals( new String [] {"", "1"}, col.getNote(col.getModels().nids(m).get(0)).getFields() );
          // move 1 -> 0
          col.getModels().moveField(m, m.getJSONArray("flds").getJSONObject(1), 0);
-         assertEquals( new String [] {"1", ""}, col.getNote(col.getModels().nids(m).get(0)).getFields() );
+         assertArrayEquals( new String [] {"1", ""}, col.getNote(col.getModels().nids(m).get(0)).getFields() );
          // add another and put notARealIn middle
          field = col.getModels().newField("baz");
          col.getModels().addField(m, field);
          note = col.getNote(col.getModels().nids(m).get(0));
          note.setItem("baz","2");
          note.flush();
-         assertEquals( new String [] {"1", "", "2"}, col.getNote(col.getModels().nids(m).get(0)).getFields() );
+         assertArrayEquals( new String [] {"1", "", "2"}, col.getNote(col.getModels().nids(m).get(0)).getFields() );
          // move 2 -> 1
          col.getModels().moveField(m, m.getJSONArray("flds").getJSONObject(2), 1);
-         assertEquals( new String [] {"1", "2", ""}, col.getNote(col.getModels().nids(m).get(0)).getFields() );
+         assertArrayEquals( new String [] {"1", "2", ""}, col.getNote(col.getModels().nids(m).get(0)).getFields() );
          // move 0 -> 2
          col.getModels().moveField(m, m.getJSONArray("flds").getJSONObject(0), 2);
-         assertEquals( new String [] {"2", "", "1"}, col.getNote(col.getModels().nids(m).get(0)).getFields() );
+         assertArrayEquals( new String [] {"2", "", "1"}, col.getNote(col.getModels().nids(m).get(0)).getFields() );
          // move 0 -> 1
          col.getModels().moveField(m, m.getJSONArray("flds").getJSONObject(0), 1);
-         assertEquals( new String [] {"", "2", "1"}, col.getNote(col.getModels().nids(m).get(0)).getFields() );
+         assertArrayEquals( new String [] {"", "2", "1"}, col.getNote(col.getModels().nids(m).get(0)).getFields() );
      }
 
      @Test
