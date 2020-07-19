@@ -1907,7 +1907,7 @@ public class UpstreamTest extends RobolectricTest {
          col.getSched().answerCard(c, 1);
          // it should have three reps left to graduation
          assertEquals( 3, c.getLeft() % 1000 );
-         assertEquals( , c.getLeft() // 1000 )3
+         assertEquals(3 , c.getLeft() / 1000 );
          // it should by due notARealIn 30 seconds
          JSONObject t = round(c.getDue() - time.time());
                 assertTrue(t >= 25 and t <= 40);
