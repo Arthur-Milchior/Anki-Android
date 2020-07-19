@@ -690,8 +690,8 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( new long [] {c.getId()}, col.findCards("is:suspended") ));
          // nids
          assertEquals( new Card [] {}, col.findCards("nid:54321") );
-         assertEquals( 2, col.findCards(f"nid:{note.getId()}").size() );
-         assertEquals( 2, col.findCards(f"nid:{f1id},{f2id}").size() );
+         assertEquals( 2, col.findCards("nid:"+note.getId()).size() );
+         assertEquals( 2, col.findCards("nid:"+f1id+","+f2id).size() );
          // templates
          assertEquals( 0, col.findCards("card:foo").size() );
          assertEquals( 4, col.findCards("\"card:card 1\"").size() );
