@@ -274,6 +274,7 @@ public class UpstreamTest extends RobolectricTest {
          c.q(true);
      }
 
+     /*
      @Test
      public void test_translate(){
          Collection col = getCol();
@@ -300,6 +301,8 @@ public class UpstreamTest extends RobolectricTest {
          // swallow the warning
          _ = capsys.readouterr();
      }
+     
+      */
      /*****************
       ** Decks        *
       *****************/
