@@ -2922,7 +2922,7 @@ public class UpstreamTest extends RobolectricTest {
          c.flush();
          col.reset();
          col.getSched().answerCard(c, 1);
-         col.getSched()._cardConf(c)["lapse"].put("delays", new JSONArray(new double [] {}));
+         col.getSched()._cardConf(c).getJSONObject("lapse").put("delays", new JSONArray(new double [] {}));
          col.getSched().answerCard(c, 1);
      }
 
@@ -4156,7 +4156,7 @@ public class UpstreamTest extends RobolectricTest {
          c.flush();
          col.reset();
          col.getSched().answerCard(c, 1);
-         col.getSched()._cardConf(c)["lapse"].put("delays", new JSONArray(new double [] {}));
+         col.getSched()._cardConf(c).getJSONObject("lapse").put("delays", new JSONArray(new double [] {}));
          col.getSched().answerCard(c, 1);
      }
 
