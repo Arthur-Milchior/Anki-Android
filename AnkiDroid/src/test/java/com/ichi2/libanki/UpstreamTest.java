@@ -1451,7 +1451,10 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Back","2");
          col.addNote(note);
          assertEquals( 2, col.cardCount() );
-         (c, c2) = note.cards();
+         List<Card> cards =  note.cards();
+         assertEquals(2, cards.size());
+         Card c = cards.get(0);
+         Card c2 = cards.get(1);
          // first card should have first ord
          assertEquals( 0, c.ord );
          assertEquals( 1, c2.ord );
@@ -1465,7 +1468,7 @@ public class UpstreamTest extends RobolectricTest {
          col.getModels().remTemplate(m, m.getJSONArray("tmpls").getJSONObject(0));
          assertEquals( 1, col.cardCount() );
          // and should have updated the other cards' ordinals
-         Card c = note.cards().get(0);
+         c = note.cards().get(0);
          assertEquals( 0, c.ord );
          assertEquals( "1", stripHTML(c.q()) );
          // it shouldn't be possible to orphan notes by removing templates
@@ -1499,7 +1502,10 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Text","{{c1::firstQ::firstA}}{{c2::secondQ::secondA}}");
          col.addNote(note);
          assertEquals( 2, col.cardCount() );
-         (c, c2) = note.cards();
+         List<Card> cards =  note.cards();
+         assertEquals(2, cards.size());
+         Card c = cards.get(0);
+         Card c2 = cards.get(1);
          // first card should have first ord
          assertEquals( 0, c.ord );
          assertEquals( 1, c2.ord );
@@ -1542,7 +1548,10 @@ public class UpstreamTest extends RobolectricTest {
          Note note = col.newNote();
          note.setItem("Text","hello {{c1::world}} {{c2::bar}}");
          assertEquals( 2, col.addNote(note) );
-         (c1, c2) = note.cards();
+         List<Card> cards =  note.cards();
+         assertEquals(2, cards.size());
+         Card c1 = cards.get(0);
+         Card c2 = cards.get(1);
          assertTrue(c1.q().contains("<span class=cloze>[...]</span> bar"));
          assertTrue(c1.a().contains("<span class=cloze>world</span> bar"));
          assertTrue(c2.q().contains("world <span class=cloze>[...]</span>"));
