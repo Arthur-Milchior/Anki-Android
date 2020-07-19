@@ -1402,37 +1402,37 @@ public class UpstreamTest extends RobolectricTest {
          // add a field
          JSONObject field = col.getModels().newField("foo");
          col.getModels().addField(m, field);
-         assertEquals( new String [] {"1", "2", ""}, col.getNote(col.getModels().nids(m)[0]).fields );
+         assertEquals( new String [] {"1", "2", ""}, col.getNote(col.getModels().nids(m).get(0)).fields );
          assertNotEquals( h, col.getModels().scmhash(m) );
          // rename it
          field = m.getJSONArray("flds").getJSONObject(2);
          col.getModels().renameField(m, field, "bar");
-         assertTrue(col.getNote(col.getModels().nids(m)[0]).put("bar",= ""));
+         assertTrue(col.getNote(col.getModels().nids(m).get(0)).put("bar",= ""));
          // delete back
          col.getModels().remField(m, m.getJSONArray("flds").getJSONObject(1));
-         assertEquals( new String [] {"1", ""}, col.getNote(col.getModels().nids(m)[0]).fields );
+         assertEquals( new String [] {"1", ""}, col.getNote(col.getModels().nids(m).get(0)).fields );
          // move 0 -> 1
          col.getModels().moveField(m, m.getJSONArray("flds").getJSONObject(0), 1);
-         assertEquals( new String [] {"", "1"}, col.getNote(col.getModels().nids(m)[0]).fields );
+         assertEquals( new String [] {"", "1"}, col.getNote(col.getModels().nids(m).get(0)).fields );
          // move 1 -> 0
          col.getModels().moveField(m, m.getJSONArray("flds").getJSONObject(1), 0);
-         assertEquals( new String [] {"1", ""}, col.getNote(col.getModels().nids(m)[0]).fields );
+         assertEquals( new String [] {"1", ""}, col.getNote(col.getModels().nids(m).get(0)).fields );
          // add another and put notARealIn middle
          field = col.getModels().newField("baz");
          col.getModels().addField(m, field);
-         note = col.getNote(col.getModels().nids(m)[0]);
+         note = col.getNote(col.getModels().nids(m).get(0));
          note.setItem("baz","2");
          note.flush();
-         assertEquals( new String [] {"1", "", "2"}, col.getNote(col.getModels().nids(m)[0]).fields );
+         assertEquals( new String [] {"1", "", "2"}, col.getNote(col.getModels().nids(m).get(0)).fields );
          // move 2 -> 1
          col.getModels().moveField(m, m.getJSONArray("flds").getJSONObject(2), 1);
-         assertEquals( new String [] {"1", "2", ""}, col.getNote(col.getModels().nids(m)[0]).fields );
+         assertEquals( new String [] {"1", "2", ""}, col.getNote(col.getModels().nids(m).get(0)).fields );
          // move 0 -> 2
          col.getModels().moveField(m, m.getJSONArray("flds").getJSONObject(0), 2);
-         assertEquals( new String [] {"2", "", "1"}, col.getNote(col.getModels().nids(m)[0]).fields );
+         assertEquals( new String [] {"2", "", "1"}, col.getNote(col.getModels().nids(m).get(0)).fields );
          // move 0 -> 1
          col.getModels().moveField(m, m.getJSONArray("flds").getJSONObject(0), 1);
-         assertEquals( new String [] {"", "2", "1"}, col.getNote(col.getModels().nids(m)[0]).fields );
+         assertEquals( new String [] {"", "2", "1"}, col.getNote(col.getModels().nids(m).get(0)).fields );
      }
 
      @Test
