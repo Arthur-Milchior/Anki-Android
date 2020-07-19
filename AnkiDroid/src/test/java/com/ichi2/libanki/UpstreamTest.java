@@ -1835,11 +1835,14 @@ public class UpstreamTest extends RobolectricTest {
      public void test_newLimits()  throws Exception {
          Collection col = getColV1();
          // add some notes
-         deck2 = col.getDecks().id("Default::foo");
+         long deck2 = col.getDecks().id("Default::foo");
          Note note;
-         for (i =0; i < 30; i++) {
+         for (int i =0; i < 30; i++) {
              note = col.newNote();
-             note.setItem("Front","did")] = deck2;
+             note.setItem("Front", Integer.toString(i));
+             if (i>4) {
+                 note.model().put("did", deck2);
+             }
              col.addNote(note);
         }
          // give the child deck a different configuration
