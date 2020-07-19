@@ -1377,9 +1377,9 @@ public class UpstreamTest extends RobolectricTest {
          Model m2 = col.getModels().copy(m);
          assertEquals("Basic copy", m2.getString("name"));
          assertNotEquals(m2.getLong("id"), m.getLong("id"));
-         assertEquals( 2, m2.getJSONArray("flds").size() );
-         assertEquals( 2, m.getJSONArray("flds").size() );
-         assertEquals( m.getJSONArray("flds").size(, m2.getJSONArray("flds").size() ));
+         assertEquals( 2, m2.getJSONArray("flds").length() );
+         assertEquals( 2, m.getJSONArray("flds").length() );
+         assertEquals( m.getJSONArray("flds").size(, m2.getJSONArray("flds").length() ));
          assertEquals( 1, m.getJSONArray("tmpls").length() );
          assertEquals( 1, m2.getJSONArray("tmpls").length() );
          assertEquals( col.getModels(, col.getModels().scmhash(m) ).scmhash(m2));
