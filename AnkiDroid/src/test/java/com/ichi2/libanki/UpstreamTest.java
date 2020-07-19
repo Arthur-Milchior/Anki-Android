@@ -816,7 +816,7 @@ public class UpstreamTest extends RobolectricTest {
              assertEquals( 1, col.findCards("rated:2:2").size() );
              // added
              assertEquals( 0, col.findCards("added:0").size() );
-             col.getDb().execute("update cards set long id = id - 86400*1000 where long id = ?", id);
+             col.getDb().execute("update cards set long id = id - 86400*1000 where long id = ?", new Object[] {id});
              assertEquals( col.cardCount(, col.findCards("added:1").size() ) - 1);
              assertEquals( col.cardCount(, col.findCards("added:2").size() ));
          } else {
@@ -1232,7 +1232,7 @@ note.setItem("Back","abc2");
          assertEquals( 7, col.cardCount() );
          assertTrue(col.getTags().all().contains("a_longer_tag"));
          assertEquals( 1, col.getDb().queryScalar("select count() from cards where type = 0") );
-         col.close();
+         col.close()
      }
 */
      /*****************
