@@ -1736,8 +1736,8 @@ public class UpstreamTest extends RobolectricTest {
 
          Collection col = getCol();
          Models mm = col.getModels();
-         basiCard c = mm.byName("Basic");
-         assertTrue(basic.contains("req"));
+         Model basic = mm.byName("Basic");
+         assertTrue(basic.has("req"));
          reqSize(basic);
          r = basic["req"][0];
          assertEquals( 0, r[0] );
