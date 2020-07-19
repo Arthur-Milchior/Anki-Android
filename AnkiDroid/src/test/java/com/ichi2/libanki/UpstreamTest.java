@@ -1783,14 +1783,6 @@ public class UpstreamTest extends RobolectricTest {
          return col;
      }
 
-     @Test
-     public void test_clock() throws ConfirmModSchemaException {
-         Collection col = getColV1();
-         if ((col.getSched().getDayCutoff() - intTime()) < 10 * 60) {
-             raise Exception("Unit tests will fail around the day rollover.");
-         }
-     }
-
      private boolean checkRevIvl(col, c, targetIvl) {
          min, max = col.getSched()._fuzzIvlRange(targetIvl);
          return min <= c.ivl <= max;
@@ -2982,7 +2974,7 @@ public class UpstreamTest extends RobolectricTest {
      public void test_clock()   throws ConfirmModSchemaException{
          Collection col = getColV2();
          if ((col.getSched().getDayCutoff() - intTime()) < 10 * 60) {
-             raise Exception("Unit tests will fail around the day rollover.");
+             throw new Exception("Unit tests will fail around the day rollover.");
          }
 
 
