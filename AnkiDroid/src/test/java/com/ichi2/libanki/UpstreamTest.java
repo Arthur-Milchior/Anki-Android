@@ -1784,7 +1784,7 @@ public class UpstreamTest extends RobolectricTest {
          return col;
      }
 
-     public void test_new()  throws Exception {
+    public void test_new()  throws Exception {
          Collection col = getColV1();
          col.reset();
          assertEquals( 0, col.getSched().newCount );
@@ -1832,7 +1832,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_newLimits()  throws ConfirmModSchemaException {
+     public void test_newLimits()  throws Exception {
          Collection col = getColV1();
          // add some notes
          deck2 = col.getDecks().id("Default::foo");
@@ -1866,7 +1866,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_newBoxes()  throws ConfirmModSchemaException {
+     public void test_newBoxes()  throws Exception {
          Collection col = getColV1();
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -1884,7 +1884,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_learn()  throws ConfirmModSchemaException {
+     public void test_learn()  throws Exception {
          Collection col = getColV1();
          // add a note
          Note note = col.newNote();
