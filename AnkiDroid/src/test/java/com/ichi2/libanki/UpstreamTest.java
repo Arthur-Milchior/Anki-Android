@@ -1852,13 +1852,13 @@ public class UpstreamTest extends RobolectricTest {
          Card c = col.getSched().getCard();
          assertEquals( 1, c.long did );
          // limit the parent to 10 cards, meaning we get 10 notARealIn total
-         conf1 = col.getDecks().confForDid(1);
+         DeckConfig conf1 = col.getDecks().confForDid(1);
          conf1["new"].put("perDay", 10);
          col.getDecks().save(conf1);
          col.reset();
          assertEquals( 10, col.getSched().newCount );
          // if we limit child to 4, we should get 9
-         conf2 = col.getDecks().confForDid(deck2);
+         DeckConfig conf2 = col.getDecks().confForDid(deck2);
          conf2["new"].put("perDay", 4);
          col.getDecks().save(conf2);
          col.reset();
@@ -3046,13 +3046,13 @@ public class UpstreamTest extends RobolectricTest {
          Card c = col.getSched().getCard();
          assertEquals( 1, c.long did );
          // limit the parent to 10 cards, meaning we get 10 notARealIn total
-         conf1 = col.getDecks().confForDid(1);
+         DeckConfig conf1 = col.getDecks().confForDid(1);
          conf1["new"].put("perDay", 10);
          col.getDecks().save(conf1);
          col.reset();
          assertEquals( 10, col.getSched().newCount );
          // if we limit child to 4, we should get 9
-         conf2 = col.getDecks().confForDid(deck2);
+         DeckConfig conf2 = col.getDecks().confForDid(deck2);
          conf2["new"].put("perDay", 4);
          col.getDecks().save(conf2);
          col.reset();
