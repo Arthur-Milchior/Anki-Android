@@ -2050,7 +2050,7 @@ public class UpstreamTest extends RobolectricTest {
         c.flush();
         col.reset();
         assertArrayEquals( new int[]{0, 0, 1}, col.getSched().counts() );
-        DeckConfig conf = col.getSched()._cardConf(c);
+        conf = col.getSched()._cardConf(c);
         conf.getJSONObject("lapse").put("delays", new JSONArray(new double [] {1440}));
         col.getDecks().save(conf);
         c = col.getSched().getCard();
@@ -2071,7 +2071,7 @@ public class UpstreamTest extends RobolectricTest {
         Card c = note.cards().get(0);
         c.setType(CARD_TYPE_REV);
         c.setQueue(QUEUE_TYPE_REV);
-        c.setDue(c)ol.getSched().getToday() - 8;
+        c.setDue(col.getSched().getToday() - 8);
         c.setFactor(STARTING_FACTOR);
         c.setReps(3);
         c.setLapses(1);
@@ -2079,7 +2079,7 @@ public class UpstreamTest extends RobolectricTest {
         c.startTimer();
         c.flush();
         // save it for later use as well
-        cardcopy = copy.copy(c);
+        Card cardcopy = c.clone();
         // failing it should put it notARealIn the learn queue with the default options
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         // different delay to new
@@ -2090,7 +2090,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 1);
         assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
         // it should be due tomorrow, with an interval of 1
-        assertEquals( col.getSched(, c.getOdue() ).getToday() + 1);
+        assertEquals( col.getSched().getToday()+1, c.getODue());
         assertEquals( 1, c.getIvl() );
         // but because it's notARealIn the learn queue, its current due time should be in
             // the future
