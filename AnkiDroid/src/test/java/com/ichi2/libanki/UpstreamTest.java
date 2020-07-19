@@ -953,7 +953,7 @@ public class UpstreamTest extends RobolectricTest {
              note.write("bar");
          Anki2Importer imp = Anki2Importer(empty, col.getPath());
          imp.run();
-         assertEquals( new String [] {"foo.mp3", "foo_%s.mp3" % mid}, sorted(os.listdir(empty.getMedia().dir())) );
+         assertEquals( new String [] {"foo.mp3", "foo_"+mid+".mp3"}, sorted(os.listdir(empty.getMedia().dir())) );
          Note n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
          assertTrue(n.fields[0].contains("_"));
          // if the localized media file already exists, we rewrite the note and
@@ -963,8 +963,8 @@ public class UpstreamTest extends RobolectricTest {
              note.write("bar");
          Anki2Importer imp = Anki2Importer(empty, col.getPath());
          imp.run();
-         assertEquals( new String [] {"foo.mp3", "foo_%s.mp3" % mid}, sorted(os.listdir(empty.getMedia().dir())) );
-         assertEquals( new String [] {"foo.mp3", "foo_%s.mp3" % mid}, sorted(os.listdir(empty.getMedia().dir())) );
+         assertEquals( new String [] {"foo.mp3", "foo_"+mid+".mp3" }, sorted(os.listdir(empty.getMedia().dir())) );
+         assertEquals( new String [] {"foo.mp3", "foo_"+mid+".mp3"}, sorted(os.listdir(empty.getMedia().dir())) );
          Note n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
          assertTrue(n.fields[0].contains("_"));
      }
@@ -1590,7 +1590,7 @@ public class UpstreamTest extends RobolectricTest {
              note.cards().get(0)
              .q()
              .endsWith("\\(a\\) <span class=cloze>[...]</span> \\[ new [] {...} \\]")
-     );
+        );
      }
 
      @Test
@@ -1607,7 +1607,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_chained_mods(){
+     public void test_chained_mods() throws ConfirmModSchemaException {
          Collection col = getCol();
          col.getModels().setCurrent(col.getModels().byName("Cloze"));
          Model m = col.getModels().current();
@@ -1622,16 +1622,11 @@ public class UpstreamTest extends RobolectricTest {
          col.getModels().remTemplate(m, m.getJSONArray("tmpls").getJSONObject(0));
 
          Note note = col.newNote();
-         q1 = "<span style=\"color:red\">phrase</span>";
-         a1 = "<b>sentence</b>";
-         q2 = "<span style=\"color:red\">en chaine</span>";
-         a2 = "<i>chained</i>";
-         note.setItem("Text","This {{c1::%s::%s}} demonstrates {{c1::%s::%s}} clozes.") % (
-             q1,
-             a1,
-             q2,
-             a2,
-     );
+         String q1 = "<span style=\"color:red\">phrase</span>";
+         String a1 = "<b>sentence</b>";
+         String q2 = "<span style=\"color:red\">en chaine</span>";
+         String a2 = "<i>chained</i>";
+         note.setItem("Text","This {{c1::"+q1+"::"+a1+"}} demonstrates {{c1::"+q2+"::"+a2+"}} clozes.");
          assertEquals( 1, col.addNote(note) );
          assertTrue(
                     note.cards().get(0).q().contains("This <span class=cloze>[sentence]</span> demonstrates <span class=cloze>[chained]</span> clozes.")
