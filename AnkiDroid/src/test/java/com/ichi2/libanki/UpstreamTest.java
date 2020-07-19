@@ -687,7 +687,7 @@ public class UpstreamTest extends RobolectricTest {
          // ensure this card gets a later mod time
          c.flush();
          col.getDb().execute("update cards set mod = mod + 1 where long id = ?", new Object[] {c.getId()});
-         assertEquals( new long [] {c.getId()}, col.findCards("is:suspended") ));
+         assertEquals( new long [] {c.getId()}, col.findCards("is:suspended"));
          // nids
          assertEquals( new Card [] {}, col.findCards("nid:54321") );
          assertEquals( 2, col.findCards("nid:"+note.getId()).size() );
@@ -709,27 +709,29 @@ public class UpstreamTest extends RobolectricTest {
          // ordering
          col.getConf().put("sortType", "noteCrt");
          col.flush();
-    assertTrue(col.findCards("front:*", true)latestCardIds.contains(new [] {-1}));
-    assertTrue(col.findCards("", true)latestCardIds.contains(new [] {-1}));
+         assertTrue(latestCardIds.contains(col.findCards("front:*", true).get(latestCardIds.size()-1));
+         assertTrue(latestCardIds.contains(col.findCards("", true).get(latestCardIds.size()-1));
+
          col.getConf().put("sortType", "noteFld");
          col.flush();
-         assertEquals( catCard.getId(, col.findCards("", true)[0] ));
-    assertTrue(col.findCards("", true)latestCardIds.contains(new [] {-1}));
-                  col.getConf().put("sortType", "cardMod");
+         assertEquals(catCard.getId(), (long) col.findCards("", true).get(0));
+         assertTrue(latestCardIds.contains(col.findCards("", true).get(latestCardIds.size()-1)));
+         col.getConf().put("sortType", "cardMod");
          col.flush();
-    assertTrue(col.findCards("", true)latestCardIds.contains(new [] {-1}));
-         assertEquals( firstCardId, col.findCards("", true)[0] );
+         assertTrue(latestCardIds.contains(col.findCards("", true).get(latestCardIds.size()-1)));
+         assertEquals(firstCardId, (long) col.findCards("", true).get(0));
                   col.getConf().put("sortBackwards", true);
          col.flush();
-    assertTrue(col.findCards("", true)latestCardIds.contains(new [] {0}));
+         assertTrue(latestCardIds.contains(col.findCards("", true).get(0)));
+         /* TODO: Port BuiltinSortKind
+         assertEquals(firstCardId,
+             col.findCards("", BuiltinSortKind.CARD_DUE, reverse=false).get(0)
+         );
          assertTrue(();
-             col.find_cards("", BuiltinSortKind.CARD_DUE, reverse=false)[0];
-             == firstCardId;
-     );
-         assertTrue(();
-             col.find_cards("", BuiltinSortKind.CARD_DUE, reverse=true)[0];
+             col.findCards("", BuiltinSortKind.CARD_DUE, reverse=true).get(0);
              != firstCardId;
      );
+     */
          // model
          assertEquals( 3, col.findCards("note:basic").size() );
          assertEquals( 2, col.findCards("-note:basic").size() );
@@ -742,7 +744,7 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 5, col.findCards("deck:*EFAULT").size() );
          assertEquals( 0, col.findCards("deck:*cefault").size() );
          // full search
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","hello<b>world</b>");
          note.setItem("Back","abc");
          col.addNote(note);

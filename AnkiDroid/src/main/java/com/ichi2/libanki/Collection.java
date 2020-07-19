@@ -1127,6 +1127,10 @@ public class Collection {
         return new Finder(this).findCards(search, order);
     }
 
+    public List<Long> findCards(String search, boolean order) {
+        return findCards(search, order, null);
+    }
+
     public List<Long> findCards(String search, boolean order, CollectionTask task) {
         return new Finder(this).findCards(search, order, task);
     }
