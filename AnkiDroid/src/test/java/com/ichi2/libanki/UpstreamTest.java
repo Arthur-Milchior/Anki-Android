@@ -681,13 +681,13 @@ public class UpstreamTest extends RobolectricTest {
          c.setDue(0);
          c.setQueue(QUEUE_TYPE_REV);
          c.flush();
-         assertEquals( new long [] {c.getId(, col.findCards("is:due") )});
+         assertEquals( new long [] {c.getId()}, col.findCards("is:due"));
          assertEquals( 4, col.findCards("-is:due").size() );
          c.setQueue(QUEUE_TYPE_SUSPENDED);
          // ensure this card gets a later mod time
          c.flush();
-         col.getDb().execute("update cards set mod = mod + 1 where long id = ?", c.getId());
-         assertEquals( new long [] {c.getId(, col.findCards("is:suspended") )});
+         col.getDb().execute("update cards set mod = mod + 1 where long id = ?", new Object[] {c.getId()});
+         assertEquals( new long [] {c.getId()}, col.findCards("is:suspended") ));
          // nids
          assertEquals( new Card [] {}, col.findCards("nid:54321") );
          assertEquals( 2, col.findCards(f"nid:{note.getId()}").size() );
