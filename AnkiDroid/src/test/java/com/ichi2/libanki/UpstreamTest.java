@@ -2074,7 +2074,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setType(CARD_TYPE_REV);
          c.setQueue(QUEUE_TYPE_REV);
          c.setDue(c)ol.getSched().today - 8;
-         c.factor = STARTING_FACTOR;
+         c.setFactor(STARTING_FACTOR);
          c.setReps(3);
          c.setLapses(1);
          c.setIvl(100);
@@ -2181,7 +2181,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setQueue(QUEUE_TYPE_LRN);
          c.setDue(-)1;
          c.odue = -1;
-         c.factor = STARTING_FACTOR;
+         c.setFactor(STARTING_FACTOR);
          c.left = 2002;
          c.setIvl(0);
          c.flush();
@@ -2262,7 +2262,7 @@ public class UpstreamTest extends RobolectricTest {
      ////////////////////////////////////////////////////////////////////////////////////////////////////
          c.setType(CARD_TYPE_REV);
          c.setIvl(100);
-         c.factor = STARTING_FACTOR;
+         c.setFactor(STARTING_FACTOR);
          assertEquals( 60, ni(c, 1) );
          assertEquals( 100 * 86400, ni(c, 2) );
          assertEquals( 100 * 86400, ni(c, 3) );
@@ -2270,7 +2270,7 @@ public class UpstreamTest extends RobolectricTest {
      ////////////////////////////////////////////////////////////////////////////////////////////////////
          c.setQueue(QUEUE_TYPE_REV);
          c.setIvl(100);
-         c.factor = STARTING_FACTOR;
+         c.setFactor(STARTING_FACTOR);
          // failing it should put it at 60s
          assertEquals( 60, ni(c, 1) );
          // or 1 day if relearn is false
@@ -2364,7 +2364,7 @@ public class UpstreamTest extends RobolectricTest {
          // due notARealIn 25 days, so it's been waiting 75 days
          c.setDue(c)ol.getSched().today + 25;
          c.setMod(1);
-         c.factor = STARTING_FACTOR;
+         c.setFactor(STARTING_FACTOR);
          c.startTimer();
          c.flush();
          col.reset();
@@ -2514,7 +2514,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setQueue(CARD_TYPE_REV);
          c.setType(QUEUE_TYPE_REV);
          c.setDue(c)ol.getSched().today + 25;
-         c.factor = STARTING_FACTOR;
+         c.setFactor(STARTING_FACTOR);
          c.flush();
          cardcopy = copy.copy(c);
          col.getSched().rebuildDyn(did);
@@ -2918,7 +2918,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setType(CARD_TYPE_REV);
          c.setQueue(QUEUE_TYPE_REV);
          c.setDue(0);
-         c.factor = STARTING_FACTOR;
+         c.setFactor(STARTING_FACTOR);
          c.setReps(3);
          c.setLapses(1);
          c.setIvl(100);
@@ -2942,7 +2942,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setQueue(QUEUE_TYPE_REV);
          c.setIvl(100);
          c.setDue(c)ol.getSched().today - c.getIvl();
-         c.factor = STARTING_FACTOR;
+         c.setFactor(STARTING_FACTOR);
          c.setReps(3);
          c.setLapses(1);
          c.startTimer();
@@ -3305,7 +3305,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setType(CARD_TYPE_REV);
          c.setQueue(QUEUE_TYPE_REV);
          c.setDue(c)ol.getSched().today - 8;
-         c.factor = STARTING_FACTOR;
+         c.setFactor(STARTING_FACTOR);
          c.setReps(3);
          c.setLapses(1);
          c.setIvl(100);
@@ -3470,7 +3470,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setQueue(QUEUE_TYPE_LRN);
          c.setDue(-)1;
          c.odue = -1;
-         c.factor = STARTING_FACTOR;
+         c.setFactor(STARTING_FACTOR);
          c.left = 2002;
          c.setIvl(0);
          c.flush();
@@ -3554,7 +3554,7 @@ public class UpstreamTest extends RobolectricTest {
      ////////////////////////////////////////////////////////////////////////////////////////////////////
                                                  c.setType(CARD_TYPE_REV);
                                                  c.setIvl(100);
-         c.factor = STARTING_FACTOR;
+                                                 c.setFactor(STARTING_FACTOR);
                                                 assertEquals( 60, ni(c, 1) );
                                                 assertEquals( 100 * 86400, ni(c, 3) );
                                                 assertEquals( 101 * 86400, ni(c, 4) );
@@ -3562,7 +3562,7 @@ public class UpstreamTest extends RobolectricTest {
      ////////////////////////////////////////////////////////////////////////////////////////////////////
                                                  c.setQueue(QUEUE_TYPE_REV);
                                                  c.setIvl(100);
-         c.factor = STARTING_FACTOR;
+                                                 c.setFactor(STARTING_FACTOR);
          // failing it should put it at 60s
                                                 assertEquals( 60, ni(c, 1) );
          // or 1 day if relearn is false
@@ -3686,7 +3686,7 @@ public class UpstreamTest extends RobolectricTest {
          // due notARealIn 25 days, so it's been waiting 75 days
          c.setDue(c)ol.getSched().today + 25;
          c.setMod(1);
-         c.factor = STARTING_FACTOR;
+         c.setFactor(STARTING_FACTOR);
          c.startTimer();
          c.flush();
          col.reset();
@@ -4152,7 +4152,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setType(CARD_TYPE_REV);
          c.setQueue(QUEUE_TYPE_REV);
          c.setDue(0);
-         c.factor = STARTING_FACTOR;
+         c.setFactor(STARTING_FACTOR);
          c.setReps(3);
          c.setLapses(1);
          c.setIvl(100);
@@ -4176,7 +4176,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setQueue(QUEUE_TYPE_REV);
          c.setIvl(100);
          c.setDue(c)ol.getSched().today - c.getIvl();
-         c.factor = STARTING_FACTOR;
+         c.setFactor(STARTING_FACTOR);
          c.setReps(3);
          c.setLapses(1);
          c.startTimer();
