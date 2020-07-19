@@ -709,8 +709,8 @@ public class UpstreamTest extends RobolectricTest {
          // ordering
          col.getConf().put("sortType", "noteCrt");
          col.flush();
-         assertTrue(latestCardIds.contains(col.findCards("front:*", true).get(latestCardIds.size()-1));
-         assertTrue(latestCardIds.contains(col.findCards("", true).get(latestCardIds.size()-1));
+         assertTrue(latestCardIds.contains(col.findCards("front:*", true).get(latestCardIds.size()-1)));
+         assertTrue(latestCardIds.contains(col.findCards("", true).get(latestCardIds.size()-1)));
 
          col.getConf().put("sortType", "noteFld");
          col.flush();
