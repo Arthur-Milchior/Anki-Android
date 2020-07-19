@@ -1473,7 +1473,7 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 0, c.getOrd() );
          assertEquals( "1", stripHTML(c.q()) );
          // it shouldn't be possible to orphan notes by removing templates
-         JSONObject t = mm.newTemplate("template name");
+         t = mm.newTemplate("template name");
          mm.addTemplateModChanged(m, t);
          col.getModels().remTemplate(m, m.getJSONArray("tmpls").getJSONObject(0));
          assertEquals(0,
@@ -1482,7 +1482,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_cloze_ordinals(){
+     public void test_cloze_ordinals() throws ConfirmModSchemaException {
          Collection col = getCol();
          col.getModels().setCurrent(col.getModels().byName("Cloze"));
          Model m = col.getModels().current();
@@ -1526,24 +1526,24 @@ public class UpstreamTest extends RobolectricTest {
          Collection col = getCol();
          col.getModels().setCurrent(col.getModels().byName("Cloze"));
          Note note = col.newNote();
-         assertTrue(note.model().put("name",= "Cloze"));
+         assertEquals("Cloze", note.model().getString("name"));
          // a cloze model with no clozes is not empty
          note.setItem("Text","nothing");
-         assertTrue(col.addNote(note));
+         assertNotEquals(0, col.addNote(note));
          // try with one cloze
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Text","hello {{c1::world}}");
          assertEquals( 1, col.addNote(note) );
          assertTrue(note.cards().get(0).q().contains("hello <span class=cloze>[...]</span>"));
          assertTrue(note.cards().get(0).a().contains("hello <span class=cloze>world</span>"));
          // and with a comment
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Text","hello {{c1::world::typical}}");
          assertEquals( 1, col.addNote(note) );
          assertTrue(note.cards().get(0).q().contains("<span class=cloze>[typical]</span>"));
          assertTrue(note.cards().get(0).a().contains("<span class=cloze>world</span>"));
          // and with 2 clozes
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Text","hello {{c1::world}} {{c2::bar}}");
          assertEquals( 2, col.addNote(note) );
          List<Card> cards =  note.cards();
@@ -1556,7 +1556,7 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(c2.a().contains("world <span class=cloze>bar</span>"));
          // if there are multiple answers for a single cloze, they are given notARealIn a
          // list
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Text","a {{c1::b}} {{c1::c}}");
          assertEquals( 1, col.addNote(note) );
          assertTrue((.contains("<span class=cloze>b</span> <span class=cloze>c</span>"));
@@ -1589,7 +1589,7 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(note.cards().get(3).q().contains("class=cloze"));
          assertTrue(note.cards().get(4).q().contains("class=cloze"));
 
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Text","\(a\) {{c1::b}} \[ {{c1::c}} \]");
          assertTrue(col.addNote(note));
          assertEquals( 1, note.nbCards() );
@@ -1712,7 +1712,7 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(note.setItem("Front",""));
          assertTrue(note.setItem("Back","note"));
          // another note to try model conversion
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","f2");
          note.setItem("Back","b2");
          col.addNote(note);
@@ -1833,10 +1833,10 @@ public class UpstreamTest extends RobolectricTest {
          // t['afmt'] = "{{Front}}"
          // mm.addTemplateModChanged(m, t)
          // mm.save(m)
-         // Note note = col.newNote()
+         // note = col.newNote()
          // note['Front'] = u"2"; note['Back'] = u"2"
          // col.addNote(note)
-         // Note note = col.newNote()
+         // note = col.newNote()
          // note['Front'] = u"3"; note['Back'] = u"3"
          // col.addNote(note)
          // col.reset()
@@ -1853,11 +1853,12 @@ public class UpstreamTest extends RobolectricTest {
          Collection col = getCol();
          // add some notes
          deck2 = col.getDecks().id("Default::foo");
+         Note note;
          for (i =0; i < 30; i++) {
-             Note note = col.newNote();
-         }
-         note.setItem("Front","did")] = deck2;
+             note = col.newNote();
+             note.setItem("Front","did")] = deck2;
              col.addNote(note);
+        }
          // give the child deck a different configuration
          c2 = col.getDecks().add_config_returning_id("new conf");
          col.getDecks().setConf(col.getDecks().get(deck2), c2);
@@ -1906,7 +1907,7 @@ public class UpstreamTest extends RobolectricTest {
          Note note = col.newNote();
          note.setItem("Front","one");
          note.setItem("Back","two");
-         Note note = col.addNote(note);
+         note = col.addNote(note);
          // set as a learn card and rebuild queues
          col.getDb().execute("update cards set queue=0, type=0");
          col.reset();
@@ -1984,10 +1985,10 @@ public class UpstreamTest extends RobolectricTest {
          // add 2 notes
          Note note = col.newNote();
          note.setItem("Front","1");
-         Note note = col.addNote(note);
-         Note note = col.newNote();
+         note = col.addNote(note);
+         note = col.newNote();
          note.setItem("Front","2");
-         Note note = col.addNote(note);
+         note = col.addNote(note);
          // set as a learn card and rebuild queues
          col.getDb().execute("update cards set queue=0, type=0");
          col.reset();
@@ -2012,7 +2013,7 @@ public class UpstreamTest extends RobolectricTest {
          // add a note
          Note note = col.newNote();
          note.setItem("Front","one");
-         Note note = col.addNote(note);
+         note = col.addNote(note);
          col.getSched().reset();
          Card c = col.getSched().getCard();
          DeckConfig conf = col.getSched()._cardConf(c);
@@ -2678,7 +2679,7 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( (0, 1, 0, col.getSched().counts() ));
          col.getSched().answerCard(col.getSched().getCard(), 2);
          assertEquals( (0, 0, 0, col.getSched().counts() ));
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","two");
          col.addNote(note);
          col.reset();
@@ -2690,14 +2691,14 @@ public class UpstreamTest extends RobolectricTest {
          col.getSched().answerCard(col.getSched().getCard(), 3);
          assertEquals( (0, 0, 0, col.getSched().counts() ));
          // immediate graduate should work
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","three");
          col.addNote(note);
          col.reset();
          col.getSched().answerCard(col.getSched().getCard(), 3);
          assertEquals( (0, 0, 0, col.getSched().counts() ));
          // and failing a review should too
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","three");
          col.addNote(note);
          Card c = note.cards().get(0);
@@ -2772,7 +2773,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Front","one");
          col.addNote(note);
          // and one that's a child
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","two");
          default1 = note.model().put("did", col.getDecks().id("Default::1"));
          col.addNote(note);
@@ -2782,12 +2783,12 @@ public class UpstreamTest extends RobolectricTest {
          c.setDue(0);
          c.flush();
          // add one more with a new deck
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","two");
          foobar = note.model().put("did", col.getDecks().id("foo::bar"));
          col.addNote(note);
          // and one that's a sibling
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","three");
          foobaz = note.model().put("did", col.getDecks().id("foo::baz"));
          col.addNote(note);
@@ -2819,12 +2820,12 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Front","one");
          col.addNote(note);
          // and one that's a child
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","two");
          default1 = note.model().put("did", col.getDecks().id("Default::2"));
          col.addNote(note);
          // and another that's higher up
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","three");
          default1 = note.model().put("did", col.getDecks().id("Default::1"));
          col.addNote(note);
@@ -2845,7 +2846,7 @@ public class UpstreamTest extends RobolectricTest {
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         Note note2 = col.newNote();
+         note2 = col.newNote();
          note2.setItem("Front","two");
          col.addNote(note2);
          assertEquals( 2, note2.cards().get(0).getDue() );
@@ -3027,10 +3028,10 @@ public class UpstreamTest extends RobolectricTest {
          // t['afmt'] = "{{Front}}"
          // mm.addTemplateModChanged(m, t)
          // mm.save(m)
-         // Note note = col.newNote()
+         // note = col.newNote()
          // note['Front'] = u"2"; note['Back'] = u"2"
          // col.addNote(note)
-         // Note note = col.newNote()
+         // note = col.newNote()
          // note['Front'] = u"3"; note['Back'] = u"3"
          // col.addNote(note)
          // col.reset()
@@ -3100,7 +3101,7 @@ public class UpstreamTest extends RobolectricTest {
          Note note = col.newNote();
          note.setItem("Front","one");
          note.setItem("Back","two");
-         Note note = col.addNote(note);
+         note = col.addNote(note);
          // set as a learn card and rebuild queues
          col.getDb().execute("update cards set queue=0, type=0");
          col.reset();
@@ -3215,10 +3216,10 @@ public class UpstreamTest extends RobolectricTest {
          // add 2 notes
          Note note = col.newNote();
          note.setItem("Front","1");
-         Note note = col.addNote(note);
-         Note note = col.newNote();
+         note = col.addNote(note);
+         note = col.newNote();
          note.setItem("Front","2");
-         Note note = col.addNote(note);
+         note = col.addNote(note);
          // set as a learn card and rebuild queues
          col.getDb().execute("update cards set queue=0, type=0");
          col.reset();
@@ -3243,7 +3244,7 @@ public class UpstreamTest extends RobolectricTest {
          // add a note
          Note note = col.newNote();
          note.setItem("Front","one");
-         Note note = col.addNote(note);
+         note = col.addNote(note);
          col.getSched().reset();
          Card c = col.getSched().getCard();
          DeckConfig conf = col.getSched()._cardConf(c);
@@ -3381,32 +3382,31 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_review_limits(){
-         Collection col = getCol();
+        Collection col=getCol();
 
-         parent = col.getDecks().get(col.getDecks().id("parent"));
-         child = col.getDecks().get(col.getDecks().id("parent::child"));
+        parent=col.getDecks().get(col.getDecks().id("parent"));
+        child=col.getDecks().get(col.getDecks().id("parent::child"));
 
-         pconf = col.getDecks().getConf(col.getDecks().add_config_returning_id("parentConf"));
-         cconf = col.getDecks().getConf(col.getDecks().add_config_returning_id("childConf"));
+        pconf=col.getDecks().getConf(col.getDecks().add_config_returning_id("parentConf"));
+        cconf=col.getDecks().getConf(col.getDecks().add_config_returning_id("childConf"));
 
-         pconf.getJSONObject("rev").put("perDay", 5);
-         col.getDecks().update_config(pconf);
-         col.getDecks().setConf(parent, pconf.getLong("id"));
-         cconf.getJSONObject("rev").put("perDay", 10);
-         col.getDecks().update_config(cconf);
-         col.getDecks().setConf(child, cconf.getLong("id"));
+        pconf.getJSONObject("rev").put("perDay",5);
+        col.getDecks().update_config(pconf);
+        col.getDecks().setConf(parent,pconf.getLong("id"));
+        cconf.getJSONObject("rev").put("perDay",10);
+        col.getDecks().update_config(cconf);
+        col.getDecks().setConf(child,cconf.getLong("id"));
 
-         Model m = col.getModels().current();
-         m.put("did", child.getLong("id"));
-         col.getModels().save(m, false);
+        Model m=col.getModels().current();
+        m.put("did",child.getLong("id"));
+        col.getModels().save(m,false);
 
-         // add some cards
-         for (int i=0; i < 20; i++) {
-             Note note = col.newNote();
-         }
-         note.setItem("Front","one");
-         note.setItem("Back","two");
-             col.addNote(note);
+        // add some cards
+        for(int i=0;i< 20;i++){
+            Note note=col.newNote();
+            note.setItem("Front","one");
+            note.setItem("Back","two");
+            col.addNote(note);
 
              // make them reviews
              Card c = note.cards().get(0);
@@ -3414,6 +3414,7 @@ public class UpstreamTest extends RobolectricTest {
              c.setType(QUEUE_TYPE_REV);
              c.setDue(0);
              c.flush();
+        }
 
          tree = col.getSched().deck_due_tree().children;
          // (('parent', 1514457677462, 5, 0, 0, (('child', 1514457677463, 5, 0, 0, ()),)))
@@ -3594,7 +3595,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Front","one");
          col.addNote(note);
          Card c = note.cards().get(0);
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","two");
          col.addNote(note);
          c2 = note.cards().get(0);
@@ -3909,7 +3910,7 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( (0, 1, 0, col.getSched().counts() ));
          col.getSched().answerCard(col.getSched().getCard(), 3);
          assertEquals( (0, 0, 0, col.getSched().counts() ));
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","two");
          col.addNote(note);
          col.reset();
@@ -3921,14 +3922,14 @@ public class UpstreamTest extends RobolectricTest {
          col.getSched().answerCard(col.getSched().getCard(), 4);
          assertEquals( (0, 0, 0, col.getSched().counts() ));
          // immediate graduate should work
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","three");
          col.addNote(note);
          col.reset();
          col.getSched().answerCard(col.getSched().getCard(), 4);
          assertEquals( (0, 0, 0, col.getSched().counts() ));
          // and failing a review should too
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","three");
          col.addNote(note);
          Card c = note.cards().get(0);
@@ -3946,16 +3947,16 @@ public class UpstreamTest extends RobolectricTest {
      public void test_timing(){
          Collection col = getCol();
          // add a few review cards, due today
-         for (int i=0; i < 5; i++) {
-             Note note = col.newNote();
-         }
-         note.setItem("Front","num") + str(i);
-             col.addNote(note);
-             Card c = note.cards().get(0);
-             c.setType(CARD_TYPE_REV);
-             c.setQueue(QUEUE_TYPE_REV);
-             c.setDue(0);
-             c.flush();
+         for (int i=0; i < 5; i++){
+        Note note=col.newNote();
+        note.setItem("Front","num")+str(i);
+        col.addNote(note);
+        Card c=note.cards().get(0);
+        c.setType(CARD_TYPE_REV);
+        c.setQueue(QUEUE_TYPE_REV);
+        c.setDue(0);
+        c.flush();
+        }
          // fail the first one
          col.reset();
          Card c = col.getSched().getCard();
@@ -3995,7 +3996,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Front","one");
          col.addNote(note);
          // and one that's a child
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","two");
          default1 = note.model().put("did", col.getDecks().id("Default::1"));
          col.addNote(note);
@@ -4005,12 +4006,12 @@ public class UpstreamTest extends RobolectricTest {
          c.setDue(0);
          c.flush();
          // add one more with a new deck
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","two");
          foobar = note.model().put("did", col.getDecks().id("foo::bar"));
          col.addNote(note);
          // and one that's a sibling
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","three");
          foobaz = note.model().put("did", col.getDecks().id("foo::baz"));
          col.addNote(note);
@@ -4053,12 +4054,12 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Front","one");
          col.addNote(note);
          // and one that's a child
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","two");
          default1 = note.model().put("did", col.getDecks().id("Default::2"));
          col.addNote(note);
          // and another that's higher up
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","three");
          default1 = note.model().put("did", col.getDecks().id("Default::1"));
          col.addNote(note);
@@ -4079,7 +4080,7 @@ public class UpstreamTest extends RobolectricTest {
          Note note = col.newNote();
          note.setItem("Front","one");
          col.addNote(note);
-         Note note2 = col.newNote();
+         note2 = col.newNote();
          note2.setItem("Front","two");
          col.addNote(note2);
          assertEquals( 2, note2.cards().get(0).getDue() );
@@ -4432,7 +4433,7 @@ public class UpstreamTest extends RobolectricTest {
          assertNotEquals(1001, c.left);
          assertFalse(col.undoName());
          // we should be able to undo multiple answers too
-         Note note = col.newNote();
+         note = col.newNote();
          note.setItem("Front","two");
          col.addNote(note);
          col.reset();
