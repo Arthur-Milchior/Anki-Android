@@ -2717,7 +2717,7 @@ public class UpstreamTest extends RobolectricTest {
          Card c = col.getSched().getCard();
          // set a a fail delay of 4 seconds
          DeckConfig conf = col.getSched()._cardConf(c);
-         conf.getJSONObject("lapse")["delays"][0] = 1 / 15.0;
+         conf.getJSONObject("lapse").getJSONArray("delays")[0] = 1 / 15.0;
          col.getDecks().save(conf);
          col.getSched().answerCard(c, 1);
          // the next card should be another review
