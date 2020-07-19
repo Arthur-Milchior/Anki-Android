@@ -26,6 +26,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import timber.log.Timber;
 
 import static com.ichi2.libanki.Consts.*;
+import static com.ichi2.libanki.Utils.intTime;
 import static com.ichi2.libanki.Utils.stripHTML;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
@@ -1776,14 +1777,14 @@ public class UpstreamTest extends RobolectricTest {
      /*****************
           ** SchedV1      *
       *****************/
-     private Collection getColV1(){
+     private Collection getColV1() throws ConfirmModSchemaException {
          Collection col = getCol();
          col.changeSchedulerVer(1);
          return col;
      }
 
      @Test
-     public void test_clock(){
+     public void test_clock() throws ConfirmModSchemaException {
          Collection col = getColV1();
          if ((col.getSched().dayCutoff - intTime()) < 10 * 60) {
              raise Exception("Unit tests will fail around the day rollover.");
@@ -1796,14 +1797,14 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_basics(){
+     public void test_basics() throws ConfirmModSchemaException {
          Collection col = getColV1();
          col.reset();
          assertFalse(col.getSched().getCard());
      }
 
      @Test
-     public void test_new(){
+     public void test_new()  throws ConfirmModSchemaException {
          Collection col = getColV1();
          col.reset();
          assertEquals( 0, col.getSched().newCount );
@@ -1851,7 +1852,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_newLimits(){
+     public void test_newLimits()  throws ConfirmModSchemaException {
          Collection col = getColV1();
          // add some notes
          deck2 = col.getDecks().id("Default::foo");
@@ -1885,7 +1886,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_newBoxes(){
+     public void test_newBoxes()  throws ConfirmModSchemaException {
          Collection col = getColV1();
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -1903,7 +1904,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_learn(){
+     public void test_learn()  throws ConfirmModSchemaException {
          Collection col = getColV1();
          // add a note
          Note note = col.newNote();
@@ -2943,7 +2944,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_failmult(){
+     public void test_failmult()  {
          Collection col = getColV1();
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -2978,7 +2979,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_clock(){
+     public void test_clock()   throws ConfirmModSchemaException{
          Collection col = getColV2();
          if ((col.getSched().dayCutoff - intTime()) < 10 * 60) {
              raise Exception("Unit tests will fail around the day rollover.");
@@ -2991,14 +2992,14 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_basics(){
+     public void test_basics()  throws ConfirmModSchemaException{
          Collection col = getColV2();
          col.reset();
          assertFalse(col.getSched().getCard());
      }
 
      @Test
-     public void test_new(){
+     public void test_new()  throws ConfirmModSchemaException{
          Collection col = getColV2();
          col.reset();
          assertEquals( 0, col.getSched().newCount );
@@ -3046,7 +3047,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_newLimits(){
+     public void test_newLimits()  throws ConfirmModSchemaException{
          Collection col = getColV2();
          // add some notes
          deck2 = col.getDecks().id("Default::foo");
@@ -3079,7 +3080,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_newBoxes(){
+     public void test_newBoxes()  throws ConfirmModSchemaException{
          Collection col = getColV2();
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -3097,7 +3098,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_learn(){
+     public void test_learn()  throws ConfirmModSchemaException{
          Collection col = getColV2();
          // add a note
          Note note = col.newNote();
