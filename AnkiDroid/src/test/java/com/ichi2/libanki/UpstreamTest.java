@@ -1739,28 +1739,28 @@ public class UpstreamTest extends RobolectricTest {
          Model basic = mm.byName("Basic");
          assertTrue(basic.has("req"));
          reqSize(basic);
-         r = basic["req"][0];
+         r = basic.getJSONArray("req")[0];
          assertEquals( 0, r[0] );
          assertTrue(r("any", "all").contains(new [] {1}));
          assertEquals(new long []0}, r[2] );
          opt = mm.byName("Basic (optional reversed card)");
          reqSize(opt);
-         r = opt["req"][0];
+         r = opt.getJSONArray("req")[0];
         assertTrue(r("any", "all").contains(new [] {1}));
          assertEquals(new long []0}, r[2] );
-         assertEquals(new long []1, "all", [1, 2]}, opt["req"][1] );
+         assertEquals(new long []1, "all", [1, 2]}, opt.getJSONArray("req")[1] );
          // testing any
          opt.getJSONArray("tmpls").getJSONObject(1).put("qfmt", "{{Back}}{{Add Reverse}}");
          mm.save(opt, true);
-         assertEquals(new long []1, "any", [1, 2]}, opt["req"][1] );
+         assertEquals(new long []1, "any", [1, 2]}, opt.getJSONArray("req")[1] );
          // testing null
          opt.getJSONArray("tmpls").getJSONObject(1).put("qfmt", "{{^Add Reverse}}{{/Add Reverse}}");
          mm.save(opt, true);
-         assertEquals(new long []1, "none", []}, opt["req"][1] );
+         assertEquals(new long []1, "none", []}, opt.getJSONArray("req")[1] );
 
          opt = mm.byName("Basic (the answer)".contains(type));
          reqSize(opt);
-         r = opt["req"][0];
+         r = opt.getJSONArray("req")[0];
          assertTrue(r("any", "all").contains(new [] {1}));
          assertEquals(new long []0, 1}, r[2] );
      }
