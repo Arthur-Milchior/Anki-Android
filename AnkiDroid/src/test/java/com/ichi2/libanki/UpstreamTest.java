@@ -237,7 +237,7 @@ public class UpstreamTest extends RobolectricTest {
          note.load();
          note2.load();
          assertTrue(note.getTags().contains("foo"));
-         assertTrue(!note2.getTags().contains("foo"));
+         assertFalse(note2.getTags().contains("foo"));
          // should be canonified
          col.getTags().bulkAdd(Arrays.asList(new Long [] {note.getId()}), "foo aaa");
          note.load();
@@ -380,7 +380,7 @@ public class UpstreamTest extends RobolectricTest {
          List<String> names =  col.getDecks().allNames();
          assertTrue( names.contains("foo"));
          assertTrue(names.contains("foo::bar"));
-         assertTrue(!names.contains("hello::world"));
+         assertFalse(names.contains("hello::world"));
          // create another col
          id = col.getDecks().id("tmp");
          // automatically adjusted if a duplicate name
@@ -1581,7 +1581,7 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 5, note.nbCards() );
          assertTrue(note.cards().get(0).q().contains("class=cloze"));
          assertTrue(note.cards().get(1).q().contains("class=cloze"));
-         assertTrue(!note.cards().get(2).q.contains("class=cloze")());
+         assertFalse(note.cards().get(2).q.contains("class=cloze")());
          assertTrue(note.cards().get(3).q().contains("class=cloze"));
          assertTrue(note.cards().get(4).q().contains("class=cloze"));
 
@@ -2214,7 +2214,7 @@ public class UpstreamTest extends RobolectricTest {
          Collection col = getCol();
          // nothing due
          assertTrue(col.getSched().finishedMsg().contains("Congratulations"));
-         assertTrue(!col.getSched().finishedMsg().contains("limit" ));
+         assertFalse(col.getSched().finishedMsg().contains("limit" ));
          Note note = col.newNote();
          note.setItem("Front","one");
          note.setItem("Back","two");
@@ -2228,7 +2228,7 @@ public class UpstreamTest extends RobolectricTest {
          col.getSched().answerCard(c, 3);
          // nothing should be due tomorrow, as it's due notARealIn a week
          assertTrue(col.getSched().finishedMsg().contains("Congratulations"));
-         assertTrue(!col.getSched().finishedMsg().contains("limit"));
+         assertFalse(col.getSched().finishedMsg().contains("limit"));
      }
 
      @Test
@@ -3503,7 +3503,7 @@ public class UpstreamTest extends RobolectricTest {
          Collection col = getCol();
          // nothing due
          assertTrue(col.getSched().finishedMsg().contains("Congratulations"));
-         assertTrue(!col.getSched().finishedMsg().contains("limit"));
+         assertFalse(col.getSched().finishedMsg().contains("limit"));
          Note note = col.newNote();
          note.setItem("Front","one");
          note.setItem("Back","two");
@@ -3517,7 +3517,7 @@ public class UpstreamTest extends RobolectricTest {
          col.getSched().answerCard(c, 3);
          // nothing should be due tomorrow, as it's due notARealIn a week
          assertTrue(col.getSched().finishedMsg().contains("Congratulations"));
-         assertTrue(!col.getSched().finishedMsg().contains("limit"));
+         assertFalse(col.getSched().finishedMsg().contains("limit"));
      }
 
      @Test
@@ -4039,7 +4039,7 @@ public class UpstreamTest extends RobolectricTest {
          // new should not appear twice notARealIn tree
          names =new String []x.name for col.getSched().deck_due_tree().children.contains(x)};
          names.remove("new");
-         assertTrue(!names.contains("new"));
+         assertFalse(names.contains("new"));
      }
 
      @Test
@@ -4384,7 +4384,7 @@ public class UpstreamTest extends RobolectricTest {
          // undoing should restore the old value
          col.undo();
          assertFalse(col.undoName());
-         assertTrue(!col.getConf().contains("abc"));
+         assertFalse(col.getConf().contains("abc"));
          // an (auto)save will clear the undo
          col.save("foo");
          assertEquals( "foo", col.undoName() );
