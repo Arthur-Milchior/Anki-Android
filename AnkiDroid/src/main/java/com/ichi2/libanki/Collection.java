@@ -588,7 +588,7 @@ public class Collection {
     public void remNotes(long[] ids) {
         ArrayList<Long> list = mDb
                 .queryColumn(Long.class, "SELECT id FROM cards WHERE nid IN " + Utils.ids2str(ids), 0);
-        remCards(Utils.arrayList2array(list));
+        remCards(Utils.collection2Array(list));
     }
 
 
@@ -648,7 +648,7 @@ public class Collection {
      * Generate cards for non-empty templates, return ids to remove.
      */
 	public ArrayList<Long> genCards(List<Long> nids) {
-	    return genCards(Utils.arrayList2array(nids));
+	    return genCards(Utils.collection2Array(nids));
 	}
     public ArrayList<Long> genCards(long[] nids) {
         // build map of (nid,ord) so we don't create dupes
@@ -923,7 +923,7 @@ public class Collection {
         }
         String sids = Utils.ids2str(ids);
         long[] nids = Utils
-                .arrayList2array(mDb.queryColumn(Long.class, "SELECT nid FROM cards WHERE id IN " + sids, 0));
+                .collection2Array(mDb.queryColumn(Long.class, "SELECT nid FROM cards WHERE id IN " + sids, 0));
         // remove cards
         _logRem(ids, Consts.REM_CARD);
         mDb.execute("DELETE FROM cards WHERE id IN " + sids);
@@ -932,7 +932,7 @@ public class Collection {
         	return;
         }
         nids = Utils
-                .arrayList2array(mDb.queryColumn(Long.class, "SELECT id FROM notes WHERE id IN " + Utils.ids2str(nids)
+                .collection2Array(mDb.queryColumn(Long.class, "SELECT id FROM notes WHERE id IN " + Utils.ids2str(nids)
                         + " AND id NOT IN (SELECT nid FROM cards)", 0));
         _remNotes(nids);
     }
@@ -1341,7 +1341,7 @@ public class Collection {
                     c.flush(false);
                     ids.add(c.getId());
                 }
-                mDb.execute("DELETE FROM graves WHERE oid IN " + Utils.ids2str(Utils.arrayList2array(ids)));
+                mDb.execute("DELETE FROM graves WHERE oid IN " + Utils.ids2str(Utils.collection2Array(ids)));
                 return (Long) data[3];
             }
 
@@ -1359,7 +1359,7 @@ public class Collection {
                     c.flush(false);
                     ids.add(c.getId());
                 }
-                mDb.execute("DELETE FROM graves WHERE oid IN " + Utils.ids2str(Utils.arrayList2array(ids)));
+                mDb.execute("DELETE FROM graves WHERE oid IN " + Utils.ids2str(Utils.collection2Array(ids)));
                 return -1;  // don't fetch new card
             }
 
@@ -1750,7 +1750,7 @@ public class Collection {
         if (ids.size() > 0) {
             problems.add("Reviews had incorrect due date.");
             mDb.execute("UPDATE cards SET due = " + mSched.getToday() + ", ivl = 1, mod = " +  Utils.intTime() +
-                    ", usn = " + usn() + " WHERE id IN " + Utils.ids2str(Utils.arrayList2array(ids)));
+                    ", usn = " + usn() + " WHERE id IN " + Utils.ids2str(Utils.collection2Array(ids)));
         }
         return problems;
     }
@@ -1780,7 +1780,7 @@ public class Collection {
         // field cache
         for (Model m : getModels().all()) {
             notifyProgress.run();
-            updateFieldCache(Utils.arrayList2array(getModels().nids(m)));
+            updateFieldCache(Utils.collection2Array(getModels().nids(m)));
         }
         return Collections.emptyList();
     }
@@ -1867,7 +1867,7 @@ public class Collection {
         notifyProgress.run();
         if (ids.size() != 0) {
             problems.add("Deleted " + ids.size() + " card(s) with missing note.");
-            remCards(Utils.arrayList2array(ids));
+            remCards(Utils.collection2Array(ids));
         }
         return problems;
     }
@@ -1884,7 +1884,7 @@ public class Collection {
         notifyProgress.run();
         if (ids.size() != 0) {
             problems.add("Deleted " + ids.size() + " note(s) with missing no cards.");
-            _remNotes(Utils.arrayList2array(ids));
+            _remNotes(Utils.collection2Array(ids));
         }
         return problems;
     }
@@ -1935,7 +1935,7 @@ public class Collection {
             notifyProgress.run();
             if (ids.size() > 0) {
                 problems.add("Deleted " + ids.size() + " note(s) with wrong field count.");
-                _remNotes(Utils.arrayList2array(ids));
+                _remNotes(Utils.collection2Array(ids));
             }
         } finally {
             if (cur != null && !cur.isClosed()) {
@@ -1962,7 +1962,7 @@ public class Collection {
                             "SELECT id FROM notes WHERE mid = ?)", 0, new Object[] {m.getLong("id")});
             if (ids.size() > 0) {
                 problems.add("Deleted " + ids.size() + " card(s) with missing template.");
-                remCards(Utils.arrayList2array(ids));
+                remCards(Utils.collection2Array(ids));
             }
         }
         return problems;
@@ -1979,7 +1979,7 @@ public class Collection {
         notifyProgress.run();
         if (ids.size() != 0) {
             problems.add("Deleted " + ids.size() + " note(s) with missing note type.");
-            _remNotes(Utils.arrayList2array(ids));
+            _remNotes(Utils.collection2Array(ids));
         }
         return problems;
     }

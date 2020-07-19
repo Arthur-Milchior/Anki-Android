@@ -2340,7 +2340,7 @@ public class SchedV2 extends AbstractSched {
      * @param nid The id of the targeted note.
      */
     public void buryNote(long nid) {
-        long[] cids = Utils.arrayList2array(mCol.getDb().queryColumn(Long.class,
+        long[] cids = Utils.collection2Array(mCol.getDb().queryColumn(Long.class,
                 "SELECT id FROM cards WHERE nid = ? AND queue >= " + Consts.CARD_TYPE_NEW, 0,
                 new Object[] {nid}));
         buryCards(cids);
@@ -2390,7 +2390,7 @@ public class SchedV2 extends AbstractSched {
         }
         // then bury
         if (!toBury.isEmpty()) {
-            buryCards(Utils.arrayList2array(toBury),false);
+            buryCards(Utils.collection2Array(toBury),false);
         }
     }
 
@@ -2439,7 +2439,7 @@ public class SchedV2 extends AbstractSched {
      * Completely reset cards for export.
      */
     public void resetCards(Long[] ids) {
-        long[] nonNew = Utils.arrayList2array(mCol.getDb().queryColumn(Long.class,
+        long[] nonNew = Utils.collection2Array(mCol.getDb().queryColumn(Long.class,
                 "select id from cards where id in " + Utils.ids2str(ids) + " and (queue != " + Consts.QUEUE_TYPE_NEW + " or type != " + Consts.CARD_TYPE_NEW + ")", 0));
         mCol.getDb().execute("update cards set reps=0, lapses=0 where id in " + Utils.ids2str(nonNew));
         forgetCards(nonNew);
@@ -2585,7 +2585,7 @@ public class SchedV2 extends AbstractSched {
 
 
         // remove new cards from learning
-        forgetCards(Utils.arrayList2array(mCol.getDb().queryColumn(Long.class, "select id from cards where queue in (" + Consts.QUEUE_TYPE_LRN + "," + Consts.QUEUE_TYPE_DAY_LEARN_RELEARN + ")", 0)));
+        forgetCards(Utils.collection2Array(mCol.getDb().queryColumn(Long.class, "select id from cards where queue in (" + Consts.QUEUE_TYPE_LRN + "," + Consts.QUEUE_TYPE_DAY_LEARN_RELEARN + ")", 0)));
     }
 
 
