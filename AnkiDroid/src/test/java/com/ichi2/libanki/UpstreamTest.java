@@ -817,16 +817,16 @@ public class UpstreamTest extends RobolectricTest {
              // added
              assertEquals( 0, col.findCards("added:0").size() );
              col.getDb().execute("update cards set long id = id - 86400*1000 where long id = ?", new Object[] {id});
-             assertEquals( col.cardCount(, col.findCards("added:1").size() ) - 1);
-             assertEquals( col.cardCount(, col.findCards("added:2").size() ));
+             assertEquals( col.cardCount() -1, col.findCards("added:1").size() );
+             assertEquals( col.cardCount() , col.findCards("added:2").size() );
          } else {
              Timber.w("some find tests disabled near cutoff");
          }
          // empty field
          assertEquals( 0, col.findCards("front:").size() );
-         Note note = col.newNote();
-note.setItem("Front","");
-note.setItem("Back","abc2");
+         note = col.newNote();
+         note.setItem("Front","");
+         note.setItem("Back","abc2");
          assertEquals( 1, col.addNote(note) );
          assertEquals( 1, col.findCards("front:").size() );
          // OR searches and nesting
@@ -850,28 +850,28 @@ note.setItem("Back","abc2");
          note2.setItem("Front","baz");
          note2.setItem("Back","foo");
          col.addNote(note2);
-         nids = new long [] {note.getId(), note2.getId()};
+         List<Long> nids = Arrays.asList(new Long [] {note.getId(), note2.getId()});
          // should do nothing
          assertEquals( 0, col.findReplace(nids, "abc", "123") );
          // global replace
          assertEquals( 2, col.findReplace(nids, "foo", "qux") );
          note.load();
-         assertTrue(note.setItem("Front","qux"));
+         assertEquals("qux", note.getItem("Front"));
          note2.load();
-         assertTrue(note2.setItem("Back","qux"));
+         assertEquals("qux", note2.getItem("Back"));
          // single field replace
-         assertEquals( 1, col.findReplace(nids, "qux", "foo", field="Front") );
+         assertEquals( 1, col.findReplace(nids, "qux", "foo", "Front") );
          note.load();
-         assertTrue(note.setItem("Front","foo"));
+         assertEquals("foo", note.getItem("Front"));
          note2.load();
-         assertTrue(note2.setItem("Back","qux"));
+         assertEquals("qux", note2.getItem("Back"));
          // regex replace
          assertEquals( 0, col.findReplace(nids, "B.r", "reg") );
          note.load();
-         assertTrue(note.setItem("Back","reg"));
-         assertEquals( 1, col.findReplace(nids, "B.r", "reg", regex=true) );
+         assertEquals(note.getItem("Back"), "reg");
+         assertEquals( 1, col.findReplace(nids, "B.r", "reg", true) );
          note.load();
-         assertTrue(note.setItem("Back","reg"));
+         assertEquals(note.getItem("Back"), "reg");
      }
 
      @Test
@@ -885,15 +885,15 @@ note.setItem("Back","abc2");
          note2.setItem("Front","baz");
          note2.setItem("Back","bar");
          col.addNote(note2);
-         note3 = col.newNote();
+         Note note3 = col.newNote();
          note3.setItem("Front","quux");
          note3.setItem("Back","bar");
          col.addNote(note3);
-         note4 = col.newNote();
+         Note note4 = col.newNote();
          note4.setItem("Front","quuux");
          note4.setItem("Back","nope");
          col.addNote(note4);
-         r = col.findDupes("Back");
+         List<Pair<String, List<Long>>> r = col.findDupes("Back");
          assertEquals( "bar", r[0][0] );
          assertEquals( 3, r[0][1].size() );
          // valid search
@@ -902,9 +902,9 @@ note.setItem("Back","abc2");
          assertEquals( 3, r[0][1].size() );
          // excludes everything
          r = col.findDupes("Back", "invalid");
-         assertFalse(r);
+         assertNotEquals(0, r.size());
          // front isn't dupe
-         assertEquals( new Pair<String, List<Long>>[] {}, col.findDupes("Front") );
+         assertEquals( 0, col.findDupes("Front").size() );
      }
 
       /*****************
