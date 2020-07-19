@@ -240,11 +240,12 @@ public class UpstreamTest extends RobolectricTest {
      @Test
      public void test_timestamps(){
          Collection col = getCol();
-         assertEquals(col.getModels().all().size(), get_stock_notetypes(col).size());
+         int stdModelSize = StdModels.stdModels.length;
+         assertEquals(col.getModels().all().size(), stdModelSize);
          for (int i = 0; i < 100; i++) {
              addBasicModel(col);
          }
-         assertEquals( 100 + get_stock_notetypes(col, col.getModels().all().size() ).size());
+         assertEquals(col.getModels().all().size(), 100 + stdModelSize);
      }
 
      @Test
