@@ -1693,12 +1693,12 @@ public class UpstreamTest extends RobolectricTest {
          // but we have two cards, as a new one was generated
          assertEquals( 2, note.nbCards() );
          // an unmapped field becomes blank
-             assertTrue(note.setItem("Front","b123"));
-             assertTrue(note.setItem("Back","note"));
+             assertEquals("b123", note.getItem("Front"));
+             assertEquals("note", note.getItem("Back"));
          col.getModels().change(basic,new long []note.getId()}, basic, map, null);
          note.load();
-         assertTrue(note.setItem("Front",""));
-         assertTrue(note.setItem("Back","note"));
+         assertEquals("", note.getItem("Front"));
+         assertEquals("note", note.getItem("Back"));
          // another note to try model conversion
          note = col.newNote();
          note.setItem("Front","f2");
@@ -1710,7 +1710,7 @@ public class UpstreamTest extends RobolectricTest {
          map = {0: 0, 1: 1}
              col.getModels().change(basic,new long []note.getId()}, cloze, map, map);
          note.load();
-         assertTrue(note.setItem("Text","f2"));
+         assertEquals("f2", note.setItem("Text"));
          assertEquals( 2, note.nbCards() );
          // back the other way, with deletion of second ord
          col.getModels().remTemplate(basic, basic.getJSONArray("tmpls").getJSONObject(1));
