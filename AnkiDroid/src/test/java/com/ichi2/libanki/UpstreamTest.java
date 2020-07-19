@@ -517,7 +517,7 @@ public class UpstreamTest extends RobolectricTest {
      public void test_export_ankipkg(){
          Collection col = setup1();
          // add a test file to the media folder
-         with open(os.path.join(col.media.dir(), "今日.mp3"), "w") as note:
+         with open(os.path.join(col.getMedia().dir(), "今日.mp3"), "w") as note:
              note.write("test");
          Note n = col.newNote();
          n.setItem("Front", "[sound:今日.mp3]");
@@ -918,40 +918,40 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          mid = n.model().getLong("id");
          col.addNote(n);
          // add that sound to media folder
-         with open(os.path.join(col.media.dir(), "foo.mp3"), "w") as note:
+         with open(os.path.join(col.getMedia().dir(), "foo.mp3"), "w") as note:
              note.write("foo");
          col.close();
          // it should be imported correctly into an empty deck
          Collection empty = getCol();
          Anki2Importer imp = Anki2Importer(empty, col.getPath());
          imp.run();
-         assertEquals( new String [] {"foo.mp3"}, os.listdir(empty.media.dir()) );
+         assertEquals( new String [] {"foo.mp3"}, os.listdir(empty.getMedia().dir()) );
          // and importing again will not duplicate, as the file content matches
          empty.remove_cards_and_orphaned_notes(empty.getDb().list("select id from cards"));
          Anki2Importer imp = Anki2Importer(empty, col.getPath());
          imp.run();
-         assertEquals( new String [] {"foo.mp3"}, os.listdir(empty.media.dir()) );
+         assertEquals( new String [] {"foo.mp3"}, os.listdir(empty.getMedia().dir()) );
          Note n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
          assertTrue(n.fields[0].contains("foo.mp3"));
          // if the local file content is different, and import should trigger a
          // rename
-         empty.remove_cards_and_orphaned_notes(empty.getDb().list("select id from cards"));
-         with open(os.path.join(empty.media.dir(), "foo.mp3"), "w") as note:
+         empty.remove_cards_and_orphaned_notes(empty.getDb().longList("select id from cards"));
+         with open(os.path.join(empty.getMedia().dir(), "foo.mp3"), "w") as note:
              note.write("bar");
          Anki2Importer imp = Anki2Importer(empty, col.getPath());
          imp.run();
-         assertEquals( new String [] {"foo.mp3", "foo_%s.mp3" % mid}, sorted(os.listdir(empty.media.dir())) );
+         assertEquals( new String [] {"foo.mp3", "foo_%s.mp3" % mid}, sorted(os.listdir(empty.getMedia().dir())) );
          Note n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
          assertTrue(n.fields[0].contains("_"));
          // if the localized media file already exists, we rewrite the note and
          // media
-         empty.remove_cards_and_orphaned_notes(empty.getDb().list("select id from cards"));
-         with open(os.path.join(empty.media.dir(), "foo.mp3"), "w") as note:
+         empty.remove_cards_and_orphaned_notes(empty.getDb().longList("select id from cards"));
+         with open(os.path.join(empty.getMedia().dir(), "foo.mp3"), "w") as note:
              note.write("bar");
          Anki2Importer imp = Anki2Importer(empty, col.getPath());
          imp.run();
-         assertEquals( new String [] {"foo.mp3", "foo_%s.mp3" % mid}, sorted(os.listdir(empty.media.dir())) );
-         assertEquals( new String [] {"foo.mp3", "foo_%s.mp3" % mid}, sorted(os.listdir(empty.media.dir())) );
+         assertEquals( new String [] {"foo.mp3", "foo_%s.mp3" % mid}, sorted(os.listdir(empty.getMedia().dir())) );
+         assertEquals( new String [] {"foo.mp3", "foo_%s.mp3" % mid}, sorted(os.listdir(empty.getMedia().dir())) );
          Note n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
          assertTrue(n.fields[0].contains("_"));
      }
@@ -961,21 +961,21 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          Collection col = getCol();
          String apkg = str(os.path.join(testDir, "support/media.apkg"));
          AnkiPackageImporter imp = AnkiPackageImporter(col, apkg);
-         assertEquals( new String [] {}, os.listdir(col.media.dir()) );
+         assertEquals( new String [] {}, os.listdir(col.getMedia().dir()) );
          imp.run();
-         assertEquals( new String [] {"foo.wav"}, os.listdir(col.media.dir()) );
+         assertEquals( new String [] {"foo.wav"}, os.listdir(col.getMedia().dir()) );
          // importing again should be idempotent notARealIn terms of media
          col.remove_cards_and_orphaned_notes(col.getDb().list("select id from cards"));
          AnkiPackageImporter imp = AnkiPackageImporter(col, apkg);
          imp.run();
-         assertEquals( new String [] {"foo.wav"}, os.listdir(col.media.dir()) );
+         assertEquals( new String [] {"foo.wav"}, os.listdir(col.getMedia().dir()) );
          // but if the local file has different data, it will rename
-         col.remove_cards_and_orphaned_notes(col.getDb().list("select id from cards"));
-         with open(os.path.join(col.media.dir(), "foo.wav"), "w") as note:
+         col.remove_cards_and_orphaned_notes(col.getDb().longList("select id from cards"));
+         with open(os.path.join(col.getMedia().dir(), "foo.wav"), "w") as note:
              note.write("xyz");
          imp = AnkiPackageImporter(col, apkg);
          imp.run();
-         assertEquals( 2, os.listdir(col.media.dir()).size() );
+         assertEquals( 2, os.listdir(col.getMedia().dir()).size() );
      }
 
      @Test
@@ -1283,13 +1283,13 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          with open(path, "w") as note:
              note.write("hello");
          // new file, should preserve name
-             assertEquals( "foo.jpg", col.media.addFile(path) );
+             assertEquals( "foo.jpg", col.getMedia().addFile(path) );
          // adding the same file again should not create a duplicate
-             assertEquals( "foo.jpg", col.media.addFile(path) );
+             assertEquals( "foo.jpg", col.getMedia().addFile(path) );
          // but if it has a different sha1, it should
          with open(path, "w") as note:
              note.write("world");
-             assertEquals( "foo-7c211433f02071597741e6ff5a8ea34789abbf43.jpg", col.media.addFile(path) );
+             assertEquals( "foo-7c211433f02071597741e6ff5a8ea34789abbf43.jpg", col.getMedia().addFile(path) );
      } */
 
      @Test
@@ -1318,10 +1318,10 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
      public void test_deckIntegration(){
          Collection col = getCol();
          // create a media dir
-         col.media.dir();
+         col.getMedia().dir();
          // put a file into it
          file = str(os.path.join(testDir, "support/fake.png"));
-         col.media.addFile(file);
+         col.getMedia().addFile(file);
          // add a note which references it
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -1333,10 +1333,10 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          note.setItem("Back","<img src='fake2.png'>");
          col.addNote(note);
          // and add another file which isn't used
-         with open(os.path.join(col.media.dir(), "foo.jpg"), "w") as note:
+         with open(os.path.join(col.getMedia().dir(), "foo.jpg"), "w") as note:
              note.write("test");
          // check media
-         ret = col.media.check();
+         ret = col.getMedia().check();
          assertEquals( new String [] {"fake2.png"}, ret.missing );
          assertEquals( new String [] {"foo.jpg"}, ret.unused );
      }
