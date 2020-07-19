@@ -1853,7 +1853,7 @@ public class UpstreamTest extends RobolectricTest {
          // assertEquals( 20, col.getSched().newCount ); TODO: newCount getter
          // first card we get comes from parent
          Card c = col.getSched().getCard();
-         assertEquals( 1, c.long did );
+         assertEquals( 1, c.getDid() );
          // limit the parent to 10 cards, meaning we get 10 notARealIn total
          DeckConfig conf1 = col.getDecks().confForDid(1);
          conf1.getJSONObject("new").put("perDay", 10);
@@ -1893,7 +1893,7 @@ public class UpstreamTest extends RobolectricTest {
          Note note = col.newNote();
          note.setItem("Front","one");
          note.setItem("Back","two");
-         note = col.addNote(note);
+         col.addNote(note);
          // set as a learn card and rebuild queues
          col.getDb().execute("update cards set queue=0, type=0");
          col.reset();
@@ -1971,10 +1971,10 @@ public class UpstreamTest extends RobolectricTest {
          // add 2 notes
          Note note = col.newNote();
          note.setItem("Front","1");
-         note = col.addNote(note);
+         col.addNote(note);
          note = col.newNote();
          note.setItem("Front","2");
-         note = col.addNote(note);
+         col.addNote(note);
          // set as a learn card and rebuild queues
          col.getDb().execute("update cards set queue=0, type=0");
          col.reset();
@@ -1999,7 +1999,7 @@ public class UpstreamTest extends RobolectricTest {
          // add a note
          Note note = col.newNote();
          note.setItem("Front","one");
-         note = col.addNote(note);
+         col.addNote(note);
          col.getSched().reset();
          Card c = col.getSched().getCard();
          DeckConfig conf = col.getSched()._cardConf(c);
@@ -3087,7 +3087,7 @@ public class UpstreamTest extends RobolectricTest {
          Note note = col.newNote();
          note.setItem("Front","one");
          note.setItem("Back","two");
-         note = col.addNote(note);
+         col.addNote(note);
          // set as a learn card and rebuild queues
          col.getDb().execute("update cards set queue=0, type=0");
          col.reset();
@@ -3202,10 +3202,10 @@ public class UpstreamTest extends RobolectricTest {
          // add 2 notes
          Note note = col.newNote();
          note.setItem("Front","1");
-         note = col.addNote(note);
+         col.addNote(note);
          note = col.newNote();
          note.setItem("Front","2");
-         note = col.addNote(note);
+         col.addNote(note);
          // set as a learn card and rebuild queues
          col.getDb().execute("update cards set queue=0, type=0");
          col.reset();
@@ -3230,7 +3230,7 @@ public class UpstreamTest extends RobolectricTest {
          // add a note
          Note note = col.newNote();
          note.setItem("Front","one");
-         note = col.addNote(note);
+         col.addNote(note);
          col.getSched().reset();
          Card c = col.getSched().getCard();
          DeckConfig conf = col.getSched()._cardConf(c);
