@@ -22,6 +22,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import timber.log.Timber;
 
 import static com.ichi2.libanki.Consts.*;
+import static com.ichi2.libanki.Utils.stripHTML;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
@@ -1437,7 +1438,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_templates(){
+     public void test_templates() throws ConfirmModSchemaException {
          Collection col = getCol();
          Model m = col.getModels().current();
          Models mm = col.getModels();
@@ -1475,12 +1476,9 @@ public class UpstreamTest extends RobolectricTest {
          JSONObject t = mm.newTemplate("template name");
          mm.addTemplateModChanged(m, t);
          col.getModels().remTemplate(m, m.getJSONArray("tmpls").getJSONObject(0));
-         assertTrue(();
-             col.getDb().queryLongScalar(;
-                 "select count() from cards where nid not in (select id from notes)";
-         );
-             == 0;
-     );
+         assertEquals(0,
+             col.getDb().queryLongScalar(
+                 "select count() from cards where nid not in (select id from notes)"));
      }
 
      @Test
