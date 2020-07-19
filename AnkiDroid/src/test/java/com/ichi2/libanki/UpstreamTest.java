@@ -508,7 +508,7 @@ public class UpstreamTest extends RobolectricTest {
          long did = col2.getDecks().id("test", create=false);
          assertTrue(did);
          conf2 = col2.getDecks().confForDid(did);
-         assertTrue(conf2["new"].put("perDay",= 20));
+         assertTrue(conf2.getJSONObject("new").put("perDay",= 20));
          Deck dobj = col2.getDecks().get(did);
          // conf should be 1
          assertTrue(dobj.put("conf",= 1));
@@ -1856,13 +1856,13 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 1, c.long did );
          // limit the parent to 10 cards, meaning we get 10 notARealIn total
          DeckConfig conf1 = col.getDecks().confForDid(1);
-         conf1["new"].put("perDay", 10);
+         conf1.getJSONObject("new").put("perDay", 10);
          col.getDecks().save(conf1);
          col.reset();
          //assertEquals( 10, col.getSched().newCount );TODO: newCount getter
          // if we limit child to 4, we should get 9
          DeckConfig conf2 = col.getDecks().confForDid(deck2);
-         conf2["new"].put("perDay", 4);
+         conf2.getJSONObject("new").put("perDay", 4);
          col.getDecks().save(conf2);
          col.reset();
          //assertEquals( 9, col.getSched().newCount );TODO: newCount getter
@@ -3050,13 +3050,13 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 1, c.long did );
          // limit the parent to 10 cards, meaning we get 10 notARealIn total
          DeckConfig conf1 = col.getDecks().confForDid(1);
-         conf1["new"].put("perDay", 10);
+         conf1.getJSONObject("new").put("perDay", 10);
          col.getDecks().save(conf1);
          col.reset();
          // assertEquals( 10, col.getSched().newCount );TODO: newCount getter
          // if we limit child to 4, we should get 9
          DeckConfig conf2 = col.getDecks().confForDid(deck2);
-         conf2["new"].put("perDay", 4);
+         conf2.getJSONObject("new").put("perDay", 4);
          col.getDecks().save(conf2);
          col.reset();
          //assertEquals( 9, col.getSched().newCount );TODO: newCount getter
