@@ -803,11 +803,11 @@ public class UpstreamTest extends RobolectricTest {
          if (! isNearCutoff()) {
              assertEquals( 0, col.findCards("rated:1:1").size() );
              assertEquals( 0, col.findCards("rated:1:2").size() );
-             Card c = col.getSched().getCard();
+             c = col.getSched().getCard();
              col.getSched().answerCard(c, 2);
              assertEquals( 0, col.findCards("rated:1:1").size() );
              assertEquals( 1, col.findCards("rated:1:2").size() );
-             Card c = col.getSched().getCard();
+             c = col.getSched().getCard();
              col.getSched().answerCard(c, 1);
              assertEquals( 1, col.findCards("rated:1:1").size() );
              assertEquals( 1, col.findCards("rated:1:2").size() );
