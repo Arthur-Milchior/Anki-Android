@@ -2959,34 +2959,34 @@ public class UpstreamTest extends RobolectricTest {
      /*****************
           ** SchedV2      *
       *****************/
-     private Collection getColV2(){
-         Collection col = getColV2Orig();
+     private Collection getColV2() throws Exception{
+         Collection col = getCol();
          col.changeSchedulerVer(2);
          return col;
      }
 
      @Test
-     public void test_clock()   throws ConfirmModSchemaException{
+     public void test_clock() throws Exception {
          Collection col = getColV2();
          if ((col.getSched().getDayCutoff() - intTime()) < 10 * 60) {
              throw new Exception("Unit tests will fail around the day rollover.");
          }
+     }
 
-
-     private boolean checkRevIvl(Collection col, Card c, int targetIvl):
-         min, max = col.getSched()._fuzzIvlRange(targetIvl);
-         return min <= c.getIvl() && c.getIvl() <= max;
+     private boolean checkRevIvl(Collection col, Card c, int targetIvl) {
+         Pair<Integer, Integer> min_max = col.getSched()._fuzzIvlRange(targetIvl);
+         return min_max.first <= c.getIvl() && c.getIvl() <= min_max.second;
      }
 
      @Test
-     public void test_basics()  throws ConfirmModSchemaException{
+     public void test_basics()  throws Exception{
          Collection col = getColV2();
          col.reset();
          assertFalse(col.getSched().getCard());
      }
 
      @Test
-     public void test_new()  throws ConfirmModSchemaException{
+     public void test_new()  throws Exception{
          Collection col = getColV2();
          col.reset();
          assertEquals( 0, col.getSched().newCount );
@@ -3034,7 +3034,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_newLimits()  throws ConfirmModSchemaException{
+     public void test_newLimits()  throws Exception{
          Collection col = getColV2();
          // add some notes
          deck2 = col.getDecks().id("Default::foo");
@@ -3067,7 +3067,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_newBoxes()  throws ConfirmModSchemaException{
+     public void test_newBoxes()  throws Exception{
          Collection col = getColV2();
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -3085,7 +3085,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_learn()  throws ConfirmModSchemaException{
+     public void test_learn()  throws Exception{
          Collection col = getColV2();
          // add a note
          Note note = col.newNote();
