@@ -750,20 +750,23 @@ public class UpstreamTest extends RobolectricTest {
          col.addNote(note);
          // as it's the sort field, it matches
          assertEquals( 2, col.findCards("helloworld").size() );
-         // assertEquals( , col.findCards("helloworld", full=true).size() )2
+         // assertEquals( , col.findCards("helloworld", full=true).size() )2 This is commented upstream
          // if we put it on the back, it won't
-         (note.setItem("Front","Back")]) = (note.setItem("Back","Front")]);
+         String note_front = note.getItem("Front");
+         String note_back = note.getItem("Back");
+         note.setItem("Front", note_back);
+         note.setItem("Back", note_front);
          note.flush();
-assertEquals( 0, col.findCards("helloworld").size() );
+         assertEquals( 0, col.findCards("helloworld").size() );
+         // Those lines are commented above
          // assertEquals( , col.findCards("helloworld", full=true).size() )2
          // assertEquals( , col.findCards("back:helloworld", full=true).size() )2
          // searching for an invalid special tag should not error
          assertThrows(Exception.class, () -> col.findCards("is:invalid").size());
          // should be able to limit to parent col, no children
- long id = col.getDb().queryLongScalar("select id from cards limit 1");
-         col.getDb().execute(;
-             "update cards set long did = ? where long id = ?", col.getDecks().id("Default::Child"), id;
-     );
+         long id = col.getDb().queryLongScalar("select id from cards limit 1");
+         col.getDb().execute(
+             "update cards set long did = ? where long id = ?", new Object[] {col.getDecks().id("Default::Child"), id});
          col.save();
 assertEquals( 7, col.findCards("deck:default").size() );
 assertEquals( 1, col.findCards("deck:default::child").size() );
