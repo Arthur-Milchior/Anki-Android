@@ -373,14 +373,14 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(names.contains("foo::bar"));
          assertTrue(!names.contains("hello::world"));
          // create another col
-         long id = col.getDecks().id("tmp");
+         id = col.getDecks().id("tmp");
          // automatically adjusted if a duplicate name
          col.getDecks().rename(col.getDecks().get(id), "FOO");
          names =  col.getDecks().allNames();
          assertTrue(names.contains("FOO+"));
          // when renaming, the children should be renamed too
          col.getDecks().id("one::two::three");
-         long id = col.getDecks().id("one");
+         id = col.getDecks().id("one");
          col.getDecks().rename(col.getDecks().get(id), "yo");
          names =  col.getDecks().allNames();
          for (String n: new String[] {"yo", "yo::two", "yo::two::three"}) {
@@ -396,7 +396,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_renameForDragAndDrop(){
+     public void test_renameForDragAndDrop() throws DeckRenameException {
          Collection col = getCol();
 
          long languages_did = col.getDecks().id("Languages");
