@@ -1,5 +1,6 @@
 package com.ichi2.libanki;
 
+import android.content.res.Resources;
 import android.icu.util.Calendar;
 import android.util.Pair;
 
@@ -16,7 +17,9 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import timber.log.Timber;
@@ -1636,7 +1639,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_modelChange(){
+     public void test_modelChange() throws ConfirmModSchemaException {
          Collection col = getCol();
          Model cloze = col.getModels().byName("Cloze");
          // enable second template and add a note
@@ -1647,17 +1650,19 @@ public class UpstreamTest extends RobolectricTest {
          t.put("afmt", "{{Front}}");
          mm.addTemplateModChanged(m, t);
          mm.save(m);
-         basiCard c = m;
+         Model basic = m;
          Note note = col.newNote();
          note.setItem("Front","note");
          note.setItem("Back","b123");
          col.addNote(note);
          // switch fields
-         map = {0: 1, 1: 0}
-         col.getModels().change(basic,new long []note.getId()}, basic, map, null);
+         Map<Integer, Integer> map = new HashMap<>();
+         map.put(0, 1);
+         map.put(1, 0);
+         col.getModels().change(basic,new long [] {note.getId()}, basic, map, null);
          note.load();
-         assertTrue(note.setItem("Front","b123"));
-         assertTrue(note.setItem("Back","note"));
+         assertEquals("b123", note.getItem("Front"));
+         assertEquals("note", note.getItem("Back"));
          // switch cards
          Card c0 = note.cards().get(0);
          Card c1 = note.cards().get(1);
@@ -1665,7 +1670,7 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(c1.q().contains("note"));
          assertEquals( 0, c0.getOrd() );
          assertEquals( 1, c1.getOrd() );
-         col.getModels().change(basic,new long []note.getId()}, basic, null, map);
+         col.getModels().change(basic,new long []{note.getId()}, basic, null, map);
          note.load();
          c0.load();
          c1.load();
@@ -1674,22 +1679,17 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 1, c0.getOrd() );
          assertEquals( 0, c1.getOrd() );
          // .cards() returns cards notARealIn order
-         assertEquals( c1.getId(, note.cards().get(0).getId() ));
+         assertEquals( c1.getId(), note.cards().get(0).getId());
          // delete first card
-         map = {0: null, 1: 1};
-         if (isWin) {
-             // The low precision timer on Windows reveals a race condition
-             time.sleep(0.05);
-         }
-         col.getModels().change(basic,new long []note.getId()}, basic, null, map);
+         map.put(0, null);
+         // if (isWin) {
+         //     // The low precision timer on Windows reveals a race condition
+         //     time.sleep(0.05);
+         // }
+         col.getModels().change(basic,new long [] {note.getId()}, basic, null, map);
          note.load();
          c0.load();
          // the card was deleted
-         try{
-             c1.load();
-             assertTrue(0);
-         } catch ( NotFoundError) {
-         }
          // but we have two cards, as a new one was generated
          assertEquals( 2, note.nbCards() );
          // an unmapped field becomes blank
