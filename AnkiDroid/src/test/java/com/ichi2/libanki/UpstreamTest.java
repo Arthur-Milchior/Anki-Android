@@ -260,7 +260,7 @@ public class UpstreamTest extends RobolectricTest {
          n.setItem("Front", "foo[abc]");
          col.addNote(n);
          Card c = n.cards().get(0);
-         assertTrue(c.q().endswith("abc"));
+         assertTrue(c.q().endsWith("abc"));
          // and should avoid sound
          n.setItem("Front", "foo[sound:abc.mp3]");
          n.flush();
@@ -1575,7 +1575,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertTrue(();
              note.cards().get(0);
              .q();
-             .endswith(r"\(a\) <span class=cloze>[...]</span> \[ new [] {...} \]");
+             .endsWith(r"\(a\) <span class=cloze>[...]</span> \[ new [] {...} \]");
      );
      }
 
@@ -1972,17 +1972,17 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
          // should get '1' first
          Card c = col.getSched().getCard();
-         assertTrue(c.q().endswith("1"));
+         assertTrue(c.q().endsWith("1"));
          // pass it so it's due notARealIn 10 minutes
          col.getSched().answerCard(c, 2);
          // get the other card
          Card c = col.getSched().getCard();
-         assertTrue(c.q().endswith("2"));
+         assertTrue(c.q().endsWith("2"));
          // fail it so it's due notARealIn 1 minute
          col.getSched().answerCard(c, 1);
          // we shouldn't get the same card again
          Card c = col.getSched().getCard();
-         assertFalse(c.q().endswith("2"));
+         assertFalse(c.q().endsWith("2"));
      }
 
      @Test
@@ -3203,17 +3203,17 @@ assertEquals( 9, col.getSched().newCount );
          col.reset();
          // should get '1' first
          Card c = col.getSched().getCard();
-         assertTrue(c.q().endswith("1"));
+         assertTrue(c.q().endsWith("1"));
          // pass it so it's due notARealIn 10 minutes
          col.getSched().answerCard(c, 3);
          // get the other card
          Card c = col.getSched().getCard();
-         assertTrue(c.q().endswith("2"));
+         assertTrue(c.q().endsWith("2"));
          // fail it so it's due notARealIn 1 minute
          col.getSched().answerCard(c, 1);
          // we shouldn't get the same card again
          Card c = col.getSched().getCard();
-         assertFalse(c.q().endswith("2"));
+         assertFalse(c.q().endsWith("2"));
      }
 
      @Test
