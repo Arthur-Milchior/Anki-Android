@@ -1936,7 +1936,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( QUEUE_TYPE_REV, c.getQueue() );
         assertEquals( CARD_TYPE_REV, c.getType() );
         // should be due tomorrow, with an interval of 1
-        assertEquals( col.getSched(, c.getDue() ).getToday() + 1);
+        assertEquals( col.getSched().getToday() + 1, c.getDue());
         assertEquals( 1, c.getIvl() );
         // or normal removal
         c.setType(CARD_TYPE_NEW);
@@ -1985,12 +1985,12 @@ public class UpstreamTest extends RobolectricTest {
         // pass it so it's due notARealIn 10 minutes
         col.getSched().answerCard(c, 2);
         // get the other card
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         assertTrue(c.q().endsWith("2"));
         // fail it so it's due notARealIn 1 minute
         col.getSched().answerCard(c, 1);
         // we shouldn't get the same card again
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         assertFalse(c.q().endsWith("2"));
     }
      
@@ -2010,7 +2010,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 2);
         // two reps to graduate, 1 more today
         assertEquals( 3, c.getLeft() % 1000 );
-        assertEquals( , c.getLeft() // 1000 )1
+        assertEquals(1 , c.getLeft() / 1000 );
             assertEquals( (0, 1, 0, col.getSched().counts() ));
         Card c = col.getSched().getCard();
         ni = col.getSched().nextIvl;
