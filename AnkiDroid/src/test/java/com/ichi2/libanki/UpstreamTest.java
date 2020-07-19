@@ -1695,7 +1695,7 @@ public class UpstreamTest extends RobolectricTest {
          // an unmapped field becomes blank
              assertEquals("b123", note.getItem("Front"));
              assertEquals("note", note.getItem("Back"));
-         col.getModels().change(basic,new long []note.getId()}, basic, map, null);
+         col.getModels().change(basic,new long [] {note.getId()}, basic, map, null);
          note.load();
          assertEquals("", note.getItem("Front"));
          assertEquals("note", note.getItem("Back"));
@@ -1704,20 +1704,23 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Front","f2");
          note.setItem("Back","b2");
          col.addNote(note);
-         counts = col.getModels().all_use_counts();
-         assertEquals( "Basic", next(c.use_count for counts if c.name ) == 2.contains(c));
-         assertEquals( "Cloze", next(c.use_count for counts if c.name ) == 0.contains(c));
-         map = {0: 0, 1: 1}
-             col.getModels().change(basic,new long []note.getId()}, cloze, map, map);
+         // counts = col.getModels().all_use_counts();
+         // Using older version of the test
+         assertEquals(2, col.getModels().useCount(basic));
+         assertEquals(0, col.getModels().useCount(cloze));
+         // Identity map
+         map.put(0, 0);
+         map.put(1, 1);
+         col.getModels().change(basic,new long []{note.getId()}, cloze, map, map);
          note.load();
-         assertEquals("f2", note.setItem("Text"));
+         assertEquals("f2", note.getItem("Text"));
          assertEquals( 2, note.nbCards() );
          // back the other way, with deletion of second ord
          col.getModels().remTemplate(basic, basic.getJSONArray("tmpls").getJSONObject(1));
-         assertEquals( 2, col.getDb().queryScalar("select count() from cards where nid = ?", note.getId()) );
-         map = {0: 0}
-             col.getModels().change(cloze,new long []note.getId()}, basic, map, map);
-         assertEquals( 1, col.getDb().queryScalar("select count() from cards where nid = ?", note.getId()) );
+         assertEquals( 2, col.getDb().queryScalar("select count() from cards where nid = ?", new Object[] {note.getId()}));
+         map.remove(1);
+         col.getModels().change(cloze,new long []{note.getId()}, basic, map, map);
+         assertEquals( 1, col.getDb().queryScalar("select count() from cards where nid = ?", new Object[] {note.getId()}));
      }
 
      @Test
