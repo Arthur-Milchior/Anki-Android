@@ -2090,7 +2090,7 @@ public class UpstreamTest extends RobolectricTest {
          col.getSched().answerCard(c, 1);
          assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
          // it should be due tomorrow, with an interval of 1
-         assertEquals( col.getSched(, c.odue ).getToday() + 1);
+         assertEquals( col.getSched(, c.getOdue() ).getToday() + 1);
          assertEquals( 1, c.getIvl() );
          // but because it's notARealIn the learn queue, its current due time should be in
          // the future
@@ -2393,7 +2393,7 @@ public class UpstreamTest extends RobolectricTest {
          // factor = 2.5+1.2/2 = 1.85
          // int(75*1.85) = 138
          assertEquals( 138, c.getIvl() );
-         assertEquals( 138, c.odue );
+         assertEquals( 138, c.getOdue() );
          assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
          // should be logged as a cram rep
          assertEquals( 3, col.getDb().queryLongScalar("select type from revlog order by id desc limit 1") );
@@ -2419,7 +2419,7 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 138 * 60 * 60 * 24, col.getSched().nextIvl(c, 3) );
          col.getSched().answerCard(c, 2);
          assertEquals( 138, c.getIvl() );
-         assertEquals( 138, c.odue );
+         assertEquals( 138, c.getOdue() );
          // fail
          col.getSched().answerCard(c, 1);
          assertEquals( 60, col.getSched().nextIvl(c, 1) );
@@ -3672,7 +3672,7 @@ public class UpstreamTest extends RobolectricTest {
          c.load();
          assertNotEquals(1, c.getDue());
          assertNotEquals(1, c.getDid());
-         assertEquals( 1, c.odue );
+         assertEquals( 1, c.getOdue() );
      }
 
      @Test
@@ -3713,7 +3713,7 @@ public class UpstreamTest extends RobolectricTest {
          col.getSched().answerCard(c, 3);
          checkRevIvl(col, c, 90);
          assertEquals( col.getSched(, c.getDue() ).getToday() + c.getIvl());
-         assertFalse(c.odue);
+         assertFalse(c.getOdue());
          // should not be notARealIn learning
          assertEquals( QUEUE_TYPE_REV, c.getQueue() );
          // should be logged as a cram rep
