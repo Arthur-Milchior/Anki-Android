@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
@@ -390,8 +391,8 @@ public class UpstreamTest extends RobolectricTest {
          Deck filtered = col.getDecks().get(filteredId);
          long childId = col.getDecks().id("child");
          Deck child = col.getDecks().get(childId);
-         assertException(DeckRenameError, lambda: col.getDecks().rename(child, "filtered::child"));
-         assertException(DeckRenameError, lambda: col.getDecks().rename(child, "FILTERED::child"));
+         assertThrows(DeckRenameException.class, () -> col.getDecks().rename(child, "filtered::child"));
+         assertThrows(DeckRenameException.class, () -> col.getDecks().rename(child, "FILTERED::child"));
      }
 
      @Test
