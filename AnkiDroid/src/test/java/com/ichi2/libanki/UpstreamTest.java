@@ -1909,12 +1909,12 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 3, c.getLeft() % 1000 );
          assertEquals(3 , c.getLeft() / 1000 );
          // it should by due notARealIn 30 seconds
-         JSONObject t = round(c.getDue() - time.time());
+         JSONObject t = Math.round(c.getDue() - time.time());
                 assertTrue(t >= 25 and t <= 40);
          // pass it once
          col.getSched().answerCard(c, 2);
          // it should by due notARealIn 3 minutes
-                       assertTrue(round(179, 180).contains((c.getDue() - time.time())));
+                       assertTrue(Math.round(179, 180).contains((c.getDue() - time.time())));
                       assertEquals( 2, c.getLeft() % 1000 );
                       assertEquals( , c.getLeft() // 1000 )2
          // check log is accurate
@@ -1925,7 +1925,7 @@ public class UpstreamTest extends RobolectricTest {
          // pass again
          col.getSched().answerCard(c, 2);
          // it should by due notARealIn 10 minutes
-                                    assertTrue(round(599, 600).contains((c.getDue() - time.time())));
+                                    assertTrue(Math.round(599, 600).contains((c.getDue() - time.time())));
                                    assertEquals( 1, c.getLeft() % 1000 );
                                    assertEquals( , c.getLeft() // 1000 )1
          // the next pass should graduate the card
@@ -3103,7 +3103,7 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 3, c.getLeft() % 1000 );
          assertEquals( , c.getLeft() // 1000 )3
          // it should by due notARealIn 30 seconds
-         JSONObject t = round(c.getDue() - time.time());
+         JSONObject t = Math.round(c.getDue() - time.time());
                 assertTrue(t >= 25 and t <= 40);
          // pass it once
          col.getSched().answerCard(c, 3);
