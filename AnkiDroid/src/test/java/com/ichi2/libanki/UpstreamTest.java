@@ -1888,7 +1888,7 @@ public class UpstreamTest extends RobolectricTest {
     }
      
      @Test
-         public void test_learn()  throws Exception {
+     public void test_learn()  throws Exception {
         Collection col = getColV1();
         // add a note
         Note note = col.newNote();
