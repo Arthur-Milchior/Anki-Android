@@ -1306,14 +1306,12 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertEquals(new String[] {"foo.jpg", "fo"},
                  col.getMedia().filesInStr(mid, "aoeu<img src=\"foo.jpg\"><img class=yo src=fo>ao"));
          assertEquals( new String [] {"foo.mp3"}, col.getMedia().filesInStr(mid, "aou[sound:foo.mp3]aou") );
-         sp = col.media.strip;
-         assertEquals( "aoeu", sp("aoeu") );
-         assertEquals( "aoeuaoeu", sp("aoeu[sound:foo.mp3]aoeu") );
-         assertEquals( "aoeu", sp("a<img src=yo>oeu") );
-         es = col.media.escapeImages;
-         assertEquals( "aoeu", es("aoeu") );
-         assertEquals( "<img src='http://foo.com'>", es("<img src='http://foo.com'>") );
-         assertEquals( "<img src=\"foo%20bar.jpg\">", es("<img src=\"foo bar.jpg\">") );
+         assertEquals( "aoeu", col.getMedia().strip("aoeu") );
+         assertEquals( "aoeuaoeu", col.getMedia().strip("aoeu[sound:foo.mp3]aoeu") );
+         assertEquals( "aoeu", col.getMedia().strip("a<img src=yo>oeu") );
+         assertEquals( "aoeu", col.getMedia().escapeImages("aoeu") );
+         assertEquals( "<img src='http://foo.com'>", col.getMedia().escapeImages("<img src='http://foo.com'>") );
+         assertEquals( "<img src=\"foo%20bar.jpg\">", col.getMedia().escapeImages("<img src=\"foo bar.jpg\">") );
      }
 
      @Test
