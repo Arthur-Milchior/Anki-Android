@@ -666,8 +666,8 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 1, col.findCards("cat -dog").size() );
          assertEquals( 1, col.findCards("cat -dog").size() );
          assertEquals( 1, col.findCards("are goats").size() );
-         assertEquals( 0, col.findCards('"are goats"').size() );
-         assertEquals( 1, col.findCards('"goats are"').size() );
+         assertEquals( 0, col.findCards("\"are goats\"").size() );
+         assertEquals( 1, col.findCards("\"goats are\"").size() );
          // card states
          Card c = note.cards().get(0);
          c.queue = c.type = CARD_TYPE_REV;
@@ -691,7 +691,7 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 2, col.findCards(f"nid:{f1id},{f2id}").size() );
          // templates
          assertEquals( 0, col.findCards("card:foo").size() );
-         assertEquals( 4, col.findCards('"card:card 1"').size() );
+         assertEquals( 4, col.findCards("\"card:card 1\"").size() );
          assertEquals( 1, col.findCards("card:reverse").size() );
          assertEquals( 4, col.findCards("card:1").size() );
          assertEquals( 1, col.findCards("card:2").size() );
@@ -1295,7 +1295,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
      @Test
      public void test_strings(){
          Collection col = getCol();
-         mid = col.getModels().current().getLong("id");
+         long mid = col.getModels().current().getLong("id");
          assertEquals( new String [] {}, col.getMedia().filesInStr(mid, "aoeu") );
          assertEquals( new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg'>ao") );
          assertEquals( new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg' style='test'>ao") );
@@ -1305,8 +1305,8 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
      ];
          assertEquals( new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src=foo.jpg style=bar>ao") );
          assertEquals( new String [] {"one", "two"}, col.getMedia().filesInStr(mid, "<img src=one><img src=two>") );
-         assertEquals( new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, 'aoeu<img src="foo.jpg">ao') );
-         assertEquals( new String [] {, col.getMedia().filesInStr(mid, 'aoeu<img src="foo.jpg"><img class=yo src=fo>ao') };
+         assertEquals( new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src=\"foo.jpg\">ao") );
+         assertEquals( new String [] {, col.getMedia().filesInStr(mid, "aoeu<img src=\"foo.jpg\"><img class=yo src=fo>ao") };
              "foo.jpg",;
              "fo",;
      ];
@@ -1318,7 +1318,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          es = col.media.escapeImages;
          assertEquals( "aoeu", es("aoeu") );
          assertEquals( "<img src='http://foo.com'>", es("<img src='http://foo.com'>") );
-         assertEquals( '<img src="foo%20bar.jpg">', es('<img src="foo bar.jpg">') );
+         assertEquals( "<img src=\"foo%20bar.jpg\">", es("<img src=\"foo bar.jpg\">") );
      }
 
      @Test
@@ -1612,9 +1612,9 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          col.getModels().remTemplate(m, m.getJSONArray("tmpls").getJSONObject(0));
 
          Note note = col.newNote();
-         q1 = '<span style="color:red">phrase</span>';
+         q1 = "<span style=\"color:red\">phrase</span>";
          a1 = "<b>sentence</b>";
-         q2 = '<span style="color:red">en chaine</span>';
+         q2 = "<span style=\"color:red\">en chaine</span>";
          a2 = "<i>chained</i>";
          note.setItem("Text","This {{c1::%s::%s}} demonstrates {{c1::%s::%s}} clozes.") % (;
              q1,;
