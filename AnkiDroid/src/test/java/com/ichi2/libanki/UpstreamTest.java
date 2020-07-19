@@ -672,7 +672,8 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 1, col.findCards("\"goats are\"").size() );
          // card states
          Card c = note.cards().get(0);
-         c.queue = c.type = CARD_TYPE_REV;
+         c.queue = QUEUE_TYPE_REV;
+         c.type = CARD_TYPE_REV;
          assertEquals( new Card [] {}, col.findCards("is:review") );
          c.flush();
          assertEquals( new long [] {c.getId(, col.findCards("is:review") )});
