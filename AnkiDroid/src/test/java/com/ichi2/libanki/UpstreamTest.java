@@ -451,7 +451,7 @@ public class UpstreamTest extends RobolectricTest {
          col.getDecks().renameForDragAndDrop(chinese_did, null);
          assertEquals( new String [] {"Chinese", "Chinese::HSK", "Languages"}, col.getDecks().allNames() );
 
-         // decks are renamed if necessary
+         // decks are renamed if necessary«
          long new_hsk_did = col.getDecks().id("hsk");
          col.getDecks().renameForDragAndDrop(new_hsk_did, chinese_did);
          assertEquals( new String [] {"Chinese", "Chinese::HSK", "Chinese::hsk+", "Languages"}, col.getDecks().allNames() );
@@ -574,7 +574,7 @@ public class UpstreamTest extends RobolectricTest {
     col2 = getCol();
     imp = Anki2Importer(col2, newname);
     imp.run();
-    Card c = col2.getCard(c.getId());
+    c = col2.getCard(c.getId());
     col2.getSched().reset();
     assertEquals( 1, c.getDue() - col2.getSched().getToday() );
 }
@@ -809,7 +809,7 @@ public class UpstreamTest extends RobolectricTest {
          if (! isNearCutoff()) {
         assertEquals( 0, col.findCards("rated:1:1").size() );
         assertEquals( 0, col.findCards("rated:1:2").size() );
-        c = col.getSched().getCard();
+        Card c = col.getSched().getCard();
         col.getSched().answerCard(c, 2);
         assertEquals( 0, col.findCards("rated:1:1").size() );
         assertEquals( 1, col.findCards("rated:1:2").size() );
@@ -1826,7 +1826,7 @@ public class UpstreamTest extends RobolectricTest {
             // col.reset()
             // qs = ("2", "3", "2", "3")
             // for (int n = 0; n < 4; n++) {
-            //     Card c = col.getSched().getCard()
+            //     c = col.getSched().getCard()
             //     assertTrue(qs[n] notARealIn c.q())
             //     col.getSched().answerCard(c, 2)
             // }
@@ -2012,7 +2012,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 3, c.getLeft() % 1000 );
         assertEquals(1 , c.getLeft() / 1000 );
             assertArrayEquals( new int[]{0, 1, 0}, col.getSched().counts());
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         
         assertEquals( 86400, col.getSched().nextIvl(c, 2) );
         // answering it will place it notARealIn queue 3
@@ -2025,7 +2025,7 @@ public class UpstreamTest extends RobolectricTest {
         c.flush();
         col.reset();
         assertEquals( (0, 1, 0, col.getSched().counts() ));
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         // nextIvl should work
         assertEquals( 86400 * 2, col.getSched().nextIvl(c, 2) );
         // if we fail it, it should be back notARealIn the correct queue
@@ -2033,7 +2033,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
         col.undo();
         col.reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 2);
         // simulate the passing of another two days
         c.getDue() -= 2;
@@ -2053,7 +2053,7 @@ public class UpstreamTest extends RobolectricTest {
         DeckConfig conf = col.getSched()._cardConf(c);
         conf.getJSONObject("lapse").put("delays", new JSONArray(new double [] {1440}));
         col.getDecks().save(conf);
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
         assertEquals( CARD_TYPE_RELEARNING, c.getQueue() );
         assertEquals( (0, 0, 0, col.getSched().counts() ));
@@ -2107,7 +2107,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 20 * 60, col.getSched().nextIvl(c, 2) );
         // try again with an ease of 2 instead
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        Card c = copy.copy(cardcopy);
+        c = copy.copy(cardcopy);
         c.flush();
         col.getSched().answerCard(c, 2);
         assertEquals( QUEUE_TYPE_REV, c.getQueue() );
@@ -2121,7 +2121,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 4, c.reps );
         // ease 3
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        Card c = copy.copy(cardcopy);
+        c = copy.copy(cardcopy);
         c.flush();
         col.getSched().answerCard(c, 3);
         // the new interval should be (100 + 8/2) * 2.5 = 260
@@ -2131,7 +2131,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( STARTING_FACTOR, c.factor );
         // ease 4
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        Card c = copy.copy(cardcopy);
+        c = copy.copy(cardcopy);
         c.flush();
         col.getSched().answerCard(c, 4);
         // the new interval should be (100 + 8) * 2.5 * 1.3 = 351
@@ -2187,7 +2187,7 @@ public class UpstreamTest extends RobolectricTest {
         col.save();
         col.getSched().reset();
         assertEquals( (0, 2, 0, col.getSched().counts() ));
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
         // it should be due tomorrow
         assertEquals( col.getSched(, c.getDue() ).getToday() + 1);
@@ -2323,7 +2323,7 @@ public class UpstreamTest extends RobolectricTest {
         c.setQueue(QUEUE_TYPE_REV);
         c.flush();
         col.reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
         assertTrue(c.getDue() >= Utils.now());
         assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
@@ -2376,7 +2376,7 @@ public class UpstreamTest extends RobolectricTest {
         // and should appear notARealIn the counts
         assertEquals( (1, 0, 0, col.getSched().counts() ));
         // grab it and check estimates
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         assertEquals( 2, col.getSched().answerButtons(c) );
         assertEquals( 600, col.getSched().nextIvl(c, 1) );
         assertEquals( 138 * 60 * 60 * 24, col.getSched().nextIvl(c, 2) );
@@ -2401,7 +2401,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 138 * 60 * 60 * 24, col.getSched().nextIvl(c, 2) );
         assertEquals( 138 * 60 * 60 * 24, col.getSched().nextIvl(c, 3) );
         // when it graduates, due is updated
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 2);
         assertEquals( 138, c.getIvl() );
         assertEquals( 138, c.getDue() );
@@ -2411,7 +2411,7 @@ public class UpstreamTest extends RobolectricTest {
         // cram the deck again
         col.getSched().rebuildDyn(did);
         col.reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         // check ivls again - passing should be idempotent
         assertEquals( 60, col.getSched().nextIvl(c, 1) );
         assertEquals( 600, col.getSched().nextIvl(c, 2) );
@@ -2455,7 +2455,7 @@ public class UpstreamTest extends RobolectricTest {
         c2.Collection col = c.col;
         c2.flush();
         // should be able to answer it
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 4);
         // it should have been moved back to the original deck
         assertEquals( 1, c.long did );
@@ -2519,7 +2519,7 @@ public class UpstreamTest extends RobolectricTest {
         cardcopy = copy.copy(c);
         col.getSched().rebuildDyn(did);
         col.reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         assertEquals( 600, col.getSched().nextIvl(c, 1) );
         assertEquals( 0, col.getSched().nextIvl(c, 2) );
         assertEquals( 0, col.getSched().nextIvl(c, 3) );
@@ -2527,22 +2527,22 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 100, c.getIvl() );
         assertEquals( col.getSched(, c.getDue() ).getToday() + 25);
         // check failure too
-        Card c = cardcopy;
+        c = cardcopy;
         c.flush();
         col.getSched().rebuildDyn(did);
         col.reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
         col.getSched().emptyDyn(did);
         c.load();
         assertEquals( 100, c.getIvl() );
         assertEquals( col.getSched(, c.getDue() ).getToday() + 25);
         // fail+grad early
-        Card c = cardcopy;
+        c = cardcopy;
         c.flush();
         col.getSched().rebuildDyn(did);
         col.reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
         col.getSched().answerCard(c, 3);
         col.getSched().emptyDyn(did);
@@ -2550,36 +2550,36 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 100, c.getIvl() );
         assertEquals( col.getSched(, c.getDue() ).getToday() + 25);
         // due cards - pass
-        Card c = cardcopy;
+        c = cardcopy;
         c.setDue(-)25;
         c.flush();
         col.getSched().rebuildDyn(did);
         col.reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
         col.getSched().emptyDyn(did);
         c.load();
         assertEquals( 100, c.getIvl() );
         assertEquals( -25, c.getDue() );
         // fail
-        Card c = cardcopy;
+        c = cardcopy;
         c.setDue(-)25;
         c.flush();
         col.getSched().rebuildDyn(did);
         col.reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
         col.getSched().emptyDyn(did);
         c.load();
         assertEquals( 100, c.getIvl() );
         assertEquals( -25, c.getDue() );
         // fail with normal grad
-        Card c = cardcopy;
+        c = cardcopy;
         c.setDue(-)25;
         c.flush();
         col.getSched().rebuildDyn(did);
         col.reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
         col.getSched().answerCard(c, 3);
         c.load();
@@ -2590,7 +2590,7 @@ public class UpstreamTest extends RobolectricTest {
         // col.getSched().answerCard(c, 1)
         // col.getSched().rebuildDyn(did)
         // col.reset()
-        // Card c = col.getSched().getCard()
+        // c = col.getSched().getCard()
         // col.getSched().answerCard(c, 2)
         // print c.__dict__
     }
@@ -2640,7 +2640,7 @@ public class UpstreamTest extends RobolectricTest {
             col.getSched().answerCard(c, 1);
             assertEquals( (0, 2, 0, col.getSched().counts() ));
             // fetching again will decrement the count
-            Card c = col.getSched().getCard();
+            c = col.getSched().getCard();
             assertEquals( (0, 0, 0, col.getSched().counts() ));
             assertEquals( 1, col.getSched().countIdx(c) );
             // answering should add it back again
@@ -2718,14 +2718,14 @@ public class UpstreamTest extends RobolectricTest {
         c.flush();
         // fail the first one
         col.reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         // set a a fail delay of 4 seconds
         DeckConfig conf = col.getSched()._cardConf(c);
         conf.getJSONObject("lapse").getJSONArray("delays").put(0, 1 / 15.0);
         col.getDecks().save(conf);
         col.getSched().answerCard(c, 1);
         // the next card should be another review
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         assertEquals( QUEUE_TYPE_REV, c.getQueue() );
         // but if we wait for a few seconds, the failed card should come back
         orig_time = time.time;
@@ -2734,7 +2734,7 @@ public class UpstreamTest extends RobolectricTest {
         return orig_time() + 5;
         
         time.time = adjusted_time;
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
         time.time = orig_time;
     }
@@ -2750,7 +2750,7 @@ public class UpstreamTest extends RobolectricTest {
         // test collapsing
         Card c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
         assertFalse(col.getSched().getCard());
     }
@@ -2951,7 +2951,7 @@ public class UpstreamTest extends RobolectricTest {
         DeckConfig conf = col.getSched()._cardConf(c);
         conf.getJSONObject("lapse").put("mult", 0.5);
         col.getDecks().save(conf);
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
         assertEquals( 50, c.getIvl() );
         col.getSched().answerCard(c, 1);
@@ -3028,7 +3028,7 @@ public class UpstreamTest extends RobolectricTest {
             // col.reset()
             // qs = ("2", "3", "2", "3")
             // for (int n = 0; n < 4; n++) {
-            //     Card c = col.getSched().getCard()
+            //     c = col.getSched().getCard()
             //     assertTrue(qs[n] notARealIn c.q())
             //     col.getSched().answerCard(c, 2)
             // }
@@ -3164,7 +3164,7 @@ public class UpstreamTest extends RobolectricTest {
         
         // fail the card
         col.reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
         assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
         assertEquals( CARD_TYPE_RELEARNING, c.getType() );
@@ -3196,7 +3196,7 @@ public class UpstreamTest extends RobolectricTest {
         
         // fail the card
         col.reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
         assertEquals( CARD_TYPE_REV && c.setType( QUEUE_TYPE_REV, c.getQueue() ));
     }
@@ -3220,12 +3220,12 @@ public class UpstreamTest extends RobolectricTest {
         // pass it so it's due notARealIn 10 minutes
         col.getSched().answerCard(c, 3);
         // get the other card
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         assertTrue(c.q().endsWith("2"));
         // fail it so it's due notARealIn 1 minute
         col.getSched().answerCard(c, 1);
         // we shouldn't get the same card again
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         assertFalse(c.q().endsWith("2"));
     }
         
@@ -3247,7 +3247,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 3, c.getLeft() % 1000 );
         assertEquals( , c.getLeft() // 1000 )1
             assertEquals( (0, 1, 0, col.getSched().counts() ));
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         
         assertEquals( 86400, col.getSched().nextIvl(c, 3) );
         // answering it will place it notARealIn queue 3
@@ -3260,7 +3260,7 @@ public class UpstreamTest extends RobolectricTest {
         c.flush();
         col.reset();
         assertEquals( (0, 1, 0, col.getSched().counts() ));
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         // nextIvl should work
         assertEquals( 86400 * 2, col.getSched().nextIvl(c, 3) );
         // if we fail it, it should be back notARealIn the correct queue
@@ -3268,7 +3268,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
         col.undo();
         col.reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
         // simulate the passing of another two days
         c.getDue() -= 2;
@@ -3287,7 +3287,7 @@ public class UpstreamTest extends RobolectricTest {
         DeckConfig conf = col.getSched()._cardConf(c);
         conf.getJSONObject("lapse").put("delays", new JSONArray(new double [] {1440}));
         col.getDecks().save(conf);
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
         assertEquals( QUEUE_TYPE_DAY_LEARN_RELEARN, c.getQueue() );
         assertEquals( (0, 0, 0, col.getSched().counts() ));
@@ -3316,7 +3316,7 @@ public class UpstreamTest extends RobolectricTest {
         cardcopy = copy.copy(c);
         // try with an ease of 2
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        Card c = copy.copy(cardcopy);
+        c = copy.copy(cardcopy);
         c.flush();
         col.reset();
         col.getSched().answerCard(c, 2);
@@ -3331,7 +3331,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 4, c.reps );
         // ease 3
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        Card c = copy.copy(cardcopy);
+        c = copy.copy(cardcopy);
         c.flush();
         col.getSched().answerCard(c, 3);
         // the new interval should be (100 + 8/2) * 2.5 = 260
@@ -3341,7 +3341,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( STARTING_FACTOR, c.factor );
         // ease 4
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        Card c = copy.copy(cardcopy);
+        c = copy.copy(cardcopy);
         c.flush();
         col.getSched().answerCard(c, 4);
         // the new interval should be (100 + 8) * 2.5 * 1.3 = 351
@@ -3354,7 +3354,7 @@ public class UpstreamTest extends RobolectricTest {
         DeckConfig conf = col.getDecks().getConf(1);
         conf.getJSONObject("lapse").put("leechAction", LEECH_SUSPEND);
         col.getDecks().save(conf);
-        Card c = copy.copy(cardcopy);
+        c = copy.copy(cardcopy);
         c.setLapses(7);
         c.flush();
         // steup hook
@@ -3400,7 +3400,7 @@ public class UpstreamTest extends RobolectricTest {
             col.addNote(note);
 
              // make them reviews
-             Card c = note.cards().get(0);
+             c = note.cards().get(0);
              c.setQueue(CARD_TYPE_REV);
              c.setType(QUEUE_TYPE_REV);
              c.setDue(0);
@@ -3418,7 +3418,7 @@ public class UpstreamTest extends RobolectricTest {
                              assertEquals( (0, 0, 5, col.getSched().counts() ));
 
          // answering a card notARealIn the child should decrement parent count
-         Card c = col.getSched().getCard();
+         c = col.getSched().getCard();
          col.getSched().answerCard(c, 3);
                              assertEquals( (0, 0, 4, col.getSched().counts() ));
 
@@ -3479,7 +3479,7 @@ public class UpstreamTest extends RobolectricTest {
          col.save();
          col.getSched().reset();
          assertEquals( (0, 2, 0, col.getSched().counts() ));
-         Card c = col.getSched().getCard();
+         c = col.getSched().getCard();
          col.getSched().answerCard(c, 3);
          // it should be due tomorrow
          assertEquals( col.getSched(, c.getDue() ).getToday() + 1);
@@ -3646,7 +3646,7 @@ public class UpstreamTest extends RobolectricTest {
         c.setQueue(QUEUE_TYPE_REV);
         c.flush();
         col.reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
         assertTrue(c.getDue() >= Utils.now());
         due = c.getDue();
@@ -3700,7 +3700,7 @@ public class UpstreamTest extends RobolectricTest {
         // and should appear notARealIn the counts
         assertEquals( (0, 0, 1, col.getSched().counts() ));
         // grab it and check estimates
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         assertEquals( 4, col.getSched().answerButtons(c) );
         assertEquals( 600, col.getSched().nextIvl(c, 1) );
         assertEquals( int(75 * 1.2, col.getSched().nextIvl(c, 2) ) * 86400);
@@ -3723,7 +3723,7 @@ public class UpstreamTest extends RobolectricTest {
         c.flush();
         col.getSched().rebuildDyn(did);
         col.reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         
         assertEquals( 60 * 86400, col.getSched().nextIvl(c, 2) );
         assertEquals( 100 * 86400, col.getSched().nextIvl(c, 3) );
@@ -3795,7 +3795,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().rebuildDyn(did);
         col.reset();
         // grab the first card
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         assertEquals( 2, col.getSched().answerButtons(c) );
         assertEquals( 600, col.getSched().nextIvl(c, 1) );
         assertEquals( 0, col.getSched().nextIvl(c, 2) );
@@ -3815,7 +3815,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( CARD_TYPE_NEW, c2.getType() );
         
         // the other card should appear again
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         assertEquals( orig.getId(, c.getId() ));
         
         // emptying the filtered deck should restore card
@@ -3871,7 +3871,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 1);
         assertEquals( (0, 1, 0, col.getSched().counts() ));
         // fetching again will decrement the count
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         assertEquals( (0, 0, 0, col.getSched().counts() ));
         assertEquals( 1, col.getSched().countIdx(c) );
         // answering should add it back again
@@ -3958,7 +3958,7 @@ public class UpstreamTest extends RobolectricTest {
         c.setDue(i)ntTime() - 1;
         c.flush();
         col.reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
     }
         
@@ -3973,7 +3973,7 @@ public class UpstreamTest extends RobolectricTest {
         // test collapsing
         Card c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 4);
         assertFalse(col.getSched().getCard());
     }
@@ -4184,7 +4184,7 @@ public class UpstreamTest extends RobolectricTest {
         DeckConfig conf = col.getSched()._cardConf(c);
         conf.getJSONObject("lapse").put("mult", 0.5);
         col.getDecks().save(conf);
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
         assertEquals( 50, c.getIvl() );
         col.getSched().answerCard(c, 1);
@@ -4213,7 +4213,7 @@ public class UpstreamTest extends RobolectricTest {
         
         // fail it again, and manually bury it
         col.reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
         col.getSched().buryCards(new [] {c.getId()});
         c.load();
@@ -4242,7 +4242,7 @@ public class UpstreamTest extends RobolectricTest {
         conf.getJSONObject("lapse").put("mult", 0.5);
         col.getDecks().save(conf);
         col.getSched().reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
         // due should be correctly set when removed from learning early
         col.changeSchedulerVer(1);
@@ -4314,7 +4314,7 @@ public class UpstreamTest extends RobolectricTest {
         // card stats
         assertTrue(col.cardStats(c));
         col.reset();
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
         col.getSched().answerCard(c, 2);
         assertTrue(col.cardStats(c));
@@ -4422,9 +4422,9 @@ public class UpstreamTest extends RobolectricTest {
         col.addNote(note);
         col.reset();
         assertEquals( (2, 0, 0, col.getSched().counts() ));
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
         assertEquals( (0, 2, 0, col.getSched().counts() ));
         col.undo();
@@ -4434,7 +4434,7 @@ public class UpstreamTest extends RobolectricTest {
         col.reset();
         assertEquals( (2, 0, 0, col.getSched().counts() ));
         // performing a normal op will clear the review queue
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
         assertEquals( "Review", col.undoName() );
         col.save("foo");
