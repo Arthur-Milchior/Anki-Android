@@ -41,7 +41,7 @@ public class UpstreamTest extends RobolectricTest {
          long cid = note.cards().get(0).getId();
          col.reset();
          col.getSched().answerCard(col.getSched().getCard(), 2);
-         col.remove_cards_and_orphaned_notes(new [] {cid});
+         col.remove_cards_and_orphaned_notes(Arrays.asList(new Long [] {cid}));
          assertEquals( 0, col.cardCount() );
          assertEquals( 0, col.noteCount() );
          assertEquals( 0, col.getDb().queryScalar("select count() from notes") );
@@ -240,7 +240,7 @@ public class UpstreamTest extends RobolectricTest {
      @Test
      public void test_timestamps(){
          Collection col = getCol();
-         assertEquals( get_stock_notetypes(col, col.getModels().all_names_and_ids().size() ).size());
+         assertEquals(col.getModels().all_names_and_ids().size(), get_stock_notetypes(col).size());
          for (int i = 0; i < 100; i++) {
              addBasicModel(col);
          }
