@@ -1629,11 +1629,11 @@ public class UpstreamTest extends RobolectricTest {
          a1 = "<b>sentence</b>";
          q2 = "<span style=\"color:red\">en chaine</span>";
          a2 = "<i>chained</i>";
-         note.setItem("Text","This {{c1::%s::%s}} demonstrates {{c1::%s::%s}} clozes.") % (;
-             q1,;
-             a1,;
-             q2,;
-             a2,;
+         note.setItem("Text","This {{c1::%s::%s}} demonstrates {{c1::%s::%s}} clozes.") % (
+             q1,
+             a1,
+             q2,
+             a2,
      );
          assertEquals( 1, col.addNote(note) );
          assertTrue(
