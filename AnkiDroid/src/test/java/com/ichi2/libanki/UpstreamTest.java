@@ -3,6 +3,7 @@ package com.ichi2.libanki;
 import android.util.Pair;
 
 import com.ichi2.anki.RobolectricTest;
+import com.ichi2.anki.exception.DeckRenameException;
 import com.ichi2.libanki.sched.AbstractSched;
 import com.ichi2.utils.Assert;
 import com.ichi2.utils.JSONObject;
@@ -360,7 +361,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_rename(){
+     public void test_rename() throws DeckRenameException {
          Collection col = getCol();
          long id = col.getDecks().id("hello::world");
          // should be able to rename into a completely different branch, creating
