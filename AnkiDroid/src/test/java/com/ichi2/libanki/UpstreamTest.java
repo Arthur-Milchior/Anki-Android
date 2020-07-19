@@ -758,8 +758,7 @@ assertEquals( 0, col.findCards("helloworld").size() );
          // assertEquals( , col.findCards("helloworld", full=true).size() )2
          // assertEquals( , col.findCards("back:helloworld", full=true).size() )2
          // searching for an invalid special tag should not error
-         with pytest.raises(Exception):
-             col.findCards("is:invalid").size();
+         assertThrows(Exception.class, () -> col.findCards("is:invalid").size());
          // should be able to limit to parent col, no children
  long id = col.getDb().queryLongScalar("select id from cards limit 1");
          col.getDb().execute(;
@@ -828,8 +827,7 @@ assertEquals( 6, col.findCards("-(tag:monkey OR tag:sheep)").size() );
 assertEquals( 2, col.findCards("tag:monkey or (tag:sheep sheep)").size() );
 assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          // flag
-         with pytest.raises(Exception):
-             col.findCards("flag:12");
+         assertThrows(Exception.class, () -> col.findCards("flag:12"));
      }
 
      @Test
