@@ -441,9 +441,6 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( new String [] {"Chinese", "Chinese::HSK", "Chinese::hsk+", "Languages"}, col.getDecks().allNames() );
          col.getDecks().rem(new_hsk_did);
 
-         // '' is a convenient alias for the top level DID
-         col.getDecks().renameForDragAndDrop(hsk_did, "");
-         assertEquals( new String [] {"Chinese", "HSK", "Languages"}, col.getDecks().allNames() );
       }
 
      /*****************
