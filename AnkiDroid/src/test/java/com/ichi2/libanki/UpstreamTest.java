@@ -1581,7 +1581,7 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 5, note.nbCards() );
          assertTrue(note.cards().get(0).q().contains("class=cloze"));
          assertTrue(note.cards().get(1).q().contains("class=cloze"));
-         assertFalse(note.cards().get(2).q.contains("class=cloze")());
+         assertFalse(note.cards().get(2).q().contains("class=cloze"));
          assertTrue(note.cards().get(3).q().contains("class=cloze"));
          assertTrue(note.cards().get(4).q().contains("class=cloze"));
 
