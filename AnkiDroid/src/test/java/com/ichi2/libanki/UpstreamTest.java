@@ -2060,7 +2060,7 @@ public class UpstreamTest extends RobolectricTest {
     }
             
     @Test
-    public void test_reviews() throws Exception{
+    public void test_reviewsV1() throws Exception{
         Collection col = getColV1();
         // add a note
         Note note = col.newNote();
@@ -2140,7 +2140,11 @@ public class UpstreamTest extends RobolectricTest {
         // factor should have been increased
         assertEquals( 2650, c.getFactor() );
     }
-        
+
+    private String without_unicode_isolation(String s) {
+        return s.replace("\u2068", "").replace("\u2069", "")
+    }
+
     @Test
     public void test_button_spacing() throws Exception{
         Collection col = getColV1();
@@ -2157,10 +2161,9 @@ public class UpstreamTest extends RobolectricTest {
         c.startTimer();
         c.flush();
         col.reset();
-        wo = without_unicode_isolation;
-        assertEquals( "2d", wo(col.getSched().nextIvlStr(getTargetContext(), c, 2)) );
-        assertEquals( "3d", wo(col.getSched().nextIvlStr(getTargetContext(), c, 3)) );
-        assertEquals( "4d", wo(col.getSched().nextIvlStr(getTargetContext(), c, 4)) );
+        assertEquals( "2d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 2)) );
+        assertEquals( "3d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 3)) );
+        assertEquals( "4d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 4)) );
     }
         
     @Test
@@ -3294,7 +3297,7 @@ public class UpstreamTest extends RobolectricTest {
     }
             
             @Test
-            public void test_reviews() throws Exception {
+            public void test_reviewsV2() throws Exception {
         Collection col = getColV2();
         // add a note
         Note note = col.newNote();
@@ -3443,16 +3446,15 @@ public class UpstreamTest extends RobolectricTest {
          c.startTimer();
          c.flush();
          col.reset();
-         wo = without_unicode_isolation;
-         assertEquals( "2d", wo(col.getSched().nextIvlStr(getTargetContext(), c, 2)) );
-         assertEquals( "3d", wo(col.getSched().nextIvlStr(getTargetContext(), c, 3)) );
-         assertEquals( "4d", wo(col.getSched().nextIvlStr(getTargetContext(), c, 4)) );
+         assertEquals( "2d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 2)) );
+         assertEquals( "3d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 3)) );
+         assertEquals( "4d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 4)) );
 
          // if hard factor is <= 1, then hard may not increase
          DeckConfig conf = col.getDecks().confForDid(1);
          conf.getJSONObject("rev").put("hardFactor", 1);
          col.getDecks().save(conf);
-         assertEquals( "1d", wo(col.getSched().nextIvlStr(getTargetContext(), c, 2)) );
+         assertEquals( "1d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 2)) );
      }
 
      @Test
