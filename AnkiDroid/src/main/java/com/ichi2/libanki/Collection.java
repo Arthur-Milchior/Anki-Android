@@ -588,7 +588,7 @@ public class Collection {
     public void remNotes(long[] ids) {
         ArrayList<Long> list = mDb
                 .queryColumn(Long.class, "SELECT id FROM cards WHERE nid IN " + Utils.ids2str(ids), 0);
-        remCards(list);
+        remove_cards_and_orphaned_notes(list);
     }
 
 
@@ -914,7 +914,7 @@ public class Collection {
     /**
      * Bulk delete cards by ID.
      */
-    public void remCards(List<Long> ids) {
+    public void remove_cards_and_orphaned_notes(List<Long> ids) {
         remCards(ids, true);
     }
 
@@ -1866,7 +1866,7 @@ public class Collection {
         notifyProgress.run();
         if (ids.size() != 0) {
             problems.add("Deleted " + ids.size() + " card(s) with missing note.");
-            remCards(ids);
+            remove_cards_and_orphaned_notes(ids);
         }
         return problems;
     }
@@ -1961,7 +1961,7 @@ public class Collection {
                             "SELECT id FROM notes WHERE mid = ?)", 0, new Object[] {m.getLong("id")});
             if (ids.size() > 0) {
                 problems.add("Deleted " + ids.size() + " card(s) with missing template.");
-                remCards(ids);
+                remove_cards_and_orphaned_notes(ids);
             }
         }
         return problems;

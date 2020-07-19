@@ -24,7 +24,6 @@ import com.ichi2.anki.exception.ImportExportException;
 import com.ichi2.anki.tests.Shared;
 import com.ichi2.libanki.Collection;
 import com.ichi2.libanki.Note;
-import com.ichi2.libanki.Utils;
 import com.ichi2.libanki.importer.Anki2Importer;
 import com.ichi2.libanki.importer.AnkiPackageImporter;
 import com.ichi2.libanki.importer.Importer;
@@ -105,7 +104,7 @@ public class ImportTest {
         actual.retainAll(expected);
         assertEquals(expected.size(), actual.size());
         // and importing again will not duplicate, as the file content matches
-        empty.remCards(empty.getDb().queryColumn(Long.class, "select id from cards", 0));
+        empty.remove_cards_and_orphaned_notes(empty.getDb().queryColumn(Long.class, "select id from cards", 0));
         imp = new Anki2Importer(empty, testCol.getPath());
         imp.run();
         expected = Collections.singletonList("foo.mp3");
@@ -115,7 +114,7 @@ public class ImportTest {
         n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
         assertTrue(n.getFields()[0].contains("foo.mp3"));
         // if the local file content is different, and import should trigger a rename
-        empty.remCards(empty.getDb().queryColumn(Long.class, "select id from cards", 0));
+        empty.remove_cards_and_orphaned_notes(empty.getDb().queryColumn(Long.class, "select id from cards", 0));
         os = new FileOutputStream(new File(empty.getMedia().dir(), "foo.mp3"), false);
         os.write("bar".getBytes());
         os.close();
@@ -128,7 +127,7 @@ public class ImportTest {
         n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
         assertTrue(n.getFields()[0].contains("_"));
         // if the localized media file already exists, we rewrite the note and media
-        empty.remCards(empty.getDb().queryColumn(Long.class, "select id from cards", 0));
+        empty.remove_cards_and_orphaned_notes(empty.getDb().queryColumn(Long.class, "select id from cards", 0));
         os = new FileOutputStream(new File(empty.getMedia().dir(), "foo.mp3"));
         os.write("bar".getBytes());
         os.close();
@@ -160,7 +159,7 @@ public class ImportTest {
         actual.retainAll(expected);
         assertEquals(expected.size(), actual.size());
         // import again should be idempotent in terms of media
-        testCol.remCards(testCol.getDb().queryColumn(Long.class, "select id from cards", 0));
+        testCol.remove_cards_and_orphaned_notes(testCol.getDb().queryColumn(Long.class, "select id from cards", 0));
         imp = new AnkiPackageImporter(testCol, apkg);
         imp.run();
         expected = Collections.singletonList("foo.wav");
@@ -168,7 +167,7 @@ public class ImportTest {
         actual.retainAll(expected);
         assertEquals(expected.size(), actual.size());
         // but if the local file has different data, it will rename
-        testCol.remCards(testCol.getDb().queryColumn(Long.class, "select id from cards", 0));
+        testCol.remove_cards_and_orphaned_notes(testCol.getDb().queryColumn(Long.class, "select id from cards", 0));
         FileOutputStream os;
         os = new FileOutputStream(new File(testCol.getMedia().dir(), "foo.wav"), false);
         os.write("xyz".getBytes());

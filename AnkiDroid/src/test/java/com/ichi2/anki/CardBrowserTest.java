@@ -347,7 +347,7 @@ public class CardBrowserTest extends RobolectricTest {
     }
 
     private void removeCardFromCollection(Long cardId) {
-        getCol().remCards(Arrays.asList(new Long[] {cardId}));
+        getCol().remove_cards_and_orphaned_notes(Arrays.asList(new Long[] {cardId}));
     }
 
     @CheckReturnValue
