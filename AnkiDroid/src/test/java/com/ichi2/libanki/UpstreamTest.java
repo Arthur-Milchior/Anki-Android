@@ -267,11 +267,11 @@ public class UpstreamTest extends RobolectricTest {
          // and should avoid sound
          n.setItem("Front", "foo[sound:abc.mp3]");
          n.flush();
-         assertTrue(c.q(reload=true).contains("anki:play"));
+         assertTrue(c.q(true).contains("anki:play"));
          // it shouldn't throw an error while people are editing
          m.getJSONArray("tmpls").getJSONObject(0).put("qfmt", "{{kana:}}");
          mm.save(m);
-         c.q(reload=true);
+         c.q(true);
      }
 
      @Test
@@ -677,7 +677,7 @@ public class UpstreamTest extends RobolectricTest {
          c.flush();
          assertEquals( new long [] {c.getId(, col.findCards("is:due") )});
          assertEquals( 4, col.findCards("-is:due").size() );
-         c.queue = -1;
+         c.queue = QUEUE_TYPE_SUSPENDED;
          // ensure this card gets a later mod time
          c.flush();
          col.getDb().execute("update cards set mod = mod + 1 where long id = ?", c.getId());
@@ -1930,8 +1930,8 @@ assertEquals( 9, col.getSched().newCount );
                                                 assertEquals( col.getSched(, c.getDue() ).today + 1);
                                                 assertEquals( 1, c.ivl );
          // or normal removal
-         c.type = 0;
-         c.queue = 1;
+         c.type = CARD_TYPE_NEW;
+         c.queue = QUEUE_TYPE_LRN;
          col.getSched().answerCard(c, 3);
                                                 assertEquals( CARD_TYPE_REV, c.type );
                                                 assertEquals( QUEUE_TYPE_REV, c.queue );
@@ -1940,7 +1940,7 @@ assertEquals( 9, col.getSched().newCount );
                                                 assertEquals( 5, col.getDb().queryScalar("select count() from revlog where type = 0") );
          // now failed card handling
          c.type = CARD_TYPE_REV;
-         c.queue = 1;
+         c.queue = QUEUE_TYPE_LRN;
          c.odue = 123;
          col.getSched().answerCard(c, 3);
                                                 assertEquals( 123, c.getDue() );
@@ -1948,7 +1948,7 @@ assertEquals( 9, col.getSched().newCount );
                                                 assertEquals( QUEUE_TYPE_REV, c.queue );
          // we should be able to remove manually, too
          c.type = CARD_TYPE_REV;
-         c.queue = 1;
+         c.queue = QUEUE_TYPE_LRN;
          c.odue = 321;
          c.flush();
          col.getSched().removeLrn();
@@ -2166,7 +2166,7 @@ assertEquals( 9, col.getSched().newCount );
          // simulate a review that was lapsed and is now due for its normal review
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
-         c.queue = 1;
+         c.queue = QUEUE_TYPE_LRN;
          c.getDue() = -1;
          c.odue = -1;
          c.factor = STARTING_FACTOR;
@@ -3126,8 +3126,8 @@ assertEquals( 9, col.getSched().newCount );
                                                 assertEquals( col.getSched(, c.getDue() ).today + 1);
                                                 assertEquals( 1, c.ivl );
          // or normal removal
-         c.type = 0;
-         c.queue = 1;
+         c.type = CARD_TYPE_NEW;
+         c.queue = QUEUE_TYPE_LRN;
          col.getSched().answerCard(c, 4);
                                                 assertEquals( CARD_TYPE_REV, c.type );
                                                 assertEquals( QUEUE_TYPE_REV, c.queue );
@@ -3455,7 +3455,7 @@ assertEquals( 9, col.getSched().newCount );
          // simulate a review that was lapsed and is now due for its normal review
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
-         c.queue = 1;
+         c.queue = QUEUE_TYPE_LRN;
          c.getDue() = -1;
          c.odue = -1;
          c.factor = STARTING_FACTOR;
