@@ -35,6 +35,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
@@ -1783,15 +1784,7 @@ public class UpstreamTest extends RobolectricTest {
          return col;
      }
 
-     @Test
-     public void test_basics() throws ConfirmModSchemaException {
-         Collection col = getColV1();
-         col.reset();
-         assertFalse(col.getSched().getCard());
-     }
-
-     @Test
-     public void test_new()  throws ConfirmModSchemaException {
+     public void test_new()  throws Exception {
          Collection col = getColV1();
          col.reset();
          assertEquals( 0, col.getSched().newCount );
@@ -2979,10 +2972,10 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_basics()  throws Exception{
-         Collection col = getColV2();
+     public void test_basics() throws Exception {
+         Collection col = getColV1();
          col.reset();
-         assertFalse(col.getSched().getCard());
+         assertNull(col.getSched().getCard());
      }
 
      @Test
