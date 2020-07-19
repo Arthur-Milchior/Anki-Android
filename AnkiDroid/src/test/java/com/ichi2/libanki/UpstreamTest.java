@@ -1846,7 +1846,7 @@ public class UpstreamTest extends RobolectricTest {
              col.addNote(note);
         }
          // give the child deck a different configuration
-         c2 = col.getDecks().add_config_returning_id("new conf");
+         c2 = col.getDecks().confId("new conf");
          col.getDecks().setConf(col.getDecks().get(deck2), c2);
          col.reset();
          // both confs have defaulted to a limit of 20
@@ -3040,7 +3040,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Front","did")] = deck2;
              col.addNote(note);
          // give the child deck a different configuration
-         c2 = col.getDecks().add_config_returning_id("new conf");
+         c2 = col.getDecks().confId("new conf");
          col.getDecks().setConf(col.getDecks().get(deck2), c2);
          col.reset();
          // both confs have defaulted to a limit of 20
@@ -3373,8 +3373,8 @@ public class UpstreamTest extends RobolectricTest {
         parent=col.getDecks().get(col.getDecks().id("parent"));
         child=col.getDecks().get(col.getDecks().id("parent::child"));
 
-        pconf=col.getDecks().getConf(col.getDecks().add_config_returning_id("parentConf"));
-        cconf=col.getDecks().getConf(col.getDecks().add_config_returning_id("childConf"));
+        pconf=col.getDecks().getConf(col.getDecks().confId("parentConf"));
+        cconf=col.getDecks().getConf(col.getDecks().confId("childConf"));
 
         pconf.getJSONObject("rev").put("perDay",5);
         col.getDecks().update_config(pconf);
