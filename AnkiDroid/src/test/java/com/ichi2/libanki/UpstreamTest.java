@@ -285,10 +285,9 @@ public class UpstreamTest extends RobolectricTest {
          Collection col = getCol();
          no_uni = without_unicode_isolation;
 
-         assertTrue(();
-             col.tr(TR.CARD_TEMPLATE_RENDERING_FRONT_SIDE_PROBLEM);
-             == "Front template has a problem:";
-     );
+         assertEqual("Front template has a problem:", 
+             col.tr(TR.CARD_TEMPLATE_RENDERING_FRONT_SIDE_PROBLEM)
+             );
          assertEquals( "1 review", no_uni(col.tr(TR.STATISTICS_REVIEWS, reviews=1)) );
          assertEquals( "2 reviews", no_uni(col.tr(TR.STATISTICS_REVIEWS, reviews=2)) );
      }
@@ -736,10 +735,8 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals(firstCardId,
              col.findCards("", BuiltinSortKind.CARD_DUE, reverse=false).get(0)
          );
-         assertTrue(();
-             col.findCards("", BuiltinSortKind.CARD_DUE, reverse=true).get(0);
-             != firstCardId;
-     );
+         assertNotEquals(firstCardId,
+             col.findCards("", BuiltinSortKind.CARD_DUE, reverse=true).get(0));
      */
          // model
          assertEquals( 3, col.findCards("note:basic").size() );
@@ -1589,10 +1586,10 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Text","\(a\) {{c1::b}} \[ {{c1::c}} \]");
          assertNotEquals(0, col.addNote(note));
          assertEquals( 1, note.nbCards() );
-         assertTrue(();
-             note.cards().get(0);
-             .q();
-             .endsWith("\\(a\\) <span class=cloze>[...]</span> \\[ new [] {...} \\]");
+         assertTrue(
+             note.cards().get(0)
+             .q()
+             .endsWith("\\(a\\) <span class=cloze>[...]</span> \\[ new [] {...} \\]")
      );
      }
 
