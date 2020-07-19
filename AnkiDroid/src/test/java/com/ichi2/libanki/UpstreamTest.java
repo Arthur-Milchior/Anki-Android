@@ -894,12 +894,14 @@ public class UpstreamTest extends RobolectricTest {
          note4.setItem("Back","nope");
          col.addNote(note4);
          List<Pair<String, List<Long>>> r = col.findDupes("Back");
-         assertEquals( "bar", r[0][0] );
-         assertEquals( 3, r[0][1].size() );
+         Pair<String, List<Long>> r0 = r.get(0);
+         assertEquals( "bar", r0.first);
+         assertEquals( 3, r0.second.size() );
          // valid search
          r = col.findDupes("Back", "bar");
-         assertEquals( "bar", r[0][0] );
-         assertEquals( 3, r[0][1].size() );
+         r0 = r.get(0);
+         assertEquals( "bar", r0.first );
+         assertEquals( 3, r0.second.size() );
          // excludes everything
          r = col.findDupes("Back", "invalid");
          assertNotEquals(0, r.size());
@@ -1379,10 +1381,10 @@ public class UpstreamTest extends RobolectricTest {
          assertNotEquals(m2.getLong("id"), m.getLong("id"));
          assertEquals( 2, m2.getJSONArray("flds").length() );
          assertEquals( 2, m.getJSONArray("flds").length() );
-         assertEquals( m.getJSONArray("flds").size(, m2.getJSONArray("flds").length() ));
+         assertEquals( m.getJSONArray("flds").length(), m2.getJSONArray("flds").length());
          assertEquals( 1, m.getJSONArray("tmpls").length() );
          assertEquals( 1, m2.getJSONArray("tmpls").length() );
-         assertEquals( col.getModels(, col.getModels().scmhash(m) ).scmhash(m2));
+         assertEquals( col.getModels().scmhash(m), col.getModels().scmhash(m2));
      }
 
      @Test
