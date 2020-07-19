@@ -707,19 +707,19 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 0, col.findCards("front:do").size() );
          assertEquals( 5, col.findCards("front:*").size() );
          // ordering
-         col..getConf().put("sortType", "noteCrt");
+         col.getConf().put("sortType", "noteCrt");
          col.flush();
     assertTrue(col.findCards("front:*", order=true)latestCardIds.contains(new [] {-1}));
     assertTrue(col.findCards("", order=true)latestCardIds.contains(new [] {-1}));
-         col..getConf().put("sortType", "noteFld");
+         col.getConf().put("sortType", "noteFld");
          col.flush();
          assertEquals( catCard.getId(, col.findCards("", order=true)[0] ));
     assertTrue(col.findCards("", order=true)latestCardIds.contains(new [] {-1}));
-                  col..getConf().put("sortType", "cardMod");
+                  col.getConf().put("sortType", "cardMod");
          col.flush();
     assertTrue(col.findCards("", order=true)latestCardIds.contains(new [] {-1}));
          assertEquals( firstCardId, col.findCards("", order=true)[0] );
-                  col..getConf().put("sortBackwards", true);
+                  col.getConf().put("sortBackwards", true);
          col.flush();
     assertTrue(col.findCards("", order=true)latestCardIds.contains(new [] {0}));
          assertTrue(();
@@ -4368,7 +4368,7 @@ assertEquals( 9, col.getSched().newCount );
          // undoing should restore the old value
          col.undo();
          assertFalse(col.undoName());
-         assertTrue(!col..getConf().contains("abc"));
+         assertTrue(!col.getConf().contains("abc"));
          // an (auto)save will clear the undo
          col.save("foo");
          assertEquals( "foo", col.undoName() );
