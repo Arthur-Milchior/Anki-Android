@@ -642,7 +642,7 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Back","foo bar");
          col.addNote(note);
          col.save();
-         long[] latestCardIds = [c.getId() for c in note.cards()];
+         List<Long> latestCardIds = note.cids();
          // tag searches
          assertEquals( 5, col.findCards("tag:*").size() );
          assertEquals( 1, col.findCards("tag:\\*").size() );
@@ -657,9 +657,10 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 1, col.findCards("tag:monkey").size() );
          assertEquals( 1, col.findCards("tag:sheep -tag:monkey").size() );
          assertEquals( 4, col.findCards("-tag:sheep").size() );
-         col.getTags().bulkAdd(col.getDb().list("select id from notes"), "foo bar");
-         assertEquals( col.findCards("tag:bar", col.findCards("tag:foo").size() ).size() == 5);
-         col.getTags().bulkRem(col.getDb().list("select id from notes"), "foo");
+         col.getTags().bulkAdd(col.getDb().longList("select id from notes"), "foo bar");
+         assertEquals(5, col.findCards("tag:foo").size());
+         assertEquals(5, col.findCards("tag:bar").size());
+         col.getTags().bulkRem(col.getDb().longList("select id from notes"), "foo");
          assertEquals( 0, col.findCards("tag:foo").size() );
          assertEquals( 5, col.findCards("tag:bar").size() );
          // text searches
