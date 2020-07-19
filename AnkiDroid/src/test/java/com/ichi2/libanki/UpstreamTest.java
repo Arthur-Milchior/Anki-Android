@@ -65,7 +65,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_misc(){
+     public void test_misc_cards(){
          Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","1");
@@ -1926,12 +1926,12 @@ public class UpstreamTest extends RobolectricTest {
          // pass again
          col.getSched().answerCard(c, 2);
          // it should be due notARealIn 10 minutes
-                                    assertTrue(Math.round(599, 600).contains((c.getDue() - Utils.now())));
-                                   assertEquals( 1, c.getLeft() % 1000 );
-                                   assertEquals( , c.getLeft() // 1000 )1
+         assertEquals(c.getDue() - Utils.now(), 599, 1);
+         assertEquals( 1, c.getLeft() % 1000 );
+         assertEquals(1 , c.getLeft() / 1000 );
          // the next pass should graduate the card
-                                                assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
-                                                assertEquals( CARD_TYPE_LRN, c.getType() );
+                 assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
+         assertEquals( CARD_TYPE_LRN, c.getType() );
          col.getSched().answerCard(c, 2);
                                                 assertEquals( QUEUE_TYPE_REV, c.getQueue() );
                                                 assertEquals( CARD_TYPE_REV, c.getType() );
@@ -1950,7 +1950,7 @@ public class UpstreamTest extends RobolectricTest {
          // now failed card handling
                                                  c.setType(CARD_TYPE_REV);
                                                  c.setQueue(QUEUE_TYPE_LRN);
-         c.odue = 123;
+         c.setODue(123);
          col.getSched().answerCard(c, 3);
                                                 assertEquals( 123, c.getDue() );
                                                 assertEquals( CARD_TYPE_REV, c.getType() );
@@ -1958,7 +1958,7 @@ public class UpstreamTest extends RobolectricTest {
          // we should be able to remove manually, too
                                                  c.setType(CARD_TYPE_REV);
                                                  c.setQueue(QUEUE_TYPE_LRN);
-         c.odue = 321;
+                                                 c.setODue(321);
          c.flush();
          col.getSched().removeLrn();
          c.load();
@@ -2178,7 +2178,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setType(CARD_TYPE_REV);
          c.setQueue(QUEUE_TYPE_LRN);
          c.setDue(-)1;
-         c.odue = -1;
+         c.setODue(-1);
          c.setFactor(STARTING_FACTOR);
          c.getLeft() = 2002;
          c.setIvl(0);
@@ -3471,7 +3471,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setType(CARD_TYPE_REV);
          c.setQueue(QUEUE_TYPE_LRN);
          c.setDue(-)1;
-         c.odue = -1;
+         c.setODue(-1);
          c.setFactor(STARTING_FACTOR);
          c.getLeft() = 2002;
          c.setIvl(0);
