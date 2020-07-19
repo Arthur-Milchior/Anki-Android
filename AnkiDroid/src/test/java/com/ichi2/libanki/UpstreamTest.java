@@ -1899,7 +1899,7 @@ public class UpstreamTest extends RobolectricTest {
          col.reset();
          // sched.getCard should return it, since it's due notARealIn the past
          Card c = col.getSched().getCard();
-         assertNotNull(c)(c);
+         assertNotNull(c);
          DeckConfig conf = col.getSched()._cardConf(c);
          conf.getJSONObject("new").put("delays", new JSONArray(new double [] {0.5, 3, 10}));
          col.getDecks().save(conf);
