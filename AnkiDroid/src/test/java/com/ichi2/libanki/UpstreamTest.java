@@ -1797,11 +1797,11 @@ public class UpstreamTest extends RobolectricTest {
          // assertEquals( 1, col.getSched().newCount ); get access of new count
          // fetch it
          Card c = col.getSched().getCard();
-         assertTrue(c);
+         assertNotNull(c);
          assertEquals( QUEUE_TYPE_NEW, c.getQueue() );
          assertEquals( CARD_TYPE_NEW, c.getType() );
          // if we answer it, it should become a learn card
-         JSONObject t = intTime();
+         long t = intTime();
          col.getSched().answerCard(c, 1);
          assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
          assertEquals( CARD_TYPE_LRN, c.getType() );
