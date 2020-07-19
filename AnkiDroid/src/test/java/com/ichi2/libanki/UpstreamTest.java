@@ -672,18 +672,18 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 1, col.findCards("\"goats are\"").size() );
          // card states
          Card c = note.cards().get(0);
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.type = CARD_TYPE_REV;
          assertEquals( new Card [] {}, col.findCards("is:review") );
          c.flush();
          assertEquals( new long [] {c.getId(, col.findCards("is:review") )});
          assertEquals( new Card [] {}, col.findCards("is:due") );
          c.getDue() = 0;
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.flush();
          assertEquals( new long [] {c.getId(, col.findCards("is:due") )});
          assertEquals( 4, col.findCards("-is:due").size() );
-         c.queue = QUEUE_TYPE_SUSPENDED;
+         c.setQueue(QUEUE_TYPE_SUSPENDED);
          // ensure this card gets a later mod time
          c.flush();
          col.getDb().execute("update cards set mod = mod + 1 where long id = ?", c.getId());
@@ -1933,7 +1933,7 @@ assertEquals( 9, col.getSched().newCount );
                                                 assertEquals( 1, c.ivl );
          // or normal removal
          c.type = CARD_TYPE_NEW;
-         c.queue = QUEUE_TYPE_LRN;
+                                                 c.setQueue(QUEUE_TYPE_LRN);
          col.getSched().answerCard(c, 3);
                                                 assertEquals( CARD_TYPE_REV, c.type );
                                                 assertEquals( QUEUE_TYPE_REV, c.queue );
@@ -1942,7 +1942,7 @@ assertEquals( 9, col.getSched().newCount );
                                                 assertEquals( 5, col.getDb().queryScalar("select count() from revlog where type = 0") );
          // now failed card handling
          c.type = CARD_TYPE_REV;
-         c.queue = QUEUE_TYPE_LRN;
+                                                 c.setQueue(QUEUE_TYPE_LRN);
          c.odue = 123;
          col.getSched().answerCard(c, 3);
                                                 assertEquals( 123, c.getDue() );
@@ -1950,7 +1950,7 @@ assertEquals( 9, col.getSched().newCount );
                                                 assertEquals( QUEUE_TYPE_REV, c.queue );
          // we should be able to remove manually, too
          c.type = CARD_TYPE_REV;
-         c.queue = QUEUE_TYPE_LRN;
+                                                 c.setQueue(QUEUE_TYPE_LRN);
          c.odue = 321;
          c.flush();
          col.getSched().removeLrn();
@@ -2062,7 +2062,7 @@ assertEquals( 9, col.getSched().newCount );
          // set the card up as a review card, due 8 days ago
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.getDue() = col.getSched().today - 8;
          c.factor = STARTING_FACTOR;
          c.reps = 3;
@@ -2142,7 +2142,7 @@ assertEquals( 9, col.getSched().newCount );
          // 1 day ivl review card due now
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.getDue() = col.getSched().today;
          c.reps = 1;
          c.ivl = 1;
@@ -2168,7 +2168,7 @@ assertEquals( 9, col.getSched().newCount );
          // simulate a review that was lapsed and is now due for its normal review
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
-         c.queue = QUEUE_TYPE_LRN;
+         c.setQueue(QUEUE_TYPE_LRN);
          c.getDue() = -1;
          c.odue = -1;
          c.factor = STARTING_FACTOR;
@@ -2258,7 +2258,7 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( 100 * 86400, ni(c, 3) );
          // review cards
      ////////////////////////////////////////////////////////////////////////////////////////////////////
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.ivl = 100;
          c.factor = STARTING_FACTOR;
          // failing it should put it at 60s
@@ -2313,7 +2313,7 @@ assertEquals( 9, col.getSched().newCount );
          c.getDue() = 0;
          c.ivl = 100;
          c.type = CARD_TYPE_REV;
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.flush();
          col.reset();
          Card c = col.getSched().getCard();
@@ -2349,7 +2349,7 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          Card c = note.cards().get(0);
          c.ivl = 100;
-         c.queue = CARD_TYPE_REV;
+         c.setQueue(CARD_TYPE_REV);
          c.type = QUEUE_TYPE_REV;
          // due notARealIn 25 days, so it's been waiting 75 days
          c.getDue() = col.getSched().today + 25;
@@ -2467,12 +2467,12 @@ assertEquals( 9, col.getSched().newCount );
          Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 2);
          // answering the card will put it notARealIn the learning queue
-         assertEquals( CARD_TYPE_LRN and c.queue == QUEUE_TYPE_LRN, c.type );
+         assertEquals( CARD_TYPE_LRN and c.setQueue( QUEUE_TYPE_LRN, c.type ));
          assertNotEquals(c.getDue(), oldDue);
          // if we terminate cramming prematurely it should be set back to new
          col.getSched().emptyDyn(did);
          c.load();
-         assertEquals( CARD_TYPE_NEW and c.queue == QUEUE_TYPE_NEW, c.type );
+         assertEquals( CARD_TYPE_NEW and c.setQueue( QUEUE_TYPE_NEW, c.type ));
          assertEquals( oldDue, c.getDue() );
      }
 
@@ -2498,10 +2498,10 @@ assertEquals( 9, col.getSched().newCount );
          assertEquals( 0, ni(c, 3) );
          assertEquals( "(end, col.getSched().nextIvlStr(c, 3) )");
          col.getSched().answerCard(c, 3);
-         assertEquals( CARD_TYPE_NEW and c.queue == QUEUE_TYPE_NEW, c.type );
+         assertEquals( CARD_TYPE_NEW and c.setQueue( QUEUE_TYPE_NEW, c.type ));
          // undue reviews should also be unaffected
          c.ivl = 100;
-         c.queue = CARD_TYPE_REV;
+         c.setQueue(CARD_TYPE_REV);
          c.type = QUEUE_TYPE_REV;
          c.getDue() = col.getSched().today + 25;
          c.factor = STARTING_FACTOR;
@@ -2683,7 +2683,7 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.getDue() = col.getSched().today;
          c.flush();
          col.reset();
@@ -2703,7 +2703,7 @@ assertEquals( 9, col.getSched().newCount );
              col.addNote(note);
              Card c = note.cards().get(0);
              c.type = CARD_TYPE_REV;
-             c.queue = QUEUE_TYPE_REV;
+             c.setQueue(QUEUE_TYPE_REV);
              c.getDue() = 0;
              c.flush();
          // fail the first one
@@ -2759,7 +2759,7 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          // make it a review card
          Card c = note.cards().get(0);
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.getDue() = 0;
          c.flush();
          // add one more with a new deck
@@ -2867,7 +2867,7 @@ assertEquals( 9, col.getSched().newCount );
          note.setItem("Front","one");
          col.addNote(note);
          Card c = note.cards().get(0);
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.type = CARD_TYPE_REV;
          c.ivl = 100;
          c.getDue() = 0;
@@ -2906,7 +2906,7 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.getDue() = 0;
          c.factor = STARTING_FACTOR;
          c.reps = 3;
@@ -2929,7 +2929,7 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.ivl = 100;
          c.getDue() = col.getSched().today - c.ivl;
          c.factor = STARTING_FACTOR;
@@ -3129,7 +3129,7 @@ assertEquals( 9, col.getSched().newCount );
                                                 assertEquals( 1, c.ivl );
          // or normal removal
          c.type = CARD_TYPE_NEW;
-         c.queue = QUEUE_TYPE_LRN;
+                                                 c.setQueue(QUEUE_TYPE_LRN);
          col.getSched().answerCard(c, 4);
                                                 assertEquals( CARD_TYPE_REV, c.type );
                                                 assertEquals( QUEUE_TYPE_REV, c.queue );
@@ -3147,7 +3147,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = note.cards().get(0);
          c.ivl = 100;
          c.getDue() = col.getSched().today;
-         c.queue = CARD_TYPE_REV;
+         c.setQueue(CARD_TYPE_REV);
          c.type = QUEUE_TYPE_REV;
          c.flush();
 
@@ -3175,7 +3175,7 @@ assertEquals( 9, col.getSched().newCount );
          Card c = note.cards().get(0);
          c.ivl = 100;
          c.getDue() = col.getSched().today;
-         c.queue = CARD_TYPE_REV;
+         c.setQueue(CARD_TYPE_REV);
          c.type = QUEUE_TYPE_REV;
          c.flush();
 
@@ -3293,7 +3293,7 @@ assertEquals( 9, col.getSched().newCount );
          // set the card up as a review card, due 8 days ago
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.getDue() = col.getSched().today - 8;
          c.factor = STARTING_FACTOR;
          c.reps = 3;
@@ -3391,7 +3391,7 @@ assertEquals( 9, col.getSched().newCount );
 
              // make them reviews
              Card c = note.cards().get(0);
-             c.queue = CARD_TYPE_REV;
+             c.setQueue(CARD_TYPE_REV);
              c.type = QUEUE_TYPE_REV;
              c.getDue() = 0;
              c.flush();
@@ -3425,7 +3425,7 @@ assertEquals( 9, col.getSched().newCount );
          // 1 day ivl review card due now
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.getDue() = col.getSched().today;
          c.reps = 1;
          c.ivl = 1;
@@ -3457,7 +3457,7 @@ assertEquals( 9, col.getSched().newCount );
          // simulate a review that was lapsed and is now due for its normal review
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
-         c.queue = QUEUE_TYPE_LRN;
+         c.setQueue(QUEUE_TYPE_LRN);
          c.getDue() = -1;
          c.odue = -1;
          c.factor = STARTING_FACTOR;
@@ -3550,7 +3550,7 @@ assertEquals( 9, col.getSched().newCount );
                                                 assertEquals( 101 * 86400, ni(c, 4) );
          // review cards
      ////////////////////////////////////////////////////////////////////////////////////////////////////
-         c.queue = QUEUE_TYPE_REV;
+                                                 c.setQueue(QUEUE_TYPE_REV);
          c.ivl = 100;
          c.factor = STARTING_FACTOR;
          // failing it should put it at 60s
@@ -3633,7 +3633,7 @@ assertEquals( 9, col.getSched().newCount );
          c.getDue() = 0;
          c.ivl = 100;
          c.type = CARD_TYPE_REV;
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.flush();
          col.reset();
          Card c = col.getSched().getCard();
@@ -3671,7 +3671,7 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          Card c = note.cards().get(0);
          c.ivl = 100;
-         c.queue = CARD_TYPE_REV;
+         c.setQueue(CARD_TYPE_REV);
          c.type = QUEUE_TYPE_REV;
          // due notARealIn 25 days, so it's been waiting 75 days
          c.getDue() = col.getSched().today + 25;
@@ -3736,11 +3736,11 @@ assertEquals( 9, col.getSched().newCount );
 
          col.getSched().answerCard(c, 1);
 
-         assertEquals( CARD_TYPE_LRN and c.queue == QUEUE_TYPE_LRN, c.type );
+         assertEquals( CARD_TYPE_LRN and c.setQueue( QUEUE_TYPE_LRN, c.type ));
          assertEquals( 3003, c.left );
 
          col.getSched().answerCard(c, 3);
-         assertEquals( CARD_TYPE_LRN and c.queue == QUEUE_TYPE_LRN, c.type );
+         assertEquals( CARD_TYPE_LRN and c.setQueue( QUEUE_TYPE_LRN, c.type ));
 
          // create a dynamic deck and refresh it
          long did = col.getDecks().newDyn("Cram");
@@ -3749,7 +3749,7 @@ assertEquals( 9, col.getSched().newCount );
 
          // card should still be notARealIn learning state
          c.load();
-         assertEquals( CARD_TYPE_LRN and c.queue == QUEUE_TYPE_LRN, c.type );
+         assertEquals( CARD_TYPE_LRN and c.setQueue( QUEUE_TYPE_LRN, c.type ));
          assertEquals( 2002, c.left );
 
          // should be able to advance learning steps
@@ -3760,7 +3760,7 @@ assertEquals( 9, col.getSched().newCount );
          // emptying the deck preserves learning state
          col.getSched().emptyDyn(did);
          c.load();
-         assertEquals( CARD_TYPE_LRN and c.queue == QUEUE_TYPE_LRN, c.type );
+         assertEquals( CARD_TYPE_LRN and c.setQueue( QUEUE_TYPE_LRN, c.type ));
          assertEquals( 1001, c.left );
          assertTrue(c.getDue() - intTime() > 60 * 60);
      }
@@ -3914,7 +3914,7 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.getDue() = col.getSched().today;
          c.flush();
          col.reset();
@@ -3934,7 +3934,7 @@ assertEquals( 9, col.getSched().newCount );
              col.addNote(note);
              Card c = note.cards().get(0);
              c.type = CARD_TYPE_REV;
-             c.queue = QUEUE_TYPE_REV;
+             c.setQueue(QUEUE_TYPE_REV);
              c.getDue() = 0;
              c.flush();
          // fail the first one
@@ -3982,7 +3982,7 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          // make it a review card
          Card c = note.cards().get(0);
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.getDue() = 0;
          c.flush();
          // add one more with a new deck
@@ -4101,7 +4101,7 @@ assertEquals( 9, col.getSched().newCount );
          note.setItem("Front","one");
          col.addNote(note);
          Card c = note.cards().get(0);
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.type = CARD_TYPE_REV;
          c.ivl = 100;
          c.getDue() = 0;
@@ -4140,7 +4140,7 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.getDue() = 0;
          c.factor = STARTING_FACTOR;
          c.reps = 3;
@@ -4163,7 +4163,7 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          Card c = note.cards().get(0);
          c.type = CARD_TYPE_REV;
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.ivl = 100;
          c.getDue() = col.getSched().today - c.ivl;
          c.factor = STARTING_FACTOR;
@@ -4219,7 +4219,7 @@ assertEquals( 9, col.getSched().newCount );
          // and it should be new again when unburied
          col.getSched().unburyCards();
          c.load();
-         assertEquals( CARD_TYPE_NEW and c.queue == QUEUE_TYPE_NEW, c.type );
+         assertEquals( CARD_TYPE_NEW and c.setQueue( QUEUE_TYPE_NEW, c.type ));
 
          // make sure relearning cards transition correctly to v1
          col.changeSchedulerVer(2);
@@ -4253,7 +4253,7 @@ assertEquals( 9, col.getSched().newCount );
          col.addNote(note);
          Card c = note.cards().get(0);
          c.getDue() = -5;
-         c.queue = QUEUE_TYPE_REV;
+         c.setQueue(QUEUE_TYPE_REV);
          c.ivl = 5;
          c.flush();
 
