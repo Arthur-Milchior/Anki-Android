@@ -1314,6 +1314,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertEquals( "<img src=\"foo%20bar.jpg\">", col.getMedia().escapeImages("<img src=\"foo bar.jpg\">") );
      }
 
+     /** TODO: file
      @Test
      public void test_deckIntegration(){
          Collection col = getCol();
@@ -1340,6 +1341,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertEquals( new String [] {"fake2.png"}, ret.missing );
          assertEquals( new String [] {"foo.jpg"}, ret.unused );
      }
+     */
      /*****************
       ** Models       *
       *****************/
