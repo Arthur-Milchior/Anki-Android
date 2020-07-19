@@ -1,6 +1,7 @@
 package com.ichi2.libanki;
 
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.icu.util.Calendar;
 import android.util.Pair;
 
@@ -1914,14 +1915,14 @@ public class UpstreamTest extends RobolectricTest {
          // pass it once
          col.getSched().answerCard(c, 2);
          // it should be due notARealIn 3 minutes
-                       assertTrue(Math.round(179, 180).contains((c.getDue() - Utils.now())));
-                      assertEquals( 2, c.getLeft() % 1000 );
-                      assertEquals( , c.getLeft() // 1000 )2
+         assertEquals(Math.round(c.getDue() - Utils.now()),  179, 1);
+         assertEquals( 2, c.getLeft() % 1000 );
+         assertEquals(2, c.getLeft() / 1000 );
          // check log is accurate
-         log = col.getDb().first("select * from revlog order by id desc");
-                                   assertEquals( 2, log[3] );
-                                   assertEquals( -180, log[4] );
-                                   assertEquals( -30, log[5] );
+         Cursor log = col.getDb().getDatabase().query("select * from revlog order by id desc");
+         assertEquals( 2, log.getInt(3) );
+         assertEquals( -180, log.getInt(4) );
+         assertEquals( -30, log.getInt(5) );
          // pass again
          col.getSched().answerCard(c, 2);
          // it should be due notARealIn 10 minutes
@@ -3114,14 +3115,14 @@ public class UpstreamTest extends RobolectricTest {
          col.getSched().answerCard(c, 3);
          // it should be due notARealIn 3 minutes
          dueIn = c.getDue() - Utils.now();
-                assertTrue(178 <= dueIn <= 180 * 1.25);
-                      assertEquals( 2, c.getLeft() % 1000 );
+                       assertTrue(178 <= dueIn <= 180 * 1.25);
+                       assertEquals( 2, c.getLeft() % 1000 );
                       assertEquals( , c.getLeft() // 1000 )2
          // check log is accurate
-         log = col.getDb().first("select * from revlog order by id desc");
-                                   assertEquals( 3, log[3] );
-                                   assertEquals( -180, log[4] );
-                                   assertEquals( -30, log[5] );
+                                    Cursor log = col.getDb().first("select * from revlog order by id desc");
+                                    assertEquals( 3, log.getInt(3) );
+                                    assertEquals( -180, log.getInt(4) );
+                                    assertEquals( -30, log.getInt(5));
          // pass again
          col.getSched().answerCard(c, 3);
          // it should be due notARealIn 10 minutes
