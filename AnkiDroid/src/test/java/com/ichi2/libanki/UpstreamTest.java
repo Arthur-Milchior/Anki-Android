@@ -793,7 +793,7 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 1, col.findCards("prop:ease>2").size() );
          assertTrue(col.findCards("-prop:ease>2").size() > 1);
          // recently failed
-         if (not isNearCutoff()) {
+         if (! isNearCutoff()) {
              assertEquals( 0, col.findCards("rated:1:1").size() );
              assertEquals( 0, col.findCards("rated:1:2").size() );
              Card c = col.getSched().getCard();
