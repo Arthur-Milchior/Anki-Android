@@ -1784,7 +1784,7 @@ public class UpstreamTest extends RobolectricTest {
          return col;
      }
 
-    public void test_new()  throws Exception {
+    public void test_new_v1()  throws Exception {
          Collection col = getColV1();
          col.reset();
          assertEquals( 0, col.getSched().newDue() );
@@ -1866,7 +1866,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_newBoxes()  throws Exception {
+     public void test_newBoxes_v1()  throws Exception {
          Collection col = getColV1();
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -2979,7 +2979,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_new()  throws Exception{
+     public void test_new_v2()  throws Exception{
          Collection col = getColV2();
          col.reset();
          assertEquals( 0, col.getSched().newCount );
@@ -3060,7 +3060,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_newBoxes()  throws Exception{
+     public void test_newBoxes_v2()  throws Exception{
          Collection col = getColV2();
          Note note = col.newNote();
          note.setItem("Front","one");
