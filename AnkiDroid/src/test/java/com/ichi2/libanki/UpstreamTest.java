@@ -127,6 +127,7 @@ public class UpstreamTest extends RobolectricTest {
       ** Collection   *
       *****************/
 
+     /*TODO
      @Test
      public void test_create_open(){
          (fd, path) = tempfile.mkstemp(suffix=".anki2", prefix="test_attachNew");
@@ -158,7 +159,7 @@ public class UpstreamTest extends RobolectricTest {
          assertException(Exception, lambda: aopen(newPath));
          os.chmod(newPath, 0o666);
          os.unlink(newPath);
-     }
+     } */
 
      @Test
      public void test_noteAddDelete(){
@@ -464,7 +465,7 @@ public class UpstreamTest extends RobolectricTest {
              /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 
-
+/* TODO
      @Test
      public void test_export_anki(){
          Collection col = setup1();
@@ -596,6 +597,8 @@ public class UpstreamTest extends RobolectricTest {
      @Test
      public void test_exporters(){
          assertTrue(str(exporters()).contains("*.apkg"));
+
+     */
      /*****************
       ** Find         *
       *****************/
@@ -891,6 +894,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
       /*****************
       ** Importing    *
       *****************/
+/* 
       private void clear_tempfile(tf) {
              ;
          """ https://stackoverflow.com/questions/23212435/permission-denied-to-write-to-my-temporary-file """;
@@ -1214,7 +1218,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          assertEquals( 1, col.getDb().queryScalar("select count() from cards where type = 0") );
          col.close();
      }
-
+*/
      /*****************
       ** Flags        *
       *****************/
