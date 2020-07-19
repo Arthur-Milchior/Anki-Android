@@ -709,25 +709,25 @@ public class UpstreamTest extends RobolectricTest {
          // ordering
          col.getConf().put("sortType", "noteCrt");
          col.flush();
-    assertTrue(col.findCards("front:*", order=true)latestCardIds.contains(new [] {-1}));
-    assertTrue(col.findCards("", order=true)latestCardIds.contains(new [] {-1}));
+    assertTrue(col.findCards("front:*", true)latestCardIds.contains(new [] {-1}));
+    assertTrue(col.findCards("", true)latestCardIds.contains(new [] {-1}));
          col.getConf().put("sortType", "noteFld");
          col.flush();
-         assertEquals( catCard.getId(, col.findCards("", order=true)[0] ));
-    assertTrue(col.findCards("", order=true)latestCardIds.contains(new [] {-1}));
+         assertEquals( catCard.getId(, col.findCards("", true)[0] ));
+    assertTrue(col.findCards("", true)latestCardIds.contains(new [] {-1}));
                   col.getConf().put("sortType", "cardMod");
          col.flush();
-    assertTrue(col.findCards("", order=true)latestCardIds.contains(new [] {-1}));
-         assertEquals( firstCardId, col.findCards("", order=true)[0] );
+    assertTrue(col.findCards("", true)latestCardIds.contains(new [] {-1}));
+         assertEquals( firstCardId, col.findCards("", true)[0] );
                   col.getConf().put("sortBackwards", true);
          col.flush();
-    assertTrue(col.findCards("", order=true)latestCardIds.contains(new [] {0}));
+    assertTrue(col.findCards("", true)latestCardIds.contains(new [] {0}));
          assertTrue(();
-             col.find_cards("", order=BuiltinSortKind.CARD_DUE, reverse=false)[0];
+             col.find_cards("", BuiltinSortKind.CARD_DUE, reverse=false)[0];
              == firstCardId;
      );
          assertTrue(();
-             col.find_cards("", order=BuiltinSortKind.CARD_DUE, reverse=true)[0];
+             col.find_cards("", BuiltinSortKind.CARD_DUE, reverse=true)[0];
              != firstCardId;
      );
          // model
