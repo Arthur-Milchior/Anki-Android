@@ -3,6 +3,7 @@ package com.ichi2.libanki;
 import android.util.Pair;
 
 import com.ichi2.anki.RobolectricTest;
+import com.ichi2.anki.exception.ConfirmModSchemaException;
 import com.ichi2.anki.exception.DeckRenameException;
 import com.ichi2.libanki.sched.AbstractSched;
 import com.ichi2.utils.Assert;
@@ -1347,7 +1348,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
       *****************/
 
      @Test
-     public void test_modelDelete(){
+     public void test_modelDelete() throws ConfirmModSchemaException {
          Collection col = getCol();
          Note note = col.newNote();
          note.setItem("Front","1");
@@ -1363,13 +1364,13 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          Collection col = getCol();
          Model m = col.getModels().current();
          Model m2 = col.getModels().copy(m);
-         assertTrue(m2.put("name",= "Basic copy"));
-         assertTrue(m2.getLong("id") != m.getLong("id"));
+         assertEquals("Basic copy", m2.getString("name"));
+         assertNotEquals(m2.getLong("id"), m.getLong("id"));
          assertEquals( 2, m2["flds"].size() );
          assertEquals( 2, m["flds"].size() );
          assertEquals( m["flds"].size(, m2["flds"].size() ));
-         assertEquals( 1, m.getJSONArray("tmpls").size() );
-         assertEquals( 1, m2.getJSONArray("tmpls").size() );
+         assertEquals( 1, m.getJSONArray("tmpls").length() );
+         assertEquals( 1, m2.getJSONArray("tmpls").length() );
          assertEquals( col.getModels(, col.getModels().scmhash(m) ).scmhash(m2));
      }
 
