@@ -2011,7 +2011,7 @@ public class UpstreamTest extends RobolectricTest {
         // two reps to graduate, 1 more today
         assertEquals( 3, c.getLeft() % 1000 );
         assertEquals(1 , c.getLeft() / 1000 );
-            assertEquals( (0, 1, 0, col.getSched().counts() ));
+            assertArrayEquals( new int[]{0, 1, 0}, col.getSched().counts());
         Card c = col.getSched().getCard();
         ni = col.getSched().nextIvl;
         assertEquals( 86400, ni(c, 2) );
