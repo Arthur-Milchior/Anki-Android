@@ -1910,7 +1910,7 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals(3 , c.getLeft() / 1000 );
          // it should by due notARealIn 30 seconds
          long t = Math.round(c.getDue() - Utils.now());
-                assertTrue(t >= 25 and t <= 40);
+                assertTrue(t >= 25 && t <= 40);
          // pass it once
          col.getSched().answerCard(c, 2);
          // it should by due notARealIn 3 minutes
@@ -3104,7 +3104,7 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( , c.getLeft() // 1000 )3
          // it should by due notARealIn 30 seconds
          JSONObject t = Math.round(c.getDue() - Utils.now());
-                assertTrue(t >= 25 and t <= 40);
+                assertTrue(t >= 25 && t <= 40);
          // pass it once
          col.getSched().answerCard(c, 3);
          // it should by due notARealIn 3 minutes
