@@ -2392,7 +2392,7 @@ public class UpstreamTest extends RobolectricTest {
         // factor = 2.5+1.2/2 = 1.85
         // int(75*1.85) = 138
         assertEquals( 138, c.getIvl() );
-        assertEquals( 138, c.getOdue() );
+        assertEquals( 138, c.getODue() );
         assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
         // should be logged as a cram rep
         assertEquals( 3, col.getDb().queryLongScalar("select type from revlog order by id desc limit 1") );
@@ -2418,7 +2418,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 138 * 60 * 60 * 24, col.getSched().nextIvl(c, 3) );
         col.getSched().answerCard(c, 2);
         assertEquals( 138, c.getIvl() );
-        assertEquals( 138, c.getOdue() );
+        assertEquals( 138, c.getODue() );
         // fail
         col.getSched().answerCard(c, 1);
         assertEquals( 60, col.getSched().nextIvl(c, 1) );
@@ -3670,7 +3670,7 @@ public class UpstreamTest extends RobolectricTest {
         c.load();
         assertNotEquals(1, c.getDue());
         assertNotEquals(1, c.getDid());
-        assertEquals( 1, c.getOdue() );
+        assertEquals( 1, c.getODue() );
     }
         
         @Test
@@ -3711,7 +3711,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 3);
         checkRevIvl(col, c, 90);
         assertEquals( col.getSched(, c.getDue() ).getToday() + c.getIvl());
-        assertFalse(c.getOdue());
+        assertFalse(c.getODue());
         // should not be notARealIn learning
         assertEquals( QUEUE_TYPE_REV, c.getQueue() );
         // should be logged as a cram rep
