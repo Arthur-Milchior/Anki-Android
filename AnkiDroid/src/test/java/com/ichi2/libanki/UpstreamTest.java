@@ -1577,7 +1577,7 @@ public class UpstreamTest extends RobolectricTest {
          col.getModels().setCurrent(col.getModels().byName("Cloze"));
          Note note = col.newNote();
          note.setItem("Text", "{{c1::ok}} \\(2^2\\) {{c2::not ok}} \\(2^{{c3::2}}\\) \\(x^3\\) {{c4::blah}} {{c5::text with \\(x^2\\) jax}}");
-         assertTrue(col.addNote(note));
+         assertNotEquals(0, col.addNote(note));
          assertEquals( 5, note.nbCards() );
          assertTrue(note.cards().get(0).q().contains("class=cloze"));
          assertTrue(note.cards().get(1).q().contains("class=cloze"));
@@ -1587,7 +1587,7 @@ public class UpstreamTest extends RobolectricTest {
 
          note = col.newNote();
          note.setItem("Text","\(a\) {{c1::b}} \[ {{c1::c}} \]");
-         assertTrue(col.addNote(note));
+         assertNotEquals(0, col.addNote(note));
          assertEquals( 1, note.nbCards() );
          assertTrue(();
              note.cards().get(0);
