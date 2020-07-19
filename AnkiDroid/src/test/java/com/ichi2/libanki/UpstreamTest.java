@@ -1227,7 +1227,7 @@ public class UpstreamTest extends RobolectricTest {
         Card c = col.getCard(cid);
         // Applies A Factor-to-E Factor conversion
         assertEquals( 2879, c.getFactor() );
-        assertEquals( 7, c.reps );
+        assertEquals( 7, c.getReps() );
         col.close();
     }
     
@@ -2100,7 +2100,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 2300, c.getFactor() );
         // check counters
         assertEquals( 2, c.getLapses() );
-        assertEquals( 4, c.reps );
+        assertEquals( 4, c.getReps() );
         // check ests.
         
         assertEquals( 120, col.getSched().nextIvl(c, 1) );
@@ -2118,7 +2118,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 2350, c.getFactor() );
         // check counters
         assertEquals( 1, c.getLapses() );
-        assertEquals( 4, c.reps );
+        assertEquals( 4, c.getReps() );
         // ease 3
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         c = copy.copy(cardcopy);
@@ -3328,7 +3328,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 2350, c.getFactor() );
         // check counters
         assertEquals( 1, c.getLapses() );
-        assertEquals( 4, c.reps );
+        assertEquals( 4, c.getReps() );
         // ease 3
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         c = copy.copy(cardcopy);
@@ -3811,7 +3811,7 @@ public class UpstreamTest extends RobolectricTest {
         // passing it will remove it
         col.getSched().answerCard(c2, 2);
         assertEquals( QUEUE_TYPE_NEW, c2.getQueue() );
-        assertEquals( 0, c2.reps );
+        assertEquals( 0, c2.getReps() );
         assertEquals( CARD_TYPE_NEW, c2.getType() );
         
         // the other card should appear again
@@ -3822,7 +3822,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().emptyDyn(did);
         c.load();
         assertEquals( QUEUE_TYPE_NEW, c.getQueue() );
-        assertEquals( 0, c.reps );
+        assertEquals( 0, c.getReps() );
         assertEquals( CARD_TYPE_NEW, c.getType() );
     }
         
