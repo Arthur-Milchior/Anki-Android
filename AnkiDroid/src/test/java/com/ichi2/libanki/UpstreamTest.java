@@ -1832,7 +1832,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_newLimits()  throws Exception {
+     public void test_newLimits_V1()  throws Exception {
          Collection col = getColV1();
          // add some notes
          long deck2 = col.getDecks().id("Default::foo");
@@ -3035,7 +3035,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_newLimits()  throws Exception{
+     public void test_newLimits_V2()  throws Exception{
          Collection col = getColV2();
          // add some notes
          deck2 = col.getDecks().id("Default::foo");
