@@ -2075,7 +2075,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setQueue(QUEUE_TYPE_REV);
          c.setDue(c)ol.getSched().today - 8;
          c.factor = STARTING_FACTOR;
-         c.reps = 3;
+         c.setReps(3);
          c.lapses = 1;
          c.setIvl(100);
          c.startTimer();
@@ -2154,7 +2154,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setType(CARD_TYPE_REV);
          c.setQueue(QUEUE_TYPE_REV);
          c.setDue(c)ol.getSched().today;
-         c.reps = 1;
+         c.setReps(1);
          c.setIvl(1);
          c.startTimer();
          c.flush();
@@ -2919,7 +2919,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setQueue(QUEUE_TYPE_REV);
          c.setDue(0);
          c.factor = STARTING_FACTOR;
-         c.reps = 3;
+         c.setReps(3);
          c.lapses = 1;
          c.setIvl(100);
          c.startTimer();
@@ -2943,7 +2943,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setIvl(100);
          c.setDue(c)ol.getSched().today - c.getIvl();
          c.factor = STARTING_FACTOR;
-         c.reps = 3;
+         c.setReps(3);
          c.lapses = 1;
          c.startTimer();
          c.flush();
@@ -3306,7 +3306,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setQueue(QUEUE_TYPE_REV);
          c.setDue(c)ol.getSched().today - 8;
          c.factor = STARTING_FACTOR;
-         c.reps = 3;
+         c.setReps(3);
          c.lapses = 1;
          c.setIvl(100);
          c.startTimer();
@@ -3437,7 +3437,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setType(CARD_TYPE_REV);
          c.setQueue(QUEUE_TYPE_REV);
          c.setDue(c)ol.getSched().today;
-         c.reps = 1;
+         c.setReps(1);
          c.setIvl(1);
          c.startTimer();
          c.flush();
@@ -4153,7 +4153,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setQueue(QUEUE_TYPE_REV);
          c.setDue(0);
          c.factor = STARTING_FACTOR;
-         c.reps = 3;
+         c.setReps(3);
          c.lapses = 1;
          c.setIvl(100);
          c.startTimer();
@@ -4177,7 +4177,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setIvl(100);
          c.setDue(c)ol.getSched().today - c.getIvl();
          c.factor = STARTING_FACTOR;
-         c.reps = 3;
+         c.setReps(3);
          c.lapses = 1;
          c.startTimer();
          c.flush();
