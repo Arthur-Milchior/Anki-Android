@@ -1588,7 +1588,7 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(note.cards().get(4).q().contains("class=cloze"));
 
          note = col.newNote();
-         note.setItem("Text","\(a\) {{c1::b}} \[ {{c1::c}} \]");
+         note.setItem("Text","\\(a\\) {{c1::b}} \\[ {{c1::c}} \\]");
          assertNotEquals(0, col.addNote(note));
          assertEquals( 1, note.nbCards() );
          assertTrue(
