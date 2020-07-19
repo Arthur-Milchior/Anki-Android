@@ -2941,7 +2941,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setType(CARD_TYPE_REV);
          c.setQueue(QUEUE_TYPE_REV);
          c.setIvl(100);
-         c.setDue(c)ol.getSched().today - c.getIvl();
+         c.setDue(col.getSched().today - c.getIvl());
          c.setFactor(STARTING_FACTOR);
          c.setReps(3);
          c.setLapses(1);
