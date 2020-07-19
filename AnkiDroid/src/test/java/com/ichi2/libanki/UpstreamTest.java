@@ -1783,11 +1783,6 @@ public class UpstreamTest extends RobolectricTest {
          return col;
      }
 
-     private boolean checkRevIvl(col, c, targetIvl) {
-         min, max = col.getSched()._fuzzIvlRange(targetIvl);
-         return min <= c.ivl <= max;
-     }
-
      @Test
      public void test_basics() throws ConfirmModSchemaException {
          Collection col = getColV1();
@@ -2978,9 +2973,9 @@ public class UpstreamTest extends RobolectricTest {
          }
 
 
-     private boolean checkRevIvl(col, c, targetIvl):
+     private boolean checkRevIvl(Collection col, Card c, int targetIvl):
          min, max = col.getSched()._fuzzIvlRange(targetIvl);
-         return min <= c.ivl <= max;
+         return min <= c.ivl && c.ivl <= max;
      }
 
      @Test
