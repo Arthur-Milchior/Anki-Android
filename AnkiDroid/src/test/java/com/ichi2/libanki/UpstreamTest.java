@@ -768,30 +768,30 @@ public class UpstreamTest extends RobolectricTest {
          col.getDb().execute(
              "update cards set long did = ? where long id = ?", new Object[] {col.getDecks().id("Default::Child"), id});
          col.save();
-assertEquals( 7, col.findCards("deck:default").size() );
-assertEquals( 1, col.findCards("deck:default::child").size() );
-assertEquals( 6, col.findCards("deck:default -deck:default::*").size() );
+        assertEquals( 7, col.findCards("deck:default").size() );
+        assertEquals( 1, col.findCards("deck:default::child").size() );
+        assertEquals( 6, col.findCards("deck:default -deck:default::*").size() );
          // properties
- long id = col.getDb().queryLongScalar("select id from cards limit 1");
-         col.getDb().execute(;
-             "update cards set queue=2, ivl=10, reps=20, due=30, factor=2200 ";
-             "where long id = ?",;
-             id,;
-     );
-assertEquals( 1, col.findCards("prop:ivl>5").size() );
+         id = col.getDb().queryLongScalar("select id from cards limit 1");
+         col.getDb().execute(
+             "update cards set queue=2, ivl=10, reps=20, due=30, factor=2200 "
+             "where long id = ?",
+             new Object[]{id}
+         );
+         assertEquals( 1, col.findCards("prop:ivl>5").size() );
          assertTrue(col.findCards("prop:ivl<5").size() > 1);
-assertEquals( 1, col.findCards("prop:ivl>=5").size() );
-assertEquals( 0, col.findCards("prop:ivl=9").size() );
-assertEquals( 1, col.findCards("prop:ivl=10").size() );
+         assertEquals( 1, col.findCards("prop:ivl>=5").size() );
+         assertEquals( 0, col.findCards("prop:ivl=9").size() );
+         assertEquals( 1, col.findCards("prop:ivl=10").size() );
          assertTrue(col.findCards("prop:ivl!=10").size() > 1);
-assertEquals( 1, col.findCards("prop:due>0").size() );
+         assertEquals( 1, col.findCards("prop:due>0").size() );
          // due dates should work
-assertEquals( 0, col.findCards("prop:due=29").size() );
-assertEquals( 1, col.findCards("prop:due=30").size() );
+         assertEquals( 0, col.findCards("prop:due=29").size() );
+         assertEquals( 1, col.findCards("prop:due=30").size() );
          // ease factors
-assertEquals( 0, col.findCards("prop:ease=2.3").size() );
-assertEquals( 1, col.findCards("prop:ease=2.2").size() );
-assertEquals( 1, col.findCards("prop:ease>2").size() );
+         assertEquals( 0, col.findCards("prop:ease=2.3").size() );
+         assertEquals( 1, col.findCards("prop:ease=2.2").size() );
+         assertEquals( 1, col.findCards("prop:ease>2").size() );
          assertTrue(col.findCards("-prop:ease>2").size() > 1);
          // recently failed
          if (not isNearCutoff()) {
@@ -817,18 +817,18 @@ assertEquals( 1, col.findCards("prop:ease>2").size() );
              print("some find tests disabled near cutoff");
          }
          // empty field
-assertEquals( 0, col.findCards("front:").size() );
+         assertEquals( 0, col.findCards("front:").size() );
          Note note = col.newNote();
 note.setItem("Front","");
 note.setItem("Back","abc2");
-assertEquals( 1, col.addNote(note) );
-assertEquals( 1, col.findCards("front:").size() );
+         assertEquals( 1, col.addNote(note) );
+         assertEquals( 1, col.findCards("front:").size() );
          // OR searches and nesting
-assertEquals( 2, col.findCards("tag:monkey or tag:sheep").size() );
-assertEquals( 2, col.findCards("(tag:monkey OR tag:sheep)").size() );
-assertEquals( 6, col.findCards("-(tag:monkey OR tag:sheep)").size() );
-assertEquals( 2, col.findCards("tag:monkey or (tag:sheep sheep)").size() );
-assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
+         assertEquals( 2, col.findCards("tag:monkey or tag:sheep").size() );
+         assertEquals( 2, col.findCards("(tag:monkey OR tag:sheep)").size() );
+         assertEquals( 6, col.findCards("-(tag:monkey OR tag:sheep)").size() );
+         assertEquals( 2, col.findCards("tag:monkey or (tag:sheep sheep)").size() );
+         assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          // flag
          assertThrows(Exception.class, () -> col.findCards("flag:12"));
      }
@@ -1847,22 +1847,22 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          col.getDecks().setConf(col.getDecks().get(deck2), c2);
          col.reset();
          // both confs have defaulted to a limit of 20
-assertEquals( 20, col.getSched().newCount );
+         assertEquals( 20, col.getSched().newCount );
          // first card we get comes from parent
          Card c = col.getSched().getCard();
-assertEquals( 1, c.long did );
+         assertEquals( 1, c.long did );
          // limit the parent to 10 cards, meaning we get 10 notARealIn total
          conf1 = col.getDecks().confForDid(1);
          conf1["new"].put("perDay", 10);
          col.getDecks().save(conf1);
          col.reset();
-assertEquals( 10, col.getSched().newCount );
+         assertEquals( 10, col.getSched().newCount );
          // if we limit child to 4, we should get 9
          conf2 = col.getDecks().confForDid(deck2);
          conf2["new"].put("perDay", 4);
          col.getDecks().save(conf2);
          col.reset();
-assertEquals( 9, col.getSched().newCount );
+         assertEquals( 9, col.getSched().newCount );
      }
 
      @Test
