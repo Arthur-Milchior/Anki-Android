@@ -2107,7 +2107,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 20 * 60, col.getSched().nextIvl(c, 2) );
         // try again with an ease of 2 instead
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        c = copy.copy(cardcopy);
+        c = cardcopy.clone();
         c.flush();
         col.getSched().answerCard(c, 2);
         assertEquals( QUEUE_TYPE_REV, c.getQueue() );
@@ -2121,7 +2121,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 4, c.getReps() );
         // ease 3
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        c = copy.copy(cardcopy);
+        c = cardcopy.clone();
         c.flush();
         col.getSched().answerCard(c, 3);
         // the new interval should be (100 + 8/2) * 2.5 = 260
@@ -2131,7 +2131,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( STARTING_FACTOR, c.getFactor() );
         // ease 4
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        c = copy.copy(cardcopy);
+        c = cardcopy.clone();
         c.flush();
         col.getSched().answerCard(c, 4);
         // the new interval should be (100 + 8) * 2.5 * 1.3 = 351
@@ -2366,7 +2366,7 @@ public class UpstreamTest extends RobolectricTest {
         c.flush();
         col.reset();
         assertArrayEquals( new int[]{0, 0, 0}, col.getSched().counts() );
-        cardcopy = copy.copy(c);
+        cardcopy = c.clone();
         // create a dynamic deck and refresh it
         long did = col.getDecks().newDyn("Cram");
         col.getSched().rebuildDyn(did);
@@ -2516,7 +2516,7 @@ public class UpstreamTest extends RobolectricTest {
         c.setDue(c)ol.getSched().getToday() + 25;
         c.setFactor(STARTING_FACTOR);
         c.flush();
-        cardcopy = copy.copy(c);
+        cardcopy = c.clone();
         col.getSched().rebuildDyn(did);
         col.reset();
         c = col.getSched().getCard();
@@ -3313,10 +3313,10 @@ public class UpstreamTest extends RobolectricTest {
         c.startTimer();
         c.flush();
         // save it for later use as well
-        cardcopy = copy.copy(c);
+        cardcopy = c.clone();
         // try with an ease of 2
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        c = copy.copy(cardcopy);
+        c = cardcopy.clone();
         c.flush();
         col.reset();
         col.getSched().answerCard(c, 2);
@@ -3331,7 +3331,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 4, c.getReps() );
         // ease 3
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        c = copy.copy(cardcopy);
+        c = cardcopy.clone();
         c.flush();
         col.getSched().answerCard(c, 3);
         // the new interval should be (100 + 8/2) * 2.5 = 260
@@ -3341,7 +3341,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( STARTING_FACTOR, c.getFactor() );
         // ease 4
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        c = copy.copy(cardcopy);
+        c = cardcopy.clone();
         c.flush();
         col.getSched().answerCard(c, 4);
         // the new interval should be (100 + 8) * 2.5 * 1.3 = 351
@@ -3354,7 +3354,7 @@ public class UpstreamTest extends RobolectricTest {
         DeckConfig conf = col.getDecks().getConf(1);
         conf.getJSONObject("lapse").put("leechAction", LEECH_SUSPEND);
         col.getDecks().save(conf);
-        c = copy.copy(cardcopy);
+        c = cardcopy.clone();
         c.setLapses(7);
         c.flush();
         // steup hook
@@ -3783,7 +3783,7 @@ public class UpstreamTest extends RobolectricTest {
         note.setItem("Front","one");
         col.addNote(note);
         Card c = note.cards().get(0);
-        orig = copy.copy(c);
+        orig = c.clone();
         Note note2 = col.newNote();
         note2.setItem("Front","two");
         col.addNote(note2);
