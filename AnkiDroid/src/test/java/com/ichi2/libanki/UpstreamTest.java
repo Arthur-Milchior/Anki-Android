@@ -1274,6 +1274,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
       *****************/
      // copying files to media folder
 
+     /* TODO: media
      @Test
      public void test_add(){
          Collection col = getCol();
@@ -1289,28 +1290,27 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
          with open(path, "w") as note:
              note.write("world");
              assertEquals( "foo-7c211433f02071597741e6ff5a8ea34789abbf43.jpg", col.media.addFile(path) );
-     }
+     } */
 
      @Test
      public void test_strings(){
          Collection col = getCol();
-         mf = col.media.filesInStr;
          mid = col.getModels().current().getLong("id");
-         assertEquals( new String [] {}, mf(mid, "aoeu") );
-         assertEquals( new String [] {"foo.jpg"}, mf(mid, "aoeu<img src='foo.jpg'>ao") );
-         assertEquals( new String [] {"foo.jpg"}, mf(mid, "aoeu<img src='foo.jpg' style='test'>ao") );
-         assertEquals( new String [] {, mf(mid, "aoeu<img src='foo.jpg'><img src=\"bar.jpg\">ao") };
+         assertEquals( new String [] {}, col.getMedia().filesInStr(mid, "aoeu") );
+         assertEquals( new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg'>ao") );
+         assertEquals( new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg' style='test'>ao") );
+         assertEquals( new String [] {, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg'><img src=\"bar.jpg\">ao") };
              "foo.jpg",;
              "bar.jpg",;
      ];
-         assertEquals( new String [] {"foo.jpg"}, mf(mid, "aoeu<img src=foo.jpg style=bar>ao") );
-         assertEquals( new String [] {"one", "two"}, mf(mid, "<img src=one><img src=two>") );
-         assertEquals( new String [] {"foo.jpg"}, mf(mid, 'aoeu<img src="foo.jpg">ao') );
-         assertEquals( new String [] {, mf(mid, 'aoeu<img src="foo.jpg"><img class=yo src=fo>ao') };
+         assertEquals( new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src=foo.jpg style=bar>ao") );
+         assertEquals( new String [] {"one", "two"}, col.getMedia().filesInStr(mid, "<img src=one><img src=two>") );
+         assertEquals( new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, 'aoeu<img src="foo.jpg">ao') );
+         assertEquals( new String [] {, col.getMedia().filesInStr(mid, 'aoeu<img src="foo.jpg"><img class=yo src=fo>ao') };
              "foo.jpg",;
              "fo",;
      ];
-         assertEquals( new String [] {"foo.mp3"}, mf(mid, "aou[sound:foo.mp3]aou") );
+         assertEquals( new String [] {"foo.mp3"}, col.getMedia().filesInStr(mid, "aou[sound:foo.mp3]aou") );
          sp = col.media.strip;
          assertEquals( "aoeu", sp("aoeu") );
          assertEquals( "aoeuaoeu", sp("aoeu[sound:foo.mp3]aoeu") );
