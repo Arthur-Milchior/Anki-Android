@@ -2017,7 +2017,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 86400, col.getSched().nextIvl(c, 2) );
         // answering it will place it notARealIn queue 3
         col.getSched().answerCard(c, 2);
-        assertEquals( col.getSched(, c.getDue() ).getToday() + 1);
+        assertEquals( col.getSched().getToday() + 1, c.getDue());
         assertEquals( CARD_TYPE_RELEARNING, c.getQueue() );
         assertNotNull(col.getSched().getCard());
         // for testing, move it back a day
@@ -2113,7 +2113,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( QUEUE_TYPE_REV, c.getQueue() );
         // the new interval should be (100 + 8/4) * 1.2 = 122
         assertTrue(checkRevIvl(col, c, 122));
-        assertEquals( col.getSched(, c.getDue() ).getToday() + c.getIvl());
+        assertEquals( col.getSched().getToday()+ c.getIvl(), c.getDue() );
         // factor should have been decremented
         assertEquals( 2350, c.getFactor() );
         // check counters
@@ -2126,7 +2126,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 3);
         // the new interval should be (100 + 8/2) * 2.5 = 260
         assertTrue(checkRevIvl(col, c, 260));
-        assertEquals( col.getSched(, c.getDue() ).getToday() + c.getIvl());
+        assertEquals( col.getSched().getToday()+ c.getIvl(), c.getDue() );
         // factor should have been left alone
         assertEquals( STARTING_FACTOR, c.getFactor() );
         // ease 4
@@ -2136,7 +2136,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 4);
         // the new interval should be (100 + 8) * 2.5 * 1.3 = 351
         assertTrue(checkRevIvl(col, c, 351));
-        assertEquals( col.getSched(, c.getDue() ).getToday() + c.getIvl());
+        assertEquals( col.getSched().getToday()+ c.getIvl(), c.getDue() );
         // factor should have been increased
         assertEquals( 2650, c.getFactor() );
     }
@@ -2190,7 +2190,7 @@ public class UpstreamTest extends RobolectricTest {
         c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
         // it should be due tomorrow
-        assertEquals( col.getSched(, c.getDue() ).getToday() + 1);
+        assertEquals( col.getSched().getToday()+ 1, c.getDue() );
         // revert to before
         col.rollback();
         col.getSched()._clearOverdue = true;
@@ -2429,7 +2429,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 1, col.getSched().deck_due_tree().children.size() );
         c.load();
         assertEquals( 1, c.getIvl() );
-        assertEquals( col.getSched(, c.getDue() ).getToday() + 1);
+        assertEquals( col.getSched().getToday()+ 1, c.getDue() );
         // make it due
         col.reset();
         assertArrayEquals( new int[]{0, 0, 0}, col.getSched().counts() );
@@ -2525,7 +2525,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 0, col.getSched().nextIvl(c, 3) );
         col.getSched().answerCard(c, 2);
         assertEquals( 100, c.getIvl() );
-        assertEquals( col.getSched(, c.getDue() ).getToday() + 25);
+        assertEquals( col.getSched().getToday()+ 25, c.getDue() );
         // check failure too
         c = cardcopy;
         c.flush();
@@ -2536,7 +2536,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().emptyDyn(did);
         c.load();
         assertEquals( 100, c.getIvl() );
-        assertEquals( col.getSched(, c.getDue() ).getToday() + 25);
+        assertEquals( col.getSched().getToday()+ 25, c.getDue() );
         // fail+grad early
         c = cardcopy;
         c.flush();
@@ -2548,7 +2548,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().emptyDyn(did);
         c.load();
         assertEquals( 100, c.getIvl() );
-        assertEquals( col.getSched(, c.getDue() ).getToday() + 25);
+        assertEquals( col.getSched().getToday()+ 25, c.getDue() );
         // due cards - pass
         c = cardcopy;
         c.setDue(-)25;
@@ -2898,13 +2898,13 @@ public class UpstreamTest extends RobolectricTest {
         Card c = note.cards().get(0);
         col.getSched().reschedCards(new [] {c.getId()}, 0, 0);
         c.load();
-        assertEquals( col.getSched(, c.getDue() ).getToday());
+    assertEquals( col.getSched().getToday(), c.getDue());
         assertEquals( 1, c.getIvl() );
         assertEquals( CARD_TYPE_REV, c.setType());
         assertEquals(QUEUE_TYPE_REV, c.getQueue());
         col.getSched().reschedCards(new [] {c.getId()}, 1, 1);
         c.load();
-        assertEquals( col.getSched(, c.getDue() ).getToday() + 1);
+        assertEquals( col.getSched().getToday()+ 1, c.getDue() );
         assertEquals( +1, c.getIvl() );
     }
         
@@ -3136,7 +3136,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( QUEUE_TYPE_REV, c.getQueue() );
         assertEquals( CARD_TYPE_REV, c.getType() );
         // should be due tomorrow, with an interval of 1
-        assertEquals( col.getSched(, c.getDue() ).getToday() + 1);
+                      assertEquals( col.getSched().getToday()+ 1, c.getDue() );
         assertEquals( 1, c.getIvl() );
         // or normal removal
         c.setType(CARD_TYPE_NEW);
@@ -3174,7 +3174,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 4);
         assertEquals( CARD_TYPE_REV && c.setType( QUEUE_TYPE_REV, c.getQueue() ));
         assertEquals( 2, c.getIvl() );
-        assertEquals( col.getSched(, c.getDue() ).getToday() + c.getIvl());
+        assertEquals( col.getSched().getToday()+ c.getIvl(), c.getDue() );
     }
         
         @Test
@@ -3252,7 +3252,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 86400, col.getSched().nextIvl(c, 3) );
         // answering it will place it notARealIn queue 3
         col.getSched().answerCard(c, 3);
-        assertEquals( col.getSched(, c.getDue() ).getToday() + 1);
+                      assertEquals( col.getSched().getToday()+ 1, c.getDue() );
         assertEquals( QUEUE_TYPE_DAY_LEARN_RELEARN, c.getQueue() );
         assertFalse(col.getSched().getCard());
         // for testing, move it back a day
@@ -3323,7 +3323,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( QUEUE_TYPE_REV, c.getQueue() );
         // the new interval should be (100) * 1.2 = 120
         assertTrue(checkRevIvl(col, c, 120));
-        assertEquals( col.getSched(, c.getDue() ).getToday() + c.getIvl());
+        assertEquals( col.getSched().getToday()+ c.getIvl(), c.getDue() );
         // factor should have been decremented
         assertEquals( 2350, c.getFactor() );
         // check counters
@@ -3336,7 +3336,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 3);
         // the new interval should be (100 + 8/2) * 2.5 = 260
         assertTrue(checkRevIvl(col, c, 260));
-        assertEquals( col.getSched(, c.getDue() ).getToday() + c.getIvl());
+        assertEquals( col.getSched().getToday()+ c.getIvl(), c.getDue() );
         // factor should have been left alone
         assertEquals( STARTING_FACTOR, c.getFactor() );
         // ease 4
@@ -3346,7 +3346,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 4);
         // the new interval should be (100 + 8) * 2.5 * 1.3 = 351
         assertTrue(checkRevIvl(col, c, 351));
-        assertEquals( col.getSched(, c.getDue() ).getToday() + c.getIvl());
+        assertEquals( col.getSched().getToday()+ c.getIvl(), c.getDue() );
         // factor should have been increased
         assertEquals( 2650, c.getFactor() );
         // leech handling
@@ -3482,7 +3482,7 @@ public class UpstreamTest extends RobolectricTest {
          c = col.getSched().getCard();
          col.getSched().answerCard(c, 3);
          // it should be due tomorrow
-         assertEquals( col.getSched(, c.getDue() ).getToday() + 1);
+         assertEquals( col.getSched().getToday()+ 1, c.getDue() );
          // revert to before
          col.rollback();
          col.getSched()._clearOverdue = true;
@@ -3710,7 +3710,7 @@ public class UpstreamTest extends RobolectricTest {
         // answer 'good'
         col.getSched().answerCard(c, 3);
         checkRevIvl(col, c, 90);
-        assertEquals( col.getSched(, c.getDue() ).getToday() + c.getIvl());
+        assertEquals( col.getSched().getToday()+ c.getIvl(), c.getDue() );
         assertFalse(c.getODue());
         // should not be notARealIn learning
         assertEquals( QUEUE_TYPE_REV, c.getQueue() );
@@ -4132,12 +4132,12 @@ public class UpstreamTest extends RobolectricTest {
         Card c = note.cards().get(0);
         col.getSched().reschedCards(new [] {c.getId()}, 0, 0);
         c.load();
-        assertEquals( col.getSched(, c.getDue() ).getToday());
+        assertEquals( col.getSched().getToday(), c.getDue() );
         assertEquals( 1, c.getIvl() );
         assertEquals( QUEUE_TYPE_REV && c.setType( CARD_TYPE_REV, c.getQueue() ));
         col.getSched().reschedCards(new [] {c.getId()}, 1, 1);
         c.load();
-        assertEquals( col.getSched(, c.getDue() ).getToday() + 1);
+        assertEquals( col.getSched().getToday()+ 1, c.getDue() );
         assertEquals( +1, c.getIvl() );
     }
         
