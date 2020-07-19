@@ -296,8 +296,8 @@ public class UpstreamTest extends RobolectricTest {
       assertEqual("Front template has a problem:", 
       col.tr(TR.CARD_TEMPLATE_RENDERING_FRONT_SIDE_PROBLEM)
       );
-      assertEquals( "1 review", no_uni(col.tr(TR.STATISTICS_REVIEWS, reviews=1)) );
-      assertEquals( "2 reviews", no_uni(col.tr(TR.STATISTICS_REVIEWS, reviews=2)) );
+      assertEquals( "1 review", no_ucol.getSched().nextIvl(col.tr(TR.STATISTICS_REVIEWS, reviews=1)) );
+      assertEquals( "2 reviews", no_ucol.getSched().nextIvl(col.tr(TR.STATISTICS_REVIEWS, reviews=2)) );
       }
       
       @Test
@@ -2013,8 +2013,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(1 , c.getLeft() / 1000 );
             assertArrayEquals( new int[]{0, 1, 0}, col.getSched().counts());
         Card c = col.getSched().getCard();
-        ni = col.getSched().nextIvl;
-        assertEquals( 86400, ni(c, 2) );
+        
+        assertEquals( 86400, col.getSched().nextIvl(c, 2) );
         // answering it will place it notARealIn queue 3
         col.getSched().answerCard(c, 2);
         assertEquals( col.getSched(, c.getDue() ).getToday() + 1);
@@ -2027,7 +2027,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( (0, 1, 0, col.getSched().counts() ));
         Card c = col.getSched().getCard();
         // nextIvl should work
-        assertEquals( 86400 * 2, ni(c, 2) );
+        assertEquals( 86400 * 2, col.getSched().nextIvl(c, 2) );
         // if we fail it, it should be back notARealIn the correct queue
         col.getSched().answerCard(c, 1);
         assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
@@ -2040,7 +2040,7 @@ public class UpstreamTest extends RobolectricTest {
         c.flush();
         col.reset();
         // the last pass should graduate it into a review card
-        assertEquals( 86400, ni(c, 2) );
+        assertEquals( 86400, col.getSched().nextIvl(c, 2) );
         col.getSched().answerCard(c, 2);
         assertEquals(CARD_TYPE_REV, c.getType());
         assertEquals(QUEUE_TYPE_REV, c.getQueue());
@@ -2102,9 +2102,9 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 2, c.lapses );
         assertEquals( 4, c.reps );
         // check ests.
-        ni = col.getSched().nextIvl;
-        assertEquals( 120, ni(c, 1) );
-        assertEquals( 20 * 60, ni(c, 2) );
+        
+        assertEquals( 120, col.getSched().nextIvl(c, 1) );
+        assertEquals( 20 * 60, col.getSched().nextIvl(c, 2) );
         // try again with an ease of 2 instead
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         Card c = copy.copy(cardcopy);
@@ -2157,11 +2157,10 @@ public class UpstreamTest extends RobolectricTest {
         c.startTimer();
         c.flush();
         col.reset();
-        ni = col.getSched().nextIvlStr;
         wo = without_unicode_isolation;
-        assertEquals( "2d", wo(ni(c, 2)) );
-        assertEquals( "3d", wo(ni(c, 3)) );
-        assertEquals( "4d", wo(ni(c, 4)) );
+        assertEquals( "2d", wo(col.getSched().nextIvlStr(getTargetContext(), c, 2)) );
+        assertEquals( "3d", wo(col.getSched().nextIvlStr(getTargetContext(), c, 3)) );
+        assertEquals( "4d", wo(col.getSched().nextIvlStr(getTargetContext(), c, 4)) );
     }
         
     @Test
@@ -2238,50 +2237,50 @@ public class UpstreamTest extends RobolectricTest {
         Card c = col.getSched().getCard();
         // new cards
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        ni = col.getSched().nextIvl;
-        assertEquals( 30, ni(c, 1) );
-        assertEquals( 180, ni(c, 2) );
-        assertEquals( 4 * 86400, ni(c, 3) );
+        
+        assertEquals( 30, col.getSched().nextIvl(c, 1) );
+        assertEquals( 180, col.getSched().nextIvl(c, 2) );
+        assertEquals( 4 * 86400, col.getSched().nextIvl(c, 3) );
         col.getSched().answerCard(c, 1);
         // cards notARealIn learning
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        assertEquals( 30, ni(c, 1) );
-        assertEquals( 180, ni(c, 2) );
-        assertEquals( 4 * 86400, ni(c, 3) );
+        assertEquals( 30, col.getSched().nextIvl(c, 1) );
+        assertEquals( 180, col.getSched().nextIvl(c, 2) );
+        assertEquals( 4 * 86400, col.getSched().nextIvl(c, 3) );
         col.getSched().answerCard(c, 2);
-        assertEquals( 30, ni(c, 1) );
-        assertEquals( 600, ni(c, 2) );
-        assertEquals( 4 * 86400, ni(c, 3) );
+        assertEquals( 30, col.getSched().nextIvl(c, 1) );
+        assertEquals( 600, col.getSched().nextIvl(c, 2) );
+        assertEquals( 4 * 86400, col.getSched().nextIvl(c, 3) );
         col.getSched().answerCard(c, 2);
         // normal graduation is tomorrow
-        assertEquals( 1 * 86400, ni(c, 2) );
-        assertEquals( 4 * 86400, ni(c, 3) );
+        assertEquals( 1 * 86400, col.getSched().nextIvl(c, 2) );
+        assertEquals( 4 * 86400, col.getSched().nextIvl(c, 3) );
         // lapsed cards
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         c.setType(CARD_TYPE_REV);
         c.setIvl(100);
         c.setFactor(STARTING_FACTOR);
-        assertEquals( 60, ni(c, 1) );
-        assertEquals( 100 * 86400, ni(c, 2) );
-        assertEquals( 100 * 86400, ni(c, 3) );
+        assertEquals( 60, col.getSched().nextIvl(c, 1) );
+        assertEquals( 100 * 86400, col.getSched().nextIvl(c, 2) );
+        assertEquals( 100 * 86400, col.getSched().nextIvl(c, 3) );
         // review cards
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         c.setQueue(QUEUE_TYPE_REV);
         c.setIvl(100);
         c.setFactor(STARTING_FACTOR);
         // failing it should put it at 60s
-        assertEquals( 60, ni(c, 1) );
+        assertEquals( 60, col.getSched().nextIvl(c, 1) );
         // or 1 day if relearn is false
         conf.getJSONObject("lapse").put("delays", new JSONArray(new double [] {}));
         col.getDecks().save(conf);
-        assertEquals( 1 * 86400, ni(c, 1) );
+        assertEquals( 1 * 86400, col.getSched().nextIvl(c, 1) );
         // (* 100 1.2 86400)10368000.0
-        assertEquals( 10368000, ni(c, 2) );
+        assertEquals( 10368000, col.getSched().nextIvl(c, 2) );
         // (* 100 2.5 86400)21600000.0
-        assertEquals( 21600000, ni(c, 3) );
+        assertEquals( 21600000, col.getSched().nextIvl(c, 3) );
         // (* 100 2.5 1.3 86400)28080000.0
-        assertEquals( 28080000, ni(c, 4) );
-        assertEquals( "10.8mo", without_unicode_isolation(col.getSched().nextIvlStr(c, 4)) );
+        assertEquals( 28080000, col.getSched().nextIvl(c, 4) );
+        assertEquals( "10.8mo", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 4)) );
     }
         
     @Test
@@ -2502,11 +2501,11 @@ public class UpstreamTest extends RobolectricTest {
         col.reset();
         // graduate should return it to new
         Card c = col.getSched().getCard();
-        ni = col.getSched().nextIvl;
-        assertEquals( 60, ni(c, 1) );
-        assertEquals( 600, ni(c, 2) );
-        assertEquals( 0, ni(c, 3) );
-        assertEquals( "(end, col.getSched().nextIvlStr(c, 3) )");
+        
+        assertEquals( 60, col.getSched().nextIvl(c, 1) );
+        assertEquals( 600, col.getSched().nextIvl(c, 2) );
+        assertEquals( 0, col.getSched().nextIvl(c, 3) );
+        assertEquals( "(end, col.getSched().nextIvlStr(getTargetContext(), c, 3) )");
         col.getSched().answerCard(c, 3);
         assertEquals( CARD_TYPE_NEW, c.getType());
         assertEquals(QUEUE_TYPE_NEW,  c.setQueue());
@@ -2521,9 +2520,9 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().rebuildDyn(did);
         col.reset();
         Card c = col.getSched().getCard();
-        assertEquals( 600, ni(c, 1) );
-        assertEquals( 0, ni(c, 2) );
-        assertEquals( 0, ni(c, 3) );
+        assertEquals( 600, col.getSched().nextIvl(c, 1) );
+        assertEquals( 0, col.getSched().nextIvl(c, 2) );
+        assertEquals( 0, col.getSched().nextIvl(c, 3) );
         col.getSched().answerCard(c, 2);
         assertEquals( 100, c.getIvl() );
         assertEquals( col.getSched(, c.getDue() ).getToday() + 25);
@@ -3249,8 +3248,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( , c.getLeft() // 1000 )1
             assertEquals( (0, 1, 0, col.getSched().counts() ));
         Card c = col.getSched().getCard();
-        ni = col.getSched().nextIvl;
-        assertEquals( 86400, ni(c, 3) );
+        
+        assertEquals( 86400, col.getSched().nextIvl(c, 3) );
         // answering it will place it notARealIn queue 3
         col.getSched().answerCard(c, 3);
         assertEquals( col.getSched(, c.getDue() ).getToday() + 1);
@@ -3263,7 +3262,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( (0, 1, 0, col.getSched().counts() ));
         Card c = col.getSched().getCard();
         // nextIvl should work
-        assertEquals( 86400 * 2, ni(c, 3) );
+        assertEquals( 86400 * 2, col.getSched().nextIvl(c, 3) );
         // if we fail it, it should be back notARealIn the correct queue
         col.getSched().answerCard(c, 1);
         assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
@@ -3276,7 +3275,7 @@ public class UpstreamTest extends RobolectricTest {
         c.flush();
         col.reset();
         // the last pass should graduate it into a review card
-        assertEquals( 86400, ni(c, 3) );
+        assertEquals( 86400, col.getSched().nextIvl(c, 3) );
         col.getSched().answerCard(c, 3);
         assertEquals( CARD_TYPE_REV && c.setType( QUEUE_TYPE_REV, c.getQueue() ));
         // if the lapse step is tomorrow, failing it should handle the counts
@@ -3444,17 +3443,16 @@ public class UpstreamTest extends RobolectricTest {
          c.startTimer();
          c.flush();
          col.reset();
-         ni = col.getSched().nextIvlStr;
          wo = without_unicode_isolation;
-         assertEquals( "2d", wo(ni(c, 2)) );
-         assertEquals( "3d", wo(ni(c, 3)) );
-         assertEquals( "4d", wo(ni(c, 4)) );
+         assertEquals( "2d", wo(col.getSched().nextIvlStr(getTargetContext(), c, 2)) );
+         assertEquals( "3d", wo(col.getSched().nextIvlStr(getTargetContext(), c, 3)) );
+         assertEquals( "4d", wo(col.getSched().nextIvlStr(getTargetContext(), c, 4)) );
 
          // if hard factor is <= 1, then hard may not increase
          DeckConfig conf = col.getDecks().confForDid(1);
          conf.getJSONObject("rev").put("hardFactor", 1);
          col.getDecks().save(conf);
-         assertEquals( "1d", wo(ni(c, 2)) );
+         assertEquals( "1d", wo(col.getSched().nextIvlStr(getTargetContext(), c, 2)) );
      }
 
      @Test
@@ -3531,53 +3529,53 @@ public class UpstreamTest extends RobolectricTest {
         Card c = col.getSched().getCard();
         // new cards
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        ni = col.getSched().nextIvl;
-        assertEquals( 30, ni(c, 1) );
-        assertEquals( (30 + 180, ni(c, 2) ) // )2
-            assertEquals( 180, ni(c, 3) );
-        assertEquals( 4 * 86400, ni(c, 4) );
+        
+        assertEquals( 30, col.getSched().nextIvl(c, 1) );
+        assertEquals( (30 + 180, col.getSched().nextIvl(c, 2) ) // )2
+            assertEquals( 180, col.getSched().nextIvl(c, 3) );
+        assertEquals( 4 * 86400, col.getSched().nextIvl(c, 4) );
         col.getSched().answerCard(c, 1);
         // cards notARealIn learning
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        assertEquals( 30, ni(c, 1) );
-        assertEquals( (30 + 180, ni(c, 2) ) // )2
-            assertEquals( 180, ni(c, 3) );
-        assertEquals( 4 * 86400, ni(c, 4) );
+        assertEquals( 30, col.getSched().nextIvl(c, 1) );
+        assertEquals( (30 + 180, col.getSched().nextIvl(c, 2) ) // )2
+            assertEquals( 180, col.getSched().nextIvl(c, 3) );
+        assertEquals( 4 * 86400, col.getSched().nextIvl(c, 4) );
         col.getSched().answerCard(c, 3);
-        assertEquals( 30, ni(c, 1) );
-        assertEquals( (180 + 600, ni(c, 2) ) // )2
-            assertEquals( 600, ni(c, 3) );
-        assertEquals( 4 * 86400, ni(c, 4) );
+        assertEquals( 30, col.getSched().nextIvl(c, 1) );
+        assertEquals( (180 + 600, col.getSched().nextIvl(c, 2) ) // )2
+            assertEquals( 600, col.getSched().nextIvl(c, 3) );
+        assertEquals( 4 * 86400, col.getSched().nextIvl(c, 4) );
         col.getSched().answerCard(c, 3);
         // normal graduation is tomorrow
-        assertEquals( 1 * 86400, ni(c, 3) );
-        assertEquals( 4 * 86400, ni(c, 4) );
+        assertEquals( 1 * 86400, col.getSched().nextIvl(c, 3) );
+        assertEquals( 4 * 86400, col.getSched().nextIvl(c, 4) );
         // lapsed cards
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         c.setType(CARD_TYPE_REV);
         c.setIvl(100);
         c.setFactor(STARTING_FACTOR);
-        assertEquals( 60, ni(c, 1) );
-        assertEquals( 100 * 86400, ni(c, 3) );
-        assertEquals( 101 * 86400, ni(c, 4) );
+        assertEquals( 60, col.getSched().nextIvl(c, 1) );
+        assertEquals( 100 * 86400, col.getSched().nextIvl(c, 3) );
+        assertEquals( 101 * 86400, col.getSched().nextIvl(c, 4) );
         // review cards
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         c.setQueue(QUEUE_TYPE_REV);
         c.setIvl(100);
         c.setFactor(STARTING_FACTOR);
         // failing it should put it at 60s
-        assertEquals( 60, ni(c, 1) );
+        assertEquals( 60, col.getSched().nextIvl(c, 1) );
         // or 1 day if relearn is false
         conf.getJSONObject("lapse").put("delays", new JSONArray(new double [] {}));
         col.getDecks().save(conf);
-        assertEquals( 1 * 86400, ni(c, 1) );
+        assertEquals( 1 * 86400, col.getSched().nextIvl(c, 1) );
         // (* 100 1.2 86400)10368000.0
-        assertEquals( 10368000, ni(c, 2) );
+        assertEquals( 10368000, col.getSched().nextIvl(c, 2) );
         // (* 100 2.5 86400)21600000.0
-        assertEquals( 21600000, ni(c, 3) );
+        assertEquals( 21600000, col.getSched().nextIvl(c, 3) );
         // (* 100 2.5 1.3 86400)28080000.0
-        assertEquals( 28080000, ni(c, 4) );
-        assertEquals( "10.8mo", without_unicode_isolation(col.getSched().nextIvlStr(c, 4)) );
+        assertEquals( 28080000, col.getSched().nextIvl(c, 4) );
+        assertEquals( "10.8mo", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 4)) );
     }
             
             @Test
