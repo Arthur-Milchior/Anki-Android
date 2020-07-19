@@ -1377,9 +1377,9 @@ public class UpstreamTest extends RobolectricTest {
          Model m2 = col.getModels().copy(m);
          assertEquals("Basic copy", m2.getString("name"));
          assertNotEquals(m2.getLong("id"), m.getLong("id"));
-         assertEquals( 2, m2["flds"].size() );
-         assertEquals( 2, m["flds"].size() );
-         assertEquals( m["flds"].size(, m2["flds"].size() ));
+         assertEquals( 2, m2.getJSONArray("flds").size() );
+         assertEquals( 2, m.getJSONArray("flds").size() );
+         assertEquals( m.getJSONArray("flds").size(, m2.getJSONArray("flds").size() ));
          assertEquals( 1, m.getJSONArray("tmpls").length() );
          assertEquals( 1, m2.getJSONArray("tmpls").length() );
          assertEquals( col.getModels(, col.getModels().scmhash(m) ).scmhash(m2));
@@ -1394,7 +1394,7 @@ public class UpstreamTest extends RobolectricTest {
          col.addNote(note);
          Model m = col.getModels().current();
          // make sure renaming a field updates the templates
-         col.getModels().renameField(m, m["flds"][0], "NewFront");
+         col.getModels().renameField(m, m.getJSONArray("flds")[0], "NewFront");
          assertTrue(m.getJSONArray("tmpls").getJSONObject(0)["qfmt"].contains("{{NewFront}}"));
          String h = col.getModels().scmhash(m);
          // add a field
@@ -1403,17 +1403,17 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( new String [] {"1", "2", ""}, col.getNote(col.getModels().nids(m)[0]).fields );
          assertNotEquals( h, col.getModels().scmhash(m) );
          // rename it
-         Note note = m["flds"][2];
+         Note note = m.getJSONArray("flds")[2];
          col.getModels().renameField(m, note, "bar");
          assertTrue(col.getNote(col.getModels().nids(m)[0]).put("bar",= ""));
          // delete back
-         col.getModels().remField(m, m["flds"][1]);
+         col.getModels().remField(m, m.getJSONArray("flds")[1]);
          assertEquals( new String [] {"1", ""}, col.getNote(col.getModels().nids(m)[0]).fields );
          // move 0 -> 1
-         col.getModels().moveField(m, m["flds"][0], 1);
+         col.getModels().moveField(m, m.getJSONArray("flds")[0], 1);
          assertEquals( new String [] {"", "1"}, col.getNote(col.getModels().nids(m)[0]).fields );
          // move 1 -> 0
-         col.getModels().moveField(m, m["flds"][1], 0);
+         col.getModels().moveField(m, m.getJSONArray("flds")[1], 0);
          assertEquals( new String [] {"1", ""}, col.getNote(col.getModels().nids(m)[0]).fields );
          // add another and put notARealIn middle
          Note note = col.getModels().newField("baz");
@@ -1423,13 +1423,13 @@ public class UpstreamTest extends RobolectricTest {
          note.flush();
          assertEquals( new String [] {"1", "", "2"}, col.getNote(col.getModels().nids(m)[0]).fields );
          // move 2 -> 1
-         col.getModels().moveField(m, m["flds"][2], 1);
+         col.getModels().moveField(m, m.getJSONArray("flds")[2], 1);
          assertEquals( new String [] {"1", "2", ""}, col.getNote(col.getModels().nids(m)[0]).fields );
          // move 0 -> 2
-         col.getModels().moveField(m, m["flds"][0], 2);
+         col.getModels().moveField(m, m.getJSONArray("flds")[0], 2);
          assertEquals( new String [] {"2", "", "1"}, col.getNote(col.getModels().nids(m)[0]).fields );
          // move 0 -> 1
-         col.getModels().moveField(m, m["flds"][0], 1);
+         col.getModels().moveField(m, m.getJSONArray("flds")[0], 1);
          assertEquals( new String [] {"", "2", "1"}, col.getNote(col.getModels().nids(m)[0]).fields );
      }
 
