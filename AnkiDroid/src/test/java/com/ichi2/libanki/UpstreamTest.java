@@ -1995,7 +1995,7 @@ public class UpstreamTest extends RobolectricTest {
     }
      
      @Test
-     public void test_learn_day() throws Exception{
+     public void test_learn_dayV1() throws Exception{
         Collection col = getColV1();
         // add a note
         Note note = col.newNote();
@@ -3230,7 +3230,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-     public void test_learn_day() throws Exception {
+     public void test_learn_dayV2() throws Exception {
         Collection col = getColV2();
         // add a note
         Note note = col.newNote();
