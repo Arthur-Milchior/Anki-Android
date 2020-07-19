@@ -904,7 +904,7 @@ assertEquals( 1, col.findCards("tag:monkey or (tag:sheep octopus)").size() );
 /* 
       private void clear_tempfile(tf) {
              ;
-         """ https://stackoverflow.com/questions/23212435/permission-denied-to-write-to-my-temporary-file """;
+         " https://stackoverflow.com/questions/23212435/permission-denied-to-write-to-my-temporary-file ";
          try {
              tf.close();
              os.unlink(tf.name);
