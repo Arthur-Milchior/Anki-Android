@@ -2796,7 +2796,7 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 1, tree0.getRevCount() );
          assertEquals( 1, tree0.getNewCount() );
          // child count is just review
-            AbstractSched.DeckDueTreeNode child = tree0.children[0];
+            AbstractSched.DeckDueTreeNode child = tree0.children.get(0);
          assertEquals( "1", child.getLastDeckNameComponent() );
          assertEquals( default1, child.getDid() );
          assertEquals( 1, child.getRevCount() );
@@ -3418,7 +3418,7 @@ public class UpstreamTest extends RobolectricTest {
             List<AbstractSched.DeckDueTreeNode> tree = col.getSched().deckDueTree();
          // (('parent', 1514457677462, 5, 0, 0, (('child', 1514457677463, 5, 0, 0, ()),)))
          assertEquals( 5  // paren, tree0.review_count )t
-                       assertArrayEquals( new int[]{  // chil, tree[0}].children[0].review_count )d
+                       assertArrayEquals( new int[]{  // chil, tree[0}].children.get(0).review_count )d
 
          // .counts() should match
          col.getDecks().select(child.getLong("id");
@@ -3432,7 +3432,7 @@ public class UpstreamTest extends RobolectricTest {
 
          tree = col.getSched().deckDueTree().children;
                        assertEquals( 4  // paren, tree0.review_count )t
-                              assertEquals( 4  // chil, tree0.children[0].review_count )d
+                              assertEquals( 4  // chil, tree0.children.get(0).review_count )d
      }
 
      @Test
@@ -4026,7 +4026,7 @@ public class UpstreamTest extends RobolectricTest {
             assertEquals( 1, tree0.review_count );
             assertEquals( 1, tree0.new_count );
             // child count is just review
-            AbstractSched.DeckDueTreeNode child = tree0.children[0];
+            AbstractSched.DeckDueTreeNode child = tree0.children.get(0);
             assertEquals( "1", child.getLastDeckNameComponent() );
             assertEquals( default1, child.getDid() );
             assertEquals( 1, child.review_count );
