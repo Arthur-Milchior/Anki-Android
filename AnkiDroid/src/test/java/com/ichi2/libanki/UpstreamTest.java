@@ -2430,14 +2430,14 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 86400, col.getSched().nextIvl(c, 3) );
         // delete the deck, returning the card mid-study
         col.getDecks().rem(col.getDecks().selected());
-        assertEquals( 1, col.getSched().deckDueTree().children.size() );
+        assertEquals( 1, col.getSched().deckDueTree().size() );
         c.load();
         assertEquals( 1, c.getIvl() );
         assertEquals( col.getSched().getToday()+ 1, c.getDue() );
         // make it due
         col.reset();
         assertArrayEquals( new int[]{0, 0, 0}, col.getSched().counts() );
-        c.setDue(-)5;
+        c.setDue(-5);
         c.setIvl(100);
         c.flush();
         col.reset();
@@ -2555,7 +2555,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( col.getSched().getToday()+ 25, c.getDue() );
         // due cards - pass
         c = cardcopy;
-        c.setDue(-)25;
+        c.setDue(-25);
         c.flush();
         col.getSched().rebuildDyn(did);
         col.reset();
@@ -2567,7 +2567,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( -25, c.getDue() );
         // fail
         c = cardcopy;
-        c.setDue(-)25;
+        c.setDue(-25);
         c.flush();
         col.getSched().rebuildDyn(did);
         col.reset();
@@ -2579,7 +2579,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( -25, c.getDue() );
         // fail with normal grad
         c = cardcopy;
-        c.setDue(-)25;
+        c.setDue(-25);
         c.flush();
         col.getSched().rebuildDyn(did);
         col.reset();
@@ -4274,7 +4274,7 @@ public class UpstreamTest extends RobolectricTest {
         note.setItem("Back","two");
         col.addNote(note);
         Card c = note.cards().get(0);
-        c.setDue(-)5;
+        c.setDue(-5);
         c.setQueue(QUEUE_TYPE_REV);
         c.setIvl(5);
         c.flush();
