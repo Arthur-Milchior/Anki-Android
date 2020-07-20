@@ -2793,14 +2793,14 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( "Default", tree0.getLastDeckNameComponent() );
          // sum of child and parent
          assertEquals( 1, tree0.getDid() );
-         assertEquals( 1, tree0.review_count );
-         assertEquals( 1, tree0.new_count );
+         assertEquals( 1, tree0.getRevCount() );
+         assertEquals( 1, tree0.getNewCount() );
          // child count is just review
          child = tree0.children[0];
          assertEquals( "1", child.getLastDeckNameComponent() );
          assertEquals( default1, child.getDid() );
-         assertEquals( 1, child.review_count );
-         assertEquals( 0, child.new_count );
+         assertEquals( 1, child.getRevCount() );
+         assertEquals( 0, child.getNewCount() );
          // code should not fail if a card has an invalid deck
          c.setDid(12345);
          c.flush();
