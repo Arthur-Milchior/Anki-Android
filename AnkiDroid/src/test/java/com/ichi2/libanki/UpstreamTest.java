@@ -809,7 +809,7 @@ public class UpstreamTest extends RobolectricTest {
          if (! isNearCutoff()) {
         assertEquals( 0, col.findCards("rated:1:1").size() );
         assertEquals( 0, col.findCards("rated:1:2").size() );
-        Card c = col.getSched().getCard();
+        c = col.getSched().getCard();
         col.getSched().answerCard(c, 2);
         assertEquals( 0, col.findCards("rated:1:1").size() );
         assertEquals( 1, col.findCards("rated:1:2").size() );
@@ -2142,7 +2142,7 @@ public class UpstreamTest extends RobolectricTest {
     }
 
     private String without_unicode_isolation(String s) {
-        return s.replace("\u2068", "").replace("\u2069", "")
+        return s.replace("\u2068", "").replace("\u2069", "");
     }
 
     @Test
@@ -2170,7 +2170,7 @@ public class UpstreamTest extends RobolectricTest {
     public void test_overdue_lapse() throws Exception {
         // disabled notARealIn commit 3069729776990980f34c25be66410e947e9d51a2
         return;
-        Collection col = getColV1()  // pylint: disable=unreachable
+        Collection col = getColV1();
             // add a note
             Note note = col.newNote();
         note.setItem("Front","one");
