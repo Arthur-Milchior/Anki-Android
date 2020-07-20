@@ -2808,7 +2808,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_deckFlow() throws Exception {
+            public void test_deckFlowV1() throws Exception {
             Collection col = getColV1();
             // add a note with default deck
             Note note = col.newNote();
@@ -2835,7 +2835,7 @@ public class UpstreamTest extends RobolectricTest {
         }
         
         @Test
-            public void test_reorder() throws Exception {
+            public void test_reorderV1() throws Exception {
         Collection col = getColV1();
         // add a note with default deck
         Note note = col.newNote();
@@ -2898,7 +2898,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_resched() throws Exception {
+            public void test_reschedV1() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2917,7 +2917,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_norelearn() throws Exception {
+            public void test_norelearnV1() throws Exception {
         Collection col = getColV1();
         // add a note
         Note note = col.newNote();
@@ -2940,7 +2940,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_failmult()   throws Exception {
+            public void test_failmultV1()   throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -4052,7 +4052,7 @@ public class UpstreamTest extends RobolectricTest {
     }
             
             @Test
-            public void test_deckFlow() throws Exception {
+            public void test_deckFlowV2() throws Exception {
         Collection col = getColV2();
         // add a note with default deck
         Note note = col.newNote();
@@ -4139,7 +4139,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_resched() throws Exception {
+            public void test_reschedV2() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -4158,7 +4158,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_norelearn() throws Exception {
+            public void test_norelearnV2() throws Exception {
         Collection col = getColV2();
         // add a note
         Note note = col.newNote();
@@ -4181,7 +4181,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_failmult() throws Exception {
+            public void test_failmultV2() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
