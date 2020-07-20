@@ -2299,7 +2299,7 @@ public class UpstreamTest extends RobolectricTest {
         assertNull(col.getSched().getCard());
         col.getSched().unburyCards();
         col.reset();
-        assertTrue(col.getSched().getCard());
+        assertNotNull(col.getSched().getCard());
     }
         
     @Test
@@ -2311,14 +2311,14 @@ public class UpstreamTest extends RobolectricTest {
         Card c = note.cards().get(0);
         // suspending
         col.reset();
-        assertTrue(col.getSched().getCard());
+        assertNotNull(col.getSched().getCard());
         col.getSched().suspendCards(new [] {c.getId()});
         col.reset();
         assertNull(col.getSched().getCard());
         // unsuspending
         col.getSched().unsuspendCards(new [] {c.getId()});
         col.reset();
-        assertTrue(col.getSched().getCard());
+        assertNotNull(col.getSched().getCard());
         // should cope with rev cards being relearnt
         c.setDue(0);
         c.setIvl(100);
