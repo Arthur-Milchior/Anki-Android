@@ -3608,10 +3608,10 @@ public class UpstreamTest extends RobolectricTest {
         col.addNote(note);
         Card c2 = note.cards().get(0);
         // burying
-        col.getSched().buryCards(new long [] {c.getId()}, manual=true)  // pylint: disable=unexpected-keyword-arg
+        col.getSched().buryCards(new long [] {c.getId()});
             c.load();
         assertEquals( QUEUE_TYPE_MANUALLY_BURIED, c.getQueue() );
-        col.getSched().buryCards(new long [] {c2.getId()}, manual=false)  // pylint: disable=unexpected-keyword-arg
+        col.getSched().buryCards(new long [] {c2.getId()});
             c2.load();
         assertEquals( QUEUE_TYPE_SIBLING_BURIED, c2.getQueue() );
         
