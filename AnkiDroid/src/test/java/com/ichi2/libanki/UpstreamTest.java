@@ -2185,7 +2185,6 @@ public class UpstreamTest extends RobolectricTest {
             c.setLeft(2002);
         c.setIvl(0);
         c.flush();
-        col.getSched()._clearOverdue = false;
         // checkpoint
         col.save();
         col.getSched().reset();
@@ -2196,7 +2195,6 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( col.getSched().getToday()+ 1, c.getDue() );
         // revert to before
         col.rollback();
-        col.getSched()._clearOverdue = true;
         // with the default settings, the overdue card should be removed from the
         // learning queue
         col.getSched().reset();
@@ -3476,7 +3474,6 @@ public class UpstreamTest extends RobolectricTest {
              c.setLeft(2002);
          c.setIvl(0);
          c.flush();
-         col.getSched()._clearOverdue = false;
          // checkpoint
          col.save();
          col.getSched().reset();
@@ -3487,7 +3484,6 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( col.getSched().getToday()+ 1, c.getDue() );
          // revert to before
          col.rollback();
-         col.getSched()._clearOverdue = true;
          // with the default settings, the overdue card should be removed from the
          // learning queue
          col.getSched().reset();
