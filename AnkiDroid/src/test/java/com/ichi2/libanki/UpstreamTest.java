@@ -692,18 +692,18 @@ public class UpstreamTest extends RobolectricTest {
         c.setType(CARD_TYPE_REV);
         assertEquals(0, col.findCards("is:review").size());
         c.flush();
-        assertEquals(new ArrayList<>(new Long[] {c.getId()}), col.findCards("is:review"));
+        assertEquals(Arrays.asList(new Long[] {c.getId()}), col.findCards("is:review"));
         assertEquals(0, col.findCards("is:due").size());
         c.setDue(0);
         c.setQueue(QUEUE_TYPE_REV);
         c.flush();
-        assertEquals(new long [] {c.getId()}, col.findCards("is:due"));
+        assertEquals(Arrays.asList(new Long [] {c.getId()}), col.findCards("is:due"));
         assertEquals(4, col.findCards("-is:due").size());
         c.setQueue(QUEUE_TYPE_SUSPENDED);
         // ensure this card gets a later mod time
         c.flush();
         col.getDb().execute("update cards set mod = mod + 1 where long id = ?", new Object[] {c.getId()});
-         assertEquals(new long [] {c.getId()}, col.findCards("is:suspended"));
+         assertEquals(Arrays.asList(new Long [] {c.getId()}), col.findCards("is:suspended"));
          // nids
          assertEquals(0, col.findCards("nid:54321").size());
          assertEquals(2, col.findCards("nid:"+note.getId()).size());
