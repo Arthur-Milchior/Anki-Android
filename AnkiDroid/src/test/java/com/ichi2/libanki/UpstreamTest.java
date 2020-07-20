@@ -2179,7 +2179,7 @@ public class UpstreamTest extends RobolectricTest {
         Card c = note.cards().get(0);
         c.setType(CARD_TYPE_REV);
         c.setQueue(QUEUE_TYPE_LRN);
-        c.setDue(-)1;
+        c.setDue(-1);
         c.setODue(-1);
         c.setFactor(STARTING_FACTOR);
         c.getLeft() = 2002;
@@ -3470,7 +3470,7 @@ public class UpstreamTest extends RobolectricTest {
          Card c = note.cards().get(0);
          c.setType(CARD_TYPE_REV);
          c.setQueue(QUEUE_TYPE_LRN);
-         c.setDue(-)1;
+         c.setDue(-1);
          c.setODue(-1);
          c.setFactor(STARTING_FACTOR);
          c.getLeft() = 2002;
