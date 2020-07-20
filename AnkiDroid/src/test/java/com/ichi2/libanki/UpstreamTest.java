@@ -2788,14 +2788,15 @@ public class UpstreamTest extends RobolectricTest {
          col.addNote(note);
          col.reset();
          assertEquals( 5, col.getDecks().allNames().size() );
-         tree = col.getSched().deckDueTree().children;
-         assertEquals( "Default", tree[0].name );
+         List<AbstractSched.DeckDueTreeNode> tree = col.getSched().deckDueTree();
+         AbstractSched.DeckDueTreeNode tree0 = tree.get(0);
+         assertEquals( "Default", tree0.name );
          // sum of child and parent
-         assertEquals( 1, tree[0].deck_id );
-         assertEquals( 1, tree[0].review_count );
-         assertEquals( 1, tree[0].new_count );
+         assertEquals( 1, tree0.deck_id );
+         assertEquals( 1, tree0.review_count );
+         assertEquals( 1, tree0.new_count );
          // child count is just review
-         child = tree[0].children[0];
+         child = tree0.children[0];
          assertEquals( "1", child.name );
          assertEquals( default1, child.deck_id );
          assertEquals( 1, child.review_count );
@@ -3414,9 +3415,9 @@ public class UpstreamTest extends RobolectricTest {
              c.flush();
         }
 
-         tree = col.getSched().deckDueTree().children;
+            List<AbstractSched.DeckDueTreeNode> tree = col.getSched().deckDueTree();
          // (('parent', 1514457677462, 5, 0, 0, (('child', 1514457677463, 5, 0, 0, ()),)))
-         assertEquals( 5  // paren, tree[0].review_count )t
+         assertEquals( 5  // paren, tree0.review_count )t
                        assertArrayEquals( new int[]{  // chil, tree[0}].children[0].review_count )d
 
          // .counts() should match
@@ -3430,8 +3431,8 @@ public class UpstreamTest extends RobolectricTest {
                                assertArrayEquals( new int[]{0, 0, 4}, col.getSched().counts() );
 
          tree = col.getSched().deckDueTree().children;
-                       assertEquals( 4  // paren, tree[0].review_count )t
-                              assertEquals( 4  // chil, tree[0].children[0].review_count )d
+                       assertEquals( 4  // paren, tree0.review_count )t
+                              assertEquals( 4  // chil, tree0.children[0].review_count )d
      }
 
      @Test
@@ -4017,14 +4018,15 @@ public class UpstreamTest extends RobolectricTest {
             col.addNote(note);
             col.reset();
             assertEquals( 5, col.getDecks().allNames().size() );
-            tree = col.getSched().deckDueTree().children;
-            assertEquals( "Default", tree[0].name );
+            tree = col.getSched().deckDueTree();
+            tree0 = tree.get(0);
+            assertEquals( "Default", tree0.name );
             // sum of child and parent
-            assertEquals( 1, tree[0].deck_id );
-            assertEquals( 1, tree[0].review_count );
-            assertEquals( 1, tree[0].new_count );
+            assertEquals( 1, tree0.deck_id );
+            assertEquals( 1, tree0.review_count );
+            assertEquals( 1, tree0.new_count );
             // child count is just review
-            child = tree[0].children[0];
+            child = tree0.children[0];
             assertEquals( "1", child.name );
             assertEquals( default1, child.deck_id );
             assertEquals( 1, child.review_count );
