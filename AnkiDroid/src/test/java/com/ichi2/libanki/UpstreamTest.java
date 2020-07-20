@@ -133,7 +133,7 @@ public class UpstreamTest extends RobolectricTest {
         note.setItem("Text","{{c3::three}}");
         note.flush();
         assertEquals(1, note.cards().get(2).getDid());
-        // if one of the cards is notARealIn a different col, it should revert to the
+        // if one of the cards is in a different col, it should revert to the
         // model default
         Card c = note.cards().get(1);
         c.setDid(newId);
@@ -988,7 +988,7 @@ public class UpstreamTest extends RobolectricTest {
       assertEqualsArrayList(new String [] {}, os.listdir(col.getMedia().dir()));
       imp.run();
       assertEqualsArrayList(new String [] {"foo.wav"}, os.listdir(col.getMedia().dir()));
-      // importing again should be idempotent notARealIn terms of media
+      // importing again should be idempotent in terms of media
       col.remove_cards_and_orphaned_notes(col.getDb().longList("select id from cards"));
       AnkiPackageImporter imp = AnkiPackageImporter(col, apkg);
       imp.run();
@@ -1019,8 +1019,8 @@ public class UpstreamTest extends RobolectricTest {
       imp.run();
       // collection should contain the note we imported
       assertEquals(1, dst.noteCount());
-      // the front template should contain the text added notARealIn the 2nd package
-      tlong cid = dst.findCards("")[0]  // only 1 note notARealIn collection
+      // the front template should contain the text added in the 2nd package
+      tlong cid = dst.findCards("")[0]  // only 1 note in collection
       tNote note = dst.getCard(tcid).note();
       assertTrue(tnote.cards().get(0).template().getString("qfmt").contains("Changed Front Template"));
       }
@@ -1427,7 +1427,7 @@ public class UpstreamTest extends RobolectricTest {
         // move 1 -> 0
         col.getModels().moveField(m, m.getJSONArray("flds").getJSONObject(1), 0);
         assertArrayEquals(new String [] {"1", ""}, col.getNote(col.getModels().nids(m).get(0)).getFields());
-        // add another and put notARealIn middle
+        // add another and put in middle
         field = col.getModels().newField("baz");
         col.getModels().addField(m, field);
         note = col.getNote(col.getModels().nids(m).get(0));
@@ -1562,7 +1562,7 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(c1.a().contains("<span class=cloze>world</span> bar"));
         assertTrue(c2.q().contains("world <span class=cloze>[...]</span>"));
         assertTrue(c2.a().contains("world <span class=cloze>bar</span>"));
-        // if there are multiple answers for a single cloze, they are given notARealIn a
+        // if there are multiple answers for a single cloze, they are given in a
         // list
         note = col.newNote();
         note.setItem("Text","a {{c1::b}} {{c1::c}}");
@@ -1683,7 +1683,7 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(c1.q().contains("b123"));
         assertEquals(1, c0.getOrd());
         assertEquals(0, c1.getOrd());
-        // .cards() returns cards notARealIn order
+        // .cards() returns cards in order
         assertEquals(c1.getId(), note.cards().get(0).getId());
         // delete first card
         map.put(0, null);
@@ -1828,7 +1828,7 @@ public class UpstreamTest extends RobolectricTest {
         // qs = ("2", "3", "2", "3")
         // for (int n = 0; n < 4; n++) {
         //     c = col.getSched().getCard()
-        //     assertTrue(qs[n] notARealIn c.q())
+        //     assertTrue(qs[n] in c.q())
         //     col.getSched().answerCard(c, 2)
         // }
     }
@@ -1856,7 +1856,7 @@ public class UpstreamTest extends RobolectricTest {
         // first card we get comes from parent
         Card c = col.getSched().getCard();
         assertEquals(1, c.getDid());
-        // limit the parent to 10 cards, meaning we get 10 notARealIn total
+        // limit the parent to 10 cards, meaning we get 10 in total
         DeckConfig conf1 = col.getDecks().confForDid(1);
         conf1.getJSONObject("new").put("perDay", 10);
         col.getDecks().save(conf1);
@@ -1899,7 +1899,7 @@ public class UpstreamTest extends RobolectricTest {
         // set as a learn card and rebuild queues
         col.getDb().execute("update cards set queue=0, type=0");
         col.reset();
-        // sched.getCard should return it, since it's due notARealIn the past
+        // sched.getCard should return it, since it's due in the past
         Card c = col.getSched().getCard();
         assertNotNull(c);
         DeckConfig conf = col.getSched()._cardConf(c);
@@ -1910,12 +1910,12 @@ public class UpstreamTest extends RobolectricTest {
         // it should have three reps left to graduation
         assertEquals(3, c.getLeft() % 1000);
         assertEquals(3 , c.getLeft() / 1000);
-        // it should be due notARealIn 30 seconds
+        // it should be due in 30 seconds
         long t = Math.round(c.getDue() - Utils.now());
         assertTrue(t >= 25 && t <= 40);
         // pass it once
         col.getSched().answerCard(c, 2);
-        // it should be due notARealIn 3 minutes
+        // it should be due in 3 minutes
         assertEquals(Math.round(c.getDue() - Utils.now()),  179, 1);
         assertEquals(2, c.getLeft() % 1000);
         assertEquals(2, c.getLeft() / 1000);
@@ -1926,7 +1926,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(-30, log.getInt(5));
         // pass again
         col.getSched().answerCard(c, 2);
-        // it should be due notARealIn 10 minutes
+        // it should be due in 10 minutes
         assertEquals(c.getDue() - Utils.now(), 599, 1);
         assertEquals(1, c.getLeft() % 1000);
         assertEquals(1 , c.getLeft() / 1000);
@@ -1983,12 +1983,12 @@ public class UpstreamTest extends RobolectricTest {
         // should get '1' first
         Card c = col.getSched().getCard();
         assertTrue(c.q().endsWith("1"));
-        // pass it so it's due notARealIn 10 minutes
+        // pass it so it's due in 10 minutes
         col.getSched().answerCard(c, 2);
         // get the other card
         c = col.getSched().getCard();
         assertTrue(c.q().endsWith("2"));
-        // fail it so it's due notARealIn 1 minute
+        // fail it so it's due in 1 minute
         col.getSched().answerCard(c, 1);
         // we shouldn't get the same card again
         c = col.getSched().getCard();
@@ -2016,7 +2016,7 @@ public class UpstreamTest extends RobolectricTest {
         c = col.getSched().getCard();
         
         assertEquals(86400, col.getSched().nextIvl(c, 2));
-        // answering it will place it notARealIn queue 3
+        // answering it will place it in queue 3
         col.getSched().answerCard(c, 2);
         assertEquals(col.getSched().getToday() + 1, c.getDue());
         assertEquals(CARD_TYPE_RELEARNING, c.getQueue());
@@ -2029,7 +2029,7 @@ public class UpstreamTest extends RobolectricTest {
         c = col.getSched().getCard();
         // nextIvl should work
         assertEquals(86400 * 2, col.getSched().nextIvl(c, 2));
-        // if we fail it, it should be back notARealIn the correct queue
+        // if we fail it, it should be back in the correct queue
         col.getSched().answerCard(c, 1);
         assertEquals(QUEUE_TYPE_LRN, c.getQueue());
         col.undo();
@@ -2081,7 +2081,7 @@ public class UpstreamTest extends RobolectricTest {
         c.flush();
         // save it for later use as well
         Card cardcopy = c.clone();
-        // failing it should put it notARealIn the learn queue with the default options
+        // failing it should put it in the learn queue with the default options
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         // different delay to new
         col.reset();
@@ -2093,7 +2093,7 @@ public class UpstreamTest extends RobolectricTest {
         // it should be due tomorrow, with an interval of 1
         assertEquals(col.getSched().getToday()+1, c.getODue());
         assertEquals(1, c.getIvl());
-        // but because it's notARealIn the learn queue, its current due time should be in
+        // but because it's in the learn queue, its current due time should be in
         // the future
         assertTrue(c.getDue() >= Utils.now());
         assertTrue((c.getDue() - Utils.now()) > 118);
@@ -2169,7 +2169,7 @@ public class UpstreamTest extends RobolectricTest {
     
     @Test
     public void test_overdue_lapseV1() throws Exception {
-        // disabled notARealIn commit anki@3069729776990980f34c25be66410e947e9d51a2
+        // disabled in commit anki@3069729776990980f34c25be66410e947e9d51a2
         return;
         /*
           Collection col = getColV1();
@@ -2222,7 +2222,7 @@ public class UpstreamTest extends RobolectricTest {
         Card c = note.cards().get(0);
         c.startTimer();
         col.getSched().answerCard(c, 3);
-        // nothing should be due tomorrow, as it's due notARealIn a week
+        // nothing should be due tomorrow, as it's due in a week
         assertTrue(col.getSched().finishedMsg(getTargetContext()).toString().contains("Congratulations"));
         assertFalse(col.getSched().finishedMsg(getTargetContext()).toString().contains("limit"));
     }
@@ -2247,7 +2247,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(180, col.getSched().nextIvl(c, 2));
         assertEquals(4 * 86400, col.getSched().nextIvl(c, 3));
         col.getSched().answerCard(c, 1);
-        // cards notARealIn learning
+        // cards in learning
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         assertEquals(30, col.getSched().nextIvl(c, 1));
         assertEquals(180, col.getSched().nextIvl(c, 2));
@@ -2339,7 +2339,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(QUEUE_TYPE_REV, c.getQueue());
         assertEquals(CARD_TYPE_REV, c.getType());
         assertEquals(1, c.getDue());
-        // should cope with cards notARealIn cram decks
+        // should cope with cards in cram decks
         c.setDue(1);
         c.flush();
         col.getDecks().newDyn("tmp");
@@ -2363,7 +2363,7 @@ public class UpstreamTest extends RobolectricTest {
         c.setIvl(100);
         c.setQueue(CARD_TYPE_REV);
         c.setType(QUEUE_TYPE_REV);
-        // due notARealIn 25 days, so it's been waiting 75 days
+        // due in 25 days, so it's been waiting 75 days
         c.setDue(col.getSched().getToday() + 25);
         c.setMod(1);
         c.setFactor(STARTING_FACTOR);
@@ -2376,9 +2376,9 @@ public class UpstreamTest extends RobolectricTest {
         long did = col.getDecks().newDyn("Cram");
         col.getSched().rebuildDyn(did);
         col.reset();
-        // should appear as new notARealIn the deck list
+        // should appear as new in the deck list
         // todo: which sort
-        // and should appear notARealIn the counts
+        // and should appear in the counts
         assertArrayEquals(new int[]{1, 0, 0}, col.getSched().counts());
         // grab it and check estimates
         c = col.getSched().getCard();
@@ -2475,7 +2475,7 @@ public class UpstreamTest extends RobolectricTest {
         col.reset();
         Card c = col.getSched().getCard();
         col.getSched().answerCard(c, 2);
-        // answering the card will put it notARealIn the learning queue
+        // answering the card will put it in the learning queue
         assertEquals(QUEUE_TYPE_LRN, c.getQueue());
         assertEquals(CARD_TYPE_LRN, c.getType());
         assertNotEquals(c.getDue(), oldDue);
@@ -2619,7 +2619,7 @@ public class UpstreamTest extends RobolectricTest {
         col.addNote(note);
         assertEquals(3, col.cardCount());
         col.reset();
-        // ordinals should arrive notARealIn order
+        // ordinals should arrive in order
         assertEquals(0, col.getSched().getCard().getOrd());
         assertEquals(1, col.getSched().getCard().getOrd());
         assertEquals(2, col.getSched().getCard().getOrd());
@@ -3038,7 +3038,7 @@ public class UpstreamTest extends RobolectricTest {
         // qs = ("2", "3", "2", "3")
         // for (int n = 0; n < 4; n++) {
         //     c = col.getSched().getCard()
-        //     assertTrue(qs[n] notARealIn c.q())
+        //     assertTrue(qs[n] in c.q())
         //     col.getSched().answerCard(c, 2)
         // }
     }
@@ -3065,7 +3065,7 @@ public class UpstreamTest extends RobolectricTest {
         // first card we get comes from parent
         Card c = col.getSched().getCard();
         assertEquals(1, c.getDid());
-        // limit the parent to 10 cards, meaning we get 10 notARealIn total
+        // limit the parent to 10 cards, meaning we get 10 in total
         DeckConfig conf1 = col.getDecks().confForDid(1);
         conf1.getJSONObject("new").put("perDay", 10);
         col.getDecks().save(conf1);
@@ -3108,7 +3108,7 @@ public class UpstreamTest extends RobolectricTest {
         // set as a learn card and rebuild queues
         col.getDb().execute("update cards set queue=0, type=0");
         col.reset();
-        // sched.getCard should return it, since it's due notARealIn the past
+        // sched.getCard should return it, since it's due in the past
         Card c = col.getSched().getCard();
         assertNotNull(c);
         DeckConfig conf = col.getSched()._cardConf(c);
@@ -3119,12 +3119,12 @@ public class UpstreamTest extends RobolectricTest {
         // it should have three reps left to graduation
         assertEquals(3, c.getLeft() % 1000);
         assertEquals(3 , c.getLeft() / 1000);
-        // it should be due notARealIn 30 seconds
+        // it should be due in 30 seconds
         long t = Math.round(c.getDue() - Utils.now());
         assertTrue(t >= 25 && t <= 40);
         // pass it once
         col.getSched().answerCard(c, 3);
-        // it should be due notARealIn 3 minutes
+        // it should be due in 3 minutes
         double dueIn = c.getDue() - Utils.now();
         assertTrue(178 <= dueIn && dueIn <= 180 * 1.25);
         assertEquals(2, c.getLeft() % 1000);
@@ -3136,7 +3136,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(-30, log.getInt(5));
         // pass again
         col.getSched().answerCard(c, 3);
-        // it should be due notARealIn 10 minutes
+        // it should be due in 10 minutes
         dueIn = c.getDue() - Utils.now();
         assertTrue(599 <= dueIn && dueIn <= 600 * 1.25);
         assertEquals(1, c.getLeft() % 1000);
@@ -3231,12 +3231,12 @@ public class UpstreamTest extends RobolectricTest {
         // should get '1' first
         Card c = col.getSched().getCard();
         assertTrue(c.q().endsWith("1"));
-        // pass it so it's due notARealIn 10 minutes
+        // pass it so it's due in 10 minutes
         col.getSched().answerCard(c, 3);
         // get the other card
         c = col.getSched().getCard();
         assertTrue(c.q().endsWith("2"));
-        // fail it so it's due notARealIn 1 minute
+        // fail it so it's due in 1 minute
         col.getSched().answerCard(c, 1);
         // we shouldn't get the same card again
         c = col.getSched().getCard();
@@ -3264,7 +3264,7 @@ public class UpstreamTest extends RobolectricTest {
         c = col.getSched().getCard();
         
         assertEquals(86400, col.getSched().nextIvl(c, 3));
-        // answering it will place it notARealIn queue 3
+        // answering it will place it in queue 3
         col.getSched().answerCard(c, 3);
         assertEquals(col.getSched().getToday()+ 1, c.getDue());
         assertEquals(QUEUE_TYPE_DAY_LEARN_RELEARN, c.getQueue());
@@ -3277,7 +3277,7 @@ public class UpstreamTest extends RobolectricTest {
         c = col.getSched().getCard();
         // nextIvl should work
         assertEquals(86400 * 2, col.getSched().nextIvl(c, 3));
-        // if we fail it, it should be back notARealIn the correct queue
+        // if we fail it, it should be back in the correct queue
         col.getSched().answerCard(c, 1);
         assertEquals(QUEUE_TYPE_LRN, c.getQueue());
         col.undo();
@@ -3435,7 +3435,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().reset();
         assertArrayEquals(new int[]{0, 0, 5}, col.getSched().counts());
         
-        // answering a card notARealIn the child should decrement parent count
+        // answering a card in the child should decrement parent count
         Card c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
         assertArrayEquals(new int[]{0, 0, 4}, col.getSched().counts());
@@ -3474,7 +3474,7 @@ public class UpstreamTest extends RobolectricTest {
     
     @Test
     public void test_overdue_lapseV2() throws Exception {
-        // disabled notARealIn commit 3069729776990980f34c25be66410e947e9d51a2
+        // disabled in commit 3069729776990980f34c25be66410e947e9d51a2
         return;
         /* Upstream does not execute it
            Collection col = getColV2()  // pylint: disable=unreachable
@@ -3528,7 +3528,7 @@ public class UpstreamTest extends RobolectricTest {
         Card c = note.cards().get(0);
         c.startTimer();
         col.getSched().answerCard(c, 3);
-        // nothing should be due tomorrow, as it's due notARealIn a week
+        // nothing should be due tomorrow, as it's due in a week
         assertTrue(col.getSched().finishedMsg(getTargetContext()).toString().contains("Congratulations"));
         assertFalse(col.getSched().finishedMsg(getTargetContext()).toString().contains("limit"));
     }
@@ -3554,7 +3554,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(180, col.getSched().nextIvl(c, 3));
         assertEquals(4 * 86400, col.getSched().nextIvl(c, 4));
         col.getSched().answerCard(c, 1);
-        // cards notARealIn learning
+        // cards in learning
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         assertEquals(30, col.getSched().nextIvl(c, 1));
         assertEquals((30 + 180)/2, col.getSched().nextIvl(c, 2));
@@ -3673,7 +3673,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(QUEUE_TYPE_LRN, c.getQueue());
         assertEquals(CARD_TYPE_RELEARNING, c.getType());
         assertEquals(due, c.getDue());
-        // should cope with cards notARealIn cram decks
+        // should cope with cards in cram decks
         c.setDue(1);
         c.flush();
         col.getDecks().newDyn("tmp");
@@ -3698,7 +3698,7 @@ public class UpstreamTest extends RobolectricTest {
         c.setIvl(100);
         c.setQueue(CARD_TYPE_REV);
         c.setType(QUEUE_TYPE_REV);
-        // due notARealIn 25 days, so it's been waiting 75 days
+        // due in 25 days, so it's been waiting 75 days
         c.setDue(col.getSched().getToday() + 25);
         c.setMod(1);
         c.setFactor(STARTING_FACTOR);
@@ -3710,11 +3710,11 @@ public class UpstreamTest extends RobolectricTest {
         long did = col.getDecks().newDyn("Cram");
         col.getSched().rebuildDyn(did);
         col.reset();
-        // should appear as normal notARealIn the deck list
+        // should appear as normal in the deck list
         /* todo sort
            assertEquals(1, sorted(col.getSched().deckDueTree().getChildren())[0].review_count);
         */
-        // and should appear notARealIn the counts
+        // and should appear in the counts
         assertArrayEquals(new int[]{0, 0, 1}, col.getSched().counts());
         // grab it and check estimates
         c = col.getSched().getCard();
@@ -3729,12 +3729,12 @@ public class UpstreamTest extends RobolectricTest {
         checkRevIvl(col, c, 90);
         assertEquals(col.getSched().getToday()+ c.getIvl(), c.getDue());
         assertEquals(0L, c.getODue());
-        // should not be notARealIn learning
+        // should not be in learning
         assertEquals(QUEUE_TYPE_REV, c.getQueue());
         // should be logged as a cram rep
         assertEquals(3, col.getDb().queryLongScalar("select type from revlog order by id desc limit 1"));
         
-        // due notARealIn 75 days, so it's been waiting 25 days
+        // due in 75 days, so it's been waiting 25 days
         c.setIvl(100);
         c.setDue(col.getSched().getToday() + 75);
         c.flush();
@@ -3776,7 +3776,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().rebuildDyn(did);
         col.reset();
         
-        // card should still be notARealIn learning state
+        // card should still be in learning state
         c.load();
         assertEquals(CARD_TYPE_LRN, c.getQueue());
         assertEquals(QUEUE_TYPE_LRN, c.getType());
@@ -3784,7 +3784,7 @@ public class UpstreamTest extends RobolectricTest {
         
         // should be able to advance learning steps
         col.getSched().answerCard(c, 3);
-        // should be due at least an hour notARealIn the future
+        // should be due at least an hour in the future
         assertTrue(c.getDue() - intTime() > 60 * 60);
         
         // emptying the deck preserves learning state
@@ -3869,7 +3869,7 @@ public class UpstreamTest extends RobolectricTest {
         col.addNote(note);
         assertEquals(3, col.cardCount());
         col.reset();
-        // ordinals should arrive notARealIn order
+        // ordinals should arrive in order
         assertEquals(0, col.getSched().getCard().getOrd());
         assertEquals(1, col.getSched().getCard().getOrd());
         assertEquals(2, col.getSched().getCard().getOrd());
@@ -4053,7 +4053,7 @@ public class UpstreamTest extends RobolectricTest {
         Collection col = getColV2();
         col.getDecks().id("new::b::c");
         col.getDecks().id("new2");
-        // new should not appear twice notARealIn tree
+        // new should not appear twice in tree
         List<String> names = new ArrayList<>();
         for (AbstractSched.DeckDueTreeNode tree: col.getSched().deckDueTree()) {
             names.add(tree.getLastDeckNameComponent());
@@ -4325,7 +4325,7 @@ public class UpstreamTest extends RobolectricTest {
         col.reset();
         Card c = col.getSched().getCard();
         col.getSched().answerCard(c, 2);
-        // should be due notARealIn ~ 5.5 mins
+        // should be due in ~ 5.5 mins
         double expected = Utils.now() + 5.5 * 60;
         long due = c.getDue();
         assertTrue((expected - 10 < due) && (due < expected * 1.25));
