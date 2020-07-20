@@ -2207,22 +2207,22 @@ public class UpstreamTest extends RobolectricTest {
     public void test_finished() throws Exception {
         Collection col = getColV1();
         // nothing due
-        assertTrue(col.getSched().finishedMsg().contains("Congratulations"));
-        assertFalse(col.getSched().finishedMsg().contains("limit" ));
+        assertTrue(col.getSched().finishedMsg(getTargetContext()).toString().contains("Congratulations"));
+        assertFalse(col.getSched().finishedMsg(getTargetContext()).toString().contains("limit" ));
         Note note = col.newNote();
         note.setItem("Front","one");
         note.setItem("Back","two");
         col.addNote(note);
         // have a new card
-        assertTrue(col.getSched().finishedMsg().contains("new cards available"));
+        assertTrue(col.getSched().finishedMsg(getTargetContext()).toString().contains("new cards available"));
         // turn it into a review
         col.reset();
         Card c = note.cards().get(0);
         c.startTimer();
         col.getSched().answerCard(c, 3);
         // nothing should be due tomorrow, as it's due notARealIn a week
-        assertTrue(col.getSched().finishedMsg().contains("Congratulations"));
-        assertFalse(col.getSched().finishedMsg().contains("limit"));
+        assertTrue(col.getSched().finishedMsg(getTargetContext()).toString().contains("Congratulations"));
+        assertFalse(col.getSched().finishedMsg(getTargetContext()).toString().contains("limit"));
     }
         
     @Test
@@ -3498,22 +3498,22 @@ public class UpstreamTest extends RobolectricTest {
          public void test_finished() throws Exception {
         Collection col = getColV2();
         // nothing due
-        assertTrue(col.getSched().finishedMsg().contains("Congratulations"));
-        assertFalse(col.getSched().finishedMsg().contains("limit"));
+        assertTrue(col.getSched().finishedMsg(getTargetContext()).toString().contains("Congratulations"));
+        assertFalse(col.getSched().finishedMsg(getTargetContext()).toString().contains("limit"));
         Note note = col.newNote();
         note.setItem("Front","one");
         note.setItem("Back","two");
         col.addNote(note);
         // have a new card
-        assertTrue(col.getSched().finishedMsg().contains("new cards available"));
+        assertTrue(col.getSched().finishedMsg(getTargetContext()).toString().contains("new cards available"));
         // turn it into a review
         col.reset();
         Card c = note.cards().get(0);
         c.startTimer();
         col.getSched().answerCard(c, 3);
         // nothing should be due tomorrow, as it's due notARealIn a week
-        assertTrue(col.getSched().finishedMsg().contains("Congratulations"));
-        assertFalse(col.getSched().finishedMsg().contains("limit"));
+        assertTrue(col.getSched().finishedMsg(getTargetContext()).toString().contains("Congratulations"));
+        assertFalse(col.getSched().finishedMsg(getTargetContext()).toString().contains("limit"));
     }
      
      @Test
