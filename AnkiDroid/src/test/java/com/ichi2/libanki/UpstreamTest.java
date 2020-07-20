@@ -3549,7 +3549,7 @@ public class UpstreamTest extends RobolectricTest {
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         
         assertEquals( 30, col.getSched().nextIvl(c, 1) );
-        assertEquals( (30 + 180, col.getSched().nextIvl(c, 2) ) // )2
+        assertEquals( (30 + 180)/2, col.getSched().nextIvl(c, 2) );
             assertEquals( 180, col.getSched().nextIvl(c, 3) );
         assertEquals( 4 * 86400, col.getSched().nextIvl(c, 4) );
         col.getSched().answerCard(c, 1);
