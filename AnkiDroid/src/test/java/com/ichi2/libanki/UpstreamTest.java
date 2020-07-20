@@ -2296,7 +2296,7 @@ public class UpstreamTest extends RobolectricTest {
         // burying
         col.getSched().buryNote(c.getNid());
         col.reset();
-        assertFalse(col.getSched().getCard());
+        assertNull(col.getSched().getCard());
         col.getSched().unburyCards();
         col.reset();
         assertTrue(col.getSched().getCard());
@@ -2314,7 +2314,7 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(col.getSched().getCard());
         col.getSched().suspendCards(new [] {c.getId()});
         col.reset();
-        assertFalse(col.getSched().getCard());
+        assertNull(col.getSched().getCard());
         // unsuspending
         col.getSched().unsuspendCards(new [] {c.getId()});
         col.reset();
@@ -2755,7 +2755,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 1);
         c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
-        assertFalse(col.getSched().getCard());
+        assertNull(col.getSched().getCard());
     }
         
         @Test
