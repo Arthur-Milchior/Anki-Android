@@ -2468,20 +2468,20 @@ public class UpstreamTest extends RobolectricTest {
         Note note = col.newNote();
         note.setItem("Front","one");
         col.addNote(note);
-        oldDue = note.cards().get(0).getDue();
+        long oldDue = note.cards().get(0).getDue();
         long did = col.getDecks().newDyn("Cram");
         col.getSched().rebuildDyn(did);
         col.reset();
         Card c = col.getSched().getCard();
         col.getSched().answerCard(c, 2);
         // answering the card will put it notARealIn the learning queue
-        assertEquals( QUEUE_TYPE_LRN, c.getQueue())
-            assertEquals(CARD_TYPE_LRN, c.getType() );
+        assertEquals( QUEUE_TYPE_LRN, c.getQueue());
+        assertEquals(CARD_TYPE_LRN, c.getType() );
         assertNotEquals(c.getDue(), oldDue);
         // if we terminate cramming prematurely it should be set back to new
         col.getSched().emptyDyn(did);
         c.load();
-        assertEquals( QUEUE_TYPE_NEW, c.setQueue());
+        assertEquals( QUEUE_TYPE_NEW, c.getQueue());
         assertEquals( CARD_TYPE_NEW, c.getType());
         assertEquals( oldDue, c.getDue() );
     }
@@ -2506,10 +2506,10 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 60, col.getSched().nextIvl(c, 1) );
         assertEquals( 600, col.getSched().nextIvl(c, 2) );
         assertEquals( 0, col.getSched().nextIvl(c, 3) );
-        assertEquals( "(end, col.getSched().nextIvlStr(getTargetContext(), c, 3) )");
+        assertEquals("(end)", col.getSched().nextIvlStr(getTargetContext(), c, 3));
         col.getSched().answerCard(c, 3);
         assertEquals( CARD_TYPE_NEW, c.getType());
-        assertEquals(QUEUE_TYPE_NEW,  c.setQueue());
+        assertEquals(QUEUE_TYPE_NEW,  c.getQueue());
         // undue reviews should also be unaffected
         c.setIvl(100);
         c.setQueue(CARD_TYPE_REV);
@@ -2606,7 +2606,7 @@ public class UpstreamTest extends RobolectricTest {
         t.put("qfmt", "{{Back}}");
         t.put("afmt", "{{Front}}");
         mm.addTemplateModChanged(m, t);
-        JSONObject t = mm.newTemplate("f2");
+        t = mm.newTemplate("f2");
         t.put("qfmt", "{{Front}}");
         t.put("afmt", "{{Back}}");
         mm.addTemplateModChanged(m, t);
@@ -2708,18 +2708,18 @@ public class UpstreamTest extends RobolectricTest {
         Collection col = getColV1();
         // add a few review cards, due today
         for (int i=0; i < 5; i++) {
-        Note note = col.newNote();
-    }
-        note.setItem("Front","num") + str(i);
-        col.addNote(note);
-        Card c = note.cards().get(0);
-        c.setType(CARD_TYPE_REV);
-        c.setQueue(QUEUE_TYPE_REV);
-        c.setDue(0);
-        c.flush();
+            Note note = col.newNote();
+            note.setItem("Front", "num" + i);
+            col.addNote(note);
+            Card c = note.cards().get(0);
+            c.setType(CARD_TYPE_REV);
+            c.setQueue(QUEUE_TYPE_REV);
+            c.setDue(0);
+            c.flush();
+        }
         // fail the first one
         col.reset();
-        c = col.getSched().getCard();
+        Card c = col.getSched().getCard();
         // set a a fail delay of 4 seconds
         DeckConfig conf = col.getSched()._cardConf(c);
         conf.getJSONObject("lapse").getJSONArray("delays").put(0, 1 / 15.0);
@@ -2728,6 +2728,7 @@ public class UpstreamTest extends RobolectricTest {
         // the next card should be another review
         c = col.getSched().getCard();
         assertEquals( QUEUE_TYPE_REV, c.getQueue() );
+        /* TODO time
         // but if we wait for a few seconds, the failed card should come back
         orig_time = time.time;
         
@@ -2738,6 +2739,8 @@ public class UpstreamTest extends RobolectricTest {
         c = col.getSched().getCard();
         assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
         time.time = orig_time;
+
+         */
     }
         
         @Test
@@ -2766,7 +2769,7 @@ public class UpstreamTest extends RobolectricTest {
         // and one that's a child
          note = col.newNote();
          note.setItem("Front","two");
-         default1 = note.model().put("did", col.getDecks().id("Default::1"));
+         JSONObject default1 = note.model().put("did", col.getDecks().id("Default::1"));
          col.addNote(note);
          // make it a review card
          Card c = note.cards().get(0);
@@ -2776,12 +2779,12 @@ public class UpstreamTest extends RobolectricTest {
          // add one more with a new deck
          note = col.newNote();
          note.setItem("Front","two");
-         foobar = note.model().put("did", col.getDecks().id("foo::bar"));
+            JSONObject foobar = note.model().put("did", col.getDecks().id("foo::bar"));
          col.addNote(note);
          // and one that's a sibling
          note = col.newNote();
          note.setItem("Front","three");
-         foobaz = note.model().put("did", col.getDecks().id("foo::baz"));
+            JSONObject foobaz = note.model().put("did", col.getDecks().id("foo::baz"));
          col.addNote(note);
          col.reset();
          assertEquals( 5, col.getDecks().allNames().size() );
@@ -2813,7 +2816,7 @@ public class UpstreamTest extends RobolectricTest {
         // and one that's a child
         note = col.newNote();
         note.setItem("Front","two");
-        default1 = note.model().put("did", col.getDecks().id("Default::2"));
+        long default1 = note.model().put("did", col.getDecks().id("Default::2"));
         col.addNote(note);
         // and another that's higher up
         note = col.newNote();
@@ -2837,27 +2840,27 @@ public class UpstreamTest extends RobolectricTest {
         Note note = col.newNote();
         note.setItem("Front","one");
         col.addNote(note);
-        note2 = col.newNote();
+        Note note2 = col.newNote();
         note2.setItem("Front","two");
         col.addNote(note2);
         assertEquals( 2, note2.cards().get(0).getDue() );
-        found = false;
+        boolean found = false;
         // 50/50 chance of being reordered
-        for (int i=0; i < 2; i++0) {
-        col.getSched().randomizeCards(1);
-        if (note.cards().get(0).getDue() != note.getId()) {
-        found = true;
-        break;
-    }
+        for (int i=0; i < 20; i++) {
+            col.getSched().randomizeCards(1);
+            if (note.cards().get(0).getDue() != note.getId()) {
+            found = true;
+            break;
+        }
     }
         assertTrue(found);
         col.getSched().orderCards(1);
         assertEquals( 1, note.cards().get(0).getDue() );
         // shifting
-        note3 = col.newNote();
+        Note note3 = col.newNote();
         note3.setItem("Front","three");
         col.addNote(note3);
-        note4 = col.newNote();
+        Note note4 = col.newNote();
         note4.setItem("Front","four");
         col.addNote(note4);
         assertEquals( 1, note.cards().get(0).getDue() );
