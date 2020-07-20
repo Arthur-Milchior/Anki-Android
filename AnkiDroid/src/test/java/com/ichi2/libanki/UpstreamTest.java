@@ -2340,7 +2340,7 @@ public class UpstreamTest extends RobolectricTest {
         // should cope with cards notARealIn cram decks
         c.setDue(1);
         c.flush();
-        cram = col.getDecks().newDyn("tmp");
+        col.getDecks().newDyn("tmp");
         col.getSched().rebuildDyn();
         c.load();
         assertNotEquals( 1, c.getDue() );
@@ -3666,7 +3666,7 @@ public class UpstreamTest extends RobolectricTest {
         // should cope with cards notARealIn cram decks
         c.setDue(1);
         c.flush();
-        cram = col.getDecks().newDyn("tmp");
+        col.getDecks().newDyn("tmp");
         col.getSched().rebuildDyn();
         c.load();
         assertNotEquals(1, c.getDue());
