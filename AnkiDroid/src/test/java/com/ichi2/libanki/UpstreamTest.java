@@ -2975,7 +2975,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_clock() throws Exception  throws Exception {
+            public void test_clock() throws Exception  {
         Collection col = getColV2();
         if ((col.getSched().getDayCutoff() - intTime()) < 10 * 60) {
         throw new Exception("Unit tests will fail around the day rollover.");
@@ -2988,14 +2988,14 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_basics() throws Exception  throws Exception {
+            public void test_basics() throws Exception  {
         Collection col = getColV1();
         col.reset();
         assertNull(col.getSched().getCard());
     }
         
         @Test
-            public void test_new_v2()  throws Exception throws Exception {
+            public void test_new_v2()  throws Exception  {
         Collection col = getColV2();
         col.reset();
         // assertEquals( 0, col.getSched().newCount );TODO: newCount getter
@@ -3043,7 +3043,7 @@ public class UpstreamTest extends RobolectricTest {
             }
         
         @Test
-            public void test_newLimits_V2()  throws Exception throws Exception {
+            public void test_newLimits_V2()  throws Exception  {
         Collection col = getColV2();
         // add some notes
         deck2 = col.getDecks().id("Default::foo");
@@ -3076,7 +3076,7 @@ public class UpstreamTest extends RobolectricTest {
     }
      
      @Test
-         public void test_newBoxes_v2()  throws Exception throws Exception {
+         public void test_newBoxes_v2()  throws Exception  {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3094,7 +3094,7 @@ public class UpstreamTest extends RobolectricTest {
     }
      
     @Test
-    public void test_learnV2()  throws Exception throws Exception {
+    public void test_learnV2()  throws Exception  {
         Collection col = getColV2();
         // add a note
         Note note = col.newNote();
