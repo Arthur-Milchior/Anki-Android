@@ -1178,7 +1178,7 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(n.setItem("Front",= "1"));
         assertTrue(n.setItem("Back",= "b"));
         assertTrue(n.setItem("Top",= "c"));
-        assertEquals( list(sorted(new [] {"four", "five", "six"}, list(sorted(n.getTags())) )));
+        assertEquals( list(sorted(new String [] {"four", "five", "six"}, list(sorted(n.getTags())) )));
         
         col.close();
     }
@@ -2312,11 +2312,11 @@ public class UpstreamTest extends RobolectricTest {
         // suspending
         col.reset();
         assertNotNull(col.getSched().getCard());
-        col.getSched().suspendCards(new [] {c.getId()});
+        col.getSched().suspendCards(new long [] {c.getId()});
         col.reset();
         assertNull(col.getSched().getCard());
         // unsuspending
-        col.getSched().unsuspendCards(new [] {c.getId()});
+        col.getSched().unsuspendCards(new long [] {c.getId()});
         col.reset();
         assertNotNull(col.getSched().getCard());
         // should cope with rev cards being relearnt
@@ -2331,8 +2331,8 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(c.getDue() >= Utils.now());
         assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
         assertEquals( CARD_TYPE_REV, c.getType() );
-        col.getSched().suspendCards(new [] {c.getId()});
-        col.getSched().unsuspendCards(new [] {c.getId()});
+        col.getSched().suspendCards(new long [] {c.getId()});
+        col.getSched().unsuspendCards(new long [] {c.getId()});
         c.load();
         assertEquals( QUEUE_TYPE_REV, c.getQueue() );
         assertEquals( CARD_TYPE_REV, c.getType() );
@@ -2345,7 +2345,7 @@ public class UpstreamTest extends RobolectricTest {
         c.load();
         assertNotEquals( 1, c.getDue() );
         assertNotEquals( 1, c.getDid() );
-        col.getSched().suspendCards(new [] {c.getId()});
+        col.getSched().suspendCards(new long [] {c.getId()});
         c.load();
         assertEquals( 1, c.getDue() );
         assertEquals( 1, c.long did );
@@ -2866,7 +2866,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 2, note2.cards().get(0).getDue() );
         assertEquals( 3, note3.cards().get(0).getDue() );
         assertEquals( 4, note4.cards().get(0).getDue() );
-        col.getSched().sortCards(new [] {note3.cards().get(0).getId(), note4.cards().get(0).getId()}, start=1, shift=true);
+        col.getSched().sortCards(new long [] {note3.cards().get(0).getId(), note4.cards().get(0).getId()}, start=1, shift=true);
         assertEquals( 3, note.cards().get(0).getDue() );
         assertEquals( 4, note2.cards().get(0).getDue() );
         assertEquals( 1, note3.cards().get(0).getDue() );
@@ -2887,7 +2887,7 @@ public class UpstreamTest extends RobolectricTest {
         c.flush();
         col.reset();
         assertArrayEquals( new int[]{0, 0, 1}, col.getSched().counts() );
-        col.getSched().forgetCards(new [] {c.getId()});
+        col.getSched().forgetCards(new long [] {c.getId()});
         col.reset();
         assertArrayEquals( new int[]{1, 0, 0}, col.getSched().counts() );
     }
@@ -2899,13 +2899,13 @@ public class UpstreamTest extends RobolectricTest {
         note.setItem("Front","one");
         col.addNote(note);
         Card c = note.cards().get(0);
-        col.getSched().reschedCards(new [] {c.getId()}, 0, 0);
+        col.getSched().reschedCards(new long [] {c.getId()}, 0, 0);
         c.load();
     assertEquals( col.getSched().getToday(), c.getDue());
         assertEquals( 1, c.getIvl() );
         assertEquals( CARD_TYPE_REV, c.setType());
         assertEquals(QUEUE_TYPE_REV, c.getQueue());
-        col.getSched().reschedCards(new [] {c.getId()}, 1, 1);
+        col.getSched().reschedCards(new long [] {c.getId()}, 1, 1);
         c.load();
         assertEquals( col.getSched().getToday()+ 1, c.getDue() );
         assertEquals( +1, c.getIvl() );
@@ -3592,10 +3592,10 @@ public class UpstreamTest extends RobolectricTest {
         col.addNote(note);
         c2 = note.cards().get(0);
         // burying
-        col.getSched().buryCards(new [] {c.getId()}, manual=true)  // pylint: disable=unexpected-keyword-arg
+        col.getSched().buryCards(new long [] {c.getId()}, manual=true)  // pylint: disable=unexpected-keyword-arg
             c.load();
         assertEquals( QUEUE_TYPE_MANUALLY_BURIED, c.getQueue() );
-        col.getSched().buryCards(new [] {c2.getId()}, manual=false)  // pylint: disable=unexpected-keyword-arg
+        col.getSched().buryCards(new long [] {c2.getId()}, manual=false)  // pylint: disable=unexpected-keyword-arg
             c2.load();
         assertEquals( QUEUE_TYPE_SIBLING_BURIED, c2.getQueue() );
         
@@ -3616,7 +3616,7 @@ public class UpstreamTest extends RobolectricTest {
                     c2.load();
                     assertEquals( QUEUE_TYPE_NEW, c2.getQueue() );
                     
-                    col.getSched().buryCards(new [] {c.getId(), c2.getId()});
+                    col.getSched().buryCards(new long [] {c.getId(), c2.getId()});
                     col.getSched().unburyCardsForDeck(type="all")  // pylint: disable=unexpected-keyword-arg
                         
                         col.reset();
@@ -3634,11 +3634,11 @@ public class UpstreamTest extends RobolectricTest {
         // suspending
         col.reset();
         assertTrue(col.getSched().getCard());
-        col.getSched().suspendCards(new [] {c.getId()});
+        col.getSched().suspendCards(new long [] {c.getId()});
         col.reset();
         assertFalse(col.getSched().getCard());
         // unsuspending
-        col.getSched().unsuspendCards(new [] {c.getId()});
+        col.getSched().unsuspendCards(new long [] {c.getId()});
         col.reset();
         assertTrue(col.getSched().getCard());
         // should cope with rev cards being relearnt
@@ -3654,8 +3654,8 @@ public class UpstreamTest extends RobolectricTest {
         due = c.getDue();
         assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
         assertEquals( CARD_TYPE_RELEARNING, c.getType() );
-        col.getSched().suspendCards(new [] {c.getId()});
-        col.getSched().unsuspendCards(new [] {c.getId()});
+        col.getSched().suspendCards(new long [] {c.getId()});
+        col.getSched().unsuspendCards(new long [] {c.getId()});
         c.load();
         assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
         assertEquals( CARD_TYPE_RELEARNING, c.getType() );
@@ -3668,7 +3668,7 @@ public class UpstreamTest extends RobolectricTest {
         c.load();
         assertNotEquals(1, c.getDue());
         assertNotEquals(1, c.getDid());
-        col.getSched().suspendCards(new [] {c.getId()});
+        col.getSched().suspendCards(new long [] {c.getId()});
         c.load();
         assertNotEquals(1, c.getDue());
         assertNotEquals(1, c.getDid());
@@ -4099,7 +4099,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 2, note2.cards().get(0).getDue() );
         assertEquals( 3, note3.cards().get(0).getDue() );
         assertEquals( 4, note4.cards().get(0).getDue() );
-        col.getSched().sortCards(new [] {note3.cards().get(0).getId(), note4.cards().get(0).getId()}, start=1, shift=true);
+        col.getSched().sortCards(new long [] {note3.cards().get(0).getId(), note4.cards().get(0).getId()}, start=1, shift=true);
         assertEquals( 3, note.cards().get(0).getDue() );
         assertEquals( 4, note2.cards().get(0).getDue() );
         assertEquals( 1, note3.cards().get(0).getDue() );
@@ -4120,7 +4120,7 @@ public class UpstreamTest extends RobolectricTest {
         c.flush();
         col.reset();
         assertArrayEquals( new int[]{0, 0, 1}, col.getSched().counts() );
-        col.getSched().forgetCards(new [] {c.getId()});
+        col.getSched().forgetCards(new long [] {c.getId()});
         col.reset();
         assertArrayEquals( new int[]{1, 0, 0}, col.getSched().counts() );
     }
@@ -4132,12 +4132,12 @@ public class UpstreamTest extends RobolectricTest {
         note.setItem("Front","one");
         col.addNote(note);
         Card c = note.cards().get(0);
-        col.getSched().reschedCards(new [] {c.getId()}, 0, 0);
+        col.getSched().reschedCards(new long [] {c.getId()}, 0, 0);
         c.load();
         assertEquals( col.getSched().getToday(), c.getDue() );
         assertEquals( 1, c.getIvl() );
         assertEquals( QUEUE_TYPE_REV && c.setType( CARD_TYPE_REV, c.getQueue() ));
-        col.getSched().reschedCards(new [] {c.getId()}, 1, 1);
+        col.getSched().reschedCards(new long [] {c.getId()}, 1, 1);
         c.load();
         assertEquals( col.getSched().getToday()+ 1, c.getDue() );
         assertEquals( +1, c.getIvl() );
@@ -4217,7 +4217,7 @@ public class UpstreamTest extends RobolectricTest {
         col.reset();
         c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
-        col.getSched().buryCards(new [] {c.getId()});
+        col.getSched().buryCards(new long [] {c.getId()});
         c.load();
         assertEquals( QUEUE_TYPE_MANUALLY_BURIED, c.getQueue() );
         
@@ -4236,7 +4236,7 @@ public class UpstreamTest extends RobolectricTest {
         // make sure relearning cards transition correctly to v1
         col.changeSchedulerVer(2);
         // card with 100 day interval, answering again
-        col.getSched().reschedCards(new [] {c.getId()}, 100, 100);
+        col.getSched().reschedCards(new long [] {c.getId()}, 100, 100);
         c.load();
         c.setDue(0);
         c.flush();
