@@ -2146,7 +2146,7 @@ public class UpstreamTest extends RobolectricTest {
     }
 
     @Test
-    public void test_button_spacing() throws Exception{
+    public void test_button_spacingV1() throws Exception{
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2167,7 +2167,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
     @Test
-    public void test_overdue_lapse() throws Exception {
+    public void test_overdue_lapseV1() throws Exception {
         // disabled notARealIn commit anki@3069729776990980f34c25be66410e947e9d51a2
         return;
         /*
@@ -2205,7 +2205,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
     @Test
-    public void test_finished() throws Exception {
+    public void test_finishedV1() throws Exception {
         Collection col = getColV1();
         // nothing due
         assertTrue(col.getSched().finishedMsg(getTargetContext()).toString().contains("Congratulations"));
@@ -3445,7 +3445,7 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_button_spacing() throws Exception {
+     public void test_button_spacingV2() throws Exception {
          Collection col = getColV2();
          Note note = col.newNote();
          note.setItem("Front","one");
@@ -3472,9 +3472,10 @@ public class UpstreamTest extends RobolectricTest {
      }
 
      @Test
-     public void test_overdue_lapse() throws Exception {
+     public void test_overdue_lapseV2() throws Exception {
          // disabled notARealIn commit 3069729776990980f34c25be66410e947e9d51a2
          return;
+         /* Upstream does not execute it 
          Collection col = getColV2()  // pylint: disable=unreachable
              // add a note
              Note note = col.newNote();
@@ -3506,10 +3507,11 @@ public class UpstreamTest extends RobolectricTest {
          col.getSched().reset();
          assertArrayEquals( new int[]{0, 0, 1}, col.getSched().counts() ); 
          */
+         
     }
      
      @Test
-         public void test_finished() throws Exception {
+         public void test_finishedV2() throws Exception {
         Collection col = getColV2();
         // nothing due
         assertTrue(col.getSched().finishedMsg(getTargetContext()).toString().contains("Congratulations"));
