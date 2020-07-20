@@ -10,6 +10,7 @@ import com.ichi2.anki.exception.ConfirmModSchemaException;
 import com.ichi2.anki.exception.DeckRenameException;
 import com.ichi2.libanki.sched.AbstractSched;
 import com.ichi2.libanki.sched.Sched;
+import com.ichi2.testutils.AnkiAssert;
 import com.ichi2.utils.Assert;
 import com.ichi2.utils.JSONArray;
 import com.ichi2.utils.JSONObject;
@@ -30,6 +31,7 @@ import timber.log.Timber;
 import static com.ichi2.libanki.Consts.*;
 import static com.ichi2.libanki.Utils.intTime;
 import static com.ichi2.libanki.Utils.stripHTML;
+import static com.ichi2.testutils.AnkiAssert.assertEqualsArrayList;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
@@ -43,6 +45,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class UpstreamTest extends RobolectricTest {
+
     /*****************
      ** Cards        *
      *****************/
@@ -64,7 +67,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(0, col.getDb().queryScalar("select count() from cards"));
         assertEquals(2, col.getDb().queryScalar("select count() from graves"));
     }
-    
+
     @Test
     public void test_misc_cards(){
         Collection col = getCol();
@@ -76,7 +79,7 @@ public class UpstreamTest extends RobolectricTest {
         long id = col.getModels().current().getLong("id");
         assertEquals(0, c.template().getInt("ord"));
     }
-    
+
     @Test
     public void test_genrem(){
         Collection col = getCol();
@@ -107,7 +110,7 @@ public class UpstreamTest extends RobolectricTest {
         note.flush();
         assertEquals(2, note.nbCards());
     }
-    
+
     @Test
     public void test_gendeck(){
         Collection col = getCol();
@@ -142,7 +145,7 @@ public class UpstreamTest extends RobolectricTest {
     /*****************
      ** Collection   *
      *****************/
-    
+
     /*TODO
       @Test
       public void test_create_open(){
@@ -157,12 +160,12 @@ public class UpstreamTest extends RobolectricTest {
       String newPath = col.getPath();
       long newMod = col.getMod();
       col.close();
-      
+
       // reopen
       col = aopen(newPath);
       assertEquals(newMod, col.getMod());
       col.close();
-      
+
       // non-writeable dir
       if (isWin) {
       String dir = "c:\root.anki2";
@@ -176,7 +179,7 @@ public class UpstreamTest extends RobolectricTest {
       os.chmod(newPath, 0o666);
       os.unlink(newPath);
       } */
-    
+
     @Test
     public void test_noteAddDelete(){
         Collection col = getCol();
@@ -216,7 +219,7 @@ public class UpstreamTest extends RobolectricTest {
         note2.setItem("Front"," ");
         assertNotEquals(note2.dupeOrEmpty(), Note.DupeOrEmpty.CORRECT);
     }
-    
+
     @Test
     public void test_fieldChecksum(){
         Collection col = getCol();
@@ -230,7 +233,7 @@ public class UpstreamTest extends RobolectricTest {
         note.flush();
         assertEquals(0x302811ae, col.getDb().queryLongScalar("select csum from notes"));
     }
-    
+
     @Test
     public void test_addDelTags(){
         Collection col = getCol();
@@ -252,7 +255,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals("aaa", note.getTags().get(0));
         assertEquals(2, note.getTags().size());
     }
-    
+
     @Test
     public void test_timestamps(){
         Collection col = getCol();
@@ -263,7 +266,7 @@ public class UpstreamTest extends RobolectricTest {
         }
         assertEquals(col.getModels().all().size(), 100 + stdModelSize);
     }
-    
+
     @Test
     public void test_furigana(){
         Collection col = getCol();
@@ -286,39 +289,39 @@ public class UpstreamTest extends RobolectricTest {
         mm.save(m);
         c.q(true);
     }
-    
+
     /*
       @Test
       public void test_translate(){
       Collection col = getCol();
       no_uni = without_unicode_isolation;
-      
-      assertEqual("Front template has a problem:", 
+
+      assertEqual("Front template has a problem:",
       col.tr(TR.CARD_TEMPLATE_RENDERING_FRONT_SIDE_PROBLEM)
      );
       assertEquals("1 review", no_ucol.getSched().nextIvl(col.tr(TR.STATISTICS_REVIEWS, reviews=1)));
       assertEquals("2 reviews", no_ucol.getSched().nextIvl(col.tr(TR.STATISTICS_REVIEWS, reviews=2)));
       }
-      
+
       @Test
       public void test_db_named_args(capsys):
       sql = "select a, 2+:test5 from b where arg =:foo and x = :test5";
       args = new Objet [] {};
       kwargs = dict(test5=5, foo="blah");
-      
+
       s, a = emulate_named_args(sql, args, kwargs);
       assertEquals("select a, 2+?1 from b where arg =?2 and x = ?1", s);
-      assertEquals(new Object [] {5, "blah"}, a);
-      
+      assertE(new Object [] {5, "blah"}, a);
+
       // swallow the warning
       _ = capsys.readouterr();
       }
-      
+
     */
     /*****************
      ** Decks        *
      *****************/
-    
+
     @Test
     public void test_basic(){
         Collection col = getCol();
@@ -421,40 +424,40 @@ public class UpstreamTest extends RobolectricTest {
 
          // Renaming also renames children
          col.getDecks().renameForDragAndDrop(chinese_did, languages_did);
-         assertEquals(new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
 
          // Dragging a col onto itself is a no-op
          col.getDecks().renameForDragAndDrop(languages_did, languages_did);
-         assertEquals(new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
 
          // Dragging a col onto its parent is a no-op
          col.getDecks().renameForDragAndDrop(hsk_did, chinese_did);
-         assertEquals(new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
 
          // Dragging a col onto a descendant is a no-op
          col.getDecks().renameForDragAndDrop(languages_did, hsk_did);
-         assertEquals(new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
 
          // Can drag a grandchild onto its grandparent.  It becomes a child
          col.getDecks().renameForDragAndDrop(hsk_did, languages_did);
-         assertEquals(new String [] {"Languages", "Languages::Chinese", "Languages::HSK"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Languages", "Languages::Chinese", "Languages::HSK"}, col.getDecks().allNames());
 
          // Can drag a col onto its sibling
          col.getDecks().renameForDragAndDrop(hsk_did, chinese_did);
-         assertEquals(new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
 
          // Can drag a col back to the top level
          col.getDecks().renameForDragAndDrop(chinese_did, null);
-         assertEquals(new String [] {"Chinese", "Chinese::HSK", "Languages"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Chinese", "Chinese::HSK", "Languages"}, col.getDecks().allNames());
 
          // Dragging a top level col to the top level is a no-op
          col.getDecks().renameForDragAndDrop(chinese_did, null);
-         assertEquals(new String [] {"Chinese", "Chinese::HSK", "Languages"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Chinese", "Chinese::HSK", "Languages"}, col.getDecks().allNames());
 
          // decks are renamed if necessary«
          long new_hsk_did = col.getDecks().id("hsk");
          col.getDecks().renameForDragAndDrop(new_hsk_did, chinese_did);
-         assertEquals(new String [] {"Chinese", "Chinese::HSK", "Chinese::hsk+", "Languages"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Chinese", "Chinese::HSK", "Chinese::hsk+", "Languages"}, col.getDecks().allNames());
          col.getDecks().rem(new_hsk_did);
 
       }
@@ -477,10 +480,10 @@ public class UpstreamTest extends RobolectricTest {
          col.addNote(note);
          return col;
      }
-    
+
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
-    
-    
+
+
     /* TODO
        @Test
        public void test_export_anki(){
@@ -524,7 +527,7 @@ public class UpstreamTest extends RobolectricTest {
        col2 = aopen(newname);
        assertEquals(1, col2.cardCount());
        }
-       
+
        @Test
        public void test_export_ankipkg(){
        Collection col = setup1();
@@ -541,8 +544,8 @@ public class UpstreamTest extends RobolectricTest {
        os.unlink(newname);
        e.exportInto(newname);
        }
-       
-       
+
+
        @errorsAfterMidnight
        @Test
        public void test_export_anki_due(){
@@ -578,7 +581,7 @@ public class UpstreamTest extends RobolectricTest {
     col2.getSched().reset();
     assertEquals(1, c.getDue() - col2.getSched().getToday());
 }
-    
+
     @Test
     public void test_export_textcard(){
     //     Collection col = setup1()
@@ -588,10 +591,10 @@ public class UpstreamTest extends RobolectricTest {
     //     e.exportInto(note)
     //     e.includeTags = true
     //     e.exportInto(note)
-    
-    
+
+
 }
-    
+
     @Test
     public void test_export_textnote(){
     Collection col = setup1();
@@ -613,17 +616,17 @@ public class UpstreamTest extends RobolectricTest {
     @Test
     public void test_exporters(){
     assertTrue(str(exporters()).contains("*.apkg"));
-    
+
     */
     /*****************
      ** Find         *
      *****************/
-    
+
     public boolean isNearCutoff() {
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         return hour >= 2 && hour < 4;
     }
-    
+
     @Test
     public void test_findCards(){
         Collection col = getCol();
@@ -845,7 +848,7 @@ public class UpstreamTest extends RobolectricTest {
          // flag
          assertThrows(Exception.class, () -> col.findCards("flag:12"));
     }
-        
+
         @Test
         public void test_findReplace(){
             Collection col = getCol();
@@ -880,7 +883,7 @@ public class UpstreamTest extends RobolectricTest {
         note.load();
         assertEquals(note.getItem("Back"), "reg");
     }
-        
+
         @Test
             public void test_findDupes(){
         Collection col = getCol();
@@ -915,11 +918,11 @@ public class UpstreamTest extends RobolectricTest {
         // front isn't dupe
         assertEquals(0, col.findDupes("Front").size());
     }
-        
+
         /*****************
          ** Importing    *
          *****************/
-        /* 
+        /*
            private void clear_tempfile(tf) {
            ;
            " https://stackoverflow.com/questions/23212435/permission-denied-to-write-to-my-temporary-file ";
@@ -929,7 +932,7 @@ public class UpstreamTest extends RobolectricTest {
            } catch () {
            }
     }
-    
+
     @Test
     public void test_anki2_mediadupes(){
         Collection col = getCol();
@@ -946,12 +949,12 @@ public class UpstreamTest extends RobolectricTest {
         Collection empty = getCol();
         Anki2Importer imp = Anki2Importer(empty, col.getPath());
         imp.run();
-        assertEquals(new String [] {"foo.mp3"}, os.listdir(empty.getMedia().dir()));
+        assertEqualsArrayList(new String [] {"foo.mp3"}, os.listdir(empty.getMedia().dir()));
         // and importing again will not duplicate, as the file content matches
         empty.remove_cards_and_orphaned_notes(empty.getDb().longList("select id from cards"));
         Anki2Importer imp = Anki2Importer(empty, col.getPath());
         imp.run();
-        assertEquals(new String [] {"foo.mp3"}, os.listdir(empty.getMedia().dir()));
+        assertEqualsArrayList(new String [] {"foo.mp3"}, os.listdir(empty.getMedia().dir()));
         Note n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
         assertTrue(n.fields[0].contains("foo.mp3"));
          // if the local file content is different, and import should trigger a
@@ -961,7 +964,7 @@ public class UpstreamTest extends RobolectricTest {
              note.write("bar");
          Anki2Importer imp = Anki2Importer(empty, col.getPath());
          imp.run();
-         assertEquals(new String [] {"foo.mp3", "foo_"+mid+".mp3"}, sorted(os.listdir(empty.getMedia().dir())));
+         assertEqualsArrayList(new String [] {"foo.mp3", "foo_"+mid+".mp3"}, sorted(os.listdir(empty.getMedia().dir())));
          Note n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
          assertTrue(n.fields[0].contains("_"));
          // if the localized media file already exists, we rewrite the note and
@@ -971,8 +974,8 @@ public class UpstreamTest extends RobolectricTest {
              note.write("bar");
          Anki2Importer imp = Anki2Importer(empty, col.getPath());
          imp.run();
-         assertEquals(new String [] {"foo.mp3", "foo_"+mid+".mp3" }, sorted(os.listdir(empty.getMedia().dir())));
-         assertEquals(new String [] {"foo.mp3", "foo_"+mid+".mp3"}, sorted(os.listdir(empty.getMedia().dir())));
+         assertEqualsArrayList(new String [] {"foo.mp3", "foo_"+mid+".mp3" }, sorted(os.listdir(empty.getMedia().dir())));
+         assertEqualsArrayList(new String [] {"foo.mp3", "foo_"+mid+".mp3"}, sorted(os.listdir(empty.getMedia().dir())));
          Note n = empty.getNote(empty.getDb().queryLongScalar("select id from notes"));
          assertTrue(n.fields[0].contains("_"));
      }
@@ -982,14 +985,14 @@ public class UpstreamTest extends RobolectricTest {
          Collection col = getCol();
          String apkg = str(os.path.join(testDir, "support/media.apkg"));
          AnkiPackageImporter imp = AnkiPackageImporter(col, apkg);
-         assertEquals(new String [] {}, os.listdir(col.getMedia().dir()));
+         assertEqualsArrayList(new String [] {}, os.listdir(col.getMedia().dir()));
          imp.run();
-         assertEquals(new String [] {"foo.wav"}, os.listdir(col.getMedia().dir()));
+         assertEqualsArrayList(new String [] {"foo.wav"}, os.listdir(col.getMedia().dir()));
          // importing again should be idempotent notARealIn terms of media
          col.remove_cards_and_orphaned_notes(col.getDb().list("select id from cards"));
          AnkiPackageImporter imp = AnkiPackageImporter(col, apkg);
          imp.run();
-         assertEquals(new String [] {"foo.wav"}, os.listdir(col.getMedia().dir()));
+         assertEqualsArrayList(new String [] {"foo.wav"}, os.listdir(col.getMedia().dir()));
          // but if the local file has different data, it will rename
          col.remove_cards_and_orphaned_notes(col.getDb().longList("select id from cards"));
          with open(os.path.join(col.getMedia().dir(), "foo.wav"), "w") as note:
@@ -1021,7 +1024,7 @@ public class UpstreamTest extends RobolectricTest {
              tNote note = dst.getCard(tcid).note();
          assertTrue(tnote.cards().get(0).template().getString("qfmt").contains("Changed Front Template"));
      }
-    
+
     @Test
     public void test_anki2_updates(){
         // create a new empty deck
@@ -1050,7 +1053,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(1, dst.noteCount());
         assertTrue(dst.getDb().queryLongScalar("select flds from notes").startswith("goodbye"));
     }
-    
+
     @Test
     public void test_csv(){
         Collection col = getCol();
@@ -1072,7 +1075,7 @@ public class UpstreamTest extends RobolectricTest {
         n.flush();
         i.run();
         n.load();
-        assertEquals(new String [] {"test"}, n.tags);
+        assertEqualsArrayList(new String [] {"test"}, n.tags);
         // if add-only mode, count will be 0
         i.importMode = 1;
         i.run();
@@ -1086,7 +1089,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(11, col.cardCount());
         col.close();
     }
-    
+
     @Test
     public void test_csv2(){
         Collection col = getCol();
@@ -1111,7 +1114,7 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(n.setItem("Three",= "3"));
         col.close();
     }
-    
+
     @Test
     public void test_tsv_tag_modified(){
         Collection col = getCol();
@@ -1126,7 +1129,7 @@ public class UpstreamTest extends RobolectricTest {
         n.setItem("Top", "3");
         n.addTag("four");
         col.addNote(n);
-        
+
         // https://stackoverflow.com/questions/23212435/permission-denied-to-write-to-my-temporary-file
         with NamedTemporaryFile(mode="w", delete=false) as tf:
         tf.write("1\tb\tc\n");
@@ -1136,7 +1139,7 @@ public class UpstreamTest extends RobolectricTest {
         i.tagModified = "boom";
         i.run();
         clear_tempfile(tf);
-        
+
         n.load();
         assertTrue(n.setItem("Front",= "1"));
         assertTrue(n.setItem("Back",= "b"));
@@ -1145,10 +1148,10 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(n.getTags().contains("boom"));
         assertEquals(2, n.getTags().size());
         assertEquals(1, i.updateCount);
-        
+
         col.close();
     }
-    
+
     @Test
     public void test_tsv_tag_multiple_tags(){
         Collection col = getCol();
@@ -1164,7 +1167,7 @@ public class UpstreamTest extends RobolectricTest {
         n.addTag("four");
         n.addTag("five");
         col.addNote(n);
-        
+
         // https://stackoverflow.com/questions/23212435/permission-denied-to-write-to-my-temporary-file
         with NamedTemporaryFile(mode="w", delete=false) as tf:
         tf.write("1\tb\tc\n");
@@ -1174,16 +1177,16 @@ public class UpstreamTest extends RobolectricTest {
         i.tagModified = "five six";
         i.run();
         clear_tempfile(tf);
-        
+
         n.load();
         assertTrue(n.setItem("Front",= "1"));
         assertTrue(n.setItem("Back",= "b"));
         assertTrue(n.setItem("Top",= "c"));
         assertEquals(list(sorted(new String [] {"four", "five", "six"}, list(sorted(n.getTags())))));
-        
+
         col.close();
     }
-    
+
     @Test
     public void test_csv_tag_only_if_modified(){
         Collection col = getCol();
@@ -1197,7 +1200,7 @@ public class UpstreamTest extends RobolectricTest {
         n.setItem("Back", "2");
         n.setItem("Left", "3");
         col.addNote(n);
-        
+
         // https://stackoverflow.com/questions/23212435/permission-denied-to-write-to-my-temporary-file
         with NamedTemporaryFile(mode="w", delete=false) as tf:
         tf.write("1,2,3\n");
@@ -1207,14 +1210,14 @@ public class UpstreamTest extends RobolectricTest {
         i.tagModified = "right";
         i.run();
         clear_tempfile(tf);
-        
+
         n.load();
-        assertEquals(new String [] {}, n.tags);
+        assertEqualsArrayList(new String [] {}, n.tags);
         assertEquals(0, i.updateCount);
-        
+
         col.close();
     }
-    
+
     @pytest.mark.filterwarnings("ignore:Using or importing the ABCs")
         @Test
         public void test_supermemo_xml_01_unicode(){
@@ -1231,7 +1234,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(7, c.getReps());
         col.close();
     }
-    
+
     @Test
     public void test_mnemo(){
         Collection col = getCol();
@@ -1247,7 +1250,7 @@ public class UpstreamTest extends RobolectricTest {
         /*****************
          ** Flags        *
          *****************/
-            
+
     @Test
     public void test_flags(){
         Collection col = getCol();
@@ -1256,7 +1259,7 @@ public class UpstreamTest extends RobolectricTest {
         n.setItem("Back", "two");
         int cnt = col.addNote(n);
         Card c = n.cards().get(0);
-                
+
         // make sure higher bits are preserved
         int origBits = 0b101 << 3;
         c.setFlag(origBits);
@@ -1281,7 +1284,7 @@ public class UpstreamTest extends RobolectricTest {
         col.setUserFlag(0, new long [] {c.getId()});
         c.load();
         assertEquals(0, c.userFlag());
-                
+
         // should work with Cards method as well
         c.setUserFlag(2);
         assertEquals(2, c.userFlag());
@@ -1294,7 +1297,7 @@ public class UpstreamTest extends RobolectricTest {
      ** Media        *
      *****************/
     // copying files to media folder
-    
+
     /* TODO: media
        @Test
        public void test_add(){
@@ -1312,21 +1315,21 @@ public class UpstreamTest extends RobolectricTest {
        note.write("world");
        assertEquals("foo-7c211433f02071597741e6ff5a8ea34789abbf43.jpg", col.getMedia().addFile(path));
        } */
-    
+
     @Test
     public void test_strings(){
         Collection col = getCol();
         long mid = col.getModels().current().getLong("id");
         assertEquals(0, col.getMedia().filesInStr(mid, "aoeu").size());
-        assertEquals(new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg'>ao"));
-        assertEquals(new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg' style='test'>ao"));
-        assertEquals(new String [] {"foo.jpg", "bar.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg'><img src=\"bar.jpg\">ao"));
-        assertEquals(new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src=foo.jpg style=bar>ao"));
-        assertEquals(new String [] {"one", "two"}, col.getMedia().filesInStr(mid, "<img src=one><img src=two>"));
-        assertEquals(new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src=\"foo.jpg\">ao"));
-        assertEquals(new String[] {"foo.jpg", "fo"},
+        assertEqualsArrayList(new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg'>ao"));
+        assertEqualsArrayList(new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg' style='test'>ao"));
+        assertEqualsArrayList(new String [] {"foo.jpg", "bar.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg'><img src=\"bar.jpg\">ao"));
+        assertEqualsArrayList(new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src=foo.jpg style=bar>ao"));
+        assertEqualsArrayList(new String [] {"one", "two"}, col.getMedia().filesInStr(mid, "<img src=one><img src=two>"));
+        assertEqualsArrayList(new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src=\"foo.jpg\">ao"));
+        assertEqualsArrayList(new String[] {"foo.jpg", "fo"},
                      col.getMedia().filesInStr(mid, "aoeu<img src=\"foo.jpg\"><img class=yo src=fo>ao"));
-        assertEquals(new String [] {"foo.mp3"}, col.getMedia().filesInStr(mid, "aou[sound:foo.mp3]aou"));
+        assertEqualsArrayList(new String [] {"foo.mp3"}, col.getMedia().filesInStr(mid, "aou[sound:foo.mp3]aou"));
         assertEquals("aoeu", col.getMedia().strip("aoeu"));
         assertEquals("aoeuaoeu", col.getMedia().strip("aoeu[sound:foo.mp3]aoeu"));
         assertEquals("aoeu", col.getMedia().strip("a<img src=yo>oeu"));
@@ -1334,7 +1337,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals("<img src='http://foo.com'>", col.getMedia().escapeImages("<img src='http://foo.com'>"));
         assertEquals("<img src=\"foo%20bar.jpg\">", col.getMedia().escapeImages("<img src=\"foo bar.jpg\">"));
     }
-    
+
     /** TODO: file
         @Test
         public void test_deckIntegration(){
@@ -1359,14 +1362,14 @@ public class UpstreamTest extends RobolectricTest {
         note.write("test");
         // check media
         ret = col.getMedia().check();
-        assertEquals(new String [] {"fake2.png"}, ret.missing);
-        assertEquals(new String [] {"foo.jpg"}, ret.unused);
+        assertEqualsArrayList(new String [] {"fake2.png"}, ret.missing);
+        assertEqualsArrayList(new String [] {"foo.jpg"}, ret.unused);
         }
     */
     /*****************
      ** Models       *
      *****************/
-    
+
     @Test
     public void test_modelDelete() throws ConfirmModSchemaException {
         Collection col = getCol();
@@ -1378,7 +1381,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getModels().rem(col.getModels().current());
         assertEquals(0, col.cardCount());
     }
-    
+
     @Test
     public void test_modelCopy(){
         Collection col = getCol();
@@ -1393,7 +1396,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(1, m2.getJSONArray("tmpls").length());
         assertEquals(col.getModels().scmhash(m), col.getModels().scmhash(m2));
     }
-    
+
     @Test
     public void test_fields() throws ConfirmModSchemaException {
         Collection col = getCol();
@@ -1441,7 +1444,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getModels().moveField(m, m.getJSONArray("flds").getJSONObject(0), 1);
         assertArrayEquals(new String [] {"", "2", "1"}, col.getNote(col.getModels().nids(m).get(0)).getFields());
     }
-    
+
     @Test
     public void test_templates() throws ConfirmModSchemaException {
         Collection col = getCol();
@@ -1485,14 +1488,14 @@ public class UpstreamTest extends RobolectricTest {
                      col.getDb().queryLongScalar(
                                                  "select count() from cards where nid not in (select id from notes)"));
     }
-    
+
     @Test
     public void test_cloze_ordinals() throws ConfirmModSchemaException {
         Collection col = getCol();
         col.getModels().setCurrent(col.getModels().byName("Cloze"));
         Model m = col.getModels().current();
         Models mm = col.getModels();
-        
+
         // We replace the default Cloze template
         JSONObject t = mm.newTemplate("ChainedCloze");
         t.put("qfmt", "{{text:cloze:Text}}");
@@ -1500,7 +1503,7 @@ public class UpstreamTest extends RobolectricTest {
         mm.addTemplateModChanged(m, t);
         mm.save(m);
         col.getModels().remTemplate(m, m.getJSONArray("tmpls").getJSONObject(0));
-        
+
         Note note = col.newNote();
         note.setItem("Text","{{c1::firstQ::firstA}}{{c2::secondQ::secondA}}");
         col.addNote(note);
@@ -1513,7 +1516,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(0, c.getOrd());
         assertEquals(1, c2.getOrd());
     }
-    
+
     @Test
     public void test_text(){
         Collection col = getCol();
@@ -1525,7 +1528,7 @@ public class UpstreamTest extends RobolectricTest {
         col.addNote(note);
         assertTrue(note.cards().get(0).q().contains("helloworld"));
     }
-    
+
     @Test
     public void test_cloze(){
         Collection col = getCol();
@@ -1575,7 +1578,7 @@ public class UpstreamTest extends RobolectricTest {
         note.flush();
         assertEquals(2, note.nbCards());
     }
-    
+
     @Test
     public void test_cloze_mathjax(){
         Collection col = getCol();
@@ -1724,18 +1727,18 @@ public class UpstreamTest extends RobolectricTest {
         col.getModels().change(cloze,new long []{note.getId()}, basic, map, map);
         assertEquals(1, col.getDb().queryScalar("select count() from cards where nid = ?", new Object[] {note.getId()}));
     }
-     
-     
+
+
      private void reqSize(Model model) {
         if (model.getInt("type") == MODEL_CLOZE) {
         return;
     }
         assertEquals(model.getJSONArray("req").length(), model.getJSONArray("tmpls").length());
     }
-     
+
      @Test
          public void test_req(){
-        
+
         Collection col = getCol();
         Models mm = col.getModels();
         Model basic = mm.byName("Basic");
@@ -1746,18 +1749,18 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(Arrays.asList(new String[]{"any", "all"}).contains(r.getString(1)));
         assertEquals(1, r.getJSONArray(2).length());
         assertEquals(0, r.getJSONArray(2).getInt(0));
-        
+
         Model opt = mm.byName("Basic (optional reversed card)");
         reqSize(opt);
-        
+
         r = opt.getJSONArray("req").getJSONArray(0);
         assertTrue(Arrays.asList(new String[]{"any", "all"}).contains(r.getString(1)));
         assertEquals(1, r.getJSONArray(2).length());
         assertEquals(0, r.getJSONArray(2).getInt(0));
-        
-        
+
+
         assertEquals(new JSONArray("[1,\"all\",[1,2]]"), opt.getJSONArray("req").getJSONArray(1));
-        
+
         // testing any
         opt.getJSONArray("tmpls").getJSONObject(1).put("qfmt", "{{Back}}{{Add Reverse}}");
         mm.save(opt, true);
@@ -1766,14 +1769,14 @@ public class UpstreamTest extends RobolectricTest {
         opt.getJSONArray("tmpls").getJSONObject(1).put("qfmt", "{{^Add Reverse}}{{/Add Reverse}}");
         mm.save(opt, true);
         assertEquals(new JSONArray("[1, \"none\", []]"), opt.getJSONArray("req").getJSONArray(1));
-        
+
         opt = mm.byName("Basic (type in the answer)");
         reqSize(opt);
         r = opt.getJSONArray("req").getJSONArray(0);
         assertTrue(Arrays.asList(new String[]{"any", "all"}).contains(r.getString(1)));
         assertEquals(new JSONArray("[0, 1]"), r.getJSONArray(2));
     }
-     
+
      /*****************
      ** SchedV1      *
      *****************/
@@ -1782,7 +1785,7 @@ public class UpstreamTest extends RobolectricTest {
         col.changeSchedulerVer(1);
         return col;
     }
-     
+
      public void test_new_v1()  throws Exception {
         Collection col = getColV1();
         col.reset();
@@ -1805,7 +1808,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(QUEUE_TYPE_LRN, c.getQueue());
         assertEquals(CARD_TYPE_LRN, c.getType());
         assertTrue(c.getDue() >= t);
-        
+
         // disabled for now, as the learn fudging makes this randomly fail
         // // the default order should ensure siblings are not seen together, and
         // // should show all cards
@@ -1829,7 +1832,7 @@ public class UpstreamTest extends RobolectricTest {
         //     col.getSched().answerCard(c, 2)
         // }
      }
-     
+
     @Test
     public void test_newLimits_V1()  throws Exception {
         Collection col = getColV1();
@@ -1866,7 +1869,7 @@ public class UpstreamTest extends RobolectricTest {
         col.reset();
         //assertEquals(9, col.getSched().newCount);TODO: newCount getter
     }
-     
+
     @Test
     public void test_newBoxes_v1()  throws Exception {
         Collection col = getColV1();
@@ -1884,7 +1887,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getDecks().save(conf);
         col.getSched().answerCard(c, 2);
     }
-     
+
     @Test
     public void test_learnV1()  throws Exception {
         Collection col = getColV1();
@@ -1963,7 +1966,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(QUEUE_TYPE_REV, c.getQueue());
         assertEquals(321, c.getDue());
     }
-     
+
     @Test
     public void test_learn_collapsedV1() throws Exception{
         Collection col = getColV1();
@@ -1991,7 +1994,7 @@ public class UpstreamTest extends RobolectricTest {
         c = col.getSched().getCard();
         assertFalse(c.q().endsWith("2"));
     }
-     
+
     @Test
     public void test_learn_dayV1() throws Exception{
         Collection col = getColV1();
@@ -2011,7 +2014,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(1 , c.getLeft() / 1000);
         assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
         c = col.getSched().getCard();
-        
+
         assertEquals(86400, col.getSched().nextIvl(c, 2));
         // answering it will place it notARealIn queue 3
         col.getSched().answerCard(c, 2);
@@ -2056,7 +2059,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(CARD_TYPE_RELEARNING, c.getQueue());
         assertArrayEquals(new int[]{0, 0, 0}, col.getSched().counts());
     }
-            
+
     @Test
     public void test_reviewsV1() throws Exception{
         Collection col = getColV1();
@@ -2100,7 +2103,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(2, c.getLapses());
         assertEquals(4, c.getReps());
         // check ests.
-        
+
         assertEquals(120, col.getSched().nextIvl(c, 1));
         assertEquals(20 * 60, col.getSched().nextIvl(c, 2));
         // try again with an ease of 2 instead
@@ -2163,7 +2166,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals("3d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 3)));
         assertEquals("4d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 4)));
     }
-        
+
     @Test
     public void test_overdue_lapseV1() throws Exception {
         // disabled notARealIn commit anki@3069729776990980f34c25be66410e947e9d51a2
@@ -2201,7 +2204,7 @@ public class UpstreamTest extends RobolectricTest {
           assertArrayEquals(new int[]{0, 0, 1}, col.getSched().counts());
         */
     }
-        
+
     @Test
     public void test_finishedV1() throws Exception {
         Collection col = getColV1();
@@ -2223,7 +2226,7 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(col.getSched().finishedMsg(getTargetContext()).toString().contains("Congratulations"));
         assertFalse(col.getSched().finishedMsg(getTargetContext()).toString().contains("limit"));
     }
-        
+
     @Test
     public void test_nextIvlV1() throws Exception {
         Collection col = getColV1();
@@ -2239,7 +2242,7 @@ public class UpstreamTest extends RobolectricTest {
         Card c = col.getSched().getCard();
         // new cards
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        
+
         assertEquals(30, col.getSched().nextIvl(c, 1));
         assertEquals(180, col.getSched().nextIvl(c, 2));
         assertEquals(4 * 86400, col.getSched().nextIvl(c, 3));
@@ -2284,7 +2287,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(28080000, col.getSched().nextIvl(c, 4));
         assertEquals("10.8mo", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 4)));
     }
-        
+
     @Test
     public void test_misc() throws Exception {
         Collection col = getColV1();
@@ -2300,7 +2303,7 @@ public class UpstreamTest extends RobolectricTest {
         col.reset();
         assertNotNull(col.getSched().getCard());
     }
-        
+
     @Test
     public void test_suspendV1() throws Exception {
         Collection col = getColV1();
@@ -2349,7 +2352,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(1, c.getDue());
         assertEquals(1, c.getDid());
     }
-        
+
     @Test
     public void test_cram() throws Exception {
         Collection col = getColV1();
@@ -2459,7 +2462,7 @@ public class UpstreamTest extends RobolectricTest {
         // it should have been moved back to the original deck
         assertEquals(1, c.getDid());
     }
-        
+
     @Test
     public void test_cram_rem() throws Exception {
         Collection col = getColV1();
@@ -2483,7 +2486,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(CARD_TYPE_NEW, c.getType());
         assertEquals(oldDue, c.getDue());
     }
-        
+
     @Test
     public void test_cram_resched() throws Exception {
         // add card
@@ -2500,7 +2503,7 @@ public class UpstreamTest extends RobolectricTest {
         col.reset();
         // graduate should return it to new
         Card c = col.getSched().getCard();
-        
+
         assertEquals(60, col.getSched().nextIvl(c, 1));
         assertEquals(600, col.getSched().nextIvl(c, 2));
         assertEquals(0, col.getSched().nextIvl(c, 3));
@@ -2593,7 +2596,7 @@ public class UpstreamTest extends RobolectricTest {
         // col.getSched().answerCard(c, 2)
         // print c.__dict__
     }
-        
+
     @Test
     public void test_ordcycleV1() throws Exception {
         Collection col = getColV1();
@@ -2621,7 +2624,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(1, col.getSched().getCard().getOrd());
         assertEquals(2, col.getSched().getCard().getOrd());
     }
-        
+
     @Test
     public void test_counts_idxV1() throws Exception {
         Collection col = getColV1();
@@ -2646,7 +2649,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 1);
         assertArrayEquals(new int[]{0, 2, 0}, col.getSched().counts());
     }
-        
+
     @Test
     public void test_repCountsV1() throws Exception {
         Collection col = getColV1();
@@ -2700,7 +2703,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(col.getSched().getCard(), 1);
         assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
     }
-        
+
     @Test
     public void test_timingV1() throws Exception {
         Collection col = getColV1();
@@ -2729,10 +2732,10 @@ public class UpstreamTest extends RobolectricTest {
         /* TODO time
         // but if we wait for a few seconds, the failed card should come back
         orig_time = time.time;
-        
+
         def adjusted_time():
         return orig_time() + 5;
-        
+
         time.time = adjusted_time;
         c = col.getSched().getCard();
         assertEquals(QUEUE_TYPE_LRN, c.getQueue());
@@ -2740,7 +2743,7 @@ public class UpstreamTest extends RobolectricTest {
 
         */
     }
-        
+
     @Test
     public void test_collapseV1() throws Exception {
         Collection col = getColV1();
@@ -2756,7 +2759,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 3);
         assertNull(col.getSched().getCard());
     }
-    
+
     @Test
     public void test_deckDueV1() throws Exception {
         Collection col = getColV1();
@@ -2804,7 +2807,7 @@ public class UpstreamTest extends RobolectricTest {
         c.flush();
         col.getSched().deckDueTree();
     }
-        
+
     @Test
     public void test_deckFlowV1() throws Exception {
         Collection col = getColV1();
@@ -2831,7 +2834,7 @@ public class UpstreamTest extends RobolectricTest {
             col.getSched().answerCard(c, 2);
         }
     }
-        
+
     @Test
     public void test_reorderV1() throws Exception {
         Collection col = getColV1();
@@ -2875,7 +2878,7 @@ public class UpstreamTest extends RobolectricTest {
 
         */
     }
-        
+
     @Test
     public void test_forgetV1() throws Exception {
         Collection col = getColV1();
@@ -2894,7 +2897,7 @@ public class UpstreamTest extends RobolectricTest {
         col.reset();
         assertArrayEquals(new int[]{1, 0, 0}, col.getSched().counts());
     }
-        
+
     @Test
     public void test_reschedV1() throws Exception {
         Collection col = getColV1();
@@ -2913,7 +2916,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(col.getSched().getToday()+ 1, c.getDue());
         assertEquals(+1, c.getIvl());
     }
-        
+
     @Test
     public void test_norelearnV1() throws Exception {
         Collection col = getColV1();
@@ -2936,7 +2939,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched()._cardConf(c).getJSONObject("lapse").put("delays", new JSONArray(new double [] {}));
         col.getSched().answerCard(c, 1);
     }
-        
+
     @Test
     public void test_failmultV1()   throws Exception {
         Collection col = getColV1();
@@ -2971,7 +2974,7 @@ public class UpstreamTest extends RobolectricTest {
         col.changeSchedulerVer(2);
         return col;
     }
-        
+
     @Test
     public void test_clock() throws Exception  {
         Collection col = getColV2();
@@ -2979,19 +2982,19 @@ public class UpstreamTest extends RobolectricTest {
             throw new Exception("Unit tests will fail around the day rollover.");
         }
     }
-        
+
     private boolean checkRevIvl(Collection col, Card c, int targetIvl) {
         Pair<Integer, Integer> min_max = col.getSched()._fuzzIvlRange(targetIvl);
         return min_max.first <= c.getIvl() && c.getIvl() <= min_max.second;
     }
-        
+
     @Test
     public void test_basics() throws Exception  {
         Collection col = getColV1();
         col.reset();
         assertNull(col.getSched().getCard());
     }
-        
+
     @Test
     public void test_new_v2()  throws Exception  {
         Collection col = getColV2();
@@ -3015,7 +3018,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(QUEUE_TYPE_LRN, c.getQueue());
         assertEquals(CARD_TYPE_LRN, c.getType());
         assertTrue(c.getDue() >= t);
-        
+
         // disabled for now, as the learn fudging makes this randomly fail
         // // the default order should ensure siblings are not seen together, and
         // // should show all cards
@@ -3039,7 +3042,7 @@ public class UpstreamTest extends RobolectricTest {
         //     col.getSched().answerCard(c, 2)
         // }
     }
-        
+
     @Test
     public void test_newLimits_V2()  throws Exception  {
         Collection col = getColV2();
@@ -3075,7 +3078,7 @@ public class UpstreamTest extends RobolectricTest {
         col.reset();
         //assertEquals(9, col.getSched().newCount);TODO: newCount getter
     }
-     
+
     @Test
     public void test_newBoxes_v2()  throws Exception  {
         Collection col = getColV2();
@@ -3093,7 +3096,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getDecks().save(conf);
         col.getSched().answerCard(c, 2);
     }
-     
+
     @Test
     public void test_learnV2()  throws Exception  {
         Collection col = getColV2();
@@ -3157,7 +3160,7 @@ public class UpstreamTest extends RobolectricTest {
         // revlog should have been updated each time
         assertEquals(5, col.getDb().queryScalar("select count() from revlog where type = 0"));
     }
-            
+
     @Test
     public void test_relearn() throws Exception {
         Collection col = getColV2();
@@ -3170,7 +3173,7 @@ public class UpstreamTest extends RobolectricTest {
         c.setQueue(CARD_TYPE_REV);
         c.setType(QUEUE_TYPE_REV);
         c.flush();
-        
+
         // fail the card
         col.reset();
         c = col.getSched().getCard();
@@ -3178,7 +3181,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(QUEUE_TYPE_LRN, c.getQueue());
         assertEquals(CARD_TYPE_RELEARNING, c.getType());
         assertEquals(1, c.getIvl());
-        
+
         // immediately graduate it
         col.getSched().answerCard(c, 4);
         assertEquals(CARD_TYPE_REV, c.getType());
@@ -3186,7 +3189,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(2, c.getIvl());
         assertEquals(col.getSched().getToday()+ c.getIvl(), c.getDue());
     }
-        
+
     @Test
     public void test_relearn_no_steps() throws Exception {
         Collection col = getColV2();
@@ -3199,11 +3202,11 @@ public class UpstreamTest extends RobolectricTest {
         c.setQueue(CARD_TYPE_REV);
         c.setType(QUEUE_TYPE_REV);
         c.flush();
-        
+
         DeckConfig conf = col.getDecks().confForDid(1);
         conf.getJSONObject("lapse").put("delays", new JSONArray(new double [] {}));
         col.getDecks().save(conf);
-        
+
         // fail the card
         col.reset();
         c = col.getSched().getCard();
@@ -3211,7 +3214,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(CARD_TYPE_REV, c.getType());
         assertEquals(QUEUE_TYPE_REV, c.getQueue());
     }
-        
+
     @Test
     public void test_learn_collapsedV2() throws Exception {
         Collection col = getColV2();
@@ -3239,7 +3242,7 @@ public class UpstreamTest extends RobolectricTest {
         c = col.getSched().getCard();
         assertFalse(c.q().endsWith("2"));
     }
-        
+
     @Test
     public void test_learn_dayV2() throws Exception {
         Collection col = getColV2();
@@ -3259,7 +3262,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(1 , c.getLeft() / 1000);
         assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
         c = col.getSched().getCard();
-        
+
         assertEquals(86400, col.getSched().nextIvl(c, 3));
         // answering it will place it notARealIn queue 3
         col.getSched().answerCard(c, 3);
@@ -3304,7 +3307,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(QUEUE_TYPE_DAY_LEARN_RELEARN, c.getQueue());
         assertArrayEquals(new int[]{0, 0, 0}, col.getSched().counts());
     }
-            
+
     @Test
     public void test_reviewsV2() throws Exception {
         Collection col = getColV2();
@@ -3372,10 +3375,10 @@ public class UpstreamTest extends RobolectricTest {
         /* todo hook
         // steup hook
         hooked = new [] {};
-        
+
         def onLeech(card):
         hooked.append(1);
-        
+
         hooks.card_did_leech.append(onLeech);
         col.getSched().answerCard(c, 1);
         assertTrue(hooked);
@@ -3384,14 +3387,14 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(QUEUE_TYPE_SUSPENDED, c.getQueue());
         */
     }
-        
+
     @Test
     public void test_review_limits() throws Exception {
         Collection col=getColV2();
-        
+
         Deck parent=col.getDecks().get(col.getDecks().id("parent"));
         Deck child=col.getDecks().get(col.getDecks().id("parent::child"));
-        
+
         DeckConfig pconf=col.getDecks().getConf(col.getDecks().confId("parentConf"));
         DeckConfig cconf=col.getDecks().getConf(col.getDecks().confId("childConf"));
 
@@ -3473,7 +3476,7 @@ public class UpstreamTest extends RobolectricTest {
     public void test_overdue_lapseV2() throws Exception {
         // disabled notARealIn commit 3069729776990980f34c25be66410e947e9d51a2
         return;
-        /* Upstream does not execute it 
+        /* Upstream does not execute it
            Collection col = getColV2()  // pylint: disable=unreachable
            // add a note
            Note note = col.newNote();
@@ -3503,11 +3506,11 @@ public class UpstreamTest extends RobolectricTest {
            // with the default settings, the overdue card should be removed from the
            // learning queue
            col.getSched().reset();
-           assertArrayEquals(new int[]{0, 0, 1}, col.getSched().counts()); 
+           assertArrayEquals(new int[]{0, 0, 1}, col.getSched().counts());
         */
-         
+
     }
-     
+
     @Test
     public void test_finishedV2() throws Exception {
         Collection col = getColV2();
@@ -3529,7 +3532,7 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(col.getSched().finishedMsg(getTargetContext()).toString().contains("Congratulations"));
         assertFalse(col.getSched().finishedMsg(getTargetContext()).toString().contains("limit"));
     }
-     
+
     @Test
     public void test_nextIvlV2() throws Exception {
         Collection col = getColV2();
@@ -3545,7 +3548,7 @@ public class UpstreamTest extends RobolectricTest {
         Card c = col.getSched().getCard();
         // new cards
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        
+
         assertEquals(30, col.getSched().nextIvl(c, 1));
         assertEquals((30 + 180)/2, col.getSched().nextIvl(c, 2));
         assertEquals(180, col.getSched().nextIvl(c, 3));
@@ -3593,7 +3596,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(28080000, col.getSched().nextIvl(c, 4));
         assertEquals("10.8mo", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 4)));
     }
-            
+
     @Test
     public void test_bury() throws Exception {
         Collection col = getColV2();
@@ -3612,28 +3615,28 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().buryCards(new long [] {c2.getId()});
         c2.load();
         assertEquals(QUEUE_TYPE_SIBLING_BURIED, c2.getQueue());
-        
+
         col.reset();
         assertNull(col.getSched().getCard());
-        
+
         col.getSched().unburyCardsForDeck(AbstractSched.UnburyType.MANUAL);
         c.load();
         assertEquals(QUEUE_TYPE_NEW, c.getQueue());
         c2.load();
         assertEquals(QUEUE_TYPE_SIBLING_BURIED, c2.getQueue());
-                    
+
         col.getSched().unburyCardsForDeck(AbstractSched.UnburyType.SIBLINGS);
         c2.load();
         assertEquals(QUEUE_TYPE_NEW, c2.getQueue());
-                    
+
         col.getSched().buryCards(new long [] {c.getId(), c2.getId()});
         col.getSched().unburyCardsForDeck(AbstractSched.UnburyType.ALL);
-                        
+
         col.reset();
-                    
+
         assertArrayEquals(new int[]{2, 0, 0}, col.getSched().counts());
     }
-        
+
     @Test
     public void test_suspendv2() throws Exception {
         Collection col = getColV2();
@@ -3684,7 +3687,7 @@ public class UpstreamTest extends RobolectricTest {
         assertNotEquals(1, c.getDid());
         assertEquals(1, c.getODue());
     }
-        
+
     @Test
     public void test_filt_reviewing_early_normal() throws Exception {
         Collection col = getColV2();
@@ -3720,7 +3723,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(Math.round(75 * 1.2) * 86400, col.getSched().nextIvl(c, 2));
         assertEquals( Math.round(75 * 2.5) * 86400, col.getSched().nextIvl(c, 3));
         assertEquals( Math.round(75 * 2.5 * 1.15), col.getSched().nextIvl(c, 4));
-        
+
         // answer 'good'
         col.getSched().answerCard(c, 3);
         checkRevIvl(col, c, 90);
@@ -3730,7 +3733,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(QUEUE_TYPE_REV, c.getQueue());
         // should be logged as a cram rep
         assertEquals(3, col.getDb().queryLongScalar("select type from revlog order by id desc limit 1"));
-        
+
         // due notARealIn 75 days, so it's been waiting 25 days
         c.setIvl(100);
         c.setDue(col.getSched().getToday() + 75);
@@ -3738,52 +3741,52 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().rebuildDyn(did);
         col.reset();
         c = col.getSched().getCard();
-        
+
         assertEquals(60 * 86400, col.getSched().nextIvl(c, 2));
         assertEquals(100 * 86400, col.getSched().nextIvl(c, 3));
         assertEquals(114 * 86400, col.getSched().nextIvl(c, 4));
     }
-        
+
     @Test
     public void test_filt_keep_lrn_state() throws Exception {
         Collection col = getColV2();
-        
+
         Note note = col.newNote();
         note.setItem("Front","one");
         col.addNote(note);
-        
+
         // fail the card outside filtered deck
         Card c = col.getSched().getCard();
         DeckConfig conf = col.getSched()._cardConf(c);
         conf.getJSONObject("new").put("delays", new JSONArray(new double [] {1, 10, 61}));
         col.getDecks().save(conf);
-        
+
         col.getSched().answerCard(c, 1);
-        
+
         assertEquals(CARD_TYPE_LRN, c.getQueue());
         assertEquals(QUEUE_TYPE_LRN, c.getType());
         assertEquals(3003, c.getLeft());
-        
+
         col.getSched().answerCard(c, 3);
         assertEquals(CARD_TYPE_LRN, c.getQueue());
         assertEquals(QUEUE_TYPE_LRN, c.getType());
-        
+
         // create a dynamic deck and refresh it
         long did = col.getDecks().newDyn("Cram");
         col.getSched().rebuildDyn(did);
         col.reset();
-        
+
         // card should still be notARealIn learning state
         c.load();
         assertEquals(CARD_TYPE_LRN, c.getQueue());
         assertEquals(QUEUE_TYPE_LRN, c.getType());
         assertEquals(2002, c.getLeft());
-        
+
         // should be able to advance learning steps
         col.getSched().answerCard(c, 3);
         // should be due at least an hour notARealIn the future
         assertTrue(c.getDue() - intTime() > 60 * 60);
-        
+
         // emptying the deck preserves learning state
         col.getSched().emptyDyn(did);
         c.load();
@@ -3792,7 +3795,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(1001, c.getLeft());
         assertTrue(c.getDue() - intTime() > 60 * 60);
     }
-        
+
     @Test
     public void test_preview() throws Exception {
         // add cards
@@ -3821,21 +3824,21 @@ public class UpstreamTest extends RobolectricTest {
         long due = c.getDue();
         col.getSched().answerCard(c, 1);
         assertNotEquals(c.getDue(), due);
-        
+
         // the other card should come next
         Card c2 = col.getSched().getCard();
         assertNotEquals(c2.getId(), c.getId());
-        
+
         // passing it will remove it
         col.getSched().answerCard(c2, 2);
         assertEquals(QUEUE_TYPE_NEW, c2.getQueue());
         assertEquals(0, c2.getReps());
         assertEquals(CARD_TYPE_NEW, c2.getType());
-        
+
         // the other card should appear again
         c = col.getSched().getCard();
         assertEquals(orig.getId(), c.getId());
-        
+
         // emptying the filtered deck should restore card
         col.getSched().emptyDyn(did);
         c.load();
@@ -3843,7 +3846,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(0, c.getReps());
         assertEquals(CARD_TYPE_NEW, c.getType());
     }
-        
+
     @Test
     public void test_ordcycleV2() throws Exception {
         Collection col = getColV2();
@@ -3871,7 +3874,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(1, col.getSched().getCard().getOrd());
         assertEquals(2, col.getSched().getCard().getOrd());
     }
-        
+
     @Test
     public void test_counts_idxV2() throws Exception {
         Collection col = getColV2();
@@ -3896,7 +3899,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 1);
         assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
     }
-        
+
     @Test
     public void test_repCountsV2() throws Exception {
         Collection col = getColV2();
@@ -3950,7 +3953,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(col.getSched().getCard(), 1);
         assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
     }
-        
+
     @Test
     public void test_timingV2() throws Exception {
         Collection col = getColV2();
@@ -3979,7 +3982,7 @@ public class UpstreamTest extends RobolectricTest {
         c = col.getSched().getCard();
         assertEquals(QUEUE_TYPE_LRN, c.getQueue());
     }
-        
+
     @Test
     public void test_collapseV2() throws Exception {
         Collection col = getColV2();
@@ -3995,7 +3998,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 4);
         assertNull(col.getSched().getCard());
     }
-        
+
     @Test
     public void test_deckDueV2() throws Exception {
         Collection col = getColV2();
@@ -4044,7 +4047,7 @@ public class UpstreamTest extends RobolectricTest {
         c.flush();
         col.getSched().deckDueTree();
     }
-        
+
     @Test
     public void test_deckTree() throws Exception {
         Collection col = getColV2();
@@ -4058,7 +4061,7 @@ public class UpstreamTest extends RobolectricTest {
         names.remove("new");
         assertFalse(names.contains("new"));
     }
-            
+
     @Test
     public void test_deckFlowV2() throws Exception {
         Collection col = getColV2();
@@ -4087,7 +4090,7 @@ public class UpstreamTest extends RobolectricTest {
             col.getSched().answerCard(c, 3);
         }
     }
-        
+
     @Test
     public void test_reorder() throws Exception {
         Collection col = getColV2();
@@ -4131,7 +4134,7 @@ public class UpstreamTest extends RobolectricTest {
 
         */
     }
-        
+
     @Test
     public void test_forgetV2() throws Exception {
         Collection col = getColV2();
@@ -4150,7 +4153,7 @@ public class UpstreamTest extends RobolectricTest {
         col.reset();
         assertArrayEquals(new int[]{1, 0, 0}, col.getSched().counts());
     }
-        
+
     @Test
     public void test_reschedV2() throws Exception {
         Collection col = getColV2();
@@ -4169,7 +4172,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(col.getSched().getToday()+ 1, c.getDue());
         assertEquals(+1, c.getIvl());
     }
-        
+
     @Test
     public void test_norelearnV2() throws Exception {
         Collection col = getColV2();
@@ -4192,7 +4195,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched()._cardConf(c).getJSONObject("lapse").put("delays", new JSONArray(new double [] {}));
         col.getSched().answerCard(c, 1);
     }
-        
+
     @Test
     public void test_failmultV2() throws Exception {
         Collection col = getColV2();
@@ -4219,27 +4222,27 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 1);
         assertEquals(25, c.getIvl());
     }
-        
+
     @Test
     public void test_moveVersions() throws Exception {
         Collection col = getColV2();
         col.changeSchedulerVer(1);
-        
+
         Note n = col.newNote();
         n.setItem("Front", "one");
         col.addNote(n);
-        
+
         // make it a learning card
         col.reset();
         Card c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
-        
+
         // the move to v2 should reset it to new
         col.changeSchedulerVer(2);
         c.load();
         assertEquals(QUEUE_TYPE_NEW, c.getQueue());
         assertEquals(CARD_TYPE_NEW, c.getType());
-        
+
         // fail it again, and manually bury it
         col.reset();
         c = col.getSched().getCard();
@@ -4247,20 +4250,20 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().buryCards(new long [] {c.getId()});
         c.load();
         assertEquals(QUEUE_TYPE_MANUALLY_BURIED, c.getQueue());
-        
+
         // revert to version 1
         col.changeSchedulerVer(1);
-        
+
         // card should have moved queues
         c.load();
         assertEquals(QUEUE_TYPE_SIBLING_BURIED, c.getQueue());
-        
+
         // and it should be new again when unburied
         col.getSched().unburyCards();
         c.load();
         assertEquals(CARD_TYPE_NEW, c.getQueue());
         assertEquals(QUEUE_TYPE_NEW, c.getType());
-        
+
         // make sure relearning cards transition correctly to v1
         col.changeSchedulerVer(2);
         // card with 100 day interval, answering again
@@ -4279,13 +4282,13 @@ public class UpstreamTest extends RobolectricTest {
         c.load();
         assertEquals(50, c.getDue());
     }
-        
+
         // cards with a due date earlier than the collection should retain
         // their due date when removed
     @Test
     public void test_negativeDueFilter() throws Exception {
         Collection col = getColV2();
-        
+
         // card due prior to collection date
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -4296,21 +4299,21 @@ public class UpstreamTest extends RobolectricTest {
         c.setQueue(QUEUE_TYPE_REV);
         c.setIvl(5);
         c.flush();
-        
+
         // into and out of filtered deck
         long did = col.getDecks().newDyn("Cram");
         col.getSched().rebuildDyn(did);
         col.getSched().emptyDyn(did);
         col.reset();
-        
+
         c.load();
         assertEquals(-5, c.getDue());
     }
-        
-        
+
+
         // hard on the first step should be the average of again and good,
         // and it should be logged properly
-        
+
     @Test
     public void test_initial_repeat() throws Exception {
         Collection col = getColV2();
@@ -4318,7 +4321,7 @@ public class UpstreamTest extends RobolectricTest {
         note.setItem("Front","one");
         note.setItem("Back","two");
         col.addNote(note);
-        
+
         col.reset();
         Card c = col.getSched().getCard();
         col.getSched().answerCard(c, 2);
@@ -4326,7 +4329,7 @@ public class UpstreamTest extends RobolectricTest {
         double expected = Utils.now() + 5.5 * 60;
         long due = c.getDue();
         assertTrue((expected - 10 < due) && (due < expected * 1.25));
-        
+
         long ivl = col.getDb().queryLongScalar("select ivl from revlog");
         assertEquals((long) (-5.5 * 60), ivl);
     }
@@ -4349,14 +4352,14 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 2);
         assertTrue(col.cardStats(c));
     }
-        
+
         @Test
             public void test_graphs_empty() throws Exception {
         Collection col = getCol();
         assertTrue(col.stats().report());
     }
 
-        
+
         @Test
             public void test_graphs() throws Exception {
         dir = tempfile.gettempdir();
@@ -4370,19 +4373,19 @@ public class UpstreamTest extends RobolectricTest {
         /*****************
         ** Templates    *
         *****************/
-        
+
     @Test
     public void test_deferred_frontside() throws Exception {
         Collection col = getCol();
         Model m = col.getModels().current();
         m.getJSONArray("tmpls").getJSONObject(0).put("qfmt", "{{custom:Front}}");
         col.getModels().save(m);
-        
+
         Note note = col.newNote();
         note.setItem("Front","xxtest");
         note.setItem("Back","");
         col.addNote(note);
-        
+
         assertTrue(note.cards().get(0).a().contains("xxtest"));
     }
         /*****************
