@@ -2182,7 +2182,7 @@ public class UpstreamTest extends RobolectricTest {
         c.setDue(-1);
         c.setODue(-1);
         c.setFactor(STARTING_FACTOR);
-        c.getLeft() = 2002;
+            c.setLeft(2002);
         c.setIvl(0);
         c.flush();
         col.getSched()._clearOverdue = false;
@@ -3473,7 +3473,7 @@ public class UpstreamTest extends RobolectricTest {
          c.setDue(-1);
          c.setODue(-1);
          c.setFactor(STARTING_FACTOR);
-         c.getLeft() = 2002;
+             c.setLeft(2002);
          c.setIvl(0);
          c.flush();
          col.getSched()._clearOverdue = false;
