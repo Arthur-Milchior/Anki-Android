@@ -3012,7 +3012,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( QUEUE_TYPE_NEW, c.getQueue() );
         assertEquals( CARD_TYPE_NEW, c.getType() );
         // if we answer it, it should become a learn card
-        JSONObject t = intTime();
+        long t = intTime();
         col.getSched().answerCard(c, 1);
         assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
         assertEquals( CARD_TYPE_LRN, c.getType() );
@@ -3046,14 +3046,17 @@ public class UpstreamTest extends RobolectricTest {
             public void test_newLimits_V2()  throws Exception  {
         Collection col = getColV2();
         // add some notes
-        deck2 = col.getDecks().id("Default::foo");
-        for (int i=0; i < 30; i++) {
-        Note note = col.newNote();
-    }
-        note.setItem("Front","did")] = deck2;
-        col.addNote(note);
+            long deck2 = col.getDecks().id("Default::foo");
+            for (int i=0; i < 30; i++) {
+                Note note = col.newNote();
+                 note.setItem("Front", Integer.toString(i));
+               if (i > 4) {
+                    note.model().put("did", deck2);
+            }
+            col.addNote(note);
+        }
         // give the child deck a different configuration
-        c2 = col.getDecks().confId("new conf");
+        long c2 = col.getDecks().confId("new conf");
         col.getDecks().setConf(col.getDecks().get(deck2), c2);
         col.reset();
         // both confs have defaulted to a limit of 20
@@ -3114,19 +3117,19 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 1);
         // it should have three reps left to graduation
         assertEquals( 3, c.getLeft() % 1000 );
-        assertEquals( , c.getLeft() // 1000 )3
+        assertEquals(3 , c.getLeft() / 1000 );
             // it should be due notARealIn 30 seconds
-            JSONObject t = Math.round(c.getDue() - Utils.now());
+            long t = Math.round(c.getDue() - Utils.now());
         assertTrue(t >= 25 && t <= 40);
         // pass it once
         col.getSched().answerCard(c, 3);
         // it should be due notARealIn 3 minutes
-        dueIn = c.getDue() - Utils.now();
-        assertTrue(178 <= dueIn <= 180 * 1.25);
+        double dueIn = c.getDue() - Utils.now();
+        assertTrue(178 <= dueIn && dueIn <= 180 * 1.25);
         assertEquals( 2, c.getLeft() % 1000 );
-        assertEquals( , c.getLeft() // 1000 )2
+        assertEquals(2 , c.getLeft() / 1000 );
             // check log is accurate
-            Cursor log = col.getDb().first("select * from revlog order by id desc");
+            Cursor log = col.getDb().getDatabase().query("select * from revlog order by id desc");
         assertEquals( 3, log.getInt(3) );
         assertEquals( -180, log.getInt(4) );
         assertEquals( -30, log.getInt(5));
@@ -3134,9 +3137,9 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 3);
         // it should be due notARealIn 10 minutes
         dueIn = c.getDue() - Utils.now();
-        assertTrue(599 <= dueIn <= 600 * 1.25);
+        assertTrue(599 <= dueIn && dueIn <= 600 * 1.25);
         assertEquals( 1, c.getLeft() % 1000 );
-        assertEquals( , c.getLeft() // 1000 )1
+        assertEquals(1 , c.getLeft() / 1000 );
             // the next pass should graduate the card
             assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
         assertEquals( CARD_TYPE_LRN, c.getType() );
@@ -3255,7 +3258,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 3);
         // two reps to graduate, 1 more today
         assertEquals( 3, c.getLeft() % 1000 );
-        assertEquals( , c.getLeft() // 1000 )1
+        assertEquals(1 , c.getLeft() / 1000 );
                       assertArrayEquals( new int[]{0, 1, 0}, col.getSched().counts() );
         c = col.getSched().getCard();
         
@@ -3264,7 +3267,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 3);
                       assertEquals( col.getSched().getToday()+ 1, c.getDue() );
         assertEquals( QUEUE_TYPE_DAY_LEARN_RELEARN, c.getQueue() );
-        assertFalse(col.getSched().getCard());
+        assertNull(col.getSched().getCard());
         // for testing, move it back a day
                       c.setDue(c.getDue() - 1);
         c.flush();
@@ -3287,7 +3290,7 @@ public class UpstreamTest extends RobolectricTest {
         // the last pass should graduate it into a review card
         assertEquals( 86400, col.getSched().nextIvl(c, 3) );
         col.getSched().answerCard(c, 3);
-                      assertEquals( CARD_TYPE_REV, c.getType();
+                      assertEquals( CARD_TYPE_REV, c.getType());
                                     assertEquals(QUEUE_TYPE_REV, c.getQueue() );
         // if the lapse step is tomorrow, failing it should handle the counts
         // correctly
@@ -3295,7 +3298,7 @@ public class UpstreamTest extends RobolectricTest {
         c.flush();
         col.reset();
                       assertArrayEquals( new int[]{0, 0, 1}, col.getSched().counts() );
-        DeckConfig conf = col.getSched()._cardConf(c);
+        conf = col.getSched()._cardConf(c);
         conf.getJSONObject("lapse").put("delays", new JSONArray(new double [] {1440}));
         col.getDecks().save(conf);
         c = col.getSched().getCard();
@@ -3368,6 +3371,7 @@ public class UpstreamTest extends RobolectricTest {
         c = cardcopy.clone();
         c.setLapses(7);
         c.flush();
+        /* todo hook
         // steup hook
         hooked = new [] {};
         
@@ -3380,23 +3384,24 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( QUEUE_TYPE_SUSPENDED, c.getQueue() );
         c.load();
         assertEquals( QUEUE_TYPE_SUSPENDED, c.getQueue() );
+         */
     }
         
         @Test
             public void test_review_limits() throws Exception {
         Collection col=getColV2();
         
-        parent=col.getDecks().get(col.getDecks().id("parent"));
-        child=col.getDecks().get(col.getDecks().id("parent::child"));
+        Deck parent=col.getDecks().get(col.getDecks().id("parent"));
+            Deck child=col.getDecks().get(col.getDecks().id("parent::child"));
         
-        pconf=col.getDecks().getConf(col.getDecks().confId("parentConf"));
-        cconf=col.getDecks().getConf(col.getDecks().confId("childConf"));
+        DeckConfig pconf=col.getDecks().getConf(col.getDecks().confId("parentConf"));
+            DeckConfig cconf=col.getDecks().getConf(col.getDecks().confId("childConf"));
 
         pconf.getJSONObject("rev").put("perDay",5);
-        col.getDecks().update_config(pconf);
+        col.getDecks().updateConf(pconf);
         col.getDecks().setConf(parent,pconf.getLong("id"));
         cconf.getJSONObject("rev").put("perDay",10);
-        col.getDecks().update_config(cconf);
+        col.getDecks().updateConf(cconf);
         col.getDecks().setConf(child,cconf.getLong("id"));
 
         Model m=col.getModels().current();
@@ -3411,7 +3416,7 @@ public class UpstreamTest extends RobolectricTest {
             col.addNote(note);
 
              // make them reviews
-             c = note.cards().get(0);
+             Card c = note.cards().get(0);
              c.setQueue(CARD_TYPE_REV);
              c.setType(QUEUE_TYPE_REV);
              c.setDue(0);
@@ -3419,23 +3424,24 @@ public class UpstreamTest extends RobolectricTest {
         }
 
             List<AbstractSched.DeckDueTreeNode> tree = col.getSched().deckDueTree();
+            AbstractSched.DeckDueTreeNode tree0 = tree.get(0);
          // (('parent', 1514457677462, 5, 0, 0, (('child', 1514457677463, 5, 0, 0, ()),)))
-         assertEquals( 5  // paren, tree0.review_count )t
-                       assertArrayEquals( new int[]{  // chil, tree[0}].getChildren().get(0).review_count )d
+         assertEquals( 5,  tree0.getRevCount());  // paren, tree0.review_count )t
+            assertEquals(5, tree0.getChildren().get(0).getRevCount());
 
          // .counts() should match
-         col.getDecks().select(child.getLong("id");
+         col.getDecks().select(child.getLong("id"));
          col.getSched().reset();
                                assertArrayEquals( new int[]{0, 0, 5}, col.getSched().counts() );
 
          // answering a card notARealIn the child should decrement parent count
-         c = col.getSched().getCard();
+         Card c = col.getSched().getCard();
          col.getSched().answerCard(c, 3);
-                               assertArrayEquals( new int[]{0, 0, 4}, col.getSched().counts() );
+         assertArrayEquals( new int[]{0, 0, 4}, col.getSched().counts() );
 
-         tree = col.getSched().deckDueTree().getChildren();
-                       assertEquals( 4  // paren, tree0.review_count )t
-                              assertEquals( 4  // chil, tree0.getChildren().get(0).review_count )d
+         tree = col.getSched().deckDueTree();
+         assertEquals( 4 , tree0.getRevCount() );
+         assertEquals( 4 , tree0.getChildren().get(0).getRevCount());
      }
 
      @Test
