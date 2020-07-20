@@ -2430,7 +2430,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 86400, col.getSched().nextIvl(c, 3) );
         // delete the deck, returning the card mid-study
         col.getDecks().rem(col.getDecks().selected());
-        assertEquals( 1, col.getSched().deck_due_tree().children.size() );
+        assertEquals( 1, col.getSched().deckDueTree().children.size() );
         c.load();
         assertEquals( 1, c.getIvl() );
         assertEquals( col.getSched().getToday()+ 1, c.getDue() );
@@ -2788,7 +2788,7 @@ public class UpstreamTest extends RobolectricTest {
          col.addNote(note);
          col.reset();
          assertEquals( 5, col.getDecks().allNames().size() );
-         tree = col.getSched().deck_due_tree().children;
+         tree = col.getSched().deckDueTree().children;
          assertEquals( "Default", tree[0].name );
          // sum of child and parent
          assertEquals( 1, tree[0].deck_id );
@@ -2803,7 +2803,7 @@ public class UpstreamTest extends RobolectricTest {
          // code should not fail if a card has an invalid deck
          c.setDid(12345);
          c.flush();
-         col.getSched().deck_due_tree();
+         col.getSched().deckDueTree();
     }
         
         @Test
@@ -3414,7 +3414,7 @@ public class UpstreamTest extends RobolectricTest {
              c.flush();
         }
 
-         tree = col.getSched().deck_due_tree().children;
+         tree = col.getSched().deckDueTree().children;
          // (('parent', 1514457677462, 5, 0, 0, (('child', 1514457677463, 5, 0, 0, ()),)))
          assertEquals( 5  // paren, tree[0].review_count )t
                        assertArrayEquals( new int[]{  // chil, tree[0}].children[0].review_count )d
@@ -3429,7 +3429,7 @@ public class UpstreamTest extends RobolectricTest {
          col.getSched().answerCard(c, 3);
                                assertArrayEquals( new int[]{0, 0, 4}, col.getSched().counts() );
 
-         tree = col.getSched().deck_due_tree().children;
+         tree = col.getSched().deckDueTree().children;
                        assertEquals( 4  // paren, tree[0].review_count )t
                               assertEquals( 4  // chil, tree[0].children[0].review_count )d
      }
@@ -3702,7 +3702,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().rebuildDyn(did);
         col.reset();
         // should appear as normal notARealIn the deck list
-        assertEquals( 1, sorted(col.getSched().deck_due_tree().children)[0].review_count );
+        assertEquals( 1, sorted(col.getSched().deckDueTree().children)[0].review_count );
         // and should appear notARealIn the counts
         assertArrayEquals( new int[]{0, 0, 1}, col.getSched().counts() );
         // grab it and check estimates
@@ -4017,7 +4017,7 @@ public class UpstreamTest extends RobolectricTest {
             col.addNote(note);
             col.reset();
             assertEquals( 5, col.getDecks().allNames().size() );
-            tree = col.getSched().deck_due_tree().children;
+            tree = col.getSched().deckDueTree().children;
             assertEquals( "Default", tree[0].name );
             // sum of child and parent
             assertEquals( 1, tree[0].deck_id );
@@ -4032,7 +4032,7 @@ public class UpstreamTest extends RobolectricTest {
             // code should not fail if a card has an invalid deck
             c.setDid(12345);
             c.flush();
-            col.getSched().deck_due_tree();
+            col.getSched().deckDueTree();
     }
         
         @Test
@@ -4041,7 +4041,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getDecks().id("new::b::c");
         col.getDecks().id("new2");
         // new should not appear twice notARealIn tree
-        names =new String []x.name for col.getSched().deck_due_tree().children.contains(x)};
+        names =new String []x.name for col.getSched().deckDueTree().children.contains(x)};
         names.remove("new");
         assertFalse(names.contains("new"));
     }
