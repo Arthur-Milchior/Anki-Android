@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import androidx.annotation.VisibleForTesting;
+
 /**
  A Card is the ultimate entity subject to review; it encapsulates the scheduling parameters (from which to derive
  the next interval), the note it is derived from (from which field data is retrieved), its own ownership (which deck it
@@ -402,6 +404,11 @@ public class Card implements Cloneable {
 
     public long getId() {
         return mId;
+    }
+
+    @VisibleForTesting
+    public void setId(long id) {
+        mId = id;
     }
 
 

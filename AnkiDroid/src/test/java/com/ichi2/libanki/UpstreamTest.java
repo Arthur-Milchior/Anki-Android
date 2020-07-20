@@ -2443,20 +2443,17 @@ public class UpstreamTest extends RobolectricTest {
         col.reset();
         assertArrayEquals( new int[]{0, 0, 1}, col.getSched().counts() );
         // cram again
-        long did = col.getDecks().newDyn("Cram");
+        did = col.getDecks().newDyn("Cram");
         col.getSched().rebuildDyn(did);
         col.reset();
         assertArrayEquals( new int[]{0, 0, 1}, col.getSched().counts() );
         c.load();
         assertEquals( 4, col.getSched().answerButtons(c) );
         // add a sibling so we can test minSpace, etc
-        c.Collection col = null;
-        c2 = copy.deepcopy(c);
-        c2.Collection col = c.Collection col = col;
-        c2.getId() = 0;
-        c2.getOrd() = 1;
-        c2.setDue(3)25;
-        c2.Collection col = c.col;
+        Card c2 = c.clone();
+        c2.setId(0);
+        c2.setOrd(1);
+        c2.setDue(325);
         c2.flush();
         // should be able to answer it
         c = col.getSched().getCard();
