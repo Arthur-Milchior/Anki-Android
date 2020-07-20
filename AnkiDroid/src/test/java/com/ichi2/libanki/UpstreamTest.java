@@ -690,10 +690,10 @@ public class UpstreamTest extends RobolectricTest {
         Card c = note.cards().get(0);
         c.setQueue(QUEUE_TYPE_REV);
         c.setType(CARD_TYPE_REV);
-        assertEquals( new Card [] {}, col.findCards("is:review") );
+        assertEquals( 0, col.findCards("is:review").size() );
         c.flush();
         assertEquals(new Long[] {c.getId()}, col.findCards("is:review"));
-        assertEquals( new Card [] {}, col.findCards("is:due") );
+        assertEquals( 0, col.findCards("is:due").size() );
         c.setDue(0);
         c.setQueue(QUEUE_TYPE_REV);
         c.flush();
@@ -705,7 +705,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getDb().execute("update cards set mod = mod + 1 where long id = ?", new Object[] {c.getId()});
          assertEquals( new long [] {c.getId()}, col.findCards("is:suspended"));
          // nids
-         assertEquals( new Card [] {}, col.findCards("nid:54321") );
+         assertEquals(0, col.findCards("nid:54321").size() );
          assertEquals( 2, col.findCards("nid:"+note.getId()).size() );
          assertEquals( 2, col.findCards("nid:"+n1id+","+n2id).size() );
          // templates
@@ -1317,7 +1317,7 @@ public class UpstreamTest extends RobolectricTest {
     public void test_strings(){
         Collection col = getCol();
         long mid = col.getModels().current().getLong("id");
-        assertEquals( new String [] {}, col.getMedia().filesInStr(mid, "aoeu") );
+        assertEquals( 0, col.getMedia().filesInStr(mid, "aoeu").size() );
         assertEquals( new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg'>ao") );
         assertEquals( new String [] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg' style='test'>ao") );
         assertEquals( new String [] {"foo.jpg", "bar.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg'><img src=\"bar.jpg\">ao"));
