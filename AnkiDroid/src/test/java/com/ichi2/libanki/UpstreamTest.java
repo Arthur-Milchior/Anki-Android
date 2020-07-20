@@ -878,7 +878,7 @@ public class UpstreamTest extends RobolectricTest {
         // regex replace
         assertEquals(0, col.findReplace(nids, "B.r", "reg"));
         note.load();
-        assertEquals(note.getItem("Back"), "reg");
+        assertNotEquals("reg", note.getItem("Back"));
         assertEquals(1, col.findReplace(nids, "B.r", "reg", true));
         note.load();
         assertEquals(note.getItem("Back"), "reg");
