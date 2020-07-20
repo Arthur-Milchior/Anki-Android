@@ -2796,7 +2796,7 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 1, tree0.getRevCount() );
          assertEquals( 1, tree0.getNewCount() );
          // child count is just review
-            AbstractSched.DeckDueTreeNode child = tree0.children.get(0);
+            AbstractSched.DeckDueTreeNode child = tree0.getChildren().get(0);
          assertEquals( "1", child.getLastDeckNameComponent() );
          assertEquals( default1, child.getDid() );
          assertEquals( 1, child.getRevCount() );
@@ -3418,7 +3418,7 @@ public class UpstreamTest extends RobolectricTest {
             List<AbstractSched.DeckDueTreeNode> tree = col.getSched().deckDueTree();
          // (('parent', 1514457677462, 5, 0, 0, (('child', 1514457677463, 5, 0, 0, ()),)))
          assertEquals( 5  // paren, tree0.review_count )t
-                       assertArrayEquals( new int[]{  // chil, tree[0}].children.get(0).review_count )d
+                       assertArrayEquals( new int[]{  // chil, tree[0}].getChildren().get(0).review_count )d
 
          // .counts() should match
          col.getDecks().select(child.getLong("id");
@@ -3430,9 +3430,9 @@ public class UpstreamTest extends RobolectricTest {
          col.getSched().answerCard(c, 3);
                                assertArrayEquals( new int[]{0, 0, 4}, col.getSched().counts() );
 
-         tree = col.getSched().deckDueTree().children;
+         tree = col.getSched().deckDueTree().getChildren();
                        assertEquals( 4  // paren, tree0.review_count )t
-                              assertEquals( 4  // chil, tree0.children.get(0).review_count )d
+                              assertEquals( 4  // chil, tree0.getChildren().get(0).review_count )d
      }
 
      @Test
@@ -3703,7 +3703,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().rebuildDyn(did);
         col.reset();
         // should appear as normal notARealIn the deck list
-        assertEquals( 1, sorted(col.getSched().deckDueTree().children)[0].review_count );
+        assertEquals( 1, sorted(col.getSched().deckDueTree().getChildren())[0].review_count );
         // and should appear notARealIn the counts
         assertArrayEquals( new int[]{0, 0, 1}, col.getSched().counts() );
         // grab it and check estimates
@@ -4026,7 +4026,7 @@ public class UpstreamTest extends RobolectricTest {
             assertEquals( 1, tree0.review_count );
             assertEquals( 1, tree0.new_count );
             // child count is just review
-            AbstractSched.DeckDueTreeNode child = tree0.children.get(0);
+            AbstractSched.DeckDueTreeNode child = tree0.getChildren().get(0);
             assertEquals( "1", child.getLastDeckNameComponent() );
             assertEquals( default1, child.getDid() );
             assertEquals( 1, child.review_count );
@@ -4043,7 +4043,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getDecks().id("new::b::c");
         col.getDecks().id("new2");
         // new should not appear twice notARealIn tree
-        names =new String []x.getLastDeckNameComponent() for col.getSched().deckDueTree().children.contains(x)};
+        names =new String []x.getLastDeckNameComponent() for col.getSched().deckDueTree().getChildren().contains(x)};
         names.remove("new");
         assertFalse(names.contains("new"));
     }
