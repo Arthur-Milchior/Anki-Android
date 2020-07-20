@@ -2384,7 +2384,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 2, col.getSched().answerButtons(c) );
         assertEquals( 600, col.getSched().nextIvl(c, 1) );
         assertEquals( 138 * 60 * 60 * 24, col.getSched().nextIvl(c, 2) );
-        cram = col.getDecks().get(did);
+        Deck cram = col.getDecks().get(did);
         cram.put("delays", new JSONArray(new double [] {1, 10}));
         col.getDecks().save(cram);
         assertEquals( 3, col.getSched().answerButtons(c) );
@@ -2498,7 +2498,7 @@ public class UpstreamTest extends RobolectricTest {
         col.addNote(note);
         // cram deck
         long did = col.getDecks().newDyn("Cram");
-        cram = col.getDecks().get(did);
+        Deck cram = col.getDecks().get(did);
         cram.put("resched", false);
         col.getDecks().save(cram);
         col.getSched().rebuildDyn(did);
@@ -3799,7 +3799,7 @@ public class UpstreamTest extends RobolectricTest {
         col.addNote(note2);
         // cram deck
         long did = col.getDecks().newDyn("Cram");
-        cram = col.getDecks().get(did);
+        Deck cram = col.getDecks().get(did);
         cram.put("resched", false);
         col.getDecks().save(cram);
         col.getSched().rebuildDyn(did);
