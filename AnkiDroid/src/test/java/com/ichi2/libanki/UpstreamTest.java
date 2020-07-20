@@ -3556,12 +3556,12 @@ public class UpstreamTest extends RobolectricTest {
         // cards notARealIn learning
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         assertEquals( 30, col.getSched().nextIvl(c, 1) );
-        assertEquals( (30 + 180, col.getSched().nextIvl(c, 2) ) // )2
+        assertEquals( (30 + 180)/2, col.getSched().nextIvl(c, 2) );
             assertEquals( 180, col.getSched().nextIvl(c, 3) );
         assertEquals( 4 * 86400, col.getSched().nextIvl(c, 4) );
         col.getSched().answerCard(c, 3);
         assertEquals( 30, col.getSched().nextIvl(c, 1) );
-        assertEquals( (180 + 600, col.getSched().nextIvl(c, 2) ) // )2
+        assertEquals( (180 + 600)/2, col.getSched().nextIvl(c, 2));
             assertEquals( 600, col.getSched().nextIvl(c, 3) );
         assertEquals( 4 * 86400, col.getSched().nextIvl(c, 4) );
         col.getSched().answerCard(c, 3);
@@ -3606,7 +3606,7 @@ public class UpstreamTest extends RobolectricTest {
         note = col.newNote();
         note.setItem("Front","two");
         col.addNote(note);
-        c2 = note.cards().get(0);
+        Card c2 = note.cards().get(0);
         // burying
         col.getSched().buryCards(new long [] {c.getId()}, manual=true)  // pylint: disable=unexpected-keyword-arg
             c.load();
@@ -3616,7 +3616,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( QUEUE_TYPE_SIBLING_BURIED, c2.getQueue() );
         
         col.reset();
-        assertFalse(col.getSched().getCard());
+        assertNull(col.getSched().getCard());
         
         col.getSched().unburyCardsForDeck(  // pylint: disable=unexpected-keyword-arg
         type="manual";
@@ -3649,14 +3649,14 @@ public class UpstreamTest extends RobolectricTest {
         Card c = note.cards().get(0);
         // suspending
         col.reset();
-        assertTrue(col.getSched().getCard());
+        assertNotNull(col.getSched().getCard());
         col.getSched().suspendCards(new long [] {c.getId()});
         col.reset();
-        assertFalse(col.getSched().getCard());
+        assertNull(col.getSched().getCard());
         // unsuspending
         col.getSched().unsuspendCards(new long [] {c.getId()});
         col.reset();
-        assertTrue(col.getSched().getCard());
+        assertNotNull(col.getSched().getCard());
         // should cope with rev cards being relearnt
         c.setDue(0);
         c.setIvl(100);
@@ -3667,7 +3667,7 @@ public class UpstreamTest extends RobolectricTest {
         c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
         assertTrue(c.getDue() >= Utils.now());
-        due = c.getDue();
+        long due = c.getDue();
         assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
         assertEquals( CARD_TYPE_RELEARNING, c.getType() );
         col.getSched().suspendCards(new long [] {c.getId()});
@@ -3714,7 +3714,9 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().rebuildDyn(did);
         col.reset();
         // should appear as normal notARealIn the deck list
+        /* todo sort
         assertEquals( 1, sorted(col.getSched().deckDueTree().getChildren())[0].review_count );
+         */
         // and should appear notARealIn the counts
         assertArrayEquals( new int[]{0, 0, 1}, col.getSched().counts() );
         // grab it and check estimates
@@ -3729,7 +3731,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 3);
         checkRevIvl(col, c, 90);
         assertEquals( col.getSched().getToday()+ c.getIvl(), c.getDue() );
-        assertFalse(c.getODue());
+        assertEquals(0L, c.getODue());
         // should not be notARealIn learning
         assertEquals( QUEUE_TYPE_REV, c.getQueue() );
         // should be logged as a cram rep
@@ -3805,7 +3807,7 @@ public class UpstreamTest extends RobolectricTest {
         note.setItem("Front","one");
         col.addNote(note);
         Card c = note.cards().get(0);
-        orig = c.clone();
+        Card orig = c.clone();
         Note note2 = col.newNote();
         note2.setItem("Front","two");
         col.addNote(note2);
@@ -3822,12 +3824,12 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 600, col.getSched().nextIvl(c, 1) );
         assertEquals( 0, col.getSched().nextIvl(c, 2) );
         // failing it will push its due time back
-        due = c.getDue();
+        long due = c.getDue();
         col.getSched().answerCard(c, 1);
         assertNotEquals(c.getDue(), due);
         
         // the other card should come next
-        c2 = col.getSched().getCard();
+        Card c2 = col.getSched().getCard();
         assertNotEquals(c2.getId(), c.getId());
         
         // passing it will remove it
@@ -3838,7 +3840,7 @@ public class UpstreamTest extends RobolectricTest {
         
         // the other card should appear again
         c = col.getSched().getCard();
-        assertEquals( orig.getId(, c.getId() ));
+        assertEquals( orig.getId(), c.getId() );
         
         // emptying the filtered deck should restore card
         col.getSched().emptyDyn(did);
@@ -3858,7 +3860,7 @@ public class UpstreamTest extends RobolectricTest {
         t.put("qfmt", "{{Back}}");
         t.put("afmt", "{{Front}}");
         mm.addTemplateModChanged(m, t);
-        JSONObject t = mm.newTemplate("f2");
+        t = mm.newTemplate("f2");
         t.put("qfmt", "{{Front}}");
         t.put("afmt", "{{Back}}");
         mm.addTemplateModChanged(m, t);
@@ -3961,7 +3963,7 @@ public class UpstreamTest extends RobolectricTest {
         // add a few review cards, due today
         for (int i=0; i < 5; i++){
         Note note=col.newNote();
-        note.setItem("Front","num")+str(i);
+        note.setItem("Front","num"+i);
         col.addNote(note);
         Card c=note.cards().get(0);
         c.setType(CARD_TYPE_REV);
@@ -3974,10 +3976,10 @@ public class UpstreamTest extends RobolectricTest {
         Card c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
         // the next card should be another review
-        c2 = col.getSched().getCard();
+        Card c2 = col.getSched().getCard();
         assertEquals( QUEUE_TYPE_REV, c2.getQueue() );
         // if the failed card becomes due, it should show first
-        c.setDue(i)ntTime() - 1;
+        c.setDue(intTime() - 1);
         c.flush();
         col.reset();
         c = col.getSched().getCard();
@@ -3997,7 +3999,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 1);
         c = col.getSched().getCard();
         col.getSched().answerCard(c, 4);
-        assertFalse(col.getSched().getCard());
+        assertNull(col.getSched().getCard());
     }
         
         @Test
@@ -4010,7 +4012,8 @@ public class UpstreamTest extends RobolectricTest {
         // and one that's a child
             note = col.newNote();
             note.setItem("Front","two");
-            default1 = note.model().put("did", col.getDecks().id("Default::1"));
+            Long default1 = col.getDecks().id("Default::1");
+            note.model().put("did", default1);
             col.addNote(note);
             // make it a review card
             Card c = note.cards().get(0);
@@ -4020,28 +4023,28 @@ public class UpstreamTest extends RobolectricTest {
             // add one more with a new deck
             note = col.newNote();
             note.setItem("Front","two");
-            foobar = note.model().put("did", col.getDecks().id("foo::bar"));
+            note.model().put("did", col.getDecks().id("foo::bar"));
             col.addNote(note);
             // and one that's a sibling
             note = col.newNote();
             note.setItem("Front","three");
-            foobaz = note.model().put("did", col.getDecks().id("foo::baz"));
+            note.model().put("did", col.getDecks().id("foo::baz"));
             col.addNote(note);
             col.reset();
             assertEquals( 5, col.getDecks().allNames().size() );
-            tree = col.getSched().deckDueTree();
-            tree0 = tree.get(0);
+            List<AbstractSched.DeckDueTreeNode> tree = col.getSched().deckDueTree();
+            AbstractSched.DeckDueTreeNode tree0 = tree.get(0);
             assertEquals( "Default", tree0.getLastDeckNameComponent() );
             // sum of child and parent
             assertEquals( 1, tree0.getDid() );
-            assertEquals( 1, tree0.review_count );
-            assertEquals( 1, tree0.new_count );
+            assertEquals( 1, tree0.getRevCount() );
+            assertEquals( 1, tree0.getNewCount() );
             // child count is just review
             AbstractSched.DeckDueTreeNode child = tree0.getChildren().get(0);
             assertEquals( "1", child.getLastDeckNameComponent() );
-            assertEquals( default1, child.getDid() );
-            assertEquals( 1, child.review_count );
-            assertEquals( 0, child.new_count );
+            assertEquals( default1, (long) child.getDid() );
+            assertEquals( 1, child.getRevCount() );
+            assertEquals( 0, child.getNewCount() );
             // code should not fail if a card has an invalid deck
             c.setDid(12345);
             c.flush();
@@ -4054,7 +4057,10 @@ public class UpstreamTest extends RobolectricTest {
         col.getDecks().id("new::b::c");
         col.getDecks().id("new2");
         // new should not appear twice notARealIn tree
-        names =new String []x.getLastDeckNameComponent() for col.getSched().deckDueTree().getChildren().contains(x)};
+            List<String> names = new ArrayList<>();
+            for (AbstractSched.DeckDueTreeNode tree: col.getSched().deckDueTree()) {
+                names.add(tree.getLastDeckNameComponent());
+            }
         names.remove("new");
         assertFalse(names.contains("new"));
     }
@@ -4069,22 +4075,24 @@ public class UpstreamTest extends RobolectricTest {
         // and one that's a child
             note = col.newNote();
             note.setItem("Front","two");
-            default1 = note.model().put("did", col.getDecks().id("Default::2"));
+            long default1 = col.getDecks().id("Default::2");
+                    note.model().put("did", default1);
             col.addNote(note);
             // and another that's higher up
             note = col.newNote();
             note.setItem("Front","three");
-            default1 = note.model().put("did", col.getDecks().id("Default::1"));
+            default1 = col.getDecks().id("Default::1");
+            note.model().put("did", default1);
             col.addNote(note);
             // should get top level one first, then ::1, then ::2
             col.reset();
             assertArrayEquals( new int[]{3, 0, 0}, col.getSched().counts() );
-            for (String  i: "one", "three", "two") {
-        Card c = col.getSched().getCard();
-    }
-            assertTrue(c.note().put("Front",= i));
+            for (String  i: new String[]{"one", "three", "two"}) {
+           Card c = col.getSched().getCard();
+            assertEquals(i, c.note().getItem("Front")));
             col.getSched().answerCard(c, 3);
     }
+        }
         
         @Test
             public void test_reorder() throws Exception {
@@ -4093,11 +4101,11 @@ public class UpstreamTest extends RobolectricTest {
         Note note = col.newNote();
         note.setItem("Front","one");
         col.addNote(note);
-        note2 = col.newNote();
+        Note note2 = col.newNote();
         note2.setItem("Front","two");
         col.addNote(note2);
         assertEquals( 2, note2.cards().get(0).getDue() );
-        found = false;
+        Boolean found = false;
         // 50/50 chance of being reordered
         for (int i=0; i < 20; i++) {
         col.getSched().randomizeCards(1);
@@ -4110,10 +4118,10 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().orderCards(1);
         assertEquals( 1, note.cards().get(0).getDue() );
         // shifting
-        note3 = col.newNote();
+        Note note3 = col.newNote();
         note3.setItem("Front","three")b;
         col.addNote(note3);
-        note4 = col.newNote();
+        Note note4 = col.newNote();
         note4.setItem("Front","four");
         col.addNote(note4);
         assertEquals( 1, note.cards().get(0).getDue() );
@@ -4322,13 +4330,13 @@ public class UpstreamTest extends RobolectricTest {
         long due = c.getDue();
         assertTrue((expected - 10 < due) && (due < expected * 1.25));
         
-        ivl = col.getDb().queryLongScalar("select ivl from revlog");
-        assertEquals( -5.5 * 60, ivl );
+        long ivl = col.getDb().queryLongScalar("select ivl from revlog");
+        assertEquals( (long) (-5.5 * 60), ivl );
     }
         /*****************
         ** Stats        *
         *****************/
-        
+        /* TODO put in Collection
         @Test
             public void test_stats() throws Exception {
         Collection col = getCol();
@@ -4350,6 +4358,7 @@ public class UpstreamTest extends RobolectricTest {
         Collection col = getCol();
         assertTrue(col.stats().report());
     }
+
         
         @Test
             public void test_graphs() throws Exception {
@@ -4360,7 +4369,7 @@ public class UpstreamTest extends RobolectricTest {
         with open(os.path.join(dir, "test.html"), "w", encoding="UTF-8") as note:
         note.write(rep);
         return;
-    }
+    } */
         /*****************
         ** Templates    *
         *****************/
@@ -4386,44 +4395,44 @@ public class UpstreamTest extends RobolectricTest {
             public void test_op() throws Exception {
         Collection col = getColV2();
         // should have no undo by default
-        assertFalse(col.undoName());
+        assertEquals("", col.undoName(getTargetContext().getResources()));
         // let's adjust a study option
         col.save("studyopts");
-        col.conf.put("abc", 5);
+        col.getConf().put("abc", 5);
         // it should be listed as undoable
-        assertEquals( "studyopts", col.undoName() );
+        assertEquals( "studyopts", col.undoName(getTargetContext().getResources()) );
         // with about 5 minutes until it's clobbered
         assertTrue(Utils.now() - col._lastSave < 1);
         // undoing should restore the old value
         col.undo();
-        assertFalse(col.undoName());
-        assertFalse(col.getConf().contains("abc"));
+        assertEquals("", col.undoName(getTargetContext().getResources()));
+        assertFalse(col.getConf().has("abc"));
         // an (auto)save will clear the undo
         col.save("foo");
-        assertEquals( "foo", col.undoName() );
+        assertEquals( "foo", col.undoName(getTargetContext().getResources()) );
         col.save();
-        assertFalse(col.undoName());
+        assertEquals("", col.undoName(getTargetContext().getResources()));
         // and a review will, too
         col.save("add");
         Note note = col.newNote();
         note.setItem("Front","one");
         col.addNote(note);
         col.reset();
-        assertEquals( "add", col.undoName() );
+        assertEquals( "add", col.undoName(getTargetContext().getResources()) );
         Card c = col.getSched().getCard();
         col.getSched().answerCard(c, 2);
-        assertEquals( "Review", col.undoName() );
+        assertEquals( "Review", col.undoName(getTargetContext().getResources()) );
     }
-        
+
         @Test
             public void test_review() throws Exception {
-        Collection col = getColV2);
+        Collection col = getColV2();
         col.getConf().put("counts", COUNT_REMAINING);
         Note note = col.newNote();
         note.setItem("Front","one");
         col.addNote(note);
         col.reset();
-        assertFalse(col.undoName());
+        assertEquals("", col.undoName(getTargetContext().getResources()));
         // answer
                       assertArrayEquals( new int[]{1, 0, 0}, col.getSched().counts() );
         Card c = col.getSched().getCard();
@@ -4433,14 +4442,14 @@ public class UpstreamTest extends RobolectricTest {
                       assertArrayEquals( new int[]{0, 1, 0}, col.getSched().counts() );
         assertEquals( QUEUE_TYPE_LRN, c.getQueue() );
         // undo
-        assertTrue(col.undoName());
+        assertNotEquals("", col.undoName(getTargetContext().getResources()));
         col.undo();
         col.reset();
                       assertArrayEquals( new int[]{1, 0, 0}, col.getSched().counts() );
         c.load();
         assertEquals( QUEUE_TYPE_NEW, c.getQueue() );
         assertNotEquals(1001, c.getLeft());
-        assertFalse(col.undoName());
+        assertEquals("", col.undoName(getTargetContext().getResources()));
         // we should be able to undo multiple answers too
         note = col.newNote();
         note.setItem("Front","two");
@@ -4461,9 +4470,9 @@ public class UpstreamTest extends RobolectricTest {
         // performing a normal op will clear the review queue
         c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
-        assertEquals( "Review", col.undoName() );
+        assertEquals( "Review", col.undoName(getTargetContext().getResources()) );
         col.save("foo");
-        assertEquals( "foo", col.undoName() );
+        assertEquals( "foo", col.undoName(getTargetContext().getResources()) );
         col.undo();
     }
         

@@ -338,6 +338,10 @@ public class Collection {
         save(null, mod);
     }
 
+    public synchronized void save(String name) {
+        save(name, 0);
+    }
+
 
     public synchronized void save(String name, long mod) {
         // let the managers conditionally flush
