@@ -2809,30 +2809,30 @@ public class UpstreamTest extends RobolectricTest {
         
         @Test
             public void test_deckFlow() throws Exception {
-        Collection col = getColV1();
-        // add a note with default deck
-        Note note = col.newNote();
-        note.setItem("Front","one");
-        col.addNote(note);
-        // and one that's a child
-        note = col.newNote();
-        note.setItem("Front","two");
-        long default1 = note.model().put("did", col.getDecks().id("Default::2"));
-        col.addNote(note);
-        // and another that's higher up
-        note = col.newNote();
-        note.setItem("Front","three");
-        default1 = note.model().put("did", col.getDecks().id("Default::1"));
-        col.addNote(note);
-        // should get top level one first, then ::1, then ::2
-        col.reset();
-        assertArrayEquals( new int[]{3, 0, 0}, col.getSched().counts() );
-        for (String i: "one", "three", "two") {
-        Card c = col.getSched().getCard();
-    }
-        assertTrue(c.note().put("Front",= i));
-        col.getSched().answerCard(c, 2);
-    }
+            Collection col = getColV1();
+            // add a note with default deck
+            Note note = col.newNote();
+            note.setItem("Front", "one");
+            col.addNote(note);
+            // and one that's a child
+            note = col.newNote();
+            note.setItem("Front", "two");
+            JSONObject default1 = note.model().put("did", col.getDecks().id("Default::2"));
+            col.addNote(note);
+            // and another that's higher up
+            note = col.newNote();
+            note.setItem("Front", "three");
+            default1 = note.model().put("did", col.getDecks().id("Default::1"));
+            col.addNote(note);
+            // should get top level one first, then ::1, then ::2
+            col.reset();
+            assertArrayEquals(new int[] {3, 0, 0}, col.getSched().counts());
+            for (String i : new String[] {"one", "three", "two"}) {
+                Card c = col.getSched().getCard();
+                assertEquals(c.note().getItem("Front"), i);
+                col.getSched().answerCard(c, 2);
+            }
+        }
         
         @Test
             public void test_reorder() throws Exception {
@@ -2868,11 +2868,14 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 2, note2.cards().get(0).getDue() );
         assertEquals( 3, note3.cards().get(0).getDue() );
         assertEquals( 4, note4.cards().get(0).getDue() );
+        /* todo sortCard
         col.getSched().sortCards(new long [] {note3.cards().get(0).getId(), note4.cards().get(0).getId()}, start=1, shift=true);
         assertEquals( 3, note.cards().get(0).getDue() );
         assertEquals( 4, note2.cards().get(0).getDue() );
         assertEquals( 1, note3.cards().get(0).getDue() );
         assertEquals( 2, note4.cards().get(0).getDue() );
+
+         */
     }
         
         @Test
@@ -2905,7 +2908,7 @@ public class UpstreamTest extends RobolectricTest {
         c.load();
     assertEquals( col.getSched().getToday(), c.getDue());
         assertEquals( 1, c.getIvl() );
-        assertEquals( CARD_TYPE_REV, c.setType());
+        assertEquals( CARD_TYPE_REV, c.getType());
         assertEquals(QUEUE_TYPE_REV, c.getQueue());
         col.getSched().reschedCards(new long [] {c.getId()}, 1, 1);
         c.load();
