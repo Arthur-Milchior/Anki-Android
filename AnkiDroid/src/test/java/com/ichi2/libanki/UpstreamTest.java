@@ -780,7 +780,7 @@ public class UpstreamTest extends RobolectricTest {
          // should be able to limit to parent col, no children
          long id = col.getDb().queryLongScalar("select id from cards limit 1");
          col.getDb().execute(
-        "update cards set long did = ? where long id = ?", new Object[] {col.getDecks().id("Default::Child"), id});
+                             "update cards set long did = ? where long id = ?", new Object[] {col.getDecks().id("Default::Child"), id});
          col.save();
          assertEquals(7, col.findCards("deck:default").size());
          assertEquals(1, col.findCards("deck:default::child").size());
@@ -788,9 +788,9 @@ public class UpstreamTest extends RobolectricTest {
          // properties
          id = col.getDb().queryLongScalar("select id from cards limit 1");
          col.getDb().execute(
-        "update cards set queue=2, ivl=10, reps=20, due=30, factor=2200 where long id = ?",
-            new Object[]{id}
-       );
+                             "update cards set queue=2, ivl=10, reps=20, due=30, factor=2200 where long id = ?",
+                             new Object[]{id}
+                             );
          assertEquals(1, col.findCards("prop:ivl>5").size());
          assertTrue(col.findCards("prop:ivl<5").size() > 1);
          assertEquals(1, col.findCards("prop:ivl>=5").size());
@@ -808,27 +808,27 @@ public class UpstreamTest extends RobolectricTest {
          assertTrue(col.findCards("-prop:ease>2").size() > 1);
          // recently failed
          if (! isNearCutoff()) {
-        assertEquals(0, col.findCards("rated:1:1").size());
-        assertEquals(0, col.findCards("rated:1:2").size());
-        c = col.getSched().getCard();
-        col.getSched().answerCard(c, 2);
-        assertEquals(0, col.findCards("rated:1:1").size());
-        assertEquals(1, col.findCards("rated:1:2").size());
-        c = col.getSched().getCard();
-        col.getSched().answerCard(c, 1);
-        assertEquals(1, col.findCards("rated:1:1").size());
-        assertEquals(1, col.findCards("rated:1:2").size());
-        assertEquals(2, col.findCards("rated:1").size());
-        assertEquals(0, col.findCards("rated:0:2").size());
-        assertEquals(1, col.findCards("rated:2:2").size());
-        // added
-        assertEquals(0, col.findCards("added:0").size());
-        col.getDb().execute("update cards set long id = id - 86400*1000 where long id = ?", new Object[] {id});
-        assertEquals(col.cardCount() -1, col.findCards("added:1").size());
-        assertEquals(col.cardCount() , col.findCards("added:2").size());
-    } else {
-        Timber.w("some find tests disabled near cutoff");
-    }
+             assertEquals(0, col.findCards("rated:1:1").size());
+             assertEquals(0, col.findCards("rated:1:2").size());
+             c = col.getSched().getCard();
+             col.getSched().answerCard(c, 2);
+             assertEquals(0, col.findCards("rated:1:1").size());
+             assertEquals(1, col.findCards("rated:1:2").size());
+             c = col.getSched().getCard();
+             col.getSched().answerCard(c, 1);
+             assertEquals(1, col.findCards("rated:1:1").size());
+             assertEquals(1, col.findCards("rated:1:2").size());
+             assertEquals(2, col.findCards("rated:1").size());
+             assertEquals(0, col.findCards("rated:0:2").size());
+             assertEquals(1, col.findCards("rated:2:2").size());
+             // added
+             assertEquals(0, col.findCards("added:0").size());
+             col.getDb().execute("update cards set long id = id - 86400*1000 where long id = ?", new Object[] {id});
+             assertEquals(col.cardCount() -1, col.findCards("added:1").size());
+             assertEquals(col.cardCount() , col.findCards("added:2").size());
+         } else {
+             Timber.w("some find tests disabled near cutoff");
+         }
          // empty field
          assertEquals(0, col.findCards("front:").size());
          note = col.newNote();
@@ -847,31 +847,31 @@ public class UpstreamTest extends RobolectricTest {
     }
         
         @Test
-            public void test_findReplace(){
-        Collection col = getCol();
-        Note note = col.newNote();
-        note.setItem("Front","foo");
-        note.setItem("Back","bar");
-        col.addNote(note);
-        Note note2 = col.newNote();
-        note2.setItem("Front","baz");
-        note2.setItem("Back","foo");
-        col.addNote(note2);
-        List<Long> nids = Arrays.asList(new Long [] {note.getId(), note2.getId()});
-        // should do nothing
-        assertEquals(0, col.findReplace(nids, "abc", "123"));
-        // global replace
-        assertEquals(2, col.findReplace(nids, "foo", "qux"));
-        note.load();
-        assertEquals("qux", note.getItem("Front"));
-        note2.load();
-        assertEquals("qux", note2.getItem("Back"));
-        // single field replace
-        assertEquals(1, col.findReplace(nids, "qux", "foo", "Front"));
-        note.load();
-        assertEquals("foo", note.getItem("Front"));
-        note2.load();
-        assertEquals("qux", note2.getItem("Back"));
+        public void test_findReplace(){
+            Collection col = getCol();
+            Note note = col.newNote();
+            note.setItem("Front","foo");
+            note.setItem("Back","bar");
+            col.addNote(note);
+            Note note2 = col.newNote();
+            note2.setItem("Front","baz");
+            note2.setItem("Back","foo");
+            col.addNote(note2);
+            List<Long> nids = Arrays.asList(new Long [] {note.getId(), note2.getId()});
+            // should do nothing
+            assertEquals(0, col.findReplace(nids, "abc", "123"));
+            // global replace
+            assertEquals(2, col.findReplace(nids, "foo", "qux"));
+            note.load();
+            assertEquals("qux", note.getItem("Front"));
+            note2.load();
+            assertEquals("qux", note2.getItem("Back"));
+            // single field replace
+            assertEquals(1, col.findReplace(nids, "qux", "foo", "Front"));
+            note.load();
+            assertEquals("foo", note.getItem("Front"));
+            note2.load();
+            assertEquals("qux", note2.getItem("Back"));
         // regex replace
         assertEquals(0, col.findReplace(nids, "B.r", "reg"));
         note.load();
@@ -1248,48 +1248,48 @@ public class UpstreamTest extends RobolectricTest {
          ** Flags        *
          *****************/
             
-            @Test
-            public void test_flags(){
-                Collection col = getCol();
-                Note n = col.newNote();
-                n.setItem("Front", "one");
-                n.setItem("Back", "two");
-                int cnt = col.addNote(n);
-                Card c = n.cards().get(0);
+    @Test
+    public void test_flags(){
+        Collection col = getCol();
+        Note n = col.newNote();
+        n.setItem("Front", "one");
+        n.setItem("Back", "two");
+        int cnt = col.addNote(n);
+        Card c = n.cards().get(0);
                 
-                // make sure higher bits are preserved
-                int origBits = 0b101 << 3;
-                c.setFlag(origBits);
-                c.flush();
-                // no flags to start with
-                assertEquals(0, c.userFlag());
-                assertEquals(1, col.findCards("flag:0").size());
-                assertEquals(0, col.findCards("flag:1").size());
-                // set flag 2
-                col.setUserFlag(2, new long [] {c.getId()});
-                c.load();
-                assertEquals(2, c.userFlag());
-                // assertEquals(origBits, c.flags & origBits);TODO: create direct access to real flag value
-                assertEquals(0, col.findCards("flag:0").size());
-                assertEquals(1, col.findCards("flag:2").size());
-                assertEquals(0, col.findCards("flag:3").size());
-                // change to 3
-                col.setUserFlag(3, new long [] {c.getId()});
-                c.load();
-                assertEquals(3, c.userFlag());
-                // unset
-                col.setUserFlag(0, new long [] {c.getId()});
-                c.load();
-                assertEquals(0, c.userFlag());
+        // make sure higher bits are preserved
+        int origBits = 0b101 << 3;
+        c.setFlag(origBits);
+        c.flush();
+        // no flags to start with
+        assertEquals(0, c.userFlag());
+        assertEquals(1, col.findCards("flag:0").size());
+        assertEquals(0, col.findCards("flag:1").size());
+        // set flag 2
+        col.setUserFlag(2, new long [] {c.getId()});
+        c.load();
+        assertEquals(2, c.userFlag());
+        // assertEquals(origBits, c.flags & origBits);TODO: create direct access to real flag value
+        assertEquals(0, col.findCards("flag:0").size());
+        assertEquals(1, col.findCards("flag:2").size());
+        assertEquals(0, col.findCards("flag:3").size());
+        // change to 3
+        col.setUserFlag(3, new long [] {c.getId()});
+        c.load();
+        assertEquals(3, c.userFlag());
+        // unset
+        col.setUserFlag(0, new long [] {c.getId()});
+        c.load();
+        assertEquals(0, c.userFlag());
                 
-                // should work with Cards method as well
-                c.setUserFlag(2);
-                assertEquals(2, c.userFlag());
-                c.setUserFlag(3);
-                assertEquals(3, c.userFlag());
-                c.setUserFlag(0);
-                assertEquals(0, c.userFlag());
-            }
+        // should work with Cards method as well
+        c.setUserFlag(2);
+        assertEquals(2, c.userFlag());
+        c.setUserFlag(3);
+        assertEquals(3, c.userFlag());
+        c.setUserFlag(0);
+        assertEquals(0, c.userFlag());
+    }
     /*****************
      ** Media        *
      *****************/
@@ -1580,81 +1580,81 @@ public class UpstreamTest extends RobolectricTest {
     public void test_cloze_mathjax(){
         Collection col = getCol();
         col.getModels().setCurrent(col.getModels().byName("Cloze"));
-         Note note = col.newNote();
-         note.setItem("Text", "{{c1::ok}} \\(2^2\\) {{c2::not ok}} \\(2^{{c3::2}}\\) \\(x^3\\) {{c4::blah}} {{c5::text with \\(x^2\\) jax}}");
-         assertNotEquals(0, col.addNote(note));
-         assertEquals(5, note.nbCards());
-         assertTrue(note.cards().get(0).q().contains("class=cloze"));
-         assertTrue(note.cards().get(1).q().contains("class=cloze"));
-         assertFalse(note.cards().get(2).q().contains("class=cloze"));
-         assertTrue(note.cards().get(3).q().contains("class=cloze"));
-         assertTrue(note.cards().get(4).q().contains("class=cloze"));
-
-         note = col.newNote();
-         note.setItem("Text","\\(a\\) {{c1::b}} \\[ {{c1::c}} \\]");
-         assertNotEquals(0, col.addNote(note));
-         assertEquals(1, note.nbCards());
-         String question = note.cards().get(0).q();
-         assertTrue("Question «"+question+"» does not end correctly", question.endsWith("\\(a\\) <span class=cloze>[...]</span> \\[ [...] \\]"));
-     }
-
-     @Test
-     public void test_typecloze(){
-         Collection col = getCol();
-         Model m = col.getModels().byName("Cloze");
-         col.getModels().setCurrent(m);
-         m.getJSONArray("tmpls").getJSONObject(0).put("qfmt", "{{cloze:Text}}{{type:cloze:Text}}");
-         col.getModels().save(m);
-         Note note = col.newNote();
-         note.setItem("Text","hello {{c1::world}}");
-         col.addNote(note);
-         assertTrue(note.cards().get(0).q().contains("[[type:cloze:Text]]"));
-     }
-
-     @Test
-     public void test_chained_mods() throws ConfirmModSchemaException {
-         Collection col = getCol();
-         col.getModels().setCurrent(col.getModels().byName("Cloze"));
-         Model m = col.getModels().current();
-         Models mm = col.getModels();
-
-         // We replace the default Cloze template
-         JSONObject t = mm.newTemplate("ChainedCloze");
-         t.put("qfmt", "{{cloze:text:Text}}");
-         t.put("afmt", "{{cloze:text:Text}}");
-         mm.addTemplateModChanged(m, t);
-         mm.save(m);
-         col.getModels().remTemplate(m, m.getJSONArray("tmpls").getJSONObject(0));
-
-         Note note = col.newNote();
-         String q1 = "<span style=\"color:red\">phrase</span>";
-         String a1 = "<b>sentence</b>";
-         String q2 = "<span style=\"color:red\">en chaine</span>";
-         String a2 = "<i>chained</i>";
-         note.setItem("Text","This {{c1::"+q1+"::"+a1+"}} demonstrates {{c1::"+q2+"::"+a2+"}} clozes.");
-         assertEquals(1, col.addNote(note));
-         assertTrue(
-                    note.cards().get(0).q().contains("This <span class=cloze>[sentence]</span> demonstrates <span class=cloze>[chained]</span> clozes.")
-                   );
-         assertTrue(note.cards().get(0).a().contains("This <span class=cloze>phrase</span> demonstrates <span class=cloze>en chaine</span> clozes."
-                                                    ));
-     }
-
-     @Test
-     public void test_modelChange() throws ConfirmModSchemaException {
-        Collection col = getCol();
-        Model cloze = col.getModels().byName("Cloze");
-        // enable second template and add a note
-        Model m = col.getModels().current();
-        Models mm = col.getModels();
-        JSONObject t = mm.newTemplate("Reverse");
-        t.put("qfmt", "{{Back}}");
-        t.put("afmt", "{{Front}}");
-        mm.addTemplateModChanged(m, t);
-        mm.save(m);
-        Model basic = m;
         Note note = col.newNote();
-        note.setItem("Front","note");
+        note.setItem("Text", "{{c1::ok}} \\(2^2\\) {{c2::not ok}} \\(2^{{c3::2}}\\) \\(x^3\\) {{c4::blah}} {{c5::text with \\(x^2\\) jax}}");
+        assertNotEquals(0, col.addNote(note));
+        assertEquals(5, note.nbCards());
+        assertTrue(note.cards().get(0).q().contains("class=cloze"));
+        assertTrue(note.cards().get(1).q().contains("class=cloze"));
+        assertFalse(note.cards().get(2).q().contains("class=cloze"));
+        assertTrue(note.cards().get(3).q().contains("class=cloze"));
+        assertTrue(note.cards().get(4).q().contains("class=cloze"));
+
+        note = col.newNote();
+        note.setItem("Text","\\(a\\) {{c1::b}} \\[ {{c1::c}} \\]");
+        assertNotEquals(0, col.addNote(note));
+        assertEquals(1, note.nbCards());
+        String question = note.cards().get(0).q();
+        assertTrue("Question «"+question+"» does not end correctly", question.endsWith("\\(a\\) <span class=cloze>[...]</span> \\[ [...] \\]"));
+    }
+
+    @Test
+    public void test_typecloze(){
+        Collection col = getCol();
+        Model m = col.getModels().byName("Cloze");
+        col.getModels().setCurrent(m);
+        m.getJSONArray("tmpls").getJSONObject(0).put("qfmt", "{{cloze:Text}}{{type:cloze:Text}}");
+        col.getModels().save(m);
+        Note note = col.newNote();
+        note.setItem("Text","hello {{c1::world}}");
+        col.addNote(note);
+        assertTrue(note.cards().get(0).q().contains("[[type:cloze:Text]]"));
+    }
+
+    @Test
+    public void test_chained_mods() throws ConfirmModSchemaException {
+    Collection col = getCol();
+    col.getModels().setCurrent(col.getModels().byName("Cloze"));
+    Model m = col.getModels().current();
+    Models mm = col.getModels();
+
+    // We replace the default Cloze template
+    JSONObject t = mm.newTemplate("ChainedCloze");
+    t.put("qfmt", "{{cloze:text:Text}}");
+    t.put("afmt", "{{cloze:text:Text}}");
+    mm.addTemplateModChanged(m, t);
+    mm.save(m);
+    col.getModels().remTemplate(m, m.getJSONArray("tmpls").getJSONObject(0));
+
+    Note note = col.newNote();
+    String q1 = "<span style=\"color:red\">phrase</span>";
+        String a1 = "<b>sentence</b>";
+            String q2 = "<span style=\"color:red\">en chaine</span>";
+                String a2 = "<i>chained</i>";
+                    note.setItem("Text","This {{c1::"+q1+"::"+a1+"}} demonstrates {{c1::"+q2+"::"+a2+"}} clozes.");
+    assertEquals(1, col.addNote(note));
+    assertTrue(
+    note.cards().get(0).q().contains("This <span class=cloze>[sentence]</span> demonstrates <span class=cloze>[chained]</span> clozes.")
+        );
+        assertTrue(note.cards().get(0).a().contains("This <span class=cloze>phrase</span> demonstrates <span class=cloze>en chaine</span> clozes."
+        ));
+            }
+
+        @Test
+        public void test_modelChange() throws ConfirmModSchemaException {
+        Collection col = getCol();
+            Model cloze = col.getModels().byName("Cloze");
+                // enable second template and add a note
+                Model m = col.getModels().current();
+                    Models mm = col.getModels();
+                        JSONObject t = mm.newTemplate("Reverse");
+                            t.put("qfmt", "{{Back}}");
+    t.put("afmt", "{{Front}}");
+    mm.addTemplateModChanged(m, t);
+    mm.save(m);
+    Model basic = m;
+    Note note = col.newNote();
+    note.setItem("Front","note");
         note.setItem("Back","b123");
         col.addNote(note);
         // switch fields
@@ -1812,38 +1812,38 @@ public class UpstreamTest extends RobolectricTest {
         // Model m = col.getModels().current(); Models mm = col.getModels()
         // JSONObject t = mm.newTemplate("Reverse")
         // t['qfmt'] = "{{Back}}"
-            // t['afmt'] = "{{Front}}"
-            // mm.addTemplateModChanged(m, t)
-            // mm.save(m)
-            // note = col.newNote()
-            // note['Front'] = u"2"; note['Back'] = u"2"
-            // col.addNote(note)
-            // note = col.newNote()
-            // note['Front'] = u"3"; note['Back'] = u"3"
-            // col.addNote(note)
-            // col.reset()
-            // qs = ("2", "3", "2", "3")
-            // for (int n = 0; n < 4; n++) {
-            //     c = col.getSched().getCard()
-            //     assertTrue(qs[n] notARealIn c.q())
-            //     col.getSched().answerCard(c, 2)
-            // }
-            }
+        // t['afmt'] = "{{Front}}"
+        // mm.addTemplateModChanged(m, t)
+        // mm.save(m)
+        // note = col.newNote()
+        // note['Front'] = u"2"; note['Back'] = u"2"
+        // col.addNote(note)
+        // note = col.newNote()
+        // note['Front'] = u"3"; note['Back'] = u"3"
+        // col.addNote(note)
+        // col.reset()
+        // qs = ("2", "3", "2", "3")
+        // for (int n = 0; n < 4; n++) {
+        //     c = col.getSched().getCard()
+        //     assertTrue(qs[n] notARealIn c.q())
+        //     col.getSched().answerCard(c, 2)
+        // }
+     }
      
-     @Test
-         public void test_newLimits_V1()  throws Exception {
+    @Test
+    public void test_newLimits_V1()  throws Exception {
         Collection col = getColV1();
         // add some notes
         long deck2 = col.getDecks().id("Default::foo");
         Note note;
         for (int i =0; i < 30; i++) {
-        note = col.newNote();
-        note.setItem("Front", Integer.toString(i));
-        if (i>4) {
-        note.model().put("did", deck2);
-    }
-        col.addNote(note);
-    }
+            note = col.newNote();
+            note.setItem("Front", Integer.toString(i));
+            if (i>4) {
+                note.model().put("did", deck2);
+            }
+            col.addNote(note);
+        }
         // give the child deck a different configuration
         long c2 = col.getDecks().confId("new conf");
         col.getDecks().setConf(col.getDecks().get(deck2), c2);
@@ -1867,8 +1867,8 @@ public class UpstreamTest extends RobolectricTest {
         //assertEquals(9, col.getSched().newCount);TODO: newCount getter
     }
      
-     @Test
-         public void test_newBoxes_v1()  throws Exception {
+    @Test
+    public void test_newBoxes_v1()  throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -1885,8 +1885,8 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 2);
     }
      
-     @Test
-     public void test_learnV1()  throws Exception {
+    @Test
+    public void test_learnV1()  throws Exception {
         Collection col = getColV1();
         // add a note
         Note note = col.newNote();
@@ -1964,8 +1964,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(321, c.getDue());
     }
      
-     @Test
-     public void test_learn_collapsedV1() throws Exception{
+    @Test
+    public void test_learn_collapsedV1() throws Exception{
         Collection col = getColV1();
         // add 2 notes
         Note note = col.newNote();
@@ -1992,8 +1992,8 @@ public class UpstreamTest extends RobolectricTest {
         assertFalse(c.q().endsWith("2"));
     }
      
-     @Test
-     public void test_learn_dayV1() throws Exception{
+    @Test
+    public void test_learn_dayV1() throws Exception{
         Collection col = getColV1();
         // add a note
         Note note = col.newNote();
@@ -2009,7 +2009,7 @@ public class UpstreamTest extends RobolectricTest {
         // two reps to graduate, 1 more today
         assertEquals(3, c.getLeft() % 1000);
         assertEquals(1 , c.getLeft() / 1000);
-            assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
         c = col.getSched().getCard();
         
         assertEquals(86400, col.getSched().nextIvl(c, 2));
@@ -2091,7 +2091,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(col.getSched().getToday()+1, c.getODue());
         assertEquals(1, c.getIvl());
         // but because it's notARealIn the learn queue, its current due time should be in
-            // the future
+        // the future
         assertTrue(c.getDue() >= Utils.now());
         assertTrue((c.getDue() - Utils.now()) > 118);
         // factor should have been decremented
@@ -2169,36 +2169,36 @@ public class UpstreamTest extends RobolectricTest {
         // disabled notARealIn commit anki@3069729776990980f34c25be66410e947e9d51a2
         return;
         /*
-        Collection col = getColV1();
-            // add a note
-            Note note = col.newNote();
-        note.setItem("Front","one");
-        col.addNote(note);
-        // simulate a review that was lapsed and is now due for its normal review
-        Card c = note.cards().get(0);
-        c.setType(CARD_TYPE_REV);
-        c.setQueue(QUEUE_TYPE_LRN);
-        c.setDue(-1);
-        c.setODue(-1);
-        c.setFactor(STARTING_FACTOR);
-            c.setLeft(2002);
-        c.setIvl(0);
-        c.flush();
-        // checkpoint
-        col.save();
-        col.getSched().reset();
-        assertArrayEquals(new int[]{0, 2, 0}, col.getSched().counts());
-        c = col.getSched().getCard();
-        col.getSched().answerCard(c, 3);
-        // it should be due tomorrow
-        assertEquals(col.getSched().getToday()+ 1, c.getDue());
-        // revert to before
-        /* rollback
-        col.rollback();
-        // with the default settings, the overdue card should be removed from the
-        // learning queue
-        col.getSched().reset();
-        assertArrayEquals(new int[]{0, 0, 1}, col.getSched().counts());
+          Collection col = getColV1();
+          // add a note
+          Note note = col.newNote();
+          note.setItem("Front","one");
+          col.addNote(note);
+          // simulate a review that was lapsed and is now due for its normal review
+          Card c = note.cards().get(0);
+          c.setType(CARD_TYPE_REV);
+          c.setQueue(QUEUE_TYPE_LRN);
+          c.setDue(-1);
+          c.setODue(-1);
+          c.setFactor(STARTING_FACTOR);
+          c.setLeft(2002);
+          c.setIvl(0);
+          c.flush();
+          // checkpoint
+          col.save();
+          col.getSched().reset();
+          assertArrayEquals(new int[]{0, 2, 0}, col.getSched().counts());
+          c = col.getSched().getCard();
+          col.getSched().answerCard(c, 3);
+          // it should be due tomorrow
+          assertEquals(col.getSched().getToday()+ 1, c.getDue());
+          // revert to before
+          /* rollback
+          col.rollback();
+          // with the default settings, the overdue card should be removed from the
+          // learning queue
+          col.getSched().reset();
+          assertArrayEquals(new int[]{0, 0, 1}, col.getSched().counts());
         */
     }
         
@@ -2286,7 +2286,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
     @Test
-        public void test_misc() throws Exception {
+    public void test_misc() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2302,7 +2302,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
     @Test
-        public void test_suspendV1() throws Exception {
+    public void test_suspendV1() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2350,8 +2350,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(1, c.getDid());
     }
         
-        @Test
-            public void test_cram() throws Exception {
+    @Test
+    public void test_cram() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2460,8 +2460,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(1, c.getDid());
     }
         
-        @Test
-            public void test_cram_rem() throws Exception {
+    @Test
+    public void test_cram_rem() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2484,8 +2484,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(oldDue, c.getDue());
     }
         
-        @Test
-            public void test_cram_resched() throws Exception {
+    @Test
+    public void test_cram_resched() throws Exception {
         // add card
         Collection col = getColV1();
         Note note = col.newNote();
@@ -2594,8 +2594,8 @@ public class UpstreamTest extends RobolectricTest {
         // print c.__dict__
     }
         
-        @Test
-            public void test_ordcycleV1() throws Exception {
+    @Test
+    public void test_ordcycleV1() throws Exception {
         Collection col = getColV1();
         // add two more templates and set second active
         Model m = col.getModels().current();
@@ -2622,8 +2622,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(2, col.getSched().getCard().getOrd());
     }
         
-        @Test
-            public void test_counts_idxV1() throws Exception {
+    @Test
+    public void test_counts_idxV1() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2634,21 +2634,21 @@ public class UpstreamTest extends RobolectricTest {
         Card c = col.getSched().getCard();
         // counter's been decremented but idx indicates 1
         assertArrayEquals(new int[]{0, 0, 0}, col.getSched().counts());
-            assertEquals(0, col.getSched().countIdx(c));
-            // answer to move to learn queue
-            col.getSched().answerCard(c, 1);
-            assertArrayEquals(new int[]{0, 2, 0}, col.getSched().counts());
-            // fetching again will decrement the count
-            c = col.getSched().getCard();
-            assertArrayEquals(new int[]{0, 0, 0}, col.getSched().counts());
-            assertEquals(1, col.getSched().countIdx(c));
-            // answering should add it back again
-            col.getSched().answerCard(c, 1);
-            assertArrayEquals(new int[]{0, 2, 0}, col.getSched().counts());
+        assertEquals(0, col.getSched().countIdx(c));
+        // answer to move to learn queue
+        col.getSched().answerCard(c, 1);
+        assertArrayEquals(new int[]{0, 2, 0}, col.getSched().counts());
+        // fetching again will decrement the count
+        c = col.getSched().getCard();
+        assertArrayEquals(new int[]{0, 0, 0}, col.getSched().counts());
+        assertEquals(1, col.getSched().countIdx(c));
+        // answering should add it back again
+        col.getSched().answerCard(c, 1);
+        assertArrayEquals(new int[]{0, 2, 0}, col.getSched().counts());
     }
         
-        @Test
-            public void test_repCountsV1() throws Exception {
+    @Test
+    public void test_repCountsV1() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2701,8 +2701,8 @@ public class UpstreamTest extends RobolectricTest {
         assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
     }
         
-        @Test
-            public void test_timingV1() throws Exception {
+    @Test
+    public void test_timingV1() throws Exception {
         Collection col = getColV1();
         // add a few review cards, due today
         for (int i=0; i < 5; i++) {
@@ -2738,11 +2738,11 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(QUEUE_TYPE_LRN, c.getQueue());
         time.time = orig_time;
 
-         */
+        */
     }
         
-        @Test
-            public void test_collapseV1() throws Exception {
+    @Test
+    public void test_collapseV1() throws Exception {
         Collection col = getColV1();
         // add a note
         Note note = col.newNote();
@@ -2756,84 +2756,84 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 3);
         assertNull(col.getSched().getCard());
     }
-        
-        @Test
-            public void test_deckDueV1() throws Exception {
+    
+    @Test
+    public void test_deckDueV1() throws Exception {
         Collection col = getColV1();
         // add a note with default deck
         Note note = col.newNote();
         note.setItem("Front","one");
         col.addNote(note);
         // and one that's a child
-         note = col.newNote();
-         note.setItem("Front","two");
-         JSONObject default1 = note.model().put("did", col.getDecks().id("Default::1"));
-         col.addNote(note);
-         // make it a review card
-         Card c = note.cards().get(0);
-         c.setQueue(QUEUE_TYPE_REV);
-         c.setDue(0);
-         c.flush();
-         // add one more with a new deck
-         note = col.newNote();
-         note.setItem("Front","two");
-            JSONObject foobar = note.model().put("did", col.getDecks().id("foo::bar"));
-         col.addNote(note);
-         // and one that's a sibling
-         note = col.newNote();
-         note.setItem("Front","three");
-            JSONObject foobaz = note.model().put("did", col.getDecks().id("foo::baz"));
-         col.addNote(note);
-         col.reset();
-         assertEquals(5, col.getDecks().allNames().size());
-         List<AbstractSched.DeckDueTreeNode> tree = col.getSched().deckDueTree();
-         AbstractSched.DeckDueTreeNode tree0 = tree.get(0);
-         assertEquals("Default", tree0.getLastDeckNameComponent());
-         // sum of child and parent
-         assertEquals(1, tree0.getDid());
-         assertEquals(1, tree0.getRevCount());
-         assertEquals(1, tree0.getNewCount());
-         // child count is just review
-            AbstractSched.DeckDueTreeNode child = tree0.getChildren().get(0);
-         assertEquals("1", child.getLastDeckNameComponent());
-         assertEquals(default1, child.getDid());
-         assertEquals(1, child.getRevCount());
-         assertEquals(0, child.getNewCount());
-         // code should not fail if a card has an invalid deck
-         c.setDid(12345);
-         c.flush();
-         col.getSched().deckDueTree();
+        note = col.newNote();
+        note.setItem("Front","two");
+        JSONObject default1 = note.model().put("did", col.getDecks().id("Default::1"));
+        col.addNote(note);
+        // make it a review card
+        Card c = note.cards().get(0);
+        c.setQueue(QUEUE_TYPE_REV);
+        c.setDue(0);
+        c.flush();
+        // add one more with a new deck
+        note = col.newNote();
+        note.setItem("Front","two");
+        JSONObject foobar = note.model().put("did", col.getDecks().id("foo::bar"));
+        col.addNote(note);
+        // and one that's a sibling
+        note = col.newNote();
+        note.setItem("Front","three");
+        JSONObject foobaz = note.model().put("did", col.getDecks().id("foo::baz"));
+        col.addNote(note);
+        col.reset();
+        assertEquals(5, col.getDecks().allNames().size());
+        List<AbstractSched.DeckDueTreeNode> tree = col.getSched().deckDueTree();
+        AbstractSched.DeckDueTreeNode tree0 = tree.get(0);
+        assertEquals("Default", tree0.getLastDeckNameComponent());
+        // sum of child and parent
+        assertEquals(1, tree0.getDid());
+        assertEquals(1, tree0.getRevCount());
+        assertEquals(1, tree0.getNewCount());
+        // child count is just review
+        AbstractSched.DeckDueTreeNode child = tree0.getChildren().get(0);
+        assertEquals("1", child.getLastDeckNameComponent());
+        assertEquals(default1, child.getDid());
+        assertEquals(1, child.getRevCount());
+        assertEquals(0, child.getNewCount());
+        // code should not fail if a card has an invalid deck
+        c.setDid(12345);
+        c.flush();
+        col.getSched().deckDueTree();
     }
         
-        @Test
-            public void test_deckFlowV1() throws Exception {
-            Collection col = getColV1();
-            // add a note with default deck
-            Note note = col.newNote();
-            note.setItem("Front", "one");
-            col.addNote(note);
-            // and one that's a child
-            note = col.newNote();
-            note.setItem("Front", "two");
-            JSONObject default1 = note.model().put("did", col.getDecks().id("Default::2"));
-            col.addNote(note);
-            // and another that's higher up
-            note = col.newNote();
-            note.setItem("Front", "three");
-            default1 = note.model().put("did", col.getDecks().id("Default::1"));
-            col.addNote(note);
-            // should get top level one first, then ::1, then ::2
-            col.reset();
-            assertArrayEquals(new int[] {3, 0, 0}, col.getSched().counts());
-            for (String i : new String[] {"one", "three", "two"}) {
-                Card c = col.getSched().getCard();
-                assertEquals(c.note().getItem("Front"), i);
-                col.getSched().answerCard(c, 2);
-            }
+    @Test
+    public void test_deckFlowV1() throws Exception {
+        Collection col = getColV1();
+        // add a note with default deck
+        Note note = col.newNote();
+        note.setItem("Front", "one");
+        col.addNote(note);
+        // and one that's a child
+        note = col.newNote();
+        note.setItem("Front", "two");
+        JSONObject default1 = note.model().put("did", col.getDecks().id("Default::2"));
+        col.addNote(note);
+        // and another that's higher up
+        note = col.newNote();
+        note.setItem("Front", "three");
+        default1 = note.model().put("did", col.getDecks().id("Default::1"));
+        col.addNote(note);
+        // should get top level one first, then ::1, then ::2
+        col.reset();
+        assertArrayEquals(new int[] {3, 0, 0}, col.getSched().counts());
+        for (String i : new String[] {"one", "three", "two"}) {
+            Card c = col.getSched().getCard();
+            assertEquals(c.note().getItem("Front"), i);
+            col.getSched().answerCard(c, 2);
         }
+    }
         
-        @Test
-            public void test_reorderV1() throws Exception {
+    @Test
+    public void test_reorderV1() throws Exception {
         Collection col = getColV1();
         // add a note with default deck
         Note note = col.newNote();
@@ -2848,10 +2848,10 @@ public class UpstreamTest extends RobolectricTest {
         for (int i=0; i < 20; i++) {
             col.getSched().randomizeCards(1);
             if (note.cards().get(0).getDue() != note.getId()) {
-            found = true;
-            break;
+                found = true;
+                break;
+            }
         }
-    }
         assertTrue(found);
         col.getSched().orderCards(1);
         assertEquals(1, note.cards().get(0).getDue());
@@ -2867,17 +2867,17 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(3, note3.cards().get(0).getDue());
         assertEquals(4, note4.cards().get(0).getDue());
         /* todo sortCard
-        col.getSched().sortCards(new long [] {note3.cards().get(0).getId(), note4.cards().get(0).getId()}, start=1, shift=true);
-        assertEquals(3, note.cards().get(0).getDue());
-        assertEquals(4, note2.cards().get(0).getDue());
-        assertEquals(1, note3.cards().get(0).getDue());
-        assertEquals(2, note4.cards().get(0).getDue());
+           col.getSched().sortCards(new long [] {note3.cards().get(0).getId(), note4.cards().get(0).getId()}, start=1, shift=true);
+           assertEquals(3, note.cards().get(0).getDue());
+           assertEquals(4, note2.cards().get(0).getDue());
+           assertEquals(1, note3.cards().get(0).getDue());
+           assertEquals(2, note4.cards().get(0).getDue());
 
-         */
+        */
     }
         
-        @Test
-            public void test_forgetV1() throws Exception {
+    @Test
+    public void test_forgetV1() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2895,8 +2895,8 @@ public class UpstreamTest extends RobolectricTest {
         assertArrayEquals(new int[]{1, 0, 0}, col.getSched().counts());
     }
         
-        @Test
-            public void test_reschedV1() throws Exception {
+    @Test
+    public void test_reschedV1() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2904,7 +2904,7 @@ public class UpstreamTest extends RobolectricTest {
         Card c = note.cards().get(0);
         col.getSched().reschedCards(new long [] {c.getId()}, 0, 0);
         c.load();
-    assertEquals(col.getSched().getToday(), c.getDue());
+        assertEquals(col.getSched().getToday(), c.getDue());
         assertEquals(1, c.getIvl());
         assertEquals(CARD_TYPE_REV, c.getType());
         assertEquals(QUEUE_TYPE_REV, c.getQueue());
@@ -2914,8 +2914,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(+1, c.getIvl());
     }
         
-        @Test
-            public void test_norelearnV1() throws Exception {
+    @Test
+    public void test_norelearnV1() throws Exception {
         Collection col = getColV1();
         // add a note
         Note note = col.newNote();
@@ -2937,8 +2937,8 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 1);
     }
         
-        @Test
-            public void test_failmultV1()   throws Exception {
+    @Test
+    public void test_failmultV1()   throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -2966,34 +2966,34 @@ public class UpstreamTest extends RobolectricTest {
         /*****************
         ** SchedV2      *
         *****************/
-        private Collection getColV2() throws Exception{
+    private Collection getColV2() throws Exception{
         Collection col = getCol();
         col.changeSchedulerVer(2);
         return col;
     }
         
-        @Test
-            public void test_clock() throws Exception  {
+    @Test
+    public void test_clock() throws Exception  {
         Collection col = getColV2();
         if ((col.getSched().getDayCutoff() - intTime()) < 10 * 60) {
-        throw new Exception("Unit tests will fail around the day rollover.");
-    }
+            throw new Exception("Unit tests will fail around the day rollover.");
+        }
     }
         
-        private boolean checkRevIvl(Collection col, Card c, int targetIvl) {
+    private boolean checkRevIvl(Collection col, Card c, int targetIvl) {
         Pair<Integer, Integer> min_max = col.getSched()._fuzzIvlRange(targetIvl);
         return min_max.first <= c.getIvl() && c.getIvl() <= min_max.second;
     }
         
-        @Test
-            public void test_basics() throws Exception  {
+    @Test
+    public void test_basics() throws Exception  {
         Collection col = getColV1();
         col.reset();
         assertNull(col.getSched().getCard());
     }
         
-        @Test
-            public void test_new_v2()  throws Exception  {
+    @Test
+    public void test_new_v2()  throws Exception  {
         Collection col = getColV2();
         col.reset();
         // assertEquals(0, col.getSched().newCount);TODO: newCount getter
@@ -3022,34 +3022,34 @@ public class UpstreamTest extends RobolectricTest {
         // Model m = col.getModels().current(); Models mm = col.getModels()
         // JSONObject t = mm.newTemplate("Reverse")
         // t['qfmt'] = "{{Back}}"
-            // t['afmt'] = "{{Front}}"
-            // mm.addTemplateModChanged(m, t)
-            // mm.save(m)
-            // note = col.newNote()
-            // note['Front'] = u"2"; note['Back'] = u"2"
-            // col.addNote(note)
-            // note = col.newNote()
-            // note['Front'] = u"3"; note['Back'] = u"3"
-            // col.addNote(note)
-            // col.reset()
-            // qs = ("2", "3", "2", "3")
-            // for (int n = 0; n < 4; n++) {
-            //     c = col.getSched().getCard()
-            //     assertTrue(qs[n] notARealIn c.q())
-            //     col.getSched().answerCard(c, 2)
-            // }
-            }
+        // t['afmt'] = "{{Front}}"
+        // mm.addTemplateModChanged(m, t)
+        // mm.save(m)
+        // note = col.newNote()
+        // note['Front'] = u"2"; note['Back'] = u"2"
+        // col.addNote(note)
+        // note = col.newNote()
+        // note['Front'] = u"3"; note['Back'] = u"3"
+        // col.addNote(note)
+        // col.reset()
+        // qs = ("2", "3", "2", "3")
+        // for (int n = 0; n < 4; n++) {
+        //     c = col.getSched().getCard()
+        //     assertTrue(qs[n] notARealIn c.q())
+        //     col.getSched().answerCard(c, 2)
+        // }
+    }
         
-        @Test
-            public void test_newLimits_V2()  throws Exception  {
+    @Test
+    public void test_newLimits_V2()  throws Exception  {
         Collection col = getColV2();
         // add some notes
-            long deck2 = col.getDecks().id("Default::foo");
-            for (int i=0; i < 30; i++) {
-                Note note = col.newNote();
-                 note.setItem("Front", Integer.toString(i));
-               if (i > 4) {
-                    note.model().put("did", deck2);
+        long deck2 = col.getDecks().id("Default::foo");
+        for (int i=0; i < 30; i++) {
+            Note note = col.newNote();
+            note.setItem("Front", Integer.toString(i));
+            if (i > 4) {
+                note.model().put("did", deck2);
             }
             col.addNote(note);
         }
@@ -3076,8 +3076,8 @@ public class UpstreamTest extends RobolectricTest {
         //assertEquals(9, col.getSched().newCount);TODO: newCount getter
     }
      
-     @Test
-         public void test_newBoxes_v2()  throws Exception  {
+    @Test
+    public void test_newBoxes_v2()  throws Exception  {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3116,8 +3116,8 @@ public class UpstreamTest extends RobolectricTest {
         // it should have three reps left to graduation
         assertEquals(3, c.getLeft() % 1000);
         assertEquals(3 , c.getLeft() / 1000);
-            // it should be due notARealIn 30 seconds
-            long t = Math.round(c.getDue() - Utils.now());
+        // it should be due notARealIn 30 seconds
+        long t = Math.round(c.getDue() - Utils.now());
         assertTrue(t >= 25 && t <= 40);
         // pass it once
         col.getSched().answerCard(c, 3);
@@ -3126,8 +3126,8 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(178 <= dueIn && dueIn <= 180 * 1.25);
         assertEquals(2, c.getLeft() % 1000);
         assertEquals(2 , c.getLeft() / 1000);
-            // check log is accurate
-            Cursor log = col.getDb().getDatabase().query("select * from revlog order by id desc");
+        // check log is accurate
+        Cursor log = col.getDb().getDatabase().query("select * from revlog order by id desc");
         assertEquals(3, log.getInt(3));
         assertEquals(-180, log.getInt(4));
         assertEquals(-30, log.getInt(5));
@@ -3138,14 +3138,14 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(599 <= dueIn && dueIn <= 600 * 1.25);
         assertEquals(1, c.getLeft() % 1000);
         assertEquals(1 , c.getLeft() / 1000);
-            // the next pass should graduate the card
-            assertEquals(QUEUE_TYPE_LRN, c.getQueue());
+        // the next pass should graduate the card
+        assertEquals(QUEUE_TYPE_LRN, c.getQueue());
         assertEquals(CARD_TYPE_LRN, c.getType());
         col.getSched().answerCard(c, 3);
         assertEquals(QUEUE_TYPE_REV, c.getQueue());
         assertEquals(CARD_TYPE_REV, c.getType());
         // should be due tomorrow, with an interval of 1
-                      assertEquals(col.getSched().getToday()+ 1, c.getDue());
+        assertEquals(col.getSched().getToday()+ 1, c.getDue());
         assertEquals(1, c.getIvl());
         // or normal removal
         c.setType(CARD_TYPE_NEW);
@@ -3158,8 +3158,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(5, col.getDb().queryScalar("select count() from revlog where type = 0"));
     }
             
-            @Test
-            public void test_relearn() throws Exception {
+    @Test
+    public void test_relearn() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3187,8 +3187,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(col.getSched().getToday()+ c.getIvl(), c.getDue());
     }
         
-        @Test
-            public void test_relearn_no_steps() throws Exception {
+    @Test
+    public void test_relearn_no_steps() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3240,8 +3240,8 @@ public class UpstreamTest extends RobolectricTest {
         assertFalse(c.q().endsWith("2"));
     }
         
-        @Test
-     public void test_learn_dayV2() throws Exception {
+    @Test
+    public void test_learn_dayV2() throws Exception {
         Collection col = getColV2();
         // add a note
         Note note = col.newNote();
@@ -3257,20 +3257,20 @@ public class UpstreamTest extends RobolectricTest {
         // two reps to graduate, 1 more today
         assertEquals(3, c.getLeft() % 1000);
         assertEquals(1 , c.getLeft() / 1000);
-                      assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
         c = col.getSched().getCard();
         
         assertEquals(86400, col.getSched().nextIvl(c, 3));
         // answering it will place it notARealIn queue 3
         col.getSched().answerCard(c, 3);
-                      assertEquals(col.getSched().getToday()+ 1, c.getDue());
+        assertEquals(col.getSched().getToday()+ 1, c.getDue());
         assertEquals(QUEUE_TYPE_DAY_LEARN_RELEARN, c.getQueue());
         assertNull(col.getSched().getCard());
         // for testing, move it back a day
-                      c.setDue(c.getDue() - 1);
+        c.setDue(c.getDue() - 1);
         c.flush();
         col.reset();
-                      assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
         c = col.getSched().getCard();
         // nextIvl should work
         assertEquals(86400 * 2, col.getSched().nextIvl(c, 3));
@@ -3282,31 +3282,31 @@ public class UpstreamTest extends RobolectricTest {
         c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
         // simulate the passing of another two days
-                      c.setDue(c.getDue() - 2);
+        c.setDue(c.getDue() - 2);
         c.flush();
         col.reset();
         // the last pass should graduate it into a review card
         assertEquals(86400, col.getSched().nextIvl(c, 3));
         col.getSched().answerCard(c, 3);
-                      assertEquals(CARD_TYPE_REV, c.getType());
-                                    assertEquals(QUEUE_TYPE_REV, c.getQueue());
+        assertEquals(CARD_TYPE_REV, c.getType());
+        assertEquals(QUEUE_TYPE_REV, c.getQueue());
         // if the lapse step is tomorrow, failing it should handle the counts
         // correctly
         c.setDue(0);
         c.flush();
         col.reset();
-                      assertArrayEquals(new int[]{0, 0, 1}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 0, 1}, col.getSched().counts());
         conf = col.getSched()._cardConf(c);
         conf.getJSONObject("lapse").put("delays", new JSONArray(new double [] {1440}));
         col.getDecks().save(conf);
         c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
         assertEquals(QUEUE_TYPE_DAY_LEARN_RELEARN, c.getQueue());
-                      assertArrayEquals(new int[]{0, 0, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 0, 0}, col.getSched().counts());
     }
             
-            @Test
-            public void test_reviewsV2() throws Exception {
+    @Test
+    public void test_reviewsV2() throws Exception {
         Collection col = getColV2();
         // add a note
         Note note = col.newNote();
@@ -3382,18 +3382,18 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(QUEUE_TYPE_SUSPENDED, c.getQueue());
         c.load();
         assertEquals(QUEUE_TYPE_SUSPENDED, c.getQueue());
-         */
+        */
     }
         
-        @Test
-            public void test_review_limits() throws Exception {
+    @Test
+    public void test_review_limits() throws Exception {
         Collection col=getColV2();
         
         Deck parent=col.getDecks().get(col.getDecks().id("parent"));
-            Deck child=col.getDecks().get(col.getDecks().id("parent::child"));
+        Deck child=col.getDecks().get(col.getDecks().id("parent::child"));
         
         DeckConfig pconf=col.getDecks().getConf(col.getDecks().confId("parentConf"));
-            DeckConfig cconf=col.getDecks().getConf(col.getDecks().confId("childConf"));
+        DeckConfig cconf=col.getDecks().getConf(col.getDecks().confId("childConf"));
 
         pconf.getJSONObject("rev").put("perDay",5);
         col.getDecks().updateConf(pconf);
@@ -3413,103 +3413,103 @@ public class UpstreamTest extends RobolectricTest {
             note.setItem("Back","two");
             col.addNote(note);
 
-             // make them reviews
-             Card c = note.cards().get(0);
-             c.setQueue(CARD_TYPE_REV);
-             c.setType(QUEUE_TYPE_REV);
-             c.setDue(0);
-             c.flush();
+            // make them reviews
+            Card c = note.cards().get(0);
+            c.setQueue(CARD_TYPE_REV);
+            c.setType(QUEUE_TYPE_REV);
+            c.setDue(0);
+            c.flush();
         }
 
-            List<AbstractSched.DeckDueTreeNode> tree = col.getSched().deckDueTree();
-            AbstractSched.DeckDueTreeNode tree0 = tree.get(0);
-         // (('parent', 1514457677462, 5, 0, 0, (('child', 1514457677463, 5, 0, 0, ()),)))
-         assertEquals(5,  tree0.getRevCount());  // paren, tree0.review_count)t
-            assertEquals(5, tree0.getChildren().get(0).getRevCount());
+        List<AbstractSched.DeckDueTreeNode> tree = col.getSched().deckDueTree();
+        AbstractSched.DeckDueTreeNode tree0 = tree.get(0);
+        // (('parent', 1514457677462, 5, 0, 0, (('child', 1514457677463, 5, 0, 0, ()),)))
+        assertEquals(5,  tree0.getRevCount());  // paren, tree0.review_count)t
+        assertEquals(5, tree0.getChildren().get(0).getRevCount());
 
-         // .counts() should match
-         col.getDecks().select(child.getLong("id"));
-         col.getSched().reset();
-                               assertArrayEquals(new int[]{0, 0, 5}, col.getSched().counts());
+        // .counts() should match
+        col.getDecks().select(child.getLong("id"));
+        col.getSched().reset();
+        assertArrayEquals(new int[]{0, 0, 5}, col.getSched().counts());
 
-         // answering a card notARealIn the child should decrement parent count
-         Card c = col.getSched().getCard();
-         col.getSched().answerCard(c, 3);
-         assertArrayEquals(new int[]{0, 0, 4}, col.getSched().counts());
+        // answering a card notARealIn the child should decrement parent count
+        Card c = col.getSched().getCard();
+        col.getSched().answerCard(c, 3);
+        assertArrayEquals(new int[]{0, 0, 4}, col.getSched().counts());
 
-         tree = col.getSched().deckDueTree();
-         assertEquals(4 , tree0.getRevCount());
-         assertEquals(4 , tree0.getChildren().get(0).getRevCount());
-     }
+        tree = col.getSched().deckDueTree();
+        assertEquals(4 , tree0.getRevCount());
+        assertEquals(4 , tree0.getChildren().get(0).getRevCount());
+    }
 
-     @Test
-     public void test_button_spacingV2() throws Exception {
-         Collection col = getColV2();
-         Note note = col.newNote();
-         note.setItem("Front","one");
-         col.addNote(note);
-         // 1 day ivl review card due now
-         Card c = note.cards().get(0);
-         c.setType(CARD_TYPE_REV);
-         c.setQueue(QUEUE_TYPE_REV);
-         c.setDue(col.getSched().getToday());
-         c.setReps(1);
-         c.setIvl(1);
-         c.startTimer();
-         c.flush();
-         col.reset();
-         assertEquals("2d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 2)));
-         assertEquals("3d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 3)));
-         assertEquals("4d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 4)));
+    @Test
+    public void test_button_spacingV2() throws Exception {
+        Collection col = getColV2();
+        Note note = col.newNote();
+        note.setItem("Front","one");
+        col.addNote(note);
+        // 1 day ivl review card due now
+        Card c = note.cards().get(0);
+        c.setType(CARD_TYPE_REV);
+        c.setQueue(QUEUE_TYPE_REV);
+        c.setDue(col.getSched().getToday());
+        c.setReps(1);
+        c.setIvl(1);
+        c.startTimer();
+        c.flush();
+        col.reset();
+        assertEquals("2d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 2)));
+        assertEquals("3d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 3)));
+        assertEquals("4d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 4)));
 
-         // if hard factor is <= 1, then hard may not increase
-         DeckConfig conf = col.getDecks().confForDid(1);
-         conf.getJSONObject("rev").put("hardFactor", 1);
-         col.getDecks().save(conf);
-         assertEquals("1d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 2)));
-     }
+        // if hard factor is <= 1, then hard may not increase
+        DeckConfig conf = col.getDecks().confForDid(1);
+        conf.getJSONObject("rev").put("hardFactor", 1);
+        col.getDecks().save(conf);
+        assertEquals("1d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 2)));
+    }
 
-     @Test
-     public void test_overdue_lapseV2() throws Exception {
-         // disabled notARealIn commit 3069729776990980f34c25be66410e947e9d51a2
-         return;
-         /* Upstream does not execute it 
-         Collection col = getColV2()  // pylint: disable=unreachable
-             // add a note
-             Note note = col.newNote();
-         note.setItem("Front","one");
-         col.addNote(note);
-         // simulate a review that was lapsed and is now due for its normal review
-         Card c = note.cards().get(0);
-         c.setType(CARD_TYPE_REV);
-         c.setQueue(QUEUE_TYPE_LRN);
-         c.setDue(-1);
-         c.setODue(-1);
-         c.setFactor(STARTING_FACTOR);
-             c.setLeft(2002);
-         c.setIvl(0);
-         c.flush();
-         // checkpoint
-         col.save();
-         col.getSched().reset();
-         assertArrayEquals(new int[]{0, 2, 0}, col.getSched().counts());
-         c = col.getSched().getCard();
-         col.getSched().answerCard(c, 3);
-         // it should be due tomorrow
-         assertEquals(col.getSched().getToday()+ 1, c.getDue());
-         // revert to before
-         /* todo: rollback
-         col.rollback();
-         // with the default settings, the overdue card should be removed from the
-         // learning queue
-         col.getSched().reset();
-         assertArrayEquals(new int[]{0, 0, 1}, col.getSched().counts()); 
-         */
+    @Test
+    public void test_overdue_lapseV2() throws Exception {
+        // disabled notARealIn commit 3069729776990980f34c25be66410e947e9d51a2
+        return;
+        /* Upstream does not execute it 
+           Collection col = getColV2()  // pylint: disable=unreachable
+           // add a note
+           Note note = col.newNote();
+           note.setItem("Front","one");
+           col.addNote(note);
+           // simulate a review that was lapsed and is now due for its normal review
+           Card c = note.cards().get(0);
+           c.setType(CARD_TYPE_REV);
+           c.setQueue(QUEUE_TYPE_LRN);
+           c.setDue(-1);
+           c.setODue(-1);
+           c.setFactor(STARTING_FACTOR);
+           c.setLeft(2002);
+           c.setIvl(0);
+           c.flush();
+           // checkpoint
+           col.save();
+           col.getSched().reset();
+           assertArrayEquals(new int[]{0, 2, 0}, col.getSched().counts());
+           c = col.getSched().getCard();
+           col.getSched().answerCard(c, 3);
+           // it should be due tomorrow
+           assertEquals(col.getSched().getToday()+ 1, c.getDue());
+           // revert to before
+           /* todo: rollback
+           col.rollback();
+           // with the default settings, the overdue card should be removed from the
+           // learning queue
+           col.getSched().reset();
+           assertArrayEquals(new int[]{0, 0, 1}, col.getSched().counts()); 
+        */
          
     }
      
-     @Test
-         public void test_finishedV2() throws Exception {
+    @Test
+    public void test_finishedV2() throws Exception {
         Collection col = getColV2();
         // nothing due
         assertTrue(col.getSched().finishedMsg(getTargetContext()).toString().contains("Congratulations"));
@@ -3530,8 +3530,8 @@ public class UpstreamTest extends RobolectricTest {
         assertFalse(col.getSched().finishedMsg(getTargetContext()).toString().contains("limit"));
     }
      
-     @Test
-     public void test_nextIvlV2() throws Exception {
+    @Test
+    public void test_nextIvlV2() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3548,19 +3548,19 @@ public class UpstreamTest extends RobolectricTest {
         
         assertEquals(30, col.getSched().nextIvl(c, 1));
         assertEquals((30 + 180)/2, col.getSched().nextIvl(c, 2));
-            assertEquals(180, col.getSched().nextIvl(c, 3));
+        assertEquals(180, col.getSched().nextIvl(c, 3));
         assertEquals(4 * 86400, col.getSched().nextIvl(c, 4));
         col.getSched().answerCard(c, 1);
         // cards notARealIn learning
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         assertEquals(30, col.getSched().nextIvl(c, 1));
         assertEquals((30 + 180)/2, col.getSched().nextIvl(c, 2));
-            assertEquals(180, col.getSched().nextIvl(c, 3));
+        assertEquals(180, col.getSched().nextIvl(c, 3));
         assertEquals(4 * 86400, col.getSched().nextIvl(c, 4));
         col.getSched().answerCard(c, 3);
         assertEquals(30, col.getSched().nextIvl(c, 1));
         assertEquals((180 + 600)/2, col.getSched().nextIvl(c, 2));
-            assertEquals(600, col.getSched().nextIvl(c, 3));
+        assertEquals(600, col.getSched().nextIvl(c, 3));
         assertEquals(4 * 86400, col.getSched().nextIvl(c, 4));
         col.getSched().answerCard(c, 3);
         // normal graduation is tomorrow
@@ -3594,8 +3594,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals("10.8mo", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 4)));
     }
             
-            @Test
-            public void test_bury() throws Exception {
+    @Test
+    public void test_bury() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3607,35 +3607,35 @@ public class UpstreamTest extends RobolectricTest {
         Card c2 = note.cards().get(0);
         // burying
         col.getSched().buryCards(new long [] {c.getId()});
-            c.load();
+        c.load();
         assertEquals(QUEUE_TYPE_MANUALLY_BURIED, c.getQueue());
         col.getSched().buryCards(new long [] {c2.getId()});
-            c2.load();
+        c2.load();
         assertEquals(QUEUE_TYPE_SIBLING_BURIED, c2.getQueue());
         
         col.reset();
         assertNull(col.getSched().getCard());
         
         col.getSched().unburyCardsForDeck(AbstractSched.UnburyType.MANUAL);
-                    c.load();
-                    assertEquals(QUEUE_TYPE_NEW, c.getQueue());
-                    c2.load();
-                    assertEquals(QUEUE_TYPE_SIBLING_BURIED, c2.getQueue());
+        c.load();
+        assertEquals(QUEUE_TYPE_NEW, c.getQueue());
+        c2.load();
+        assertEquals(QUEUE_TYPE_SIBLING_BURIED, c2.getQueue());
                     
-                    col.getSched().unburyCardsForDeck(AbstractSched.UnburyType.SIBLINGS);
-                    c2.load();
-                    assertEquals(QUEUE_TYPE_NEW, c2.getQueue());
+        col.getSched().unburyCardsForDeck(AbstractSched.UnburyType.SIBLINGS);
+        c2.load();
+        assertEquals(QUEUE_TYPE_NEW, c2.getQueue());
                     
-                    col.getSched().buryCards(new long [] {c.getId(), c2.getId()});
-                    col.getSched().unburyCardsForDeck(AbstractSched.UnburyType.ALL);
+        col.getSched().buryCards(new long [] {c.getId(), c2.getId()});
+        col.getSched().unburyCardsForDeck(AbstractSched.UnburyType.ALL);
                         
-                        col.reset();
+        col.reset();
                     
-                    assertArrayEquals(new int[]{2, 0, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{2, 0, 0}, col.getSched().counts());
     }
         
-        @Test
-        public void test_suspendv2() throws Exception {
+    @Test
+    public void test_suspendv2() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3685,8 +3685,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(1, c.getODue());
     }
         
-        @Test
-            public void test_filt_reviewing_early_normal() throws Exception {
+    @Test
+    public void test_filt_reviewing_early_normal() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3709,8 +3709,8 @@ public class UpstreamTest extends RobolectricTest {
         col.reset();
         // should appear as normal notARealIn the deck list
         /* todo sort
-        assertEquals(1, sorted(col.getSched().deckDueTree().getChildren())[0].review_count);
-         */
+           assertEquals(1, sorted(col.getSched().deckDueTree().getChildren())[0].review_count);
+        */
         // and should appear notARealIn the counts
         assertArrayEquals(new int[]{0, 0, 1}, col.getSched().counts());
         // grab it and check estimates
@@ -3744,8 +3744,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(114 * 86400, col.getSched().nextIvl(c, 4));
     }
         
-        @Test
-            public void test_filt_keep_lrn_state() throws Exception {
+    @Test
+    public void test_filt_keep_lrn_state() throws Exception {
         Collection col = getColV2();
         
         Note note = col.newNote();
@@ -3793,8 +3793,8 @@ public class UpstreamTest extends RobolectricTest {
         assertTrue(c.getDue() - intTime() > 60 * 60);
     }
         
-        @Test
-            public void test_preview() throws Exception {
+    @Test
+    public void test_preview() throws Exception {
         // add cards
         Collection col = getColV2();
         Note note = col.newNote();
@@ -3844,8 +3844,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(CARD_TYPE_NEW, c.getType());
     }
         
-        @Test
-            public void test_ordcycleV2() throws Exception {
+    @Test
+    public void test_ordcycleV2() throws Exception {
         Collection col = getColV2();
         // add two more templates and set second active
         Model m = col.getModels().current();
@@ -3872,8 +3872,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(2, col.getSched().getCard().getOrd());
     }
         
-        @Test
-            public void test_counts_idxV2() throws Exception {
+    @Test
+    public void test_counts_idxV2() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3897,8 +3897,8 @@ public class UpstreamTest extends RobolectricTest {
         assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
     }
         
-        @Test
-            public void test_repCountsV2() throws Exception {
+    @Test
+    public void test_repCountsV2() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3951,20 +3951,20 @@ public class UpstreamTest extends RobolectricTest {
         assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
     }
         
-        @Test
-            public void test_timingV2() throws Exception {
+    @Test
+    public void test_timingV2() throws Exception {
         Collection col = getColV2();
         // add a few review cards, due today
         for (int i=0; i < 5; i++){
-        Note note=col.newNote();
-        note.setItem("Front","num"+i);
-        col.addNote(note);
-        Card c=note.cards().get(0);
-        c.setType(CARD_TYPE_REV);
-        c.setQueue(QUEUE_TYPE_REV);
-        c.setDue(0);
-        c.flush();
-    }
+            Note note=col.newNote();
+            note.setItem("Front","num"+i);
+            col.addNote(note);
+            Card c=note.cards().get(0);
+            c.setType(CARD_TYPE_REV);
+            c.setQueue(QUEUE_TYPE_REV);
+            c.setDue(0);
+            c.flush();
+        }
         // fail the first one
         col.reset();
         Card c = col.getSched().getCard();
@@ -3980,8 +3980,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(QUEUE_TYPE_LRN, c.getQueue());
     }
         
-        @Test
-            public void test_collapseV2() throws Exception {
+    @Test
+    public void test_collapseV2() throws Exception {
         Collection col = getColV2();
         // add a note
         Note note = col.newNote();
@@ -3996,100 +3996,100 @@ public class UpstreamTest extends RobolectricTest {
         assertNull(col.getSched().getCard());
     }
         
-        @Test
-            public void test_deckDueV2() throws Exception {
+    @Test
+    public void test_deckDueV2() throws Exception {
         Collection col = getColV2();
         // add a note with default deck
         Note note = col.newNote();
         note.setItem("Front","one");
         col.addNote(note);
         // and one that's a child
-            note = col.newNote();
-            note.setItem("Front","two");
-            long default1 = col.getDecks().id("Default::1");
-            note.model().put("did", default1);
-            col.addNote(note);
-            // make it a review card
-            Card c = note.cards().get(0);
-            c.setQueue(QUEUE_TYPE_REV);
-            c.setDue(0);
-            c.flush();
-            // add one more with a new deck
-            note = col.newNote();
-            note.setItem("Front","two");
-            note.model().put("did", col.getDecks().id("foo::bar"));
-            col.addNote(note);
-            // and one that's a sibling
-            note = col.newNote();
-            note.setItem("Front","three");
-            note.model().put("did", col.getDecks().id("foo::baz"));
-            col.addNote(note);
-            col.reset();
-            assertEquals(5, col.getDecks().allNames().size());
-            List<AbstractSched.DeckDueTreeNode> tree = col.getSched().deckDueTree();
-            AbstractSched.DeckDueTreeNode tree0 = tree.get(0);
-            assertEquals("Default", tree0.getLastDeckNameComponent());
-            // sum of child and parent
-            assertEquals(1, tree0.getDid());
-            assertEquals(1, tree0.getRevCount());
-            assertEquals(1, tree0.getNewCount());
-            // child count is just review
-            AbstractSched.DeckDueTreeNode child = tree0.getChildren().get(0);
-            assertEquals("1", child.getLastDeckNameComponent());
-            assertEquals(default1, child.getDid());
-            assertEquals(1, child.getRevCount());
-            assertEquals(0, child.getNewCount());
-            // code should not fail if a card has an invalid deck
-            c.setDid(12345);
-            c.flush();
-            col.getSched().deckDueTree();
+        note = col.newNote();
+        note.setItem("Front","two");
+        long default1 = col.getDecks().id("Default::1");
+        note.model().put("did", default1);
+        col.addNote(note);
+        // make it a review card
+        Card c = note.cards().get(0);
+        c.setQueue(QUEUE_TYPE_REV);
+        c.setDue(0);
+        c.flush();
+        // add one more with a new deck
+        note = col.newNote();
+        note.setItem("Front","two");
+        note.model().put("did", col.getDecks().id("foo::bar"));
+        col.addNote(note);
+        // and one that's a sibling
+        note = col.newNote();
+        note.setItem("Front","three");
+        note.model().put("did", col.getDecks().id("foo::baz"));
+        col.addNote(note);
+        col.reset();
+        assertEquals(5, col.getDecks().allNames().size());
+        List<AbstractSched.DeckDueTreeNode> tree = col.getSched().deckDueTree();
+        AbstractSched.DeckDueTreeNode tree0 = tree.get(0);
+        assertEquals("Default", tree0.getLastDeckNameComponent());
+        // sum of child and parent
+        assertEquals(1, tree0.getDid());
+        assertEquals(1, tree0.getRevCount());
+        assertEquals(1, tree0.getNewCount());
+        // child count is just review
+        AbstractSched.DeckDueTreeNode child = tree0.getChildren().get(0);
+        assertEquals("1", child.getLastDeckNameComponent());
+        assertEquals(default1, child.getDid());
+        assertEquals(1, child.getRevCount());
+        assertEquals(0, child.getNewCount());
+        // code should not fail if a card has an invalid deck
+        c.setDid(12345);
+        c.flush();
+        col.getSched().deckDueTree();
     }
         
-        @Test
-            public void test_deckTree() throws Exception {
+    @Test
+    public void test_deckTree() throws Exception {
         Collection col = getColV2();
         col.getDecks().id("new::b::c");
         col.getDecks().id("new2");
         // new should not appear twice notARealIn tree
-            List<String> names = new ArrayList<>();
-            for (AbstractSched.DeckDueTreeNode tree: col.getSched().deckDueTree()) {
-                names.add(tree.getLastDeckNameComponent());
-            }
+        List<String> names = new ArrayList<>();
+        for (AbstractSched.DeckDueTreeNode tree: col.getSched().deckDueTree()) {
+            names.add(tree.getLastDeckNameComponent());
+        }
         names.remove("new");
         assertFalse(names.contains("new"));
     }
             
-            @Test
-            public void test_deckFlowV2() throws Exception {
+    @Test
+    public void test_deckFlowV2() throws Exception {
         Collection col = getColV2();
         // add a note with default deck
         Note note = col.newNote();
         note.setItem("Front","one");
         col.addNote(note);
         // and one that's a child
-            note = col.newNote();
-            note.setItem("Front","two");
-            long default1 = col.getDecks().id("Default::2");
-                    note.model().put("did", default1);
-            col.addNote(note);
-            // and another that's higher up
-            note = col.newNote();
-            note.setItem("Front","three");
-            default1 = col.getDecks().id("Default::1");
-            note.model().put("did", default1);
-            col.addNote(note);
-            // should get top level one first, then ::1, then ::2
-            col.reset();
-            assertArrayEquals(new int[]{3, 0, 0}, col.getSched().counts());
-            for (String  i: new String[]{"one", "three", "two"}) {
-           Card c = col.getSched().getCard();
+        note = col.newNote();
+        note.setItem("Front","two");
+        long default1 = col.getDecks().id("Default::2");
+        note.model().put("did", default1);
+        col.addNote(note);
+        // and another that's higher up
+        note = col.newNote();
+        note.setItem("Front","three");
+        default1 = col.getDecks().id("Default::1");
+        note.model().put("did", default1);
+        col.addNote(note);
+        // should get top level one first, then ::1, then ::2
+        col.reset();
+        assertArrayEquals(new int[]{3, 0, 0}, col.getSched().counts());
+        for (String  i: new String[]{"one", "three", "two"}) {
+            Card c = col.getSched().getCard();
             assertEquals(i, c.note().getItem("Front"));
             col.getSched().answerCard(c, 3);
-    }
         }
+    }
         
-        @Test
-            public void test_reorder() throws Exception {
+    @Test
+    public void test_reorder() throws Exception {
         Collection col = getColV2();
         // add a note with default deck
         Note note = col.newNote();
@@ -4102,12 +4102,12 @@ public class UpstreamTest extends RobolectricTest {
         boolean found = false;
         // 50/50 chance of being reordered
         for (int i=0; i < 20; i++) {
-        col.getSched().randomizeCards(1);
-        if (note.cards().get(0).getDue() != note.getId()) {
-        found = true;
-        break;
-    }
-    }
+            col.getSched().randomizeCards(1);
+            if (note.cards().get(0).getDue() != note.getId()) {
+                found = true;
+                break;
+            }
+        }
         assertTrue(found);
         col.getSched().orderCards(1);
         assertEquals(1, note.cards().get(0).getDue());
@@ -4123,17 +4123,17 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(3, note3.cards().get(0).getDue());
         assertEquals(4, note4.cards().get(0).getDue());
         /* todo: start
-        col.getSched().sortCards(new long [] {note3.cards().get(0).getId(), note4.cards().get(0).getId()}, start=1, shift=true);
+           col.getSched().sortCards(new long [] {note3.cards().get(0).getId(), note4.cards().get(0).getId()}, start=1, shift=true);
         assertEquals(3, note.cards().get(0).getDue());
         assertEquals(4, note2.cards().get(0).getDue());
         assertEquals(1, note3.cards().get(0).getDue());
         assertEquals(2, note4.cards().get(0).getDue());
 
-         */
+        */
     }
         
-        @Test
-            public void test_forgetV2() throws Exception {
+    @Test
+    public void test_forgetV2() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -4151,8 +4151,8 @@ public class UpstreamTest extends RobolectricTest {
         assertArrayEquals(new int[]{1, 0, 0}, col.getSched().counts());
     }
         
-        @Test
-            public void test_reschedV2() throws Exception {
+    @Test
+    public void test_reschedV2() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -4170,8 +4170,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(+1, c.getIvl());
     }
         
-        @Test
-            public void test_norelearnV2() throws Exception {
+    @Test
+    public void test_norelearnV2() throws Exception {
         Collection col = getColV2();
         // add a note
         Note note = col.newNote();
@@ -4193,8 +4193,8 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 1);
     }
         
-        @Test
-            public void test_failmultV2() throws Exception {
+    @Test
+    public void test_failmultV2() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -4220,8 +4220,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(25, c.getIvl());
     }
         
-        @Test
-            public void test_moveVersions() throws Exception {
+    @Test
+    public void test_moveVersions() throws Exception {
         Collection col = getColV2();
         col.changeSchedulerVer(1);
         
@@ -4282,8 +4282,8 @@ public class UpstreamTest extends RobolectricTest {
         
         // cards with a due date earlier than the collection should retain
         // their due date when removed
-        @Test
-            public void test_negativeDueFilter() throws Exception {
+    @Test
+    public void test_negativeDueFilter() throws Exception {
         Collection col = getColV2();
         
         // card due prior to collection date
@@ -4311,8 +4311,8 @@ public class UpstreamTest extends RobolectricTest {
         // hard on the first step should be the average of again and good,
         // and it should be logged properly
         
-        @Test
-            public void test_initial_repeat() throws Exception {
+    @Test
+    public void test_initial_repeat() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -4371,8 +4371,8 @@ public class UpstreamTest extends RobolectricTest {
         ** Templates    *
         *****************/
         
-        @Test
-            public void test_deferred_frontside() throws Exception {
+    @Test
+    public void test_deferred_frontside() throws Exception {
         Collection col = getCol();
         Model m = col.getModels().current();
         m.getJSONArray("tmpls").getJSONObject(0).put("qfmt", "{{custom:Front}}");
@@ -4388,8 +4388,8 @@ public class UpstreamTest extends RobolectricTest {
         /*****************
         ** Undo         *
         *****************/
-        @Test
-            public void test_op() throws Exception {
+    @Test
+    public void test_op() throws Exception {
         Collection col = getColV2();
         // should have no undo by default
         assertEquals("", col.undoName(getTargetContext().getResources()));
@@ -4400,8 +4400,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals("studyopts", col.undoName(getTargetContext().getResources()));
         // with about 5 minutes until it's clobbered
         /* lastSave
-        assertTrue(Utils.now() - col._lastSave < 1);
-         */
+           assertTrue(Utils.now() - col._lastSave < 1);
+        */
         // undoing should restore the old value
         col.undo();
         assertEquals("", col.undoName(getTargetContext().getResources()));
@@ -4423,8 +4423,8 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals("Review", col.undoName(getTargetContext().getResources()));
     }
 
-        @Test
-            public void test_review() throws Exception {
+    @Test
+    public void test_review() throws Exception {
         Collection col = getColV2();
         col.getConf().put("counts", COUNT_REMAINING);
         Note note = col.newNote();
@@ -4433,18 +4433,18 @@ public class UpstreamTest extends RobolectricTest {
         col.reset();
         assertEquals("", col.undoName(getTargetContext().getResources()));
         // answer
-                      assertArrayEquals(new int[]{1, 0, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{1, 0, 0}, col.getSched().counts());
         Card c = col.getSched().getCard();
         assertEquals(QUEUE_TYPE_NEW, c.getQueue());
         col.getSched().answerCard(c, 3);
         assertEquals(1001, c.getLeft());
-                      assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
         assertEquals(QUEUE_TYPE_LRN, c.getQueue());
         // undo
         assertNotEquals("", col.undoName(getTargetContext().getResources()));
         col.undo();
         col.reset();
-                      assertArrayEquals(new int[]{1, 0, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{1, 0, 0}, col.getSched().counts());
         c.load();
         assertEquals(QUEUE_TYPE_NEW, c.getQueue());
         assertNotEquals(1001, c.getLeft());
@@ -4454,18 +4454,18 @@ public class UpstreamTest extends RobolectricTest {
         note.setItem("Front","two");
         col.addNote(note);
         col.reset();
-                      assertArrayEquals(new int[]{2, 0, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{2, 0, 0}, col.getSched().counts());
         c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
         c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
-                      assertArrayEquals(new int[]{0, 2, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 2, 0}, col.getSched().counts());
         col.undo();
         col.reset();
-                      assertArrayEquals(new int[]{1, 1, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{1, 1, 0}, col.getSched().counts());
         col.undo();
         col.reset();
-                      assertArrayEquals(new int[]{2, 0, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{2, 0, 0}, col.getSched().counts());
         // performing a normal op will clear the review queue
         c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
@@ -4474,6 +4474,5 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals("foo", col.undoName(getTargetContext().getResources()));
         col.undo();
     }
-        
-    } 
+} 
             
