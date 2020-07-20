@@ -2790,14 +2790,14 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 5, col.getDecks().allNames().size() );
          List<AbstractSched.DeckDueTreeNode> tree = col.getSched().deckDueTree();
          AbstractSched.DeckDueTreeNode tree0 = tree.get(0);
-         assertEquals( "Default", tree0.name );
+         assertEquals( "Default", tree0.getLastDeckNameComponent() );
          // sum of child and parent
          assertEquals( 1, tree0.deck_id );
          assertEquals( 1, tree0.review_count );
          assertEquals( 1, tree0.new_count );
          // child count is just review
          child = tree0.children[0];
-         assertEquals( "1", child.name );
+         assertEquals( "1", child.getLastDeckNameComponent() );
          assertEquals( default1, child.deck_id );
          assertEquals( 1, child.review_count );
          assertEquals( 0, child.new_count );
@@ -4020,14 +4020,14 @@ public class UpstreamTest extends RobolectricTest {
             assertEquals( 5, col.getDecks().allNames().size() );
             tree = col.getSched().deckDueTree();
             tree0 = tree.get(0);
-            assertEquals( "Default", tree0.name );
+            assertEquals( "Default", tree0.getLastDeckNameComponent() );
             // sum of child and parent
             assertEquals( 1, tree0.deck_id );
             assertEquals( 1, tree0.review_count );
             assertEquals( 1, tree0.new_count );
             // child count is just review
             child = tree0.children[0];
-            assertEquals( "1", child.name );
+            assertEquals( "1", child.getLastDeckNameComponent() );
             assertEquals( default1, child.deck_id );
             assertEquals( 1, child.review_count );
             assertEquals( 0, child.new_count );
@@ -4043,7 +4043,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getDecks().id("new::b::c");
         col.getDecks().id("new2");
         // new should not appear twice notARealIn tree
-        names =new String []x.name for col.getSched().deckDueTree().children.contains(x)};
+        names =new String []x.getLastDeckNameComponent() for col.getSched().deckDueTree().children.contains(x)};
         names.remove("new");
         assertFalse(names.contains("new"));
     }
