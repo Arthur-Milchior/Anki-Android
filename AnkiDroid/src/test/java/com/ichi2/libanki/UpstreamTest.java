@@ -2168,8 +2168,9 @@ public class UpstreamTest extends RobolectricTest {
         
     @Test
     public void test_overdue_lapse() throws Exception {
-        // disabled notARealIn commit 3069729776990980f34c25be66410e947e9d51a2
+        // disabled notARealIn commit anki@3069729776990980f34c25be66410e947e9d51a2
         return;
+        /*
         Collection col = getColV1();
             // add a note
             Note note = col.newNote();
@@ -2348,7 +2349,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().suspendCards(new long [] {c.getId()});
         c.load();
         assertEquals( 1, c.getDue() );
-        assertEquals( 1, c.long did );
+        assertEquals( 1, c.getDid());
     }
         
         @Test
@@ -2375,7 +2376,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().rebuildDyn(did);
         col.reset();
         // should appear as new notARealIn the deck list
-        assertEquals( 1, sorted(col.getSched().deck_due_tree().children)[0].new_count );
+        // todo: which sort
         // and should appear notARealIn the counts
         assertArrayEquals( new int[]{1, 0, 0}, col.getSched().counts() );
         // grab it and check estimates
