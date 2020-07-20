@@ -657,6 +657,11 @@ public class Card implements Cloneable {
         return extraData | flag;
     }
 
+    @VisibleForTesting
+    public void setFlag(int flag) {
+        mFlags = flag;
+    }
+
     public void setUserFlag(int flag) {
         mFlags = setFlagInInt(mFlags, flag);
     }

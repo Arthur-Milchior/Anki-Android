@@ -1258,7 +1258,7 @@ public class UpstreamTest extends RobolectricTest {
                 
                 // make sure higher bits are preserved
                 int origBits = 0b101 << 3;
-                c.setUserFlag(origBits); // TODO: create setter for real flag value
+                c.setFlag(origBits); 
                 c.flush();
                 // no flags to start with
                 assertEquals( 0, c.userFlag() );
