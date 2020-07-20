@@ -2227,7 +2227,7 @@ public class UpstreamTest extends RobolectricTest {
     }
         
     @Test
-    public void test_nextIvl() throws Exception {
+    public void test_nextIvlV1() throws Exception {
         Collection col = getColV1();
         Note note = col.newNote();
         note.setItem("Front","one");
@@ -3533,7 +3533,7 @@ public class UpstreamTest extends RobolectricTest {
     }
      
      @Test
-         public void test_nextIvl() throws Exception {
+     public void test_nextIvlV2() throws Exception {
         Collection col = getColV2();
         Note note = col.newNote();
         note.setItem("Front","one");
