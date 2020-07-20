@@ -2792,13 +2792,13 @@ public class UpstreamTest extends RobolectricTest {
          AbstractSched.DeckDueTreeNode tree0 = tree.get(0);
          assertEquals( "Default", tree0.getLastDeckNameComponent() );
          // sum of child and parent
-         assertEquals( 1, tree0.deck_id );
+         assertEquals( 1, tree0.getDid() );
          assertEquals( 1, tree0.review_count );
          assertEquals( 1, tree0.new_count );
          // child count is just review
          child = tree0.children[0];
          assertEquals( "1", child.getLastDeckNameComponent() );
-         assertEquals( default1, child.deck_id );
+         assertEquals( default1, child.getDid() );
          assertEquals( 1, child.review_count );
          assertEquals( 0, child.new_count );
          // code should not fail if a card has an invalid deck
@@ -4022,13 +4022,13 @@ public class UpstreamTest extends RobolectricTest {
             tree0 = tree.get(0);
             assertEquals( "Default", tree0.getLastDeckNameComponent() );
             // sum of child and parent
-            assertEquals( 1, tree0.deck_id );
+            assertEquals( 1, tree0.getDid() );
             assertEquals( 1, tree0.review_count );
             assertEquals( 1, tree0.new_count );
             // child count is just review
             child = tree0.children[0];
             assertEquals( "1", child.getLastDeckNameComponent() );
-            assertEquals( default1, child.deck_id );
+            assertEquals( default1, child.getDid() );
             assertEquals( 1, child.review_count );
             assertEquals( 0, child.new_count );
             // code should not fail if a card has an invalid deck
