@@ -2796,7 +2796,7 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 1, tree0.getRevCount() );
          assertEquals( 1, tree0.getNewCount() );
          // child count is just review
-         child = tree0.children[0];
+            AbstractSched.DeckDueTreeNode child = tree0.children[0];
          assertEquals( "1", child.getLastDeckNameComponent() );
          assertEquals( default1, child.getDid() );
          assertEquals( 1, child.getRevCount() );
@@ -4026,7 +4026,7 @@ public class UpstreamTest extends RobolectricTest {
             assertEquals( 1, tree0.review_count );
             assertEquals( 1, tree0.new_count );
             // child count is just review
-            child = tree0.children[0];
+            AbstractSched.DeckDueTreeNode child = tree0.children[0];
             assertEquals( "1", child.getLastDeckNameComponent() );
             assertEquals( default1, child.getDid() );
             assertEquals( 1, child.review_count );
