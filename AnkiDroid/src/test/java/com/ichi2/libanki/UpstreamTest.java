@@ -519,7 +519,7 @@ public class UpstreamTest extends RobolectricTest {
        newname = str(newname);
        os.close(fd);
        os.unlink(newname);
-       e.long did = 1;
+       e.setDid(1);
        e.exportInto(newname);
        col2 = aopen(newname);
        assertEquals( 1, col2.cardCount() );
@@ -2411,7 +2411,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 138, c.getDue() );
         assertEquals( QUEUE_TYPE_REV, c.getQueue() );
         // and it will have moved back to the previous deck
-        assertEquals( 1, c.long did );
+        assertEquals( 1, c.getDid() );
         // cram the deck again
         col.getSched().rebuildDyn(did);
         col.reset();
@@ -2462,7 +2462,7 @@ public class UpstreamTest extends RobolectricTest {
         c = col.getSched().getCard();
         col.getSched().answerCard(c, 4);
         // it should have been moved back to the original deck
-        assertEquals( 1, c.long did );
+        assertEquals( 1, c.getDid() );
     }
         
         @Test
@@ -2801,7 +2801,7 @@ public class UpstreamTest extends RobolectricTest {
          assertEquals( 1, child.review_count );
          assertEquals( 0, child.new_count );
          // code should not fail if a card has an invalid deck
-         c.long did = 12345;
+         c.setDid(12345);
          c.flush();
          col.getSched().deck_due_tree();
     }
@@ -3056,7 +3056,7 @@ public class UpstreamTest extends RobolectricTest {
         // assertEquals( 20, col.getSched().newCount );TODO: newCount getter
         // first card we get comes from parent
         Card c = col.getSched().getCard();
-        assertEquals( 1, c.long did );
+        assertEquals( 1, c.getDid() );
         // limit the parent to 10 cards, meaning we get 10 notARealIn total
         DeckConfig conf1 = col.getDecks().confForDid(1);
         conf1.getJSONObject("new").put("perDay", 10);
@@ -4030,7 +4030,7 @@ public class UpstreamTest extends RobolectricTest {
             assertEquals( 1, child.review_count );
             assertEquals( 0, child.new_count );
             // code should not fail if a card has an invalid deck
-            c.long did = 12345;
+            c.setDid(12345);
             c.flush();
             col.getSched().deck_due_tree();
     }
