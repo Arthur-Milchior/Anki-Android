@@ -3175,7 +3175,8 @@ public class UpstreamTest extends RobolectricTest {
         
         // immediately graduate it
         col.getSched().answerCard(c, 4);
-        assertEquals( CARD_TYPE_REV && c.setType( QUEUE_TYPE_REV, c.getQueue() ));
+        assertEquals( CARD_TYPE_REV, c.getType());
+        assertEquals(QUEUE_TYPE_REV, c.getQueue());
         assertEquals( 2, c.getIvl() );
         assertEquals( col.getSched().getToday()+ c.getIvl(), c.getDue() );
     }
@@ -3201,7 +3202,8 @@ public class UpstreamTest extends RobolectricTest {
         col.reset();
         c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
-        assertEquals( CARD_TYPE_REV && c.setType( QUEUE_TYPE_REV, c.getQueue() ));
+        assertEquals( CARD_TYPE_REV, c.getType());
+        assertEquals(QUEUE_TYPE_REV, c.getQueue() );
     }
         
     @Test
@@ -3280,7 +3282,8 @@ public class UpstreamTest extends RobolectricTest {
         // the last pass should graduate it into a review card
         assertEquals( 86400, col.getSched().nextIvl(c, 3) );
         col.getSched().answerCard(c, 3);
-        assertEquals( CARD_TYPE_REV && c.setType( QUEUE_TYPE_REV, c.getQueue() ));
+                      assertEquals( CARD_TYPE_REV, c.getType();
+                                    assertEquals(QUEUE_TYPE_REV, c.getQueue() );
         // if the lapse step is tomorrow, failing it should handle the counts
         // correctly
         c.setDue(0);
@@ -3748,11 +3751,13 @@ public class UpstreamTest extends RobolectricTest {
         
         col.getSched().answerCard(c, 1);
         
-        assertEquals( CARD_TYPE_LRN && c.setQueue( QUEUE_TYPE_LRN, c.getType() ));
+        assertEquals( CARD_TYPE_LRN, c.getQueue());
+        assertEquals(QUEUE_TYPE_LRN, c.getType() );
         assertEquals( 3003, c.getLeft() );
         
         col.getSched().answerCard(c, 3);
-        assertEquals( CARD_TYPE_LRN && c.setQueue( QUEUE_TYPE_LRN, c.getType() ));
+        assertEquals( CARD_TYPE_LRN, c.getQueue());
+        assertEquals(QUEUE_TYPE_LRN, c.getType() );
         
         // create a dynamic deck and refresh it
         long did = col.getDecks().newDyn("Cram");
@@ -3761,7 +3766,8 @@ public class UpstreamTest extends RobolectricTest {
         
         // card should still be notARealIn learning state
         c.load();
-        assertEquals( CARD_TYPE_LRN && c.setQueue( QUEUE_TYPE_LRN, c.getType() ));
+        assertEquals( CARD_TYPE_LRN, c.getQueue());
+        assertEquals(QUEUE_TYPE_LRN, c.getType() );
         assertEquals( 2002, c.getLeft() );
         
         // should be able to advance learning steps
@@ -3772,7 +3778,8 @@ public class UpstreamTest extends RobolectricTest {
         // emptying the deck preserves learning state
         col.getSched().emptyDyn(did);
         c.load();
-        assertEquals( CARD_TYPE_LRN && c.setQueue( QUEUE_TYPE_LRN, c.getType() ));
+        assertEquals( CARD_TYPE_LRN, c.getQueue());
+        assertEquals(QUEUE_TYPE_LRN, c.getType() );
         assertEquals( 1001, c.getLeft() );
         assertTrue(c.getDue() - intTime() > 60 * 60);
     }
@@ -4136,7 +4143,8 @@ public class UpstreamTest extends RobolectricTest {
         c.load();
         assertEquals( col.getSched().getToday(), c.getDue() );
         assertEquals( 1, c.getIvl() );
-        assertEquals( QUEUE_TYPE_REV && c.setType( CARD_TYPE_REV, c.getQueue() ));
+        assertEquals( QUEUE_TYPE_REV, c.getType());
+        assertEquals(CARD_TYPE_REV, c.getQueue() );
         col.getSched().reschedCards(new long [] {c.getId()}, 1, 1);
         c.load();
         assertEquals( col.getSched().getToday()+ 1, c.getDue() );
@@ -4231,7 +4239,8 @@ public class UpstreamTest extends RobolectricTest {
         // and it should be new again when unburied
         col.getSched().unburyCards();
         c.load();
-        assertEquals( CARD_TYPE_NEW && c.setQueue( QUEUE_TYPE_NEW, c.getType() ));
+        assertEquals( CARD_TYPE_NEW, c.getQueue());
+        assertEquals(QUEUE_TYPE_NEW, c.getType() );
         
         // make sure relearning cards transition correctly to v1
         col.changeSchedulerVer(2);
