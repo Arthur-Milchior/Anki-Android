@@ -334,21 +334,21 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( parentId, (long) col.getDecks().id("new deck") );
         // we start with the default col selected
         assertEquals( 1, col.getDecks().selected() );
-        assertEquals( new long [] {1}, col.getDecks().active() );
+        assertEquals( Arrays.asList(new long [] {1}), col.getDecks().active() );
         // we can select a different col
         col.getDecks().select(parentId);
         assertEquals( parentId, col.getDecks().selected() );
-        assertEquals( new long [] {parentId}, col.getDecks().active() );
+        assertEquals( Arrays.asList(new long [] {parentId}), col.getDecks().active() );
         // let's create a child
         long childId = col.getDecks().id("new deck::child");
         col.getSched().reset();
         // it should have been added to the active list
          assertEquals( parentId, col.getDecks().selected() );
-         assertEquals( new long [] {parentId, childId}, col.getDecks().active() );
+         assertEquals( Arrays.asList(new long [] {parentId, childId}), col.getDecks().active() );
          // we can select the child individually too
          col.getDecks().select(childId);
          assertEquals( childId, col.getDecks().selected() );
-         assertEquals( new long [] {childId}, col.getDecks().active() );
+         assertEquals( Arrays.asList(new long [] {childId}), col.getDecks().active() );
          // parents with a different case should be handled correctly
          col.getDecks().id("ONE");
          Model m = col.getModels().current();
@@ -675,6 +675,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals( 4, col.findCards("-tag:sheep").size() );
         col.getTags().bulkAdd(col.getDb().longList("select id from notes"), "foo bar");
         assertEquals(5, col.findCards("tag:foo").size());
+        assertEquals(5, col.findCards("tag:bar").size());
         col.getTags().bulkRem(col.getDb().longList("select id from notes"), "foo");
         assertEquals( 0, col.findCards("tag:foo").size() );
         assertEquals( 5, col.findCards("tag:bar").size() );
@@ -1258,7 +1259,7 @@ public class UpstreamTest extends RobolectricTest {
                 
                 // make sure higher bits are preserved
                 int origBits = 0b101 << 3;
-                c.setFlag(origBits); 
+                c.setFlag(origBits);
                 c.flush();
                 // no flags to start with
                 assertEquals( 0, c.userFlag() );
@@ -1593,11 +1594,8 @@ public class UpstreamTest extends RobolectricTest {
          note.setItem("Text","\\(a\\) {{c1::b}} \\[ {{c1::c}} \\]");
          assertNotEquals(0, col.addNote(note));
          assertEquals( 1, note.nbCards() );
-         assertTrue(
-             note.cards().get(0)
-             .q()
-             .endsWith("\\(a\\) <span class=cloze>[...]</span> \\[ new [] {...} \\]")
-        );
+         String question = note.cards().get(0).q();
+         assertTrue("Question «"+question+"» does not end correctly", question.endsWith("\\(a\\) <span class=cloze>[...]</span> \\[ [...] \\]"));
      }
 
      @Test
