@@ -3719,9 +3719,9 @@ public class UpstreamTest extends RobolectricTest {
         c = col.getSched().getCard();
         assertEquals( 4, col.getSched().answerButtons(c) );
         assertEquals( 600, col.getSched().nextIvl(c, 1) );
-        assertEquals( int(75 * 1.2, col.getSched().nextIvl(c, 2) ) * 86400);
-        assertEquals( int(75 * 2.5, col.getSched().nextIvl(c, 3) ) * 86400);
-        assertEquals( int(75 * 2.5 * 1.15, col.getSched().nextIvl(c, 4) ) * 86400);
+        assertEquals( Math.round(75 * 1.2) * 86400, col.getSched().nextIvl(c, 2) );
+        assertEquals(  Math.round(75 * 2.5) * 86400, col.getSched().nextIvl(c, 3) );
+        assertEquals(  Math.round(75 * 2.5 * 1.15), col.getSched().nextIvl(c, 4) );
         
         // answer 'good'
         col.getSched().answerCard(c, 3);
@@ -4008,7 +4008,7 @@ public class UpstreamTest extends RobolectricTest {
         // and one that's a child
             note = col.newNote();
             note.setItem("Front","two");
-            Long default1 = col.getDecks().id("Default::1");
+            long default1 = col.getDecks().id("Default::1");
             note.model().put("did", default1);
             col.addNote(note);
             // make it a review card
@@ -4038,7 +4038,7 @@ public class UpstreamTest extends RobolectricTest {
             // child count is just review
             AbstractSched.DeckDueTreeNode child = tree0.getChildren().get(0);
             assertEquals( "1", child.getLastDeckNameComponent() );
-            assertEquals( default1, (long) child.getDid() );
+            assertEquals( default1, child.getDid() );
             assertEquals( 1, child.getRevCount() );
             assertEquals( 0, child.getNewCount() );
             // code should not fail if a card has an invalid deck
@@ -4101,7 +4101,7 @@ public class UpstreamTest extends RobolectricTest {
         note2.setItem("Front","two");
         col.addNote(note2);
         assertEquals( 2, note2.cards().get(0).getDue() );
-        Boolean found = false;
+        boolean found = false;
         // 50/50 chance of being reordered
         for (int i=0; i < 20; i++) {
         col.getSched().randomizeCards(1);
