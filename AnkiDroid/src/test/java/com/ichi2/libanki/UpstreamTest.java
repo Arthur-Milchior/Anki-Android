@@ -2294,7 +2294,7 @@ public class UpstreamTest extends RobolectricTest {
         col.addNote(note);
         Card c = note.cards().get(0);
         // burying
-        col.getSched().buryNote(c.nid);
+        col.getSched().buryNote(c.getNid());
         col.reset();
         assertFalse(col.getSched().getCard());
         col.getSched().unburyCards();
