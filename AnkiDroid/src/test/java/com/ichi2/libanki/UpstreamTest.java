@@ -2369,7 +2369,7 @@ public class UpstreamTest extends RobolectricTest {
         c.flush();
         col.reset();
         assertArrayEquals( new int[]{0, 0, 0}, col.getSched().counts() );
-        cardcopy = c.clone();
+        Card cardcopy = c.clone();
         // create a dynamic deck and refresh it
         long did = col.getDecks().newDyn("Cram");
         col.getSched().rebuildDyn(did);
@@ -2519,7 +2519,7 @@ public class UpstreamTest extends RobolectricTest {
         c.setDue(col.getSched().getToday() + 25);
         c.setFactor(STARTING_FACTOR);
         c.flush();
-        cardcopy = c.clone();
+        Card cardcopy = c.clone();
         col.getSched().rebuildDyn(did);
         col.reset();
         c = col.getSched().getCard();
@@ -3319,7 +3319,7 @@ public class UpstreamTest extends RobolectricTest {
         c.startTimer();
         c.flush();
         // save it for later use as well
-        cardcopy = c.clone();
+        Card cardcopy = c.clone();
         // try with an ease of 2
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         c = cardcopy.clone();
