@@ -2620,9 +2620,16 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(3, col.cardCount());
         col.reset();
         // ordinals should arrive in order
-        assertEquals(0, col.getSched().getCard().getOrd());
-        assertEquals(1, col.getSched().getCard().getOrd());
-        assertEquals(2, col.getSched().getCard().getOrd());
+        AbstractSched sched = col.getSched();
+        Card c = sched.getCard();
+        sched.answerCard(c, sched.answerButtons(c)-1); // not upstream. But we are not expecting multiple getCard without review
+        assertEquals(0, c.getOrd());
+        c = sched.getCard();
+        sched.answerCard(c, sched.answerButtons(c)-1); // not upstream. But we are not expecting multiple getCard without review
+        assertEquals(1, c.getOrd());
+        c = sched.getCard();
+        sched.answerCard(c, sched.answerButtons(c)-1); // not upstream. But we are not expecting multiple getCard without review
+        assertEquals(2, c.getOrd());
     }
     
     @Test
@@ -3870,9 +3877,16 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(3, col.cardCount());
         col.reset();
         // ordinals should arrive in order
-        assertEquals(0, col.getSched().getCard().getOrd());
-        assertEquals(1, col.getSched().getCard().getOrd());
-        assertEquals(2, col.getSched().getCard().getOrd());
+        AbstractSched sched = col.getSched();
+        Card c = sched.getCard();
+        sched.answerCard(c, sched.answerButtons(c)-1); // not upstream. But we are not expecting multiple getCard without review
+        assertEquals(0, c.getOrd());
+        c = sched.getCard();
+        sched.answerCard(c, sched.answerButtons(c)-1); // not upstream. But we are not expecting multiple getCard without review
+        assertEquals(1, c.getOrd());
+        c = sched.getCard();
+        sched.answerCard(c, sched.answerButtons(c)-1); // not upstream. But we are not expecting multiple getCard without review
+        assertEquals(2, c.getOrd());
     }
     
     @Test
