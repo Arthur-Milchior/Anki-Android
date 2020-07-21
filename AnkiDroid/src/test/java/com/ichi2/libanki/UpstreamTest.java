@@ -342,21 +342,21 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(parentId, (long) col.getDecks().id("new deck"));
         // we start with the default col selected
         assertEquals(1, col.getDecks().selected());
-        assertEquals(Arrays.asList(new long [] {1}), col.getDecks().active());
+        assertEqualsArrayList(new Long [] {1L}, col.getDecks().active());
         // we can select a different col
         col.getDecks().select(parentId);
         assertEquals(parentId, col.getDecks().selected());
-        assertEquals(Arrays.asList(new long [] {parentId}), col.getDecks().active());
+        assertEqualsArrayList(new Long [] {parentId}, col.getDecks().active());
         // let's create a child
         long childId = col.getDecks().id("new deck::child");
         col.getSched().reset();
         // it should have been added to the active list
          assertEquals(parentId, col.getDecks().selected());
-         assertEquals(Arrays.asList(new long [] {parentId, childId}), col.getDecks().active());
+        assertEqualsArrayList(new Long [] {parentId, childId}, col.getDecks().active());
          // we can select the child individually too
          col.getDecks().select(childId);
          assertEquals(childId, col.getDecks().selected());
-         assertEquals(Arrays.asList(new long [] {childId}), col.getDecks().active());
+        assertEqualsArrayList(new Long [] {childId}, col.getDecks().active());
          // parents with a different case should be handled correctly
          col.getDecks().id("ONE");
          Model m = col.getModels().current();
@@ -707,18 +707,18 @@ public class UpstreamTest extends RobolectricTest {
         c.setType(CARD_TYPE_REV);
         assertEquals(0, col.findCards("is:review").size());
         c.flush();
-        assertEquals(Arrays.asList(new Long[] {c.getId()}), col.findCards("is:review"));
+        assertEqualsArrayList((new Long[] {c.getId()}), col.findCards("is:review"));
         assertEquals(0, col.findCards("is:due").size());
         c.setDue(0);
         c.setQueue(QUEUE_TYPE_REV);
         c.flush();
-        assertEquals(Arrays.asList(new Long [] {c.getId()}), col.findCards("is:due"));
+        assertEqualsArrayList((new Long [] {c.getId()}), col.findCards("is:due"));
         assertEquals(4, col.findCards("-is:due").size());
         c.setQueue(QUEUE_TYPE_SUSPENDED);
         // ensure this card gets a later mod time
         c.flush();
         col.getDb().execute("update cards set mod = mod + 1 where id = ?", new Object[] {c.getId()});
-        assertEquals(Arrays.asList(new Long [] {c.getId()}), col.findCards("is:suspended"));
+        assertEqualsArrayList((new Long [] {c.getId()}), col.findCards("is:suspended"));
         // nids
         assertEquals(0, col.findCards("nid:54321").size());
         assertEquals(2, col.findCards("nid:"+note.getId()).size());
