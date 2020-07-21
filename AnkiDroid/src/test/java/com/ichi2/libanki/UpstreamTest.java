@@ -423,6 +423,7 @@ public class UpstreamTest extends RobolectricTest {
 
      @Test
      public void test_renameForDragAndDrop() throws DeckRenameException {
+        // TODO: upstream does not return "default", remove it
          Collection col = getCol();
 
          long languages_did = col.getDecks().id("Languages");
@@ -431,40 +432,40 @@ public class UpstreamTest extends RobolectricTest {
 
          // Renaming also renames children
          col.getDecks().renameForDragAndDrop(chinese_did, languages_did);
-         assertEqualsArrayList(new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Default", "Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
 
          // Dragging a col onto itself is a no-op
          col.getDecks().renameForDragAndDrop(languages_did, languages_did);
-         assertEqualsArrayList(new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Default", "Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
 
          // Dragging a col onto its parent is a no-op
          col.getDecks().renameForDragAndDrop(hsk_did, chinese_did);
-         assertEqualsArrayList(new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Default", "Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
 
          // Dragging a col onto a descendant is a no-op
          col.getDecks().renameForDragAndDrop(languages_did, hsk_did);
-         assertEqualsArrayList(new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Default", "Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
 
          // Can drag a grandchild onto its grandparent.  It becomes a child
          col.getDecks().renameForDragAndDrop(hsk_did, languages_did);
-         assertEqualsArrayList(new String [] {"Languages", "Languages::Chinese", "Languages::HSK"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Default", "Languages", "Languages::Chinese", "Languages::HSK"}, col.getDecks().allNames());
 
          // Can drag a col onto its sibling
          col.getDecks().renameForDragAndDrop(hsk_did, chinese_did);
-         assertEqualsArrayList(new String [] {"Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Default", "Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
 
          // Can drag a col back to the top level
          col.getDecks().renameForDragAndDrop(chinese_did, null);
-         assertEqualsArrayList(new String [] {"Chinese", "Chinese::HSK", "Languages"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Default", "Chinese", "Chinese::HSK", "Languages"}, col.getDecks().allNames());
 
          // Dragging a top level col to the top level is a no-op
          col.getDecks().renameForDragAndDrop(chinese_did, null);
-         assertEqualsArrayList(new String [] {"Chinese", "Chinese::HSK", "Languages"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Default", "Chinese", "Chinese::HSK", "Languages"}, col.getDecks().allNames());
 
          // decks are renamed if necessary«
          long new_hsk_did = col.getDecks().id("hsk");
          col.getDecks().renameForDragAndDrop(new_hsk_did, chinese_did);
-         assertEqualsArrayList(new String [] {"Chinese", "Chinese::HSK", "Chinese::hsk+", "Languages"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Default", "Chinese", "Chinese::HSK", "Chinese::hsk+", "Languages"}, col.getDecks().allNames());
          col.getDecks().rem(new_hsk_did);
 
       }
