@@ -197,7 +197,7 @@ public class UpstreamTest extends RobolectricTest {
         t.put("qfmt", "{{Back}}");
         t.put("afmt", "{{Front}}");
         mm.addTemplateModChanged(m, t);
-        mm.save(m);
+        mm.save(m, true); // todo: remove true which is not upstream
         assertEquals(2, col.cardCount());
         // creating new notes should use both cards
         note = col.newNote();
