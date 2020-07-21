@@ -3619,10 +3619,10 @@ public class UpstreamTest extends RobolectricTest {
         col.addNote(note);
         Card c2 = note.cards().get(0);
         // burying
-        col.getSched().buryCards(new long [] {c.getId()});
+        col.getSched().buryCards(new long [] {c.getId()}, true);
         c.load();
         assertEquals(QUEUE_TYPE_MANUALLY_BURIED, c.getQueue());
-        col.getSched().buryCards(new long [] {c2.getId()});
+        col.getSched().buryCards(new long [] {c2.getId()}, false);
         c2.load();
         assertEquals(QUEUE_TYPE_SIBLING_BURIED, c2.getQueue());
         
