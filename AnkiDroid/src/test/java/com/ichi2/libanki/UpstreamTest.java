@@ -796,7 +796,7 @@ public class UpstreamTest extends RobolectricTest {
         // should be able to limit to parent col, no children
         long id = col.getDb().queryLongScalar("select id from cards limit 1");
         col.getDb().execute(
-                            "update cards set long did = ? where long id = ?", new Object[] {col.getDecks().id("Default::Child"), id});
+                            "update cards set did = ? where id = ?", new Object[] {col.getDecks().id("Default::Child"), id});
         col.save();
         assertEquals(7, col.findCards("deck:default").size());
         assertEquals(1, col.findCards("deck:default::child").size());
@@ -804,7 +804,7 @@ public class UpstreamTest extends RobolectricTest {
         // properties
         id = col.getDb().queryLongScalar("select id from cards limit 1");
         col.getDb().execute(
-                            "update cards set queue=2, ivl=10, reps=20, due=30, factor=2200 where long id = ?",
+                            "update cards set queue=2, ivl=10, reps=20, due=30, factor=2200 where id = ?",
                             new Object[]{id}
                             );
         assertEquals(1, col.findCards("prop:ivl>5").size());
@@ -839,7 +839,7 @@ public class UpstreamTest extends RobolectricTest {
             assertEquals(1, col.findCards("rated:2:2").size());
             // added
             assertEquals(0, col.findCards("added:0").size());
-            col.getDb().execute("update cards set long id = id - 86400*1000 where long id = ?", new Object[] {id});
+            col.getDb().execute("update cards set id = id - 86400*1000 where id = ?", new Object[] {id});
             assertEquals(col.cardCount() -1, col.findCards("added:1").size());
             assertEquals(col.cardCount() , col.findCards("added:2").size());
         } else {
