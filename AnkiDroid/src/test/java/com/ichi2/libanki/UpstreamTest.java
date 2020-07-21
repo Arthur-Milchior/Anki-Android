@@ -712,7 +712,7 @@ public class UpstreamTest extends RobolectricTest {
         c.setQueue(QUEUE_TYPE_SUSPENDED);
         // ensure this card gets a later mod time
         c.flush();
-        col.getDb().execute("update cards set mod = mod + 1 where long id = ?", new Object[] {c.getId()});
+        col.getDb().execute("update cards set mod = mod + 1 where id = ?", new Object[] {c.getId()});
         assertEquals(Arrays.asList(new Long [] {c.getId()}), col.findCards("is:suspended"));
         // nids
         assertEquals(0, col.findCards("nid:54321").size());
@@ -921,7 +921,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(3, r0.second.size());
         // excludes everything
         r = col.findDupes("Back", "invalid");
-        assertNotEquals(0, r.size());
+        assertEquals(0, r.size());
         // front isn't dupe
         assertEquals(0, col.findDupes("Front").size());
     }
@@ -2794,7 +2794,8 @@ public class UpstreamTest extends RobolectricTest {
         // and one that's a child
         note = col.newNote();
         note.setItem("Front","two");
-        JSONObject default1 = note.model().put("did", col.getDecks().id("Default::1"));
+        long default1 = col.getDecks().id("Default::1");
+        note.model().put("did", default1);
         col.addNote(note);
         // make it a review card
         Card c = note.cards().get(0);
