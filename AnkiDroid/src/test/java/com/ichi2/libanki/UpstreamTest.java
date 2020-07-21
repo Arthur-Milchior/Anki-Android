@@ -2805,15 +2805,14 @@ public class UpstreamTest extends RobolectricTest {
         col.addNote(note);
         col.reset();
         assertEquals(5, col.getDecks().allNames().size());
-        List<AbstractSched.DeckDueTreeNode> tree = col.getSched().deckDueTree();
-        AbstractSched.DeckDueTreeNode tree0 = tree.get(0);
-        assertEquals("Default", tree0.getLastDeckNameComponent());
+        AbstractSched.DeckDueTreeNode tree = col.getSched().deckDueTree().get(0);
+        assertEquals("Default", tree.getLastDeckNameComponent());
         // sum of child and parent
-        assertEquals(1, tree0.getDid());
-        assertEquals(1, tree0.getRevCount());
-        assertEquals(1, tree0.getNewCount());
+        assertEquals(1, tree.getDid());
+        assertEquals(1, tree.getRevCount());
+        assertEquals(1, tree.getNewCount());
         // child count is just review
-        AbstractSched.DeckDueTreeNode child = tree0.getChildren().get(0);
+        AbstractSched.DeckDueTreeNode child = tree.getChildren().get(0);
         assertEquals("1", child.getLastDeckNameComponent());
         assertEquals(default1, child.getDid());
         assertEquals(1, child.getRevCount());
@@ -3440,12 +3439,13 @@ public class UpstreamTest extends RobolectricTest {
             c.setDue(0);
             c.flush();
         }
-        
-        List<AbstractSched.DeckDueTreeNode> tree = col.getSched().deckDueTree();
-        AbstractSched.DeckDueTreeNode tree0 = tree.get(0);
+
+        // position 0 is default deck. Different from upstream
+        AbstractSched.DeckDueTreeNode tree = col.getSched().deckDueTree().get(1);
         // (('parent', 1514457677462, 5, 0, 0, (('child', 1514457677463, 5, 0, 0, ()),)))
-        assertEquals(5,  tree0.getRevCount());  // paren, tree0.review_count)t
-        assertEquals(5, tree0.getChildren().get(0).getRevCount());
+        assertEquals("parent", tree.getFullDeckName());
+        assertEquals(5,  tree.getRevCount());  // paren, tree.review_count)t
+        assertEquals(5, tree.getChildren().get(0).getRevCount());
         
         // .counts() should match
         col.getDecks().select(child.getLong("id"));
@@ -3457,9 +3457,9 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 3);
         assertArrayEquals(new int[]{0, 0, 4}, col.getSched().counts());
         
-        tree = col.getSched().deckDueTree();
-        assertEquals(4 , tree0.getRevCount());
-        assertEquals(4 , tree0.getChildren().get(0).getRevCount());
+        tree = col.getSched().deckDueTree().get(1);
+        assertEquals(4 , tree.getRevCount());
+        assertEquals(4 , tree.getChildren().get(0).getRevCount());
     }
     
     @Test
@@ -4056,15 +4056,14 @@ public class UpstreamTest extends RobolectricTest {
         col.addNote(note);
         col.reset();
         assertEquals(5, col.getDecks().allNames().size());
-        List<AbstractSched.DeckDueTreeNode> tree = col.getSched().deckDueTree();
-        AbstractSched.DeckDueTreeNode tree0 = tree.get(0);
-        assertEquals("Default", tree0.getLastDeckNameComponent());
+        AbstractSched.DeckDueTreeNode tree = col.getSched().deckDueTree().get(0);
+        assertEquals("Default", tree.getLastDeckNameComponent());
         // sum of child and parent
-        assertEquals(1, tree0.getDid());
-        assertEquals(1, tree0.getRevCount());
-        assertEquals(1, tree0.getNewCount());
+        assertEquals(1, tree.getDid());
+        assertEquals(1, tree.getRevCount());
+        assertEquals(1, tree.getNewCount());
         // child count is just review
-        AbstractSched.DeckDueTreeNode child = tree0.getChildren().get(0);
+        AbstractSched.DeckDueTreeNode child = tree.getChildren().get(0);
         assertEquals("1", child.getLastDeckNameComponent());
         assertEquals(default1, child.getDid());
         assertEquals(1, child.getRevCount());
