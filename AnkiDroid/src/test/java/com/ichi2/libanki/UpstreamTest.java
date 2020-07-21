@@ -16,6 +16,7 @@ import com.ichi2.utils.JSONArray;
 import com.ichi2.utils.JSONObject;
 
 import org.apache.http.util.Asserts;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -1921,6 +1922,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(2, c.getLeft() / 1000);
         // check log is accurate
         Cursor log = col.getDb().getDatabase().query("select * from revlog order by id desc");
+        assertTrue(log.moveToFirst());
         assertEquals(2, log.getInt(3));
         assertEquals(-180, log.getInt(4));
         assertEquals(-30, log.getInt(5));
@@ -3138,6 +3140,7 @@ public class UpstreamTest extends RobolectricTest {
         assertEquals(2 , c.getLeft() / 1000);
         // check log is accurate
         Cursor log = col.getDb().getDatabase().query("select * from revlog order by id desc");
+        assertTrue(log.moveToFirst());
         assertEquals(3, log.getInt(3));
         assertEquals(-180, log.getInt(4));
         assertEquals(-30, log.getInt(5));
@@ -4406,6 +4409,7 @@ public class UpstreamTest extends RobolectricTest {
      ** Undo         *
      *****************/
     @Test
+    @Ignore("We need to figure out how to test save/undo")
     public void test_op() throws Exception {
         Collection col = getColV2();
         // should have no undo by default
