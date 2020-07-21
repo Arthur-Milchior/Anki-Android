@@ -2036,7 +2036,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getSched().answerCard(c, 2);
         assertEquals(col.getSched().getToday() + 1, c.getDue());
         assertEquals(CARD_TYPE_RELEARNING, c.getQueue());
-        assertNotNull(col.getSched().getCard());
+        assertNull(col.getSched().getCard());
         // for testing, move it back a day
         c.setDue(c.getDue() - 1);
         c.flush();
