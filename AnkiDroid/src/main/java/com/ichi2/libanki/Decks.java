@@ -30,6 +30,7 @@ import com.ichi2.anki.exception.DeckRenameException;
 import com.ichi2.libanki.exception.NoSuchDeckException;
 
 import com.ichi2.utils.DeckComparator;
+import com.ichi2.utils.DeckNameComparator;
 import com.ichi2.utils.JSONArray;
 import com.ichi2.utils.JSONObject;
 
@@ -440,6 +441,13 @@ public class Decks {
         ArrayList<Deck> decks = all();
         Collections.sort(decks, DeckComparator.instance);
         return decks;
+    }
+
+    @VisibleForTesting
+    public List<String> allSortedNames() {
+        List<String> names = allNames();
+        Collections.sort(names, DeckNameComparator.instance);
+        return names;
     }
 
 

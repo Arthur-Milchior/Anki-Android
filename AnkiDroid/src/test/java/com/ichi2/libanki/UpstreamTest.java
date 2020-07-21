@@ -330,13 +330,13 @@ public class UpstreamTest extends RobolectricTest {
     public void test_basic(){
         Collection col = getCol();
         // we start with a standard col
-        assertEquals(1, col.getDecks().allNames().size());
+        assertEquals(1, col.getDecks().allSortedNames().size());
         // it should have an id of 1
         assertNotNull(col.getDecks().name(1));
         // create a new col
         long parentId = col.getDecks().id("new deck");
         assertNotEquals(parentId, 0);
-        assertEquals(2, col.getDecks().allNames().size());
+        assertEquals(2, col.getDecks().allSortedNames().size());
         // should get the same id
         assertEquals(parentId, (long) col.getDecks().id("new deck"));
         // we start with the default col selected
@@ -391,7 +391,7 @@ public class UpstreamTest extends RobolectricTest {
          // should be able to rename into a completely different branch, creating
          // parents as necessary
          col.getDecks().rename(col.getDecks().get(id), "foo::bar");
-         List<String> names =  col.getDecks().allNames();
+         List<String> names =  col.getDecks().allSortedNames();
          assertTrue(names.contains("foo"));
          assertTrue(names.contains("foo::bar"));
          assertFalse(names.contains("hello::world"));
@@ -400,7 +400,7 @@ public class UpstreamTest extends RobolectricTest {
          /* TODO: do we want to follow upstream here ?
          // automatically adjusted if a duplicate name
          col.getDecks().rename(col.getDecks().get(id), "FOO");
-         names =  col.getDecks().allNames();
+         names =  col.getDecks().allSortedNames();
          assertTrue(names.contains("FOO+"));
          
           */
@@ -408,7 +408,7 @@ public class UpstreamTest extends RobolectricTest {
          col.getDecks().id("one::two::three");
          id = col.getDecks().id("one");
          col.getDecks().rename(col.getDecks().get(id), "yo");
-         names =  col.getDecks().allNames();
+         names =  col.getDecks().allSortedNames();
          for (String n: new String[] {"yo", "yo::two", "yo::two::three"}) {
              assertTrue(names.contains(n));
          }
@@ -432,40 +432,40 @@ public class UpstreamTest extends RobolectricTest {
 
          // Renaming also renames children
          col.getDecks().renameForDragAndDrop(chinese_did, languages_did);
-         assertEqualsArrayList(new String [] {"Default", "Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Default", "Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allSortedNames());
 
          // Dragging a col onto itself is a no-op
          col.getDecks().renameForDragAndDrop(languages_did, languages_did);
-         assertEqualsArrayList(new String [] {"Default", "Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Default", "Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allSortedNames());
 
          // Dragging a col onto its parent is a no-op
          col.getDecks().renameForDragAndDrop(hsk_did, chinese_did);
-         assertEqualsArrayList(new String [] {"Default", "Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Default", "Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allSortedNames());
 
          // Dragging a col onto a descendant is a no-op
          col.getDecks().renameForDragAndDrop(languages_did, hsk_did);
-         assertEqualsArrayList(new String [] {"Default", "Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Default", "Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allSortedNames());
 
          // Can drag a grandchild onto its grandparent.  It becomes a child
          col.getDecks().renameForDragAndDrop(hsk_did, languages_did);
-         assertEqualsArrayList(new String [] {"Default", "Languages", "Languages::Chinese", "Languages::HSK"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Default", "Languages", "Languages::Chinese", "Languages::HSK"}, col.getDecks().allSortedNames());
 
          // Can drag a col onto its sibling
          col.getDecks().renameForDragAndDrop(hsk_did, chinese_did);
-         assertEqualsArrayList(new String [] {"Default", "Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Default", "Languages", "Languages::Chinese", "Languages::Chinese::HSK"}, col.getDecks().allSortedNames());
 
          // Can drag a col back to the top level
          col.getDecks().renameForDragAndDrop(chinese_did, null);
-         assertEqualsArrayList(new String [] {"Default", "Chinese", "Chinese::HSK", "Languages"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Default", "Chinese", "Chinese::HSK", "Languages"}, col.getDecks().allSortedNames());
 
          // Dragging a top level col to the top level is a no-op
          col.getDecks().renameForDragAndDrop(chinese_did, null);
-         assertEqualsArrayList(new String [] {"Default", "Chinese", "Chinese::HSK", "Languages"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Default", "Chinese", "Chinese::HSK", "Languages"}, col.getDecks().allSortedNames());
 
          // decks are renamed if necessary«
          long new_hsk_did = col.getDecks().id("hsk");
          col.getDecks().renameForDragAndDrop(new_hsk_did, chinese_did);
-         assertEqualsArrayList(new String [] {"Default", "Chinese", "Chinese::HSK", "Chinese::hsk+", "Languages"}, col.getDecks().allNames());
+         assertEqualsArrayList(new String [] {"Default", "Chinese", "Chinese::HSK", "Chinese::hsk+", "Languages"}, col.getDecks().allSortedNames());
          col.getDecks().rem(new_hsk_did);
 
       }
@@ -2814,7 +2814,7 @@ public class UpstreamTest extends RobolectricTest {
         JSONObject foobaz = note.model().put("did", col.getDecks().id("foo::baz"));
         col.addNote(note);
         col.reset();
-        assertEquals(5, col.getDecks().allNames().size());
+        assertEquals(5, col.getDecks().allSortedNames().size());
         AbstractSched.DeckDueTreeNode tree = col.getSched().deckDueTree().get(0);
         assertEquals("Default", tree.getLastDeckNameComponent());
         // sum of child and parent
@@ -4066,7 +4066,7 @@ public class UpstreamTest extends RobolectricTest {
         note.model().put("did", col.getDecks().id("foo::baz"));
         col.addNote(note);
         col.reset();
-        assertEquals(5, col.getDecks().allNames().size());
+        assertEquals(5, col.getDecks().allSortedNames().size());
         AbstractSched.DeckDueTreeNode tree = col.getSched().deckDueTree().get(0);
         assertEquals("Default", tree.getLastDeckNameComponent());
         // sum of child and parent
