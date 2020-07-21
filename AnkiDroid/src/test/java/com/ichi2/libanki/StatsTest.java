@@ -52,6 +52,9 @@ public class StatsTest extends RobolectricTest {
     /*****************
      ** Stats        *
      *****************/
+       @Test
+       public void empty_test() {
+       }
     /* TODO put in Collection
        @Test
        public void test_stats() throws Exception {

@@ -47,6 +47,10 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class ImportingTest extends RobolectricTest {
+    @Test
+    public void empty_test() {
+    }
+
     /*****************
      ** Importing    *
      *****************/
@@ -79,7 +83,7 @@ public class ImportingTest extends RobolectricTest {
       imp.run();
       assertEqualsArrayList(new String [] {"foo.mp3"}, os.listdir(empty.getMedia().dir()));
       // and importing again will not duplicate, as the file content matches
-      empty.remove_cards_and_orphaned_notes(empty.getDb().longList("select id from cards"));
+      empty.remove_cards_and_orphaned_notes(empty.getDb().queryLongList("select id from cards"));
       Anki2Importer imp = Anki2Importer(empty, col.getPath());
       imp.run();
       assertEqualsArrayList(new String [] {"foo.mp3"}, os.listdir(empty.getMedia().dir()));
@@ -87,7 +91,7 @@ public class ImportingTest extends RobolectricTest {
       assertTrue(n.fields[0].contains("foo.mp3"));
       // if the local file content is different, and import should trigger a
       // rename
-      empty.remove_cards_and_orphaned_notes(empty.getDb().longList("select id from cards"));
+      empty.remove_cards_and_orphaned_notes(empty.getDb().queryLongList("select id from cards"));
       with open(os.path.join(empty.getMedia().dir(), "foo.mp3"), "w") as note:
       note.write("bar");
       Anki2Importer imp = Anki2Importer(empty, col.getPath());
@@ -97,7 +101,7 @@ public class ImportingTest extends RobolectricTest {
       assertTrue(n.fields[0].contains("_"));
       // if the localized media file already exists, we rewrite the note and
       // media
-      empty.remove_cards_and_orphaned_notes(empty.getDb().longList("select id from cards"));
+      empty.remove_cards_and_orphaned_notes(empty.getDb().queryLongList("select id from cards"));
       with open(os.path.join(empty.getMedia().dir(), "foo.mp3"), "w") as note:
       note.write("bar");
       Anki2Importer imp = Anki2Importer(empty, col.getPath());
@@ -117,12 +121,12 @@ public class ImportingTest extends RobolectricTest {
       imp.run();
       assertEqualsArrayList(new String [] {"foo.wav"}, os.listdir(col.getMedia().dir()));
       // importing again should be idempotent in terms of media
-      col.remove_cards_and_orphaned_notes(col.getDb().longList("select id from cards"));
+      col.remove_cards_and_orphaned_notes(col.getDb().queryLongList("select id from cards"));
       AnkiPackageImporter imp = AnkiPackageImporter(col, apkg);
       imp.run();
       assertEqualsArrayList(new String [] {"foo.wav"}, os.listdir(col.getMedia().dir()));
       // but if the local file has different data, it will rename
-      col.remove_cards_and_orphaned_notes(col.getDb().longList("select id from cards"));
+      col.remove_cards_and_orphaned_notes(col.getDb().queryLongList("select id from cards"));
       with open(os.path.join(col.getMedia().dir(), "foo.wav"), "w") as note:
       note.write("xyz");
       imp = AnkiPackageImporter(col, apkg);

@@ -152,10 +152,10 @@ public class FinderTest extends RobolectricTest {
         assertEquals(1, col.findCards("tag:monkey").size());
         assertEquals(1, col.findCards("tag:sheep -tag:monkey").size());
         assertEquals(4, col.findCards("-tag:sheep").size());
-        col.getTags().bulkAdd(col.getDb().longList("select id from notes"), "foo bar");
+        col.getTags().bulkAdd(col.getDb().queryLongList("select id from notes"), "foo bar");
         assertEquals(5, col.findCards("tag:foo").size());
         assertEquals(5, col.findCards("tag:bar").size());
-        col.getTags().bulkRem(col.getDb().longList("select id from notes"), "foo");
+        col.getTags().bulkRem(col.getDb().queryLongList("select id from notes"), "foo");
         assertEquals(0, col.findCards("tag:foo").size());
         assertEquals(5, col.findCards("tag:bar").size());
         // text searches

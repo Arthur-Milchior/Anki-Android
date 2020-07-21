@@ -167,7 +167,7 @@ public class ImportTest {
         actual.retainAll(expected);
         assertEquals(expected.size(), actual.size());
         // but if the local file has different data, it will rename
-        testCol.remove_cards_and_orphaned_notes(testCol.getDb().longList("select id from cards"));
+        testCol.remove_cards_and_orphaned_notes(testCol.getDb().queryLongList("select id from cards"));
         FileOutputStream os;
         os = new FileOutputStream(new File(testCol.getMedia().dir(), "foo.wav"), false);
         os.write("xyz".getBytes());
