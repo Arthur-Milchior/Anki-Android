@@ -2178,9 +2178,10 @@ public class UpstreamTest extends RobolectricTest {
         c.startTimer();
         c.flush();
         col.reset();
-        assertEquals("2d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 2)));
-        assertEquals("3d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 3)));
-        assertEquals("4d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 4)));
+        // Upstream, there is no space in 2d
+        assertEquals("2 d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 2)));
+        assertEquals("3 d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 3)));
+        assertEquals("4 d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 4)));
     }
     
     @Test
@@ -3485,15 +3486,16 @@ public class UpstreamTest extends RobolectricTest {
         c.startTimer();
         c.flush();
         col.reset();
-        assertEquals("2d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 2)));
-        assertEquals("3d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 3)));
-        assertEquals("4d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 4)));
+        // Upstream, there is no space in 2d
+        assertEquals("2 d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 2)));
+        assertEquals("3 d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 3)));
+        assertEquals("4 d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 4)));
         
         // if hard factor is <= 1, then hard may not increase
         DeckConfig conf = col.getDecks().confForDid(1);
         conf.getJSONObject("rev").put("hardFactor", 1);
         col.getDecks().save(conf);
-        assertEquals("1d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 2)));
+        assertEquals("1 d", without_unicode_isolation(col.getSched().nextIvlStr(getTargetContext(), c, 2)));
     }
     
     @Test
