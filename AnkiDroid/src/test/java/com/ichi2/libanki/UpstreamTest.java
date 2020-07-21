@@ -4424,7 +4424,7 @@ public class UpstreamTest extends RobolectricTest {
     public void test_op() throws Exception {
         Collection col = getColV2();
         // should have no undo by default
-        assertEquals("", col.undoName(getTargetContext().getResources()));
+        assertNull(col.undoType());
         // let's adjust a study option
         col.save("studyopts");
         col.getConf().put("abc", 5);
@@ -4436,7 +4436,7 @@ public class UpstreamTest extends RobolectricTest {
         */
         // undoing should restore the old value
         col.undo();
-        assertEquals("", col.undoName(getTargetContext().getResources()));
+        assertEquals(null, col.undoType());
         assertFalse(col.getConf().has("abc"));
         // an (auto)save will clear the undo
         col.save("foo");
@@ -4463,7 +4463,7 @@ public class UpstreamTest extends RobolectricTest {
         note.setItem("Front","one");
         col.addNote(note);
         col.reset();
-        assertEquals("", col.undoName(getTargetContext().getResources()));
+        assertNotNull(col.undoType());
         // answer
         assertArrayEquals(new int[]{1, 0, 0}, col.getSched().counts());
         Card c = col.getSched().getCard();
@@ -4473,14 +4473,14 @@ public class UpstreamTest extends RobolectricTest {
         assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
         assertEquals(QUEUE_TYPE_LRN, c.getQueue());
         // undo
-        assertNotEquals("", col.undoName(getTargetContext().getResources()));
+        assertNotNull(col.undoType());
         col.undo();
         col.reset();
         assertArrayEquals(new int[]{1, 0, 0}, col.getSched().counts());
         c.load();
         assertEquals(QUEUE_TYPE_NEW, c.getQueue());
         assertNotEquals(1001, c.getLeft());
-        assertEquals("", col.undoName(getTargetContext().getResources()));
+        assertNull(col.undoType());
         // we should be able to undo multiple answers too
         note = col.newNote();
         note.setItem("Front","two");
@@ -4501,7 +4501,7 @@ public class UpstreamTest extends RobolectricTest {
         // performing a normal op will clear the review queue
         c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
-        assertEquals("Review", col.undoName(getTargetContext().getResources()));
+        assertEquals(Collection.DismissType.REVIEW, col.undoType());
         col.save("foo");
         assertEquals("foo", col.undoName(getTargetContext().getResources()));
         col.undo();
