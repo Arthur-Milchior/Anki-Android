@@ -87,7 +87,7 @@ public class UpstreamTest extends RobolectricTest {
         note.setItem("Front","1");
         note.setItem("Back","");
         col.addNote(note);
-        assertEquals(1, note.nbCards());
+        assertEquals(1, note.numberOfCards());
         Model m = col.getModels().current();
         Models mm = col.getModels();
         // adding a new template should automatically create cards
@@ -96,19 +96,19 @@ public class UpstreamTest extends RobolectricTest {
         t.put("afmt", "");
         mm.addTemplateModChanged(m, t);
         mm.save(m, true);
-        assertEquals(2, note.nbCards());
+        assertEquals(2, note.numberOfCards());
         // if the template is changed to remove cards, they'll be removed
         t = m.getJSONArray("tmpls").getJSONObject(1);
         t.put("qfmt", "{{Back}}");
         mm.save(m, true);
         List<Long> rep = col.emptyCids();
         col.remove_cards_and_orphaned_notes(rep);
-        assertEquals(1, note.nbCards());
+        assertEquals(1, note.numberOfCards());
         // if we add to the note, a card should be automatically generated
         note.load();
         note.setItem("Back","1");
         note.flush();
-        assertEquals(2, note.nbCards());
+        assertEquals(2, note.numberOfCards());
     }
 
     @Test
@@ -1576,7 +1576,7 @@ public class UpstreamTest extends RobolectricTest {
         // 0 or negative indices are not supported
         note.setItem("Text","{{c0::zero}} {{c-1:foo}}");
         note.flush();
-        assertEquals(2, note.nbCards());
+        assertEquals(2, note.numberOfCards());
     }
     
     @Test
@@ -1586,7 +1586,7 @@ public class UpstreamTest extends RobolectricTest {
         Note note = col.newNote();
         note.setItem("Text", "{{c1::ok}} \\(2^2\\) {{c2::not ok}} \\(2^{{c3::2}}\\) \\(x^3\\) {{c4::blah}} {{c5::text with \\(x^2\\) jax}}");
         assertNotEquals(0, col.addNote(note));
-        assertEquals(5, note.nbCards());
+        assertEquals(5, note.numberOfCards());
         assertTrue(note.cards().get(0).q().contains("class=cloze"));
         assertTrue(note.cards().get(1).q().contains("class=cloze"));
         assertFalse(note.cards().get(2).q().contains("class=cloze"));
@@ -1596,7 +1596,7 @@ public class UpstreamTest extends RobolectricTest {
         note = col.newNote();
         note.setItem("Text","\\(a\\) {{c1::b}} \\[ {{c1::c}} \\]");
         assertNotEquals(0, col.addNote(note));
-        assertEquals(1, note.nbCards());
+        assertEquals(1, note.numberOfCards());
         String question = note.cards().get(0).q();
         assertTrue("Question «"+question+"» does not end correctly", question.endsWith("\\(a\\) <span class=cloze>[...]</span> \\[ [...] \\]"));
     }
@@ -1696,7 +1696,7 @@ public class UpstreamTest extends RobolectricTest {
         c0.load();
         // the card was deleted
         // but we have two cards, as a new one was generated
-        assertEquals(2, note.nbCards());
+        assertEquals(2, note.numberOfCards());
         // an unmapped field becomes blank
         assertEquals("b123", note.getItem("Front"));
         assertEquals("note", note.getItem("Back"));
@@ -1719,7 +1719,7 @@ public class UpstreamTest extends RobolectricTest {
         col.getModels().change(basic,new long []{note.getId()}, cloze, map, map);
         note.load();
         assertEquals("f2", note.getItem("Text"));
-        assertEquals(2, note.nbCards());
+        assertEquals(2, note.numberOfCards());
         // back the other way, with deletion of second ord
         col.getModels().remTemplate(basic, basic.getJSONArray("tmpls").getJSONObject(1));
         assertEquals(2, col.getDb().queryScalar("select count() from cards where nid = ?", new Object[] {note.getId()}));
