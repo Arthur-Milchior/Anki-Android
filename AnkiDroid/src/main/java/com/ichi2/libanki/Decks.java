@@ -576,6 +576,7 @@ public class Decks {
     }
 
 
+    /* Buggy implementation. Keep as first draft if we want to use it again
     public void renameForDragAndDrop(Long draggedDeckDid, Long ontoDeckDid) throws DeckRenameException {
         Deck draggedDeck = get(draggedDeckDid);
         String draggedDeckName = draggedDeck.getString("name");
@@ -601,6 +602,7 @@ public class Decks {
             return true;
         }
     }
+    */
 
 
     private boolean _isParent(String parentDeckName, String childDeckName) {
