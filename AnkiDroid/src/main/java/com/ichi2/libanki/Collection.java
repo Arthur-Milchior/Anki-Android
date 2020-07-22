@@ -587,7 +587,7 @@ public class Collection {
 
     public void remNotes(long[] ids) {
         ArrayList<Long> list = mDb
-                .queryColumn(Long.class, "SELECT id FROM cards WHERE nid IN " + Utils.ids2str(ids), 0);
+                .queryLongList("SELECT id FROM cards WHERE nid IN " + Utils.ids2str(ids), 0);
         remove_cards_and_orphaned_notes(list);
     }
 
@@ -848,7 +848,7 @@ public class Collection {
         card.setNid(nid);
         ord = template.getInt("ord");
         card.setOrd(ord);
-        did = mDb.queryScalar("select did from cards where nid = ? and ord = ?", new Object[] {nid, ord});
+        did = mDb.queryScalar("select did from cards where nid = ? and ord = ?", nid, ord);
         // Use template did (deck override) if valid, otherwise did in argument, otherwise model did
         if (did == 0) {
             did = template.optLong("did", 0);
@@ -923,7 +923,7 @@ public class Collection {
             return;
         }
         String sids = Utils.ids2str(ids);
-        List<Long> nids = mDb.queryColumn(Long.class, "SELECT nid FROM cards WHERE id IN " + sids, 0);
+        List<Long> nids = mDb.queryLongList("SELECT nid FROM cards WHERE id IN " + sids);
         // remove cards
         _logRem(ids, Consts.REM_CARD);
         mDb.execute("DELETE FROM cards WHERE id IN " + sids);
@@ -931,8 +931,8 @@ public class Collection {
         if (!notes) {
         	return;
         }
-        nids = mDb.queryColumn(Long.class, "SELECT id FROM notes WHERE id IN " + Utils.ids2str(nids)
-                        + " AND id NOT IN (SELECT nid FROM cards)", 0);
+        nids = mDb.queryLongList("SELECT id FROM notes WHERE id IN " + Utils.ids2str(nids)
+                        + " AND id NOT IN (SELECT nid FROM cards)");
         _remNotes(nids);
     }
 
@@ -1256,11 +1256,11 @@ public class Collection {
                 // write old data
                 c.flush(false);
                 // and delete revlog entry
-                long last = mDb.queryLongScalar("SELECT id FROM revlog WHERE cid = ? ORDER BY id DESC LIMIT 1", new Object [] {c.getId()});
+                long last = mDb.queryLongScalar("SELECT id FROM revlog WHERE cid = ? ORDER BY id DESC LIMIT 1", c.getId());
                 mDb.execute("DELETE FROM revlog WHERE id = " + last);
                 // restore any siblings
                 mDb.execute("update cards set queue=type,mod=?,usn=? where queue=" + Consts.QUEUE_TYPE_SIBLING_BURIED + " and nid=?",
-                        new Object[]{Utils.intTime(), usn(), c.getNid()});
+                        Utils.intTime(), usn(), c.getNid());
                 // and finally, update daily count
                 @Consts.CARD_QUEUE int n = c.getQueue() == Consts.QUEUE_TYPE_DAY_LEARN_RELEARN ? Consts.QUEUE_TYPE_LRN : c.getQueue();
                 String type = (new String[]{"new", "lrn", "rev"})[n];
@@ -1487,7 +1487,7 @@ public class Collection {
 
             boolean badOrd = mDb.queryScalar("select 1 from cards where (ord < 0 or ord >= ?) and nid in ( " +
                                              "select id from notes where mid = ?) limit 1",
-                                             new Object[] {tmpls.length(), m.getLong("id")}) > 0;
+                                             tmpls.length(), m.getLong("id")) > 0;
             if (badOrd) {
                 return false;
             }
@@ -1647,11 +1647,10 @@ public class Collection {
         List<Long> dynIdsAndZero = new ArrayList<>(Arrays.asList(dynDeckIds));
         dynIdsAndZero.add(0L);
 
-        ArrayList<Long> cardIds = mDb.queryColumn(Long.class, "select id from cards where did in " +
+        ArrayList<Long> cardIds = mDb.queryLongList("select id from cards where did in " +
                 Utils.ids2str(dynDeckIds) +
                 "and odid in " +
-                Utils.ids2str(dynIdsAndZero)
-                , 0);
+                Utils.ids2str(dynIdsAndZero));
 
         notifyProgress.run();
 
@@ -1744,7 +1743,7 @@ public class Collection {
         ArrayList<String> problems = new ArrayList<>();
         notifyProgress.run();
         // reviews should have a reasonable due #
-        ArrayList<Long> ids = mDb.queryColumn(Long.class, "SELECT id FROM cards WHERE queue = " + Consts.QUEUE_TYPE_REV + " AND due > 100000", 0);
+        ArrayList<Long> ids = mDb.queryLongList("SELECT id FROM cards WHERE queue = " + Consts.QUEUE_TYPE_REV + " AND due > 100000");
         notifyProgress.run();
         if (ids.size() > 0) {
             problems.add("Reviews had incorrect due date.");
@@ -1829,8 +1828,8 @@ public class Collection {
         }
         notifyProgress.run();
         // cards with odid set when not in a dyn deck
-        ArrayList<Long> ids = mDb.queryColumn(Long.class,
-                "select id from cards where odid > 0 and did in " + Utils.ids2str(dids), 0);
+        ArrayList<Long> ids = mDb.queryLongList(
+                "select id from cards where odid > 0 and did in " + Utils.ids2str(dids));
         notifyProgress.run();
         if (ids.size() != 0) {
             problems.add("Fixed " + ids.size() + " card(s) with invalid properties.");
@@ -1845,8 +1844,8 @@ public class Collection {
         ArrayList<String> problems = new ArrayList<>();
         notifyProgress.run();
         // cards with odue set when it shouldn't be
-        ArrayList<Long> ids = mDb.queryColumn(Long.class,
-                "select id from cards where odue > 0 and (type= " + Consts.CARD_TYPE_LRN + " or queue=" + Consts.QUEUE_TYPE_REV + ") and not odid", 0);
+        ArrayList<Long> ids = mDb.queryLongList(
+                "select id from cards where odue > 0 and (type= " + Consts.CARD_TYPE_LRN + " or queue=" + Consts.QUEUE_TYPE_REV + ") and not odid");
         notifyProgress.run();
         if (ids.size() != 0) {
             problems.add("Fixed " + ids.size() + " card(s) with invalid properties.");
@@ -1861,8 +1860,8 @@ public class Collection {
         ArrayList<String> problems = new ArrayList<>();
         ArrayList<Long> ids;// cards with missing notes
         notifyProgress.run();
-        ids = mDb.queryColumn(Long.class,
-                "SELECT id FROM cards WHERE nid NOT IN (SELECT id FROM notes)", 0);
+        ids = mDb.queryLongList(
+                "SELECT id FROM cards WHERE nid NOT IN (SELECT id FROM notes)");
         notifyProgress.run();
         if (ids.size() != 0) {
             problems.add("Deleted " + ids.size() + " card(s) with missing note.");
@@ -1878,8 +1877,8 @@ public class Collection {
         ArrayList<Long> ids;
         notifyProgress.run();
         // delete any notes with missing cards
-        ids = mDb.queryColumn(Long.class,
-                "SELECT id FROM notes WHERE id NOT IN (SELECT DISTINCT nid FROM cards)", 0);
+        ids = mDb.queryLongList(
+                "SELECT id FROM notes WHERE id NOT IN (SELECT DISTINCT nid FROM cards)");
         notifyProgress.run();
         if (ids.size() != 0) {
             problems.add("Deleted " + ids.size() + " note(s) with missing no cards.");
@@ -1956,9 +1955,9 @@ public class Collection {
                 ords.add(tmpls.getJSONObject(t).getInt("ord"));
             }
             // cards with invalid ordinal
-            ArrayList<Long> ids = mDb.queryColumn(Long.class,
+            ArrayList<Long> ids = mDb.queryLongList(
                     "SELECT id FROM cards WHERE ord NOT IN " + Utils.ids2str(ords) + " AND nid IN ( " +
-                            "SELECT id FROM notes WHERE mid = ?)", 0, new Object[] {m.getLong("id")});
+                            "SELECT id FROM notes WHERE mid = ?)", m.getLong("id"));
             if (ids.size() > 0) {
                 problems.add("Deleted " + ids.size() + " card(s) with missing template.");
                 remove_cards_and_orphaned_notes(ids);
@@ -1973,8 +1972,8 @@ public class Collection {
         ArrayList<String> problems = new ArrayList<>();
         // note types with a missing model
         notifyProgress.run();
-        ArrayList<Long> ids = mDb.queryColumn(Long.class,
-                "SELECT id FROM notes WHERE mid NOT IN " + Utils.ids2str(getModels().ids()), 0);
+        ArrayList<Long> ids = mDb.queryLongList(
+                "SELECT id FROM notes WHERE mid NOT IN " + Utils.ids2str(getModels().ids()));
         notifyProgress.run();
         if (ids.size() != 0) {
             problems.add("Deleted " + ids.size() + " note(s) with missing note type.");
@@ -2078,7 +2077,7 @@ public class Collection {
     public void setUserFlag(int flag, long[] cids)  {
         assert (0<= flag && flag <= 7);
         mDb.execute("update cards set flags = (flags & ~?) | ?, usn=?, mod=? where id in " + Utils.ids2str(cids),
-                    new Object[]{0b111, flag, usn(), Utils.intTime()});
+                    0b111, flag, usn(), Utils.intTime());
     }
 
     /**
