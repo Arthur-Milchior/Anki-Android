@@ -84,11 +84,11 @@ public abstract class Undoable {
         }
     }
 
-    public static class UndoableBuryCard extends Undoable {
+    private static class UndoableFlushAll extends Undoable {
         private final List<Card> mCards;
         private final long mCid;
-        public UndoableBuryCard(List<Card> cards, long cid) {
-            super(BURY_CARD);
+        public UndoableFlushAll(DismissType dt, List<Card> cards, long cid) {
+            super(dt);
             mCards = cards;
             mCid = cid;
         }
@@ -102,21 +102,15 @@ public abstract class Undoable {
         }
     }
 
-    public static class UndoableBuryNote extends Undoable {
-        private final long mCid;
-        private final List<Card> mCards;
-        public UndoableBuryNote(List<Card> cards, long cid) {
-            super(BURY_NOTE);
-            mCid = cid;
-            mCards = cards;
+    public static class UndoableBuryCard extends UndoableFlushAll {
+        public UndoableBuryCard(List<Card> cards, long cid) {
+            super(BURY_CARD, cards, cid);
         }
+    }
 
-        public UndoType undo(Collection col) {
-            Timber.i("UNDO: Burying notes");
-            for (Card cc : mCards) {
-                cc.flush(false);
-            }
-            return new UndoType.Review(mCid);
+    public static class UndoableBuryNote extends UndoableFlushAll {
+        public UndoableBuryNote(List<Card> cards, long cid) {
+            super(BURY_NOTE, cards, cid);
         }
     }
 
@@ -174,21 +168,9 @@ public abstract class Undoable {
         }
     }
 
-    public static class UndoableSuspendNote extends Undoable {
-        private final List<Card> mCards;
-        private final long mCid;
+    public static class UndoableSuspendNote extends UndoableFlushAll {
         public UndoableSuspendNote(List<Card> cards, long cid) {
-            super(SUSPEND_NOTE);
-            mCards = cards;
-            mCid = cid;
-        }
-
-        public UndoType undo(Collection col) {
-            Timber.i("Undo: Suspend note");
-            for (Card ccc : mCards) {
-                ccc.flush(false);
-            }
-            return new UndoType.Review(mCid);
+            super(SUSPEND_NOTE, cards, cid);
         }
     }
 
