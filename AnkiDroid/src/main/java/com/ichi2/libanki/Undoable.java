@@ -15,6 +15,21 @@ import static com.ichi2.libanki.Collection.DismissType.*;
 public abstract class Undoable {
     private final DismissType mDt;
 
+
+    public abstract static class UndoType {
+        public static class MultiCard extends UndoType {}
+        public static class NonReview extends UndoType {}
+        public static class Review extends UndoType {
+            private final long mId;
+            public Review(long id) {
+                mId = id;
+            }
+            public long getId() {
+                return mId;
+            }
+        }
+    }
+
     /**
      * For all descendants, we assume that a card/note/object passed as argument is never going to be changed again.
      * It's the caller reponsability to clone the object if necessary.*/
@@ -31,10 +46,10 @@ public abstract class Undoable {
     }
 
     /**
-     * Return -1 when no other action is needed, e.g. for multi card action
-     * Return 0 when we just need to reset the collection
+     * Return MultiCard object when no other action is needed, e.g. for multi card action
+     * Return NonReview when we just need to reset the collection
      * Returned positive integers are card id. Those ids is the card that was discarded and that may be sent back to the reviewer.*/
-    public abstract long undo(Collection col);
+    public abstract UndoType undo(Collection col);
 
     public static class UndoableReview extends Undoable {
         private final Card mCard;
@@ -45,7 +60,7 @@ public abstract class Undoable {
             mWasLeech = wasLeach;
         }
 
-        public long undo(Collection col) {
+        public UndoType undo(Collection col) {
             // remove leech tag if it didn't have it before
             if (!mWasLeech && mCard.note().hasTag("leech")) {
                 mCard.note().delTag("leech");
@@ -65,7 +80,7 @@ public abstract class Undoable {
             String type = (new String[]{"new", "lrn", "rev"})[n];
             col.getSched()._updateStats(mCard, type, -1);
             col.getSched().setReps(col.getSched().getReps() - 1);
-            return mCard.getId();
+            return new UndoType.Review(mCard.getId());
         }
     }
 
@@ -78,12 +93,12 @@ public abstract class Undoable {
             mCid = cid;
         }
 
-        public long undo(Collection col) {
+        public UndoType undo(Collection col) {
             Timber.i("Undo: Bury Card");
             for (Card cc : mCards) {
                 cc.flush(false);
             }
-            return mCid;
+            return new UndoType.Review(mCid);
         }
     }
 
@@ -96,12 +111,12 @@ public abstract class Undoable {
             mCards = cards;
         }
 
-        public long undo(Collection col) {
+        public UndoType undo(Collection col) {
             Timber.i("UNDO: Burying notes");
             for (Card cc : mCards) {
                 cc.flush(false);
             }
-            return mCid;
+            return new UndoType.Review(mCid);
         }
     }
 
@@ -112,10 +127,10 @@ public abstract class Undoable {
             mSuspendedCard = card;
         }
 
-        public long undo(Collection col) {
+        public UndoType undo(Collection col) {
             Timber.i("UNDO: Suspend Card %d", mSuspendedCard.getId());
             mSuspendedCard.flush(false);
-            return mSuspendedCard.getId();
+            return new UndoType.Review(mSuspendedCard.getId());
         }
     }
 
@@ -128,7 +143,7 @@ public abstract class Undoable {
             mOriginalSuspended = originalSuspended;
         }
 
-        public long undo(Collection col) {
+        public UndoType undo(Collection col) {
             Timber.i("Undo: Suspend multiple cards");
             List<Long> toSuspendIds = new ArrayList<>();
             List<Long> toUnsuspendIds = new ArrayList<>();
@@ -154,7 +169,7 @@ public abstract class Undoable {
             col.getSched().suspendCards(toSuspendIdsArray);
             col.getSched().unsuspendCards(toUnsuspendIdsArray);
 
-            return -1;  // don't fetch new card
+            return new UndoType.MultiCard();  // don't fetch new card
 
         }
     }
@@ -168,12 +183,12 @@ public abstract class Undoable {
             mCid = cid;
         }
 
-        public long undo(Collection col) {
+        public UndoType undo(Collection col) {
             Timber.i("Undo: Suspend note");
             for (Card ccc : mCards) {
                 ccc.flush(false);
             }
-            return mCid;
+            return new UndoType.Review(mCid);
         }
     }
 
@@ -188,7 +203,7 @@ public abstract class Undoable {
             mCid = cid;
         }
 
-        public long undo(Collection col) {
+        public UndoType undo(Collection col) {
             Timber.i("Undo: Delete note");
             ArrayList<Long> ids = new ArrayList<>();
             mNote.flush(mNote.getMod(), false);
@@ -198,7 +213,7 @@ public abstract class Undoable {
                 ids.add(c.getId());
             }
             col.getDb().execute("DELETE FROM graves WHERE oid IN " + Utils.ids2str(Utils.arrayList2array(ids)));
-            return mCid;
+            return new UndoType.Review(mCid);
         }
     }
 
@@ -211,7 +226,7 @@ public abstract class Undoable {
             mAllCards = allCards;
         }
 
-        public long undo(Collection col) {
+        public UndoType undo(Collection col) {
             Timber.i("Undo: Delete notes");
             // undo all of these at once instead of one-by-one
             ArrayList<Long> ids = new ArrayList<>();
@@ -224,7 +239,7 @@ public abstract class Undoable {
                 ids.add(c.getId());
             }
             col.getDb().execute("DELETE FROM graves WHERE oid IN " + Utils.ids2str(Utils.arrayList2array(ids)));
-            return -1;  // don't fetch new card
+            return new UndoType.MultiCard();  // don't fetch new card
 
         }
     }
@@ -238,7 +253,7 @@ public abstract class Undoable {
             mOriginalDid = originalDid;
         }
 
-        public long undo(Collection col) {
+        public UndoType undo(Collection col) {
             Timber.i("Undo: Change Decks");
             // move cards to original deck
             for (int i = 0; i < mCards.length; i++) {
@@ -249,7 +264,7 @@ public abstract class Undoable {
                 note.flush();
                 card.flush();
             }
-            return -1;  // don't fetch new card
+            return new UndoType.MultiCard();  // don't fetch new card
 
         }
     }
@@ -263,11 +278,11 @@ public abstract class Undoable {
             mOriginalUnmarked = originalUnmarked;
         }
 
-        public long undo(Collection col) {
+        public UndoType undo(Collection col) {
             Timber.i("Undo: Mark notes");
             CardUtils.markAll(mOriginalMarked, true);
             CardUtils.markAll(mOriginalUnmarked, false);
-            return -1;  // don't fetch new card
+            return new UndoType.MultiCard();  // don't fetch new card
         }
     }
 
@@ -276,9 +291,9 @@ public abstract class Undoable {
             super(FLAG);
         }
 
-        public long undo(Collection col) {
+        public UndoType undo(Collection col) {
             Timber.d("Not implemented.");
-            return 0;
+            return new UndoType.NonReview();
         }
     }
 
@@ -289,13 +304,13 @@ public abstract class Undoable {
             mCards = cards;
         }
 
-        public long undo(Collection col) {
+        public UndoType undo(Collection col) {
             Timber.i("Undoing action of type %s on %d cards", getDismissType(), mCards.length);
             for (int i = 0; i < mCards.length; i++) {
                 Card card = mCards[i];
                 card.flush(false);
             }
-            return 0;
+            return new UndoType.NonReview();
         }
     }
 }

@@ -1250,7 +1250,7 @@ public class Collection {
         return mUndo.size() > 0;
     }
 
-    public long undo() {
+    public Undoable.UndoType undo() {
         Undoable lastUndo = mUndo.removeLast();
         Timber.d("undo() of type %s", lastUndo.getDismissType());
         return lastUndo.undo(this);

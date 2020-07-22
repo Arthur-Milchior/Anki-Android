@@ -921,16 +921,17 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
             col.getDb().getDatabase().beginTransaction();
             Card newCard = null;
             try {
-                long cid = col.undo();
-                if (cid == 0) {
+                UndoType undoType = col.undo();
+                if (undoType instanceof UndoType.NonReview) {
                     // /* card schedule change undone, reset and get
                     // new card */
                     Timber.d("Single card non-review change undo succeeded");
                     col.reset();
                     newCard = sched.getCard();
-                } else if (cid > 0) {
+                } else if (undoType instanceof UndoType.Review) {
                     // a review was undone,
                      /* card review undone, set up to review that card again */
+                    long cid = ((UndoType.Review)undoType).getId();
                     Timber.d("Single card review undo succeeded");
                     newCard = col.getCard(cid);
                     newCard.startTimer();
@@ -938,7 +939,6 @@ public class CollectionTask extends BaseAsyncTask<CollectionTask.TaskData, Colle
                     sched.deferReset(newCard);
                     col.getSched().setCurrentCard(newCard);
                 } else {
-                    // cid < 0
                     /* multi-card action undone, no action to take here */
                     Timber.d("Multi-select undo succeeded");
                 }
