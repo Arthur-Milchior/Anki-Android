@@ -32,6 +32,7 @@ import com.ichi2.anki.dialogs.ModelEditorContextMenu;
 import com.ichi2.anki.exception.ConfirmModSchemaException;
 import com.ichi2.async.CollectionTask;
 import com.ichi2.async.TaskListener;
+import com.ichi2.async.TaskListenerWithContext;
 import com.ichi2.libanki.Collection;
 import com.ichi2.libanki.Model;
 import com.ichi2.themes.StyledProgressDialog;
@@ -44,6 +45,8 @@ import com.ichi2.utils.JSONObject;
 import java.util.ArrayList;
 import static com.ichi2.async.CollectionTask.TASK_TYPE.*;
 import com.ichi2.async.TaskData;
+
+import androidx.annotation.NonNull;
 
 public class ModelFieldEditor extends AnkiActivity {
 
@@ -464,27 +467,30 @@ public class ModelFieldEditor extends AnkiActivity {
     /*
      * Called during the desk task when any field is modified
      */
-    private TaskListener mChangeFieldHandler = new TaskListener() {
+    private ChangeFieldHandler mChangeFieldHandler =  new ChangeFieldHandler(this);
+    private static class ChangeFieldHandler extends TaskListenerWithContext<ModelFieldEditor> {
+        public ChangeFieldHandler(ModelFieldEditor modelFieldEditor) {
+            super(modelFieldEditor);
+        }
 
         @Override
-        public void onPreExecute() {
-            if (mProgressDialog == null) {
-                mProgressDialog = StyledProgressDialog.show(ModelFieldEditor.this, getIntent().getStringExtra("title"),
-                        getResources().getString(R.string.model_field_editor_changing), false);
+        public void actualOnPreExecute(@NonNull ModelFieldEditor modelFieldEditor) {
+            if (modelFieldEditor != null && modelFieldEditor.mProgressDialog == null) {
+                modelFieldEditor.mProgressDialog = StyledProgressDialog.show(modelFieldEditor, modelFieldEditor.getIntent().getStringExtra("title"),
+                        modelFieldEditor.getResources().getString(R.string.model_field_editor_changing), false);
             }
         }
 
         @Override
-        public void onPostExecute(TaskData result) {
+        public void actualOnPostExecute(@NonNull ModelFieldEditor modelFieldEditor, TaskData result) {
             if (!result.getBoolean()) {
-                closeActivity(DeckPicker.RESULT_DB_ERROR);
+                modelFieldEditor.closeActivity(DeckPicker.RESULT_DB_ERROR);
             }
 
-            dismissProgressBar();
-            fullRefreshList();
+            modelFieldEditor.dismissProgressBar();
+            modelFieldEditor.fullRefreshList();
         }
-    };
-
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
