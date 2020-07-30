@@ -44,6 +44,7 @@ import com.ichi2.anki.dialogs.ModelBrowserContextMenu;
 import com.ichi2.anki.exception.ConfirmModSchemaException;
 import com.ichi2.async.CollectionTask;
 import com.ichi2.async.TaskListener;
+import com.ichi2.async.TaskListenerWithContext;
 import com.ichi2.libanki.Collection;
 import com.ichi2.libanki.Model;
 import com.ichi2.libanki.StdModels;
@@ -95,28 +96,32 @@ public class ModelBrowser extends AnkiActivity {
      * Displays the loading bar when loading the mModels and displaying them
      * loading bar is necessary because card count per model is not cached *
      */
-    private TaskListener mLoadingModelsHandler = new TaskListener() {
-        @Override
-        public void onCancelled() {
-            hideProgressBar();
+    private final LoadingModelsHandler mLoadingModelsHandler = new LoadingModelsHandler(this);
+    private static class LoadingModelsHandler extends TaskListenerWithContext<ModelBrowser> {
+        public LoadingModelsHandler(ModelBrowser browser) {
+            super(browser);
         }
 
         @Override
-        public void onPreExecute() {
-            showProgressBar();
+        public void actualOnCancelled(@NonNull ModelBrowser browser) {
+            browser.hideProgressBar();
         }
 
         @Override
-        public void onPostExecute(TaskData result) {
+        public void actualOnPreExecute(@NonNull ModelBrowser browser) {
+            browser.showProgressBar();
+        }
 
+        @Override
+        public void actualOnPostExecute(@NonNull ModelBrowser browser, TaskData result) {
             if (!result.getBoolean()) {
                 throw new RuntimeException();
             }
-            hideProgressBar();
-            mModels = (ArrayList<Model>) result.getObjArray()[0];
-            mCardCounts = (ArrayList<Integer>) result.getObjArray()[1];
+            browser.hideProgressBar();
+            browser.mModels = (ArrayList<Model>) result.getObjArray()[0];
+            browser.mCardCounts = (ArrayList<Integer>) result.getObjArray()[1];
 
-            fillModelList();
+            browser.fillModelList();
         }
     };
 
