@@ -162,7 +162,7 @@ public class DeckPickerCheckDatabaseListenerTest extends RobolectricTest {
 
     @NonNull
     private DeckPicker.CheckDatabaseListener getInstance(DeckPickerTestImpl test) {
-        return test.new CheckDatabaseListener();
+        return test.mCheckDatabaseListener;
     }
 
     /**COULD_BE_BETTER: Listener is too coupled to this */

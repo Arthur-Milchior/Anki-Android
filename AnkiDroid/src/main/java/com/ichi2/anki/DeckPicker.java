@@ -1499,7 +1499,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
 
     private void performIntegrityCheck() {
         Timber.i("performIntegrityCheck()");
-        CollectionTask.launchCollectionTask(CHECK_DATABASE, new CheckDatabaseListener());
+        CollectionTask.launchCollectionTask(CHECK_DATABASE, mCheckDatabaseListener);
     }
 
 
@@ -2631,22 +2631,28 @@ public class DeckPicker extends NavigationDrawerActivity implements
 
 
     @VisibleForTesting
-    class CheckDatabaseListener extends TaskListener {
+    public final CheckDatabaseListener mCheckDatabaseListener = new CheckDatabaseListener(this);
+    @VisibleForTesting
+    public class CheckDatabaseListener extends TaskListenerWithContext<DeckPicker>{
+        public CheckDatabaseListener (DeckPicker deckPicker) {
+            super(deckPicker);
+        }
+
         @Override
-        public void onPreExecute() {
-            mProgressDialog = StyledProgressDialog.show(DeckPicker.this, AnkiDroidApp.getAppResources().getString(R.string.app_name),
-                    getResources().getString(R.string.check_db_message), false);
+        public void actualOnPreExecute(@NonNull DeckPicker deckPicker) {
+            deckPicker.mProgressDialog = StyledProgressDialog.show(deckPicker, AnkiDroidApp.getAppResources().getString(R.string.app_name),
+                    deckPicker.getResources().getString(R.string.check_db_message), false);
         }
 
 
         @Override
-        public void onPostExecute(TaskData result) {
-            if (mProgressDialog != null && mProgressDialog.isShowing()) {
-                mProgressDialog.dismiss();
+        public void actualOnPostExecute(@NonNull DeckPicker deckPicker, TaskData result) {
+            if (deckPicker.mProgressDialog != null && deckPicker.mProgressDialog.isShowing()) {
+                deckPicker.mProgressDialog.dismiss();
             }
 
             if (result == null) {
-                handleDbError();
+                deckPicker.handleDbError();
                 return;
             }
 
@@ -2654,7 +2660,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
                 if (result.getBoolean()) {
                     Timber.w("Expected result data, got nothing");
                 } else {
-                    handleDbError();
+                    deckPicker.handleDbError();
                 }
                 return;
             }
@@ -2663,9 +2669,9 @@ public class DeckPicker extends NavigationDrawerActivity implements
 
             if (!result.getBoolean() || databaseResult.getFailed()) {
                 if (databaseResult.getDatabaseLocked()) {
-                    handleDbLocked();
+                    deckPicker.handleDbLocked();
                 } else {
-                    handleDbError();
+                    deckPicker.handleDbError();
                 }
                 return;
             }
@@ -2673,25 +2679,25 @@ public class DeckPicker extends NavigationDrawerActivity implements
 
             int count = databaseResult.getCardsWithFixedHomeDeckCount();
             if (count != 0) {
-                String message = getResources().getString(R.string.integrity_check_fixed_no_home_deck, count);
-                UIUtils.showThemedToast(DeckPicker.this,  message, false);
+                String message = deckPicker.getResources().getString(R.string.integrity_check_fixed_no_home_deck, count);
+                UIUtils.showThemedToast(deckPicker,  message, false);
             }
 
             String msg;
             long shrunkInMb = Math.round(databaseResult.getSizeChangeInKb() / 1024.0);
             if (shrunkInMb > 0.0) {
-                msg = getResources().getString(R.string.check_db_acknowledge_shrunk, (int) shrunkInMb);
+                msg = deckPicker.getResources().getString(R.string.check_db_acknowledge_shrunk, (int) shrunkInMb);
             } else {
-                msg = getResources().getString(R.string.check_db_acknowledge);
+                msg = deckPicker.getResources().getString(R.string.check_db_acknowledge);
             }
             // Show result of database check and restart the app
-            showSimpleMessageDialog(msg, true);
+            deckPicker.showSimpleMessageDialog(msg, true);
         }
 
 
         @Override
-        public void onProgressUpdate(TaskData value) {
-            mProgressDialog.setContent(value.getString());
+        public void actualOnProgressUpdate(@NonNull DeckPicker deckPicker, TaskData value) {
+            deckPicker.mProgressDialog.setContent(value.getString());
         }
     }
 }
