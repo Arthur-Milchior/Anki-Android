@@ -68,7 +68,6 @@ import com.ichi2.anki.dialogs.TagsDialog;
 import com.ichi2.anki.receiver.SdCardReceiver;
 import com.ichi2.anki.widgets.DeckDropDownAdapter;
 import com.ichi2.async.CollectionTask;
-import com.ichi2.async.TaskListener;
 import com.ichi2.async.TaskListenerWithContext;
 import com.ichi2.compat.Compat;
 import com.ichi2.compat.CompatHelper;
@@ -1173,7 +1172,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
         if (requestCode == EDIT_CARD && resultCode != RESULT_CANCELED) {
             Timber.i("CardBrowser:: CardBrowser: Saving card...");
-            CollectionTask.launchCollectionTask(UPDATE_NOTE, mUpdateCardHandler,
+            CollectionTask.launchCollectionTask(UPDATE_NOTE, updateCardHandler(),
                     new TaskData(sCardBrowserCard, false));
         } else if (requestCode == ADD_NOTE && resultCode == RESULT_OK) {
             if (mSearchView != null) {
@@ -1386,35 +1385,41 @@ public class CardBrowser extends NavigationDrawerActivity implements
     }
 
 
-    private abstract class ListenerWithProgressBar extends TaskListener {
+    private static abstract class ListenerWithProgressBar extends TaskListenerWithContext<CardBrowser>{
+        public ListenerWithProgressBar(CardBrowser browser) {
+            super(browser);
+        }
+
         @Override
-        public void onPreExecute() {
-            showProgressBar();
+        public void actualOnPreExecute(@NonNull CardBrowser browser) {
+            browser.showProgressBar();
         }
     }
 
-    private abstract class ListenerWithProgressBarCloseOnFalse extends ListenerWithProgressBar {
-        private String timber = null;
-
-        public ListenerWithProgressBarCloseOnFalse(String timber) {
-            this.timber = timber;
+    /** Does not leak Card Browser. */
+    private static abstract class ListenerWithProgressBarCloseOnFalse extends ListenerWithProgressBar {
+        private final String mTimber;
+        public ListenerWithProgressBarCloseOnFalse(String timber, CardBrowser browser) {
+            super(browser);
+            mTimber = timber;
         }
 
-        public ListenerWithProgressBarCloseOnFalse() {
+        public ListenerWithProgressBarCloseOnFalse(CardBrowser browser) {
+            this(null, browser);
 		}
 
-        public void onPostExecute(TaskData result) {
-            if (timber != null) {
-                Timber.d(timber);
+        public void actualOnPostExecute(@NonNull CardBrowser browser, TaskData result) {
+            if (mTimber != null) {
+                Timber.d(mTimber);
             }
             if (result.getBoolean()) {
-                actualPostExecute(result);
+                actualActualOnPostExecute(browser, result);
             } else {
-                closeCardBrowser(DeckPicker.RESULT_DB_ERROR);
+                browser.closeCardBrowser(DeckPicker.RESULT_DB_ERROR);
             }
         }
 
-        protected abstract void actualPostExecute(TaskData result);
+        protected abstract void actualActualOnPostExecute(CardBrowser browser, TaskData result);
     }
 
     /**
@@ -1453,41 +1458,54 @@ public class CardBrowser extends NavigationDrawerActivity implements
         updateList();
     }
 
-    private TaskListener mUpdateCardHandler = new ListenerWithProgressBarCloseOnFalse("Card Browser - mUpdateCardHandler.onPostExecute()"){
-        @Override
-        public void onProgressUpdate(TaskData value) {
-            updateCardInList(value.getCard(), value.getString());
+    private UpdateCardHandler updateCardHandler() {
+        return new UpdateCardHandler(this);
+    }
+
+    private static class UpdateCardHandler extends ListenerWithProgressBarCloseOnFalse {
+        public UpdateCardHandler(CardBrowser browser) {
+            super("Card Browser - UpdateCardHandler.actualOnPostExecute(CardBrowser browser)", browser);
         }
 
         @Override
-        protected void actualPostExecute(TaskData result) {
-            hideProgressBar();
+        public void actualOnProgressUpdate(@NonNull CardBrowser browser, TaskData value) {
+            browser.updateCardInList(value.getCard(), value.getString());
+        }
+
+        @Override
+        protected void actualActualOnPostExecute(CardBrowser browser, TaskData result) {
+            browser.hideProgressBar();
         }
     };
 
-    private TaskListener mChangeDeckHandler = new ListenerWithProgressBarCloseOnFalse("Card Browser - mChangeDeckHandler.onPostExecute()") {
-        @Override
-        protected void actualPostExecute(TaskData result) {
-            hideProgressBar();
+    private final ChangeDeckHandler mChangeDeckHandler = new ChangeDeckHandler(this);
+    private static class ChangeDeckHandler extends ListenerWithProgressBarCloseOnFalse {
+        public ChangeDeckHandler(CardBrowser browser) {
+            super("Card Browser - mChangeDeckHandler.actualOnPostExecute(CardBrowser browser)", browser);
+        }
 
-            searchCards();
-            endMultiSelectMode();
-            mCardsAdapter.notifyDataSetChanged();
-            invalidateOptionsMenu();    // maybe the availability of undo changed
+        @Override
+        protected void actualActualOnPostExecute(CardBrowser browser, TaskData result) {
+            browser.hideProgressBar();
+
+            browser.searchCards();
+            browser.endMultiSelectMode();
+            browser.mCardsAdapter.notifyDataSetChanged();
+            browser.invalidateOptionsMenu();    // maybe the availability of undo changed
 
             if (!result.getBoolean()) {
                 Timber.i("mChangeDeckHandler failed, not offering undo");
-                displayCouldNotChangeDeck();
+                browser.displayCouldNotChangeDeck();
                 return;
             }
             // snackbar to offer undo
-            String deckName = getCol().getDecks().name(mNewDid);
-            mUndoSnackbar = UIUtils.showSnackbar(CardBrowser.this, String.format(getString(R.string.changed_deck_message), deckName), SNACKBAR_DURATION, R.string.undo, new View.OnClickListener() {
+            String deckName = browser.getCol().getDecks().name(browser.mNewDid);
+            browser.mUndoSnackbar = UIUtils.showSnackbar(browser, String.format(browser.getString(R.string.changed_deck_message), deckName), SNACKBAR_DURATION, R.string.undo, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    CollectionTask.launchCollectionTask(UNDO, mUndoHandler);
+                    CollectionTask.launchCollectionTask(UNDO, browser.mUndoHandler);
                 }
-            }, mCardsListView, null);
+            }, browser.mCardsListView, null);
         }
     };
 
@@ -1628,68 +1646,95 @@ public class CardBrowser extends NavigationDrawerActivity implements
         updateList();
     }
 
-    private TaskListener mSuspendCardHandler = new ListenerWithProgressBarCloseOnFalse() {
-        @Override
-        protected void actualPostExecute(TaskData result) {
-            Card[] cards = (Card[]) result.getObjArray();
-            updateCardsInList(Arrays.asList(cards), null);
-            hideProgressBar();
-            invalidateOptionsMenu();    // maybe the availability of undo changed
+    private SuspendCardHandler mSuspendCardHandler = new SuspendCardHandler(this);
+    private static class SuspendCardHandler extends ListenerWithProgressBarCloseOnFalse {
+        public SuspendCardHandler(CardBrowser browser) {
+            super(browser);
         }
-    };
-    private TaskListener mFlagCardHandler = mSuspendCardHandler;
 
-    private TaskListener mMarkCardHandler = new ListenerWithProgressBarCloseOnFalse() {
         @Override
-        protected void actualPostExecute(TaskData result) {
+        protected void actualActualOnPostExecute(CardBrowser browser, TaskData result) {
             Card[] cards = (Card[]) result.getObjArray();
-            updateCardsInList(CardUtils.getAllCards(CardUtils.getNotes(Arrays.asList(cards))), null);
-            hideProgressBar();
-            invalidateOptionsMenu();    // maybe the availability of undo changed
+            browser.updateCardsInList(Arrays.asList(cards), null);
+            browser.hideProgressBar();
+            browser.invalidateOptionsMenu();    // maybe the availability of undo changed
         }
     };
 
-    private TaskListener mDeleteNoteHandler = new ListenerWithProgressBarCloseOnFalse() {
+    private final FlagCardHandler mFlagCardHandler = new FlagCardHandler(this);
+    private static class FlagCardHandler extends SuspendCardHandler{public FlagCardHandler(CardBrowser browser) {super(browser);}};
+
+    private MarkCardHandler mMarkCardHandler = new MarkCardHandler(this);
+    private static class MarkCardHandler extends ListenerWithProgressBarCloseOnFalse {
+        public MarkCardHandler(CardBrowser browser) {
+            super(browser);
+        }
+
         @Override
-        public void onProgressUpdate(TaskData value) {
+        protected void actualActualOnPostExecute(CardBrowser browser, TaskData result) {
+            Card[] cards = (Card[]) result.getObjArray();
+            browser.updateCardsInList(CardUtils.getAllCards(CardUtils.getNotes(Arrays.asList(cards))), null);
+            browser.hideProgressBar();
+            browser.invalidateOptionsMenu();    // maybe the availability of undo changed
+        }
+    };
+
+    private DeleteNoteHandler mDeleteNoteHandler = new DeleteNoteHandler(this);
+    private static class DeleteNoteHandler extends ListenerWithProgressBarCloseOnFalse {
+        public DeleteNoteHandler(CardBrowser browser) {
+            super(browser);
+        }
+
+        @Override
+        public void actualOnProgressUpdate(@NonNull CardBrowser browser, TaskData value) {
             Card[] cards = (Card[]) value.getObjArray();
             //we don't need to reorder cards here as we've already deselected all notes,
-            removeNotesView(cards, false);
+            browser.removeNotesView(cards, false);
         }
 
 
         @Override
-        protected void actualPostExecute(TaskData result) {
-            hideProgressBar();
-            mActionBarTitle.setText(Integer.toString(mCheckedCardPositions.size()));
-            invalidateOptionsMenu();    // maybe the availability of undo changed
+        protected void actualActualOnPostExecute(CardBrowser browser, TaskData result) {
+            browser.hideProgressBar();
+            browser.mActionBarTitle.setText(Integer.toString(browser.mCheckedCardPositions.size()));
+            browser.invalidateOptionsMenu();    // maybe the availability of undo changed
             // snackbar to offer undo
-            mUndoSnackbar = UIUtils.showSnackbar(CardBrowser.this, getString(R.string.deleted_message), SNACKBAR_DURATION, R.string.undo, new View.OnClickListener() {
+            browser.mUndoSnackbar = UIUtils.showSnackbar(browser, browser.getString(R.string.deleted_message), SNACKBAR_DURATION, R.string.undo, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    CollectionTask.launchCollectionTask(UNDO, mUndoHandler);
+                    CollectionTask.launchCollectionTask(UNDO, browser.mUndoHandler);
                 }
-            }, mCardsListView, null);
+            }, browser.mCardsListView, null);
         }
     };
 
-    private TaskListener mUndoHandler = new ListenerWithProgressBarCloseOnFalse() {
+    private final UndoHandler mUndoHandler = new UndoHandler(this);
+    private static class UndoHandler extends ListenerWithProgressBarCloseOnFalse {
+        public UndoHandler(CardBrowser browser) {
+            super(browser);
+        }
+
         @Override
-        public void actualPostExecute(TaskData result) {
-            Timber.d("Card Browser - mUndoHandler.onPostExecute()");
-            hideProgressBar();
+        public void actualActualOnPostExecute(CardBrowser browser, TaskData result) {
+            Timber.d("Card Browser - mUndoHandler.actualOnPostExecute(CardBrowser browser)");
+            browser.hideProgressBar();
             // reload whole view
-            searchCards();
-            endMultiSelectMode();
-            mCardsAdapter.notifyDataSetChanged();
-            updatePreviewMenuItem();
-            invalidateOptionsMenu();    // maybe the availability of undo changed
+            browser.searchCards();
+            browser.endMultiSelectMode();
+            browser.mCardsAdapter.notifyDataSetChanged();
+            browser.updatePreviewMenuItem();
+            browser.invalidateOptionsMenu();    // maybe the availability of undo changed
         }
     };
 
-    private TaskListener mSearchCardsHandler = new ListenerWithProgressBar() {
+    private final SearchCardsHandler mSearchCardsHandler = new SearchCardsHandler(this);
+    private class SearchCardsHandler extends ListenerWithProgressBar {
+        public SearchCardsHandler(CardBrowser browser) {
+            super(browser);
+        }
+
         @Override
-        public void onPostExecute(TaskData result) {
+        public void actualOnPostExecute(@NonNull CardBrowser browser, TaskData result) {
             if (result != null) {
                 mCards = result.getCards();
                 updateList();
@@ -1732,8 +1777,8 @@ public class CardBrowser extends NavigationDrawerActivity implements
         }
 
         @Override
-        public void onCancelled() {
-            super.onCancelled();
+        public void actualOnCancelled(@NonNull CardBrowser browser) {
+            super.actualOnCancelled(browser);
             hideProgressBar();
         }
     };
@@ -1770,23 +1815,28 @@ public class CardBrowser extends NavigationDrawerActivity implements
         }
     }
 
-    private TaskListener mRenderQAHandler = new TaskListener() {
+    private final RenderQAHandler mRenderQAHandler = new RenderQAHandler(this);
+    private static class RenderQAHandler extends TaskListenerWithContext<CardBrowser>{
+        public RenderQAHandler(CardBrowser browser) {
+            super(browser);
+        }
+
         @Override
-        public void onProgressUpdate(TaskData value) {
+        public void actualOnProgressUpdate(@NonNull CardBrowser browser, TaskData value) {
             // Note: This is called every time a card is rendered.
             // It blocks the long-click callback while the task is running, so usage of the task should be minimized
-            mCardsAdapter.notifyDataSetChanged();
+            browser.mCardsAdapter.notifyDataSetChanged();
         }
 
 
         @Override
-        public void onPreExecute() {
+        public void actualOnPreExecute(@NonNull CardBrowser browser) {
             Timber.d("Starting Q&A background rendering");
         }
 
 
         @Override
-        public void onPostExecute(TaskData result) {
+        public void actualOnPostExecute(@NonNull CardBrowser browser, TaskData result) {
             if (result != null) {
                 if (result.getObjArray() != null && result.getObjArray().length > 1) {
                     try {
@@ -1794,14 +1844,14 @@ public class CardBrowser extends NavigationDrawerActivity implements
                         List<Long> cardsIdsToHide = (List<Long>) result.getObjArray()[1];
                         if (cardsIdsToHide.size() > 0) {
                             Timber.i("Removing %d invalid cards from view", cardsIdsToHide.size());
-                            removeNotesView(cardsIdsToHide, true);
+                            browser.removeNotesView(cardsIdsToHide, true);
                         }
                     } catch (Exception e) {
                         Timber.e(e, "failed to hide cards");
                     }
                 }
-                hideProgressBar();
-                mCardsAdapter.notifyDataSetChanged();
+                browser.hideProgressBar();
+                browser.mCardsAdapter.notifyDataSetChanged();
                 Timber.d("Completed doInBackgroundRenderBrowserQA Successfuly");
             } else {
                 // Might want to do something more proactive here like show a message box?
@@ -1811,44 +1861,49 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
 
         @Override
-        public void onCancelled() {
-            hideProgressBar();
+        public void actualOnCancelled(@NonNull CardBrowser browser) {
+            browser.hideProgressBar();
         }
     };
 
-    private TaskListener mCheckSelectedCardsHandler = new ListenerWithProgressBar() {
+    private final CheckSelectedCardsHandler mCheckSelectedCardsHandler = new CheckSelectedCardsHandler(this);
+    private static class CheckSelectedCardsHandler extends ListenerWithProgressBar {
+        public CheckSelectedCardsHandler(CardBrowser browser) {
+            super(browser);
+        }
+
         @Override
-        public void onPostExecute(TaskData result) {
-            hideProgressBar();
+        public void actualOnPostExecute(@NonNull CardBrowser browser, TaskData result) {
+            browser.hideProgressBar();
 
             Object[] resultArr = result.getObjArray();
             boolean hasUnsuspended = (boolean) resultArr[0];
             boolean hasUnmarked = (boolean) resultArr[1];
 
             if (hasUnsuspended) {
-                mActionBarMenu.findItem(R.id.action_suspend_card).setTitle(getString(R.string.card_browser_suspend_card));
-                mActionBarMenu.findItem(R.id.action_suspend_card).setIcon(R.drawable.ic_action_suspend);
+                browser.mActionBarMenu.findItem(R.id.action_suspend_card).setTitle(browser.getString(R.string.card_browser_suspend_card));
+                browser.mActionBarMenu.findItem(R.id.action_suspend_card).setIcon(R.drawable.ic_action_suspend);
             } else {
-                mActionBarMenu.findItem(R.id.action_suspend_card).setTitle(getString(R.string.card_browser_unsuspend_card));
-                mActionBarMenu.findItem(R.id.action_suspend_card).setIcon(R.drawable.ic_action_unsuspend);
+                browser.mActionBarMenu.findItem(R.id.action_suspend_card).setTitle(browser.getString(R.string.card_browser_unsuspend_card));
+                browser.mActionBarMenu.findItem(R.id.action_suspend_card).setIcon(R.drawable.ic_action_unsuspend);
             }
 
             if (hasUnmarked) {
-                mActionBarMenu.findItem(R.id.action_mark_card).setTitle(getString(R.string.card_browser_mark_card));
-                mActionBarMenu.findItem(R.id.action_mark_card).setIcon(R.drawable.ic_star_outline_white_24dp);
+                browser.mActionBarMenu.findItem(R.id.action_mark_card).setTitle(browser.getString(R.string.card_browser_mark_card));
+                browser.mActionBarMenu.findItem(R.id.action_mark_card).setIcon(R.drawable.ic_star_outline_white_24dp);
             } else {
-                mActionBarMenu.findItem(R.id.action_mark_card).setTitle(getString(R.string.card_browser_unmark_card));
-                mActionBarMenu.findItem(R.id.action_mark_card).setIcon(R.drawable.ic_star_white_24dp);
+                browser.mActionBarMenu.findItem(R.id.action_mark_card).setTitle(browser.getString(R.string.card_browser_unmark_card));
+                browser.mActionBarMenu.findItem(R.id.action_mark_card).setIcon(R.drawable.ic_star_white_24dp);
             }
         }
 
 
         @Override
-        public void onCancelled() {
-            super.onCancelled();
-            hideProgressBar();
+        public void actualOnCancelled(@NonNull CardBrowser browser) {
+            super.actualOnCancelled(browser);
+            browser.hideProgressBar();
         }
-    };
+    }
 
 
     private void closeCardBrowser(int result) {
@@ -2316,7 +2371,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
     @VisibleForTesting(otherwise = VisibleForTesting.NONE) //should only be called from changeDeck()
     void executeChangeCollectionTask(long[] ids, long newDid) {
         mNewDid = newDid; //line required for unit tests, not necessary, but a noop in regular call.
-        CollectionTask.launchCollectionTask(DISMISS_MULTI, mChangeDeckHandler,
+        CollectionTask.launchCollectionTask(DISMISS_MULTI, new ChangeDeckHandler(this),
                 new TaskData(new Object[]{ids, Collection.DismissType.CHANGE_DECK_MULTI, newDid}));
     }
 
