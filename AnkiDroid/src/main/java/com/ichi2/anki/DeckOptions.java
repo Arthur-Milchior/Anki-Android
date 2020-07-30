@@ -45,6 +45,7 @@ import com.ichi2.anki.receiver.SdCardReceiver;
 import com.ichi2.anki.services.ReminderService;
 import com.ichi2.async.CollectionTask;
 import com.ichi2.async.TaskListener;
+import com.ichi2.async.TaskListenerWithContext;
 import com.ichi2.libanki.Collection;
 import com.ichi2.libanki.Consts;
 import com.ichi2.libanki.DeckConfig;
@@ -71,6 +72,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import androidx.annotation.NonNull;
 import timber.log.Timber;
 import static com.ichi2.async.CollectionTask.TASK_TYPE.*;
 import com.ichi2.async.TaskData;
@@ -211,7 +213,7 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
                                 int oldValue = mOptions.getJSONObject("new").getInt("order");
                                 if (oldValue != newValue) {
                                     mOptions.getJSONObject("new").put("order", newValue);
-                                    CollectionTask.launchCollectionTask(REORDER, new ConfChangeHandler(this),
+                                    CollectionTask.launchCollectionTask(REORDER, mConfChangeHandler,
                                             new TaskData(new Object[] {mOptions}));
                                 }
                                 mOptions.getJSONObject("new").put("order", Integer.parseInt((String) value));
@@ -301,7 +303,7 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
                             case "deckConf": {
                                 long newConfId = Long.parseLong((String) value);
                                 mOptions = mCol.getDecks().getConf(newConfId);
-                                CollectionTask.launchCollectionTask(CONF_CHANGE, confChangeHandler(),
+                                CollectionTask.launchCollectionTask(CONF_CHANGE, mConfChangeHandler,
                                         new TaskData(new Object[] {mDeck, mOptions}));
                                 break;
                             }
@@ -314,7 +316,7 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
                             }
                             case "confReset":
                                 if ((Boolean) value) {
-                                    CollectionTask.launchCollectionTask(CONF_RESET, confChangeHandler(),
+                                    CollectionTask.launchCollectionTask(CONF_RESET, mConfChangeHandler,
                                             new TaskData(new Object[] {mOptions}));
                                 }
                                 break;
@@ -360,7 +362,7 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
                                 break;
                             case "confSetSubdecks":
                                 if ((Boolean) value) {
-                                    CollectionTask.launchCollectionTask(CONF_SET_SUBDECKS, confChangeHandler(),
+                                    CollectionTask.launchCollectionTask(CONF_SET_SUBDECKS, mConfChangeHandler,
                                             new TaskData(new Object[] {mDeck, mOptions}));
                                 }
                                 break;
@@ -529,9 +531,7 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
                 return DeckPreferenceHack.this;
             }
 
-            public ConfChangeHandler confChangeHandler() {
-                return new ConfChangeHandler(this);
-            }
+            public final ConfChangeHandler mConfChangeHandler = new ConfChangeHandler(DeckPreferenceHack.this);
 
             /**
              * Remove the currently selected options group
@@ -540,7 +540,7 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
                 // Remove options group, asking user to confirm full sync if necessary
                 mCol.getDecks().remConf(mOptions.getLong("id"));
                 // Run the CPU intensive re-sort operation in a background thread
-                CollectionTask.launchCollectionTask(CONF_REMOVE, confChangeHandler(),
+                CollectionTask.launchCollectionTask(CONF_REMOVE, mConfChangeHandler,
                                         new TaskData(new Object[] { mOptions }));
                 mDeck.put("conf", 1);
             }
@@ -617,30 +617,29 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
 
     }
 
-
-    private static class ConfChangeHandler extends TaskListener {
-        private final DeckPreferenceHack.Editor mEditor;
-        public ConfChangeHandler(DeckPreferenceHack.Editor editor) {
-            mEditor = editor;
+    private static class ConfChangeHandler extends TaskListenerWithContext<DeckPreferenceHack> {
+        public ConfChangeHandler(DeckPreferenceHack deckPreferenceHack) {
+            super(deckPreferenceHack);
         }
+
         @Override
-        public void onPreExecute() {
-            Resources res = mEditor.getDeckPreferenceHack().getDeckOptions().getResources();
-            mEditor.getDeckPreferenceHack().mProgressDialog = StyledProgressDialog.show(mEditor.getDeckPreferenceHack().getDeckOptions(), "",
+        public void actualOnPreExecute(@NonNull DeckPreferenceHack deckPreferenceHack) {
+            Resources res = deckPreferenceHack.getDeckOptions().getResources();
+            deckPreferenceHack.mProgressDialog = StyledProgressDialog.show(deckPreferenceHack.getDeckOptions(), "",
                     res.getString(R.string.reordering_cards), false);
         }
 
 
         @Override
-        public void onPostExecute(TaskData result) {
-            mEditor.getDeckPreferenceHack().cacheValues();
-            mEditor.getDeckPreferenceHack().getDeckOptions().buildLists();
-            mEditor.getDeckPreferenceHack().getDeckOptions().updateSummaries();
-            mEditor.getDeckPreferenceHack().mProgressDialog.dismiss();
+        public void actualOnPostExecute(@NonNull DeckPreferenceHack deckPreferenceHack, TaskData result) {
+            deckPreferenceHack.cacheValues();
+            deckPreferenceHack.getDeckOptions().buildLists();
+            deckPreferenceHack.getDeckOptions().updateSummaries();
+            deckPreferenceHack.mProgressDialog.dismiss();
             // Restart to reflect the new preference values
-            mEditor.getDeckPreferenceHack().getDeckOptions().restartActivity();
+            deckPreferenceHack.getDeckOptions().restartActivity();
         }
-    };
+    }
 
     @Override
     public SharedPreferences getSharedPreferences(String name, int mode) {
