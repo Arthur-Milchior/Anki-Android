@@ -45,6 +45,7 @@ import com.ichi2.anki.UIUtils;
 import com.ichi2.anki.analytics.AnalyticsDialogFragment;
 import com.ichi2.async.CollectionTask;
 import com.ichi2.async.TaskListener;
+import com.ichi2.async.TaskListenerWithContext;
 import com.ichi2.libanki.Collection;
 import com.ichi2.libanki.Consts;
 
@@ -480,18 +481,7 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
         dyn.put("resched", resched);
         // Rebuild the filtered deck
         Timber.i("Rebuilding Custom Study Deck");
-        TaskListener listener = new TaskListener() {
-            @Override
-            public void onPreExecute() {
-                activity.showProgressBar();
-            }
-
-            @Override
-            public void onPostExecute(TaskData result) {
-                activity.hideProgressBar();
-                ((CustomStudyListener) activity).onCreateCustomStudySession();
-            }
-        };
+        TaskListener listener = createCustomStudySessionListener(activity);
         CollectionTask.launchCollectionTask(REBUILD_CRAM, listener);
 
         // Hide the dialogs
@@ -511,5 +501,31 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
 
     protected AnkiActivity getAnkiActivity() {
         return (AnkiActivity) getActivity();
+    }
+
+
+    private CreateCustomStudySessionListener createCustomStudySessionListener(AnkiActivity activity){
+        return new CreateCustomStudySessionListener(this, activity);
+    }
+    private static class CreateCustomStudySessionListener extends TaskListenerWithContext<CustomStudyDialog> {
+        private  AnkiActivity activity;
+
+        public CreateCustomStudySessionListener(CustomStudyDialog customStudyDialog, AnkiActivity activity) {
+            super(customStudyDialog);
+            this.activity = activity;
+        }
+
+
+        @Override
+        public void actualOnPreExecute(@NonNull CustomStudyDialog dialog) {
+            activity.showProgressBar();
+        }
+
+
+        @Override
+        public void actualOnPostExecute(@NonNull CustomStudyDialog dialog, TaskData result) {
+            activity.hideProgressBar();
+            ((CustomStudyListener) activity).onCreateCustomStudySession();
+        }
     }
 }
