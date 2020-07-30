@@ -2465,19 +2465,23 @@ public class DeckPicker extends NavigationDrawerActivity implements
     /**
      * Show progress bars and rebuild deck list on completion
      */
-    private TaskListener mSimpleProgressListener = new TaskListener() {
+    private final SimpleProgressListener mSimpleProgressListener = new SimpleProgressListener(this);
+    private static class SimpleProgressListener extends TaskListenerWithContext<DeckPicker>{
+        public SimpleProgressListener (DeckPicker deckPicker) {
+            super(deckPicker);
+        }
 
         @Override
-        public void onPreExecute() {
-            showProgressBar();
+        public void actualOnPreExecute(@NonNull DeckPicker deckPicker) {
+            deckPicker.showProgressBar();
         }
 
 
         @Override
-        public void onPostExecute(TaskData result) {
-            updateDeckList();
-            if (mFragmented) {
-                loadStudyOptionsFragment(false);
+        public void actualOnPostExecute(@NonNull DeckPicker deckPicker, TaskData result) {
+            deckPicker.updateDeckList();
+            if (deckPicker.mFragmented) {
+                deckPicker.loadStudyOptionsFragment(false);
             }
         }
     };
