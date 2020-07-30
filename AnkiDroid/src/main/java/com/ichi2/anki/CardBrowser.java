@@ -298,22 +298,27 @@ public class CardBrowser extends NavigationDrawerActivity implements
         }
     }
 
-    private TaskListener mRescheduleCardHandler = new TaskListener() {
+    private final RescheduleCardHandler mRescheduleCardHandler = new RescheduleCardHandler(this);
+    private static class RescheduleCardHandler extends TaskListenerWithContext<CardBrowser>{
+        public RescheduleCardHandler (CardBrowser browser) {
+            super(browser);
+        }
+
         @Override
-        public void onPreExecute() {
+        public void actualOnPreExecute(@NonNull CardBrowser browser) {
             Timber.d("CardBrowser::RescheduleCardHandler() onPreExecute");
         }
 
 
         @Override
-        public void onPostExecute(TaskData result) {
+        public void actualOnPostExecute(@NonNull CardBrowser browser, TaskData result) {
             Timber.d("CardBrowser::RescheduleCardHandler() onPostExecute");
-            mReloadRequired = true;
+            browser.mReloadRequired = true;
             int cardCount = result.getObjArray().length;
-            UIUtils.showThemedToast(CardBrowser.this,
-                    getResources().getQuantityString(R.plurals.reschedule_cards_dialog_acknowledge, cardCount, cardCount), true);
+            UIUtils.showThemedToast(browser,
+                    browser.getResources().getQuantityString(R.plurals.reschedule_cards_dialog_acknowledge, cardCount, cardCount), true);
         }
-    };
+    }
 
     private CardBrowserMySearchesDialog.MySearchesDialogListener mMySearchesDialogListener =
             new CardBrowserMySearchesDialog.MySearchesDialogListener() {
