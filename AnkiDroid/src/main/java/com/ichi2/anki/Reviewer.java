@@ -87,13 +87,23 @@ public class Reviewer extends AbstractFlashcardViewer {
     private ActionButtons mActionButtons = new ActionButtons(this);
 
 
-    private TaskListener mRescheduleCardHandler = new ScheduleCollectionTaskListener() {
+    private final RescheduleCardHandler mRescheduleCardHandler = new RescheduleCardHandler(this);
+    private static class RescheduleCardHandler extends ScheduleCollectionTaskListener {
+        public RescheduleCardHandler(Reviewer reviewer) {
+            super(reviewer);
+        }
+
         protected int getToastResourceId() {
             return R.plurals.reschedule_cards_dialog_acknowledge;
         }
     };
 
-    private TaskListener mResetProgressCardHandler = new ScheduleCollectionTaskListener() {
+    private final ResetProgressCardHandler mResetProgressCardHandler = new ResetProgressCardHandler(this);
+    private static class ResetProgressCardHandler extends ScheduleCollectionTaskListener {
+        public ResetProgressCardHandler(Reviewer reviewer) {
+            super(reviewer);
+        }
+
         protected int getToastResourceId() {
             return R.plurals.reset_cards_dialog_acknowledge;
         }
@@ -103,18 +113,22 @@ public class Reviewer extends AbstractFlashcardViewer {
     protected PeripheralKeymap mProcessor = new PeripheralKeymap(this, this);
 
     /** We need to listen for and handle reschedules / resets very similarly */
-    abstract class ScheduleCollectionTaskListener extends NextCardHandler {
+    abstract static class ScheduleCollectionTaskListener extends NextCardHandler<Reviewer> {
+
+        ScheduleCollectionTaskListener(Reviewer reviewer) {
+            super(reviewer);
+        }
 
         abstract protected int getToastResourceId();
 
 
         @Override
-        public void onPostExecute(TaskData result) {
+        public void actualOnPostExecute(@NonNull Reviewer reviewer, TaskData result) {
             super.onPostExecute(result);
-            invalidateOptionsMenu();
+            reviewer.invalidateOptionsMenu();
             int cardCount = result.getObjArray().length;
-            UIUtils.showThemedToast(Reviewer.this,
-                    getResources().getQuantityString(getToastResourceId(), cardCount, cardCount), true);
+            UIUtils.showThemedToast(reviewer,
+                    reviewer.getResources().getQuantityString(getToastResourceId(), cardCount, cardCount), true);
         }
     }
 
@@ -235,7 +249,7 @@ public class Reviewer extends AbstractFlashcardViewer {
         }
 
         col.getSched().deferReset();     // Reset schedule in case card was previously loaded
-        CollectionTask.launchCollectionTask(ANSWER_CARD, mAnswerCardHandler(false),
+        CollectionTask.launchCollectionTask(ANSWER_CARD, answerCardHandler(false),
                 new TaskData(null, 0));
 
         disableDrawerSwipeOnConflicts();
