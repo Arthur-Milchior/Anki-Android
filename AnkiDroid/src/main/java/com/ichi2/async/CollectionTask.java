@@ -1065,13 +1065,13 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
                     case REPOSITION_CARDS:
                     case RESET_CARDS: {
                         // collect undo information, sensitive to memory pressure, same for all 3 cases
-                        try {
-                            Timber.d("Saving undo information of type %s on %d cards", type, cards.length);
-                            Card[] cards_copied = deepCopyCardArray(cards);
+                        Timber.d("Saving undo information of type %s on %d cards", type, cards.length);
+                        Card[] cards_copied = deepCopyCardArray(cards);
+                        if (cards_copied == null) {
+                            Timber.i("Cancelled while handling type %s, skipping undo", type);
+                        } else {
                             Undoable repositionRescheduleResetCards = new UndoRepositionRescheduleResetCards(type, cards_copied);
                             col.markUndo(repositionRescheduleResetCards);
-                        } catch (CancellationException ce) {
-                            Timber.i(ce, "Cancelled while handling type %s, skipping undo", type);
                         }
                         switch (type) {
                             case RESCHEDULE_CARDS:
@@ -1104,13 +1104,13 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
         return new TaskData(true, cards);
     }
 
-    private Card[] deepCopyCardArray(Card[] originals) throws CancellationException {
+    private @Nullable Card[] deepCopyCardArray(Card[] originals) {
         Collection col = CollectionHelper.getInstance().getCol(AnkiDroidApp.getInstance());
         Card[] copies = new Card[originals.length];
         for (int i = 0; i < originals.length; i++) {
             if (isCancelled()) {
                 Timber.i("Cancelled during deep copy, probably memory pressure?");
-                throw new CancellationException("Cancelled during deep copy");
+                return null;
             }
 
             // TODO: the performance-naive implementation loads from database instead of working in memory
