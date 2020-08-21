@@ -30,6 +30,7 @@ import com.ichi2.libanki.Decks;
 import com.ichi2.libanki.Model;
 import com.ichi2.libanki.Models;
 import com.ichi2.libanki.Note;
+import com.ichi2.testutils.MockTime;
 import com.ichi2.utils.JSONArray;
 
 import org.junit.Before;
@@ -46,12 +47,16 @@ import timber.log.Timber;
 
 import static com.ichi2.anki.AbstractFlashcardViewer.EASE_3;
 import static com.ichi2.async.CollectionTask.TASK_TYPE.*;
+import static com.ichi2.async.CollectionTask.nonTaskUndo;
+import static com.ichi2.libanki.Consts.QUEUE_TYPE_LRN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -302,5 +307,255 @@ mw.col.sched.extendLimits(1, 0)
     @Test
     public void increaseToday() {
         new IncreaseToday().test();
+    }
+
+    private class LearnQueue {
+        private Card card;
+
+        private void assertEqualFirstField(String message, Card expected, Card obtained) {
+            assertEquals(message, expected.note().getFields()[0], obtained.note().getFields()[0]);
+        }
+
+
+        private void assertLrnQueue(String message, Card... expectedCards) {
+            LrnCardQueue lrnQueue = getCol().getSched().getLrnQueue();
+            assertTrue(getCol().getSched().getHaveQueue());
+            try {
+                assertEquals(message, expectedCards.length, lrnQueue.size());
+                for (int i = 0; i < expectedCards.length; ++i) {
+                    assertEqualFirstField(message, expectedCards[i], lrnQueue.get(i).getCard());
+                }
+            } catch (AssertionError c) {
+                Timber.d("Failing queue is %s.", lrnQueue);
+                throw c;
+            }
+        }
+
+
+        private void assertCounts(String message, int new_, int lrn, int rev) {
+            AbstractSched sched = getCol().getSched();
+            assertTrue(sched.getHaveCount());
+            assertArrayEquals(message, new int[] {new_, lrn, rev}, sched.currentCounts());
+        }
+
+
+        private void assertCounts(String message, int new_, int lrn, int rev, Card card) {
+            AbstractSched sched = getCol().getSched();
+            assertArrayEquals(message, new int[] {new_, lrn, rev}, sched.counts(card));
+        }
+
+
+        private void noCount(String message) {
+            assertFalse(message, getCol().getSched().getHaveCount());
+        }
+
+
+        private void noQueue(String message) {
+            assertFalse(message, getCol().getSched().getHaveQueue());
+        }
+
+
+        private void answer(Card card, int button, int nbReps) {
+            answer(card, button, nbReps, QUEUE_TYPE_LRN);
+        }
+
+
+        private void answer(Card card, int button, int nbReps, int queue_type) {
+            AbstractSched sched = getCol().getSched();
+            assertThat(card.getDue(), is(lessThanOrEqualTo(sched.getDayCutoff())));
+            sched.answerCard(card, button);
+            assertEquals(1001 * nbReps, card.getLeft());
+            assertEquals(queue_type, card.getQueue());
+            assertEquals(queue_type, card.getType());
+        }
+
+
+        private void noCardToDiscard() {
+            assertNull(getCol().getSched().getCardNotToFetch());
+        }
+
+
+        private void noCurrentCard() {
+            assertNull(getCol().getSched().getCurrentCard());
+        }
+
+
+        private void currentCard(String message, Card card) {
+            assertEqualFirstField(message, card, getCol().getSched().getCurrentCard());
+        }
+
+
+        private void cardToDiscard(String message, Card card) {
+            noQueue(message);
+            assertEqualFirstField(message, card, getCol().getSched().getCardNotToFetch());
+        }
+
+        public void getCard(int firstField, int new_, int lrn, int rev, Card... expectedCards) {
+            AbstractSched sched = getCol().getSched();
+            card = sched.getCard();
+            assertEquals(Integer.toString(firstField), card.note().getFields()[0]);
+            assertArrayEquals(new int[]{new_, lrn, rev}, sched.counts(card));
+            getCol().getSched().preloadNextCard();
+            assertLrnQueue("", expectedCards);
+        }
+
+
+        public synchronized void dontRepeatCardInLearning() throws InterruptedException {
+            Collection<MockTime> col = getCol();
+            AbstractSched sched = col.getSched();
+            MockTime time = col.getTime();
+            Deck deck = col.getDecks().get(1);
+            int nbLrnOne = (schedVersion == 1) ? 2 : 1;
+            int goodButton = (schedVersion == 1) ? 2 : 3;
+            DeckConfig dconf = col.getDecks().getConf(1);
+            dconf.getJSONObject("new").put("bury", true);
+            int steps[] = new int[] {1, 3};
+            dconf.getJSONObject("new").put("delays", new JSONArray(steps));
+
+            int[] itv = new int[steps.length];
+            int[] delta = new int[steps.length];
+            for (int i = 0; i < steps.length; i++) {
+                itv[i] = steps[i] * 60;// normal interval
+                delta[i] = itv[i] / 4;// Fuzziness is itv /4.
+            }
+
+            final int nbNote = 3;
+            Note notes[] = new Note[nbNote];
+            Card cardsFront[] = new Card[nbNote];
+            long cids[] = new long[nbNote];
+            for (int i = 0; i < nbNote; ++i) {
+                if (i == nbNote - 1) {
+                    notes[i] = addNoteUsingBasicModel(Integer.toString(i), "foo");
+                } else {
+                    notes[i] = addNoteUsingBasicAndReversedModel(Integer.toString(i), "foo");
+                }
+                cardsFront[i] = notes[i].firstCard();
+                cids[i] = cardsFront[i].getId();
+            }
+            // Start, 0, 0, 0
+            noCount("No count at start");
+            noQueue("No queue at start");
+            noCardToDiscard();
+            col.reset();
+            noCount("reset does not put counts");
+            noQueue("Reset does not put queue");
+            noCardToDiscard();
+
+
+            // Get note 0 front, new, 5, 0, 0
+            // Empty lrn queue
+            getCard(0, nbNote * 2 -1, 0 , 0);
+
+            // Answer good. 4, 1/1, 0 Due today, one step.
+            // Lrn queue 0
+            answer(card, goodButton, 1);
+            assertCounts("Button good, so one step for the card moved.", nbNote * 2 - 2, 1, 0);
+            assertLrnQueue("Card answered good should be in learning", cardsFront[0]);
+
+
+            // Get note 1 front, new, 4, 1/1, 0
+            // Lrn queue 0
+            getCard(1, nbNote * 2 - 2, 1, 0, cardsFront[0]);
+
+            // Answer again. 3, 2/3, 0. Due today, two steps.
+            // Lrn queue 1, 0
+            answer(card, 1, 2);
+            assertCounts("Card answer again. Sched V1 counts two steps. Sched V2 counts one card.", nbNote * 2 - 3, nbLrnOne + 1, 0);
+            assertLrnQueue("Card answered again, we'll see it in 1 minutes, so before card0 seen in 3 minutes (Because there are still new cards to review)", cardsFront[1], cardsFront[0]);
+            //assertEquals(card.getDue(), answerTime + itv[0], delta[0]);
+
+
+            // Get note 2 front, new, 3, 2/3, 0.
+            // Lrn queue 1, 0
+            getCard(2, 3, nbLrnOne + 1, 0, cardsFront[1], cardsFront[0]);
+            time.addS(delta[1] + 1); // Ensure that even with maximal fuziness for card 0 and minimal here, card[2] is planned after card [0]
+
+            // Answer good. Due today, one step. 2, 3/4, 0
+            // Lrn queue 1, 0, 2
+            answer(card, goodButton, 1);
+            //assertEquals(card.getDue(), col.getTime().intTime() + itv[1], delta[1]);
+            assertCounts("No new card anymore because sibling buried. Number changed while preloading card", 0, nbLrnOne + 1 + 1, 0);
+            assertLrnQueue("Another good review, so behind last good review.", cardsFront[1], cardsFront[0], cardsFront[2]);
+
+
+            // Get note 1 front, again. Lrn, 0, 3/4, 0.
+            // Queue 0, 2
+            getCard(1, 0, nbLrnOne + 1 + 1, 0, cardsFront[0], cardsFront[2]);
+
+            // Answer again. Due today, two steps.
+            // Lrn queue 1, 0, 2,  No more new/rev card, so card should appear in second position
+            answer(card, 1, 2);
+            assertCounts("No new card. Still the same number of learn card.", 0, nbLrnOne + 1 + 1, 0);
+            assertLrnQueue("Since there are no other new/rev card, even if the card should be seen before note 0, we'll put it behind", cardsFront[0], cardsFront[1], cardsFront[2]);
+
+
+            // Get note 0. Not yet due, but taken in advance as no due card.
+            getCard(0, 0, nbLrnOne + 1 + 1, 0, cardsFront[1], cardsFront[2]);
+
+
+            // Undo second review of note 1. No queue/count until asked
+            card = nonTaskUndo(col);
+            cardToDiscard("", card);
+            currentCard("", card);
+            assertEqualFirstField("The card just reviewed is undone.", cardsFront[1], card);
+            noCount("");
+            // Get count (to display in reviewer)
+            assertCounts("Only card is learning", 0, nbLrnOne + 1 + 1, 0, card);
+            noQueue("");
+            assertTrue(sched.getHaveCount());
+
+
+            // Answer again. Due today, two steps. Same as last second review
+            // Lrn queue 1, 0, 2,  No more new/rev card, so card should appear in second position
+            answer(card, 1, 2);
+            assertCounts("No new card. Still the same number of learn card.", 0, 1 + nbLrnOne + 1, 0);
+            noQueue("");
+            noCardToDiscard();
+            noCurrentCard();
+
+
+            // Get note 0. Not yet due, but taken in advance as no due card.
+            getCard(0, 0, 1 + nbLrnOne + 1, 0, cardsFront[1], cardsFront[2]);
+
+
+            // Undo second review of note 1. No queue/count until asked
+            card = nonTaskUndo(col);
+            assertEqualFirstField("The card just reviewed is undone.", cardsFront[1], card);
+            cardToDiscard("", card);
+            currentCard("", card);
+            noQueue("");
+            noCount("");
+            // Get count (to display in reviewer)
+            assertCounts("Only card is learning", 0, nbLrnOne + 2, 0, card);
+            noQueue("");
+            assertTrue(sched.getHaveCount());
+
+            // Undo first review of note 2. Card is new. No queue/count. 0, 2, 0
+            card = nonTaskUndo(col);
+            noQueue("");
+            noCount("");
+            noQueue("");
+            assertEqualFirstField("The card previously reviewed is undone.", cardsFront[2], card);
+            assertEquals(card.getQueue(), Consts.QUEUE_TYPE_NEW);
+            assertEquals(card.getType(), Consts.CARD_TYPE_NEW);
+            assertCounts("", 1, nbLrnOne + 1, 0, card);
+
+            // Answer good, 0, 3, 0, still no queue
+            answer(card, goodButton, 1);
+            assertCounts("", 0, 1 + nbLrnOne + 1, 0);
+            noQueue("");
+
+            // get card 1 again, in learning, two steps.
+            getCard(1, 0, nbLrnOne + 1 + 1, 0, cardsFront[0], cardsFront[2]);
+
+            // Answer hard. 0, 3/4, 0
+            answer(card, 1, 2);
+            assertCounts("Counts recomputed", 0, 1 + nbLrnOne + 1, 0);
+            assertLrnQueue("No new/rev, so even if its due date should be small, we move it later.", cardsFront[0], cardsFront[1], cardsFront[2]);
+        }
+    }
+    @Test
+    public void dontRepeatCardInLearning() throws InterruptedException {
+        new LearnQueue().dontRepeatCardInLearning();
     }
 }
