@@ -3125,4 +3125,11 @@ public class SchedV2 extends AbstractSched {
     public Collection getCol() {
         return mCol;
     }
+
+    @Override
+    @VisibleForTesting
+    public LrnCardQueue getLrnQueue() {
+        return mLrnQueue;
+    };
+
 }

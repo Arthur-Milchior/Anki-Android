@@ -327,4 +327,6 @@ public abstract class AbstractSched {
 
     @VisibleForTesting
     public abstract boolean _fillLrn();
+    @VisibleForTesting
+    public abstract LrnCardQueue getLrnQueue();
 }
