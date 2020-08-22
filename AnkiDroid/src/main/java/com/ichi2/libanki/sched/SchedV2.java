@@ -994,7 +994,8 @@ public class SchedV2 extends AbstractSched {
 
     // sub-day learning
     // Overridden: a single kind of queue in V1
-    protected boolean _fillLrn() {
+    @VisibleForTesting
+    public boolean _fillLrn() {
         if (mLrnCount == 0) {
             return false;
         }

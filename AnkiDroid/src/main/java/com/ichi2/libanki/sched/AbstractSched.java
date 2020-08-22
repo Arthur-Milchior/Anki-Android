@@ -320,4 +320,7 @@ public abstract class AbstractSched {
     public abstract void discardCurrentCard();
 
     public abstract Collection getCol();
+
+    @VisibleForTesting
+    public abstract boolean _fillLrn();
 }

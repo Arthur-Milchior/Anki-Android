@@ -343,7 +343,8 @@ public class Sched extends SchedV2 {
 
     // sub-day learning
     @Override
-    protected boolean _fillLrn() {
+    @VisibleForTesting
+    public boolean _fillLrn() {
         if (mLrnCount == 0) {
             return false;
         }
