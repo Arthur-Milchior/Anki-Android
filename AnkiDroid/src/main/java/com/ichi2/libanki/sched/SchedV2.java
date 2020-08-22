@@ -341,6 +341,11 @@ public class SchedV2 extends AbstractSched {
     }
 
 
+    public int[] currentCounts() {
+        return new int[] {mNewCount, mLrnCount, mRevCount};
+    }
+
+
     /**
      * Same as counts(), but also count `card`. In practice, we use it because `card` is in the reviewer and that is the
      * number we actually want.

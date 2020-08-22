@@ -83,6 +83,10 @@ public abstract class AbstractSched {
     // We almost never want to consider the card in the reviewer differently, and a lot of code is added to correct this.
     public abstract int[] counts();
 
+    /** Don't use it apart for test. It shows current values without recomputing */
+    @VisibleForTesting
+    public abstract int[] currentCounts();
+
 
     /** Number of new card in selected decks. Recompute it if we reseted.*/
     public int newCount() {
