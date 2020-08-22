@@ -18,4 +18,10 @@ class LrnCard extends Card.Cache implements Comparable<LrnCard> {
     public int compareTo(LrnCard o) {
         return Long.compare(mDue, o.mDue);
     }
+
+    // For testing/debugging only.
+    @Override
+    public String toString() {
+        return "(id: " + getId() +", due: " + getDue() +" 1rst field: " + getCard().note().getFields()[0] + ")";
+    }
 }

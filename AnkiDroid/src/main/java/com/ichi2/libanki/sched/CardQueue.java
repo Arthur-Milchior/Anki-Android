@@ -69,4 +69,9 @@ abstract class CardQueue<T extends Card.Cache> {
     protected Collection getCol() {
         return mSched.getCol();
     }
+
+    @Override
+    public String toString() {
+        return mQueue.toString();
+    }
 }
