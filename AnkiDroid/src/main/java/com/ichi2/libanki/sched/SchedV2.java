@@ -1069,7 +1069,6 @@ public class SchedV2 extends AbstractSched {
             }
             if (mLrnQueue.getFirstDue() < cutoff) {
                 return true;
-                // mLrnCount -= 1; see decrementCounts()
             }
         }
         return false;
