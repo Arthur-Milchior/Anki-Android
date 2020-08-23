@@ -3142,4 +3142,18 @@ public class SchedV2 extends AbstractSched {
         return mHaveCounts;
     }
 
+    @VisibleForTesting
+    public Card getCurrentCard() {
+        return mCurrentCard;
+    }
+
+    @VisibleForTesting
+    public Card getCardToDecrement() {
+        return mCardToDecrement;
+    }
+
+    @VisibleForTesting
+    public Card getCardNotToFetch() {
+        return mCardNotToFetch;
+    }
 }

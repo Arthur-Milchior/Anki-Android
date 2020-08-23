@@ -333,4 +333,10 @@ public abstract class AbstractSched {
     public abstract boolean getHaveQueue();
     @VisibleForTesting
     public abstract boolean getHaveCount();
+    @VisibleForTesting
+    public abstract Card getCurrentCard();
+    @VisibleForTesting
+    public abstract Card getCardNotToFetch();
+    @VisibleForTesting
+    public abstract Card getCardToDecrement();
 }

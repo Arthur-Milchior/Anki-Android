@@ -10,6 +10,8 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
+import androidx.annotation.VisibleForTesting;
+
 abstract class CardQueue<T extends Card.Cache> {
     // We need to store mSched and not queue, because during initialization of sched, when CardQueues are initialized
     // sched.getCol is null.
@@ -68,6 +70,11 @@ abstract class CardQueue<T extends Card.Cache> {
 
     protected Collection getCol() {
         return mSched.getCol();
+    }
+
+    @VisibleForTesting
+    public Card.Cache get(int i) {
+        return mQueue.get(i);
     }
 
     @Override
