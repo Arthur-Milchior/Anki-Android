@@ -87,6 +87,8 @@ public class Sched extends SchedV2 {
     @Override
     public void answerCard(Card card, @Consts.BUTTON_TYPE int ease) {
         mCol.log();
+        mCardNotToFetch = null; // Queue was not reset between undo and _answerCard. No need to take the undone card into account as the card will be be in learning/not due anymore
+        mCardToDecrement = null; // Usefull only if the answer is so quick that the counts has not yet been recomputed.
         mCol.markReview(card);
         discardCurrentCard();
         _burySiblings(card);

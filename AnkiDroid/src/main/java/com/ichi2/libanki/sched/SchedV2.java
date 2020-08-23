@@ -101,11 +101,11 @@ public class SchedV2 extends AbstractSched {
     /** Next time you reset counts, take into account this card is in the reviewer and should not be counted.
      * This is currently due only when the card is sent by Undo.
      */
-    private Card mCardToDecrement = null;
+    protected Card mCardToDecrement = null;
     /** Next time the queue is reset, takes into account that this card is in the reviewer and so should not be added
      * to queue. I.e. that is mCurrentCard but should not be discarded by reset.
      * */
-    private Card mCardNotToFetch = null;
+    protected Card mCardNotToFetch = null;
 
     protected double[] mEtaCache = new double[] { -1, -1, -1, -1, -1, -1 };
 
@@ -280,6 +280,8 @@ public class SchedV2 extends AbstractSched {
 
 
     public void _answerCard(Card card, @Consts.BUTTON_TYPE int ease) {
+        mCardNotToFetch = null; // Queue was not reset between undo and _answerCard. No need to take the undone card into account as the card will be be in learning/not due anymore
+        mCardToDecrement = null; // Usefull only if the answer is so quick that the counts has not yet been recomputed.
         if (_previewingCard(card)) {
             _answerCardPreview(card, ease);
             return;
