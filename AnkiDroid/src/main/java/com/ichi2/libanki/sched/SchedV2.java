@@ -3132,4 +3132,14 @@ public class SchedV2 extends AbstractSched {
         return mLrnQueue;
     };
 
+    @VisibleForTesting
+    public boolean getHaveQueue() {
+        return mHaveQueues;
+    };
+
+    @VisibleForTesting
+    public boolean getHaveCount() {
+        return mHaveCounts;
+    }
+
 }
