@@ -97,7 +97,7 @@ public class ReviewerTest extends RobolectricTest {
     public void testMultipleCards() throws ConfirmModSchemaException {
         addNoteWithThreeCards();
         JSONObject nw = getCol().getDecks().confForDid(1).getJSONObject("new");
-        nw.put("delays", new JSONArray(new int[] {1, 10, 60, 720}));
+        nw.put("delays", new JSONArray(new int[] {1, 10, 20}));
 
         waitForAsyncTasksToComplete();
 
