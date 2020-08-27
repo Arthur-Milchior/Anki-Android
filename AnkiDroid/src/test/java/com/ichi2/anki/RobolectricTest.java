@@ -28,7 +28,9 @@ import com.ichi2.async.TaskData;
 import com.ichi2.async.TaskListener;
 import com.ichi2.async.TaskManager;
 import com.ichi2.compat.customtabs.CustomTabActivityHelper;
+import com.ichi2.libanki.Card;
 import com.ichi2.libanki.Collection;
+import com.ichi2.libanki.Consts;
 import com.ichi2.libanki.DB;
 import com.ichi2.libanki.Model;
 import com.ichi2.libanki.Models;
@@ -64,6 +66,7 @@ import timber.log.Timber;
 import static android.os.Looper.getMainLooper;
 import static com.ichi2.anki.UIUtils.getDayStart;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.robolectric.Shadows.shadowOf;
 
 public class RobolectricTest {
@@ -346,5 +349,9 @@ public class RobolectricTest {
     public void assumeTrue(String message, boolean b) {
         this.advanceRobolectricLooper();
         Assume.assumeTrue(message, b);
+    }
+
+    public void equalFirstField(Card expected, Card obtained) {
+        assertThat(obtained.note().getFields()[0], is(expected.note().getFields()[0]));
     }
 }
