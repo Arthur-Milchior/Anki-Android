@@ -21,10 +21,8 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import com.ichi2.anki.exception.ImportExportException;
-import com.ichi2.async.CollectionTask;
 import com.ichi2.async.TaskManager;
 import com.ichi2.libanki.Collection;
-import com.ichi2.libanki.Utils;
 
 import java.util.ArrayList;
 import java.util.List;

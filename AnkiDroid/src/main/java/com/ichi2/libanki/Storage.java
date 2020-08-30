@@ -22,6 +22,7 @@ import android.content.Context;
 import com.ichi2.anki.exception.ConfirmModSchemaException;
 
 import com.ichi2.async.TaskManager;
+import com.ichi2.async.BackgroundTaskManager;
 import com.ichi2.libanki.utils.SystemTime;
 import com.ichi2.libanki.utils.Time;
 import com.ichi2.utils.JSONArray;
@@ -47,7 +48,7 @@ public class Storage {
 
 
     public static Collection<Time> Collection(Context context, String path, boolean server, boolean log) {
-        return Collection(context, path, server, log, new SystemTime(), new TaskManager());
+        return Collection(context, path, server, log, new SystemTime(), new BackgroundTaskManager());
     }
     public static <T extends Time> Collection<T> Collection(Context context, String path, boolean server, boolean log, @NonNull T time, @NonNull TaskManager taskManager) {
         assert path.endsWith(".anki2");

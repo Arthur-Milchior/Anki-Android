@@ -12,31 +12,16 @@ import java.util.concurrent.TimeUnit;
 import androidx.annotation.Nullable;
 import timber.log.Timber;
 
-public class TaskManager {
+import static com.ichi2.async.CollectionTask.TASK_TYPE.SAVE_COLLECTION;
 
-    /**
-     * Tasks which are running or waiting to run.
-     * */
-    private final List<CollectionTask> mTasks = Collections.synchronizedList(new LinkedList<>());
+public abstract class TaskManager {
 
-    protected void addTasks(CollectionTask task) {
-        mTasks.add(task);
-    }
-
-    protected boolean removeTask(CollectionTask task) {
-        return mTasks.remove(task);
-    }
+    protected abstract void addTasks(CollectionTask task);
+    protected abstract boolean removeTask(CollectionTask task);
+    public abstract void cancelAllTasks(CollectionTask.TASK_TYPE taskType);
 
 
-    /**
-     * The most recently started {@link CollectionTask} instance.
-     */
-    private CollectionTask mLatestInstance;
-
-    protected void setLatestInstance(CollectionTask task) {
-        mLatestInstance = task;
-    }
-
+    protected abstract void setLatestInstance(CollectionTask task);
 
     /**
      * Starts a new {@link CollectionTask}, with no listener
@@ -95,12 +80,7 @@ public class TaskManager {
      * @param param to pass to the task
      * @return the newly created task
      */
-    public CollectionTask launchCollectionTask(CollectionTask.TASK_TYPE type, @Nullable TaskListener listener, TaskData param) {
-        // Start new task
-        CollectionTask newTask = new CollectionTask(type, listener, mLatestInstance);
-        newTask.execute(param);
-        return newTask;
-    }
+    public abstract CollectionTask launchCollectionTask(CollectionTask.TASK_TYPE type, @Nullable TaskListener listener, TaskData param);
 
 
     /**
@@ -115,50 +95,10 @@ public class TaskManager {
      * @param timeout timeout in seconds
      * @return whether or not the previous task was successful or not
      */
-    public boolean waitToFinish(Integer timeout) {
-        try {
-            if ((mLatestInstance != null) && (mLatestInstance.getStatus() != AsyncTask.Status.FINISHED)) {
-                Timber.d("CollectionTask: waiting for task %s to finish...", mLatestInstance.getType());
-                if (timeout != null) {
-                    mLatestInstance.get(timeout, TimeUnit.SECONDS);
-                } else {
-                    mLatestInstance.get();
-                }
-
-            }
-            return true;
-        } catch (Exception e) {
-            Timber.e(e, "Exception waiting for task to finish");
-            return false;
-        }
-    }
+    public abstract boolean waitToFinish(Integer timeout);
 
     /** Cancel the current task only if it's of type taskType */
-    public void cancelCurrentlyExecutingTask() {
-        CollectionTask latestInstance = mLatestInstance;
-        if (latestInstance != null) {
-            if (latestInstance.safeCancel()) {
-                Timber.i("Cancelled task %s", latestInstance.getType());
-            }
-        };
-    }
-
-    /** Cancel all tasks of type taskType*/
-    public void cancelAllTasks(CollectionTask.TASK_TYPE taskType) {
-        int count = 0;
-        // safeCancel modifies sTasks, so iterate over a concrete copy
-        for (CollectionTask task: new ArrayList<>(mTasks)) {
-            if (task.getType() != taskType) {
-                continue;
-            }
-            if (task.safeCancel()) {
-                count++;
-            }
-        }
-        if (count > 0) {
-            Timber.i("Cancelled %d instances of task %s", count, taskType);
-        }
-    }
+    public abstract void cancelCurrentlyExecutingTask();
 
     public ProgressCallback progressCallback(CollectionTask task, Resources res) {
         return new ProgressCallback(task, res);
@@ -196,7 +136,5 @@ public class TaskManager {
     }
 
     // Here so that progress can be published differently depending on the manager.
-    public void publishProgress(CollectionTask ct, TaskData value) {
-        ct.publishProgress(value);
-    }
+    public abstract void publishProgress(CollectionTask ct, TaskData value);
 }

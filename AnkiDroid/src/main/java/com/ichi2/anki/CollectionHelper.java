@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 
 import com.ichi2.anki.exception.StorageAccessException;
 import com.ichi2.async.TaskManager;
+import com.ichi2.async.BackgroundTaskManager;
 import com.ichi2.libanki.Collection;
 import com.ichi2.libanki.Storage;
 import com.ichi2.libanki.utils.SystemTime;
@@ -112,7 +113,7 @@ public class CollectionHelper {
         if (colIsOpen()) {
             return mCollection;
         }
-        return getCol(context, new SystemTime(), new TaskManager());
+        return getCol(context, new SystemTime(), new BackgroundTaskManager());
     }
 
     @VisibleForTesting
