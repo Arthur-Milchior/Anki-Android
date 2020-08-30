@@ -925,7 +925,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
         }
         /** Complete task and enqueue fetching nonessential data for
          * startup. */
-        TaskManager.launchCollectionTask(LOAD_COLLECTION_COMPLETE);
+        getCol().getTaskManager().launchCollectionTask(LOAD_COLLECTION_COMPLETE);
         // Update sync status (if we've come back from a screen)
         supportInvalidateOptionsMenu();
     }
@@ -951,7 +951,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
         Timber.d("onPause()");
         mActivityPaused = true;
         // The deck count will be computed on resume. No need to compute it now
-        TaskManager.cancelAllTasks(LOAD_DECK_COUNTS);
+        getCol().getTaskManager().cancelAllTasks(LOAD_DECK_COUNTS);
         super.onPause();
     }
 
@@ -1348,7 +1348,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
         String undoReviewString = getResources().getString(R.string.undo_action_review);
         final boolean isReview = undoReviewString.equals(getCol().undoName(getResources()));
         TaskListener listener = undoTaskListener(isReview);
-        TaskManager.launchCollectionTask(UNDO, listener);
+        getCol().getTaskManager().launchCollectionTask(UNDO, listener);
     }
 
 
@@ -1497,7 +1497,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
     public void repairCollection() {
         Timber.i("Repairing the Collection");
         TaskListener listener= repairCollectionTask();
-        TaskManager.launchCollectionTask(REPAIR_COLLECTION, listener);
+        getCol().getTaskManager().launchCollectionTask(REPAIR_COLLECTION, listener);
     }
 
 
@@ -1523,7 +1523,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
 
     private void performIntegrityCheck() {
         Timber.i("performIntegrityCheck()");
-        TaskManager.launchCollectionTask(CHECK_DATABASE, new CheckDatabaseListener());
+        getCol().getTaskManager().launchCollectionTask(CHECK_DATABASE, new CheckDatabaseListener());
     }
 
 
@@ -1559,7 +1559,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
     @Override
     public void mediaCheck() {
         TaskListener listener = mediaCheckListener();
-        TaskManager.launchCollectionTask(CHECK_MEDIA, listener);
+        getCol().getTaskManager().launchCollectionTask(CHECK_MEDIA, listener);
     }
 
 
@@ -1985,7 +1985,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
     @Override
     public void importAdd(String importPath) {
         Timber.d("importAdd() for file %s", importPath);
-        TaskManager.launchCollectionTask(IMPORT, mImportAddListener,
+        getCol().getTaskManager().launchCollectionTask(IMPORT, mImportAddListener,
                 new TaskData(importPath));
     }
 
@@ -1993,7 +1993,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
     // Callback to import a file -- replacing the existing collection
     @Override
     public void importReplace(String importPath) {
-        TaskManager.launchCollectionTask(IMPORT_REPLACE, importReplaceListener(), new TaskData(importPath));
+        getCol().getTaskManager().launchCollectionTask(IMPORT_REPLACE, importReplaceListener(), new TaskData(importPath));
     }
 
 
@@ -2025,7 +2025,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
         inputArgs[2] = did;
         inputArgs[3] = includeSched;
         inputArgs[4] = includeMedia;
-        TaskManager.launchCollectionTask(EXPORT_APKG, exportListener(), new TaskData(inputArgs));
+        getCol().getTaskManager().launchCollectionTask(EXPORT_APKG, exportListener(), new TaskData(inputArgs));
     }
 
 
@@ -2312,7 +2312,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
     private void updateDeckList(boolean quick) {
         TaskListener listener = updateDeckListListener();
         CollectionTask.TASK_TYPE taskType = quick ? LOAD_DECK_QUICK : LOAD_DECK_COUNTS;
-        TaskManager.launchCollectionTask(taskType, listener);
+        getCol().getTaskManager().launchCollectionTask(taskType, listener);
     }
 
     public void __renderPage() {
@@ -2558,7 +2558,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
     }
     public void deleteDeck(final long did) {
         TaskListener listener = deleteDeckListener(did);
-        TaskManager.launchCollectionTask(DELETE_DECK, listener, new TaskData(did));
+        getCol().getTaskManager().launchCollectionTask(DELETE_DECK, listener, new TaskData(did));
     }
     private DeleteDeckListener deleteDeckListener(long did) {
         return new DeleteDeckListener(did, this);
@@ -2635,12 +2635,12 @@ public class DeckPicker extends NavigationDrawerActivity implements
 
     public void rebuildFiltered() {
         getCol().getDecks().select(mContextMenuDid);
-        TaskManager.launchCollectionTask(REBUILD_CRAM, simpleProgressListener());
+        getCol().getTaskManager().launchCollectionTask(REBUILD_CRAM, simpleProgressListener());
     }
 
     public void emptyFiltered() {
         getCol().getDecks().select(mContextMenuDid);
-        TaskManager.launchCollectionTask(EMPTY_CRAM, simpleProgressListener());
+        getCol().getTaskManager().launchCollectionTask(EMPTY_CRAM, simpleProgressListener());
     }
 
     @Override
@@ -2679,7 +2679,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
     }
 
     public void handleEmptyCards() {
-        TaskManager.launchCollectionTask(FIND_EMPTY_CARDS, handlerEmptyCardListener());
+        getCol().getTaskManager().launchCollectionTask(FIND_EMPTY_CARDS, handlerEmptyCardListener());
     }
     private final HandleEmptyCardListener handlerEmptyCardListener() {
         return new HandleEmptyCardListener(this);

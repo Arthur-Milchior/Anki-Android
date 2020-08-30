@@ -301,7 +301,7 @@ public class RobolectricTest {
                 }
             }
         };
-        TaskManager.launchCollectionTask(taskType, listener);
+        getCol().getTaskManager().launchCollectionTask(taskType, listener);
 
         wait(timeoutMs);
 

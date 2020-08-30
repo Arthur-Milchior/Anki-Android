@@ -322,13 +322,13 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
                 Timber.i("StudyOptionsFragment:: rebuild cram deck button pressed");
                 mProgressDialog = StyledProgressDialog.show(getActivity(), "",
                         getResources().getString(R.string.rebuild_cram_deck), true);
-                TaskManager.launchCollectionTask(REBUILD_CRAM, getCollectionTaskListener(true));
+                getCol().getTaskManager().launchCollectionTask(REBUILD_CRAM, getCollectionTaskListener(true));
                 return true;
             case R.id.action_empty:
                 Timber.i("StudyOptionsFragment:: empty cram deck button pressed");
                 mProgressDialog = StyledProgressDialog.show(getActivity(), "",
                         getResources().getString(R.string.empty_cram_deck), false);
-                TaskManager.launchCollectionTask(EMPTY_CRAM, getCollectionTaskListener(true));
+                getCol().getTaskManager().launchCollectionTask(EMPTY_CRAM, getCollectionTaskListener(true));
                 return true;
             case R.id.action_rename:
                 ((DeckPicker) getActivity()).renameDeckDialog(getCol().getDecks().selected());
@@ -448,9 +448,9 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
                 }
                     mProgressDialog = StyledProgressDialog.show(getActivity(), "",
                             getResources().getString(R.string.rebuild_cram_deck), true);
-                    TaskManager.launchCollectionTask(REBUILD_CRAM, getCollectionTaskListener(true));
+                    getCol().getTaskManager().launchCollectionTask(REBUILD_CRAM, getCollectionTaskListener(true));
             } else {
-                TaskManager.waitToFinish();
+                getCol().getTaskManager().waitToFinish();
                 refreshInterface(true);
             }
         } else if (requestCode == AnkiActivity.REQUEST_REVIEW) {
@@ -504,7 +504,7 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
     protected void refreshInterface(boolean resetSched, boolean resetDecklist) {
         Timber.d("Refreshing StudyOptionsFragment");
         // Load the deck counts for the deck from Collection asynchronously
-        TaskManager.launchCollectionTask(UPDATE_VALUES_FROM_DECK, getCollectionTaskListener(resetDecklist),
+        getCol().getTaskManager().launchCollectionTask(UPDATE_VALUES_FROM_DECK, getCollectionTaskListener(resetDecklist),
                 new TaskData(new Object[]{resetSched}));
     }
 

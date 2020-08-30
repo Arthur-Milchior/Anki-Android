@@ -287,14 +287,14 @@ public class Connection extends BaseAsyncTask<Connection.Payload, Object, Connec
         sIsCancellable = true;
         Timber.d("doInBackgroundSync()");
         // Block execution until any previous background task finishes, or timeout after 5s
-        boolean ok = TaskManager.waitToFinish(5);
+        Collection col = CollectionHelper.getInstance().getColSafe(AnkiDroidApp.getInstance());
+        boolean ok = col.getTaskManager().waitToFinish(5);
 
         String hkey = (String) data.data[0];
         boolean media = (Boolean) data.data[1];
         String conflictResolution = (String) data.data[2];
         HostNum hostNum = (HostNum) data.data[3];
         // Use safe version that catches exceptions so that full sync is still possible
-        Collection col = CollectionHelper.getInstance().getColSafe(AnkiDroidApp.getInstance());
 
         boolean colCorruptFullSync = false;
         if (!CollectionHelper.getInstance().colIsOpen() || !ok) {

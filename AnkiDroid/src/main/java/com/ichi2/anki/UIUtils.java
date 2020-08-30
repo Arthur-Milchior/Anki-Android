@@ -119,7 +119,6 @@ public class UIUtils {
         return cal.getTimeInMillis();
     }
 
-
     public static void saveCollectionInBackground() {
         saveCollectionInBackground(false);
     }
@@ -138,7 +137,7 @@ public class UIUtils {
                     Timber.d("saveCollectionInBackground: finished");
                 }
             };
-            TaskManager.launchCollectionTask(SAVE_COLLECTION, listener, new TaskData(syncIgnoresDatabaseModification));
+            CollectionHelper.getInstance().getCol().getTaskManager().launchCollectionTask(SAVE_COLLECTION, listener, new TaskData(syncIgnoresDatabaseModification));
         }
     }
 }

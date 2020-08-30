@@ -237,7 +237,7 @@ public class Reviewer extends AbstractFlashcardViewer {
 
         col.getSched().deferReset();     // Reset schedule in case card was previously loaded
         getCol().startTimebox();
-        TaskManager.launchCollectionTask(ANSWER_CARD, mAnswerCardHandler(false),
+        getCol().getTaskManager().launchCollectionTask(ANSWER_CARD, mAnswerCardHandler(false),
                 new TaskData(null, 0));
 
         disableDrawerSwipeOnConflicts();
@@ -467,7 +467,7 @@ public class Reviewer extends AbstractFlashcardViewer {
 
     private void showRescheduleCardDialog() {
         Consumer<Integer> runnable = days ->
-            TaskManager.launchCollectionTask(DISMISS_MULTI, mRescheduleCardHandler,
+            getCol().getTaskManager().launchCollectionTask(DISMISS_MULTI, mRescheduleCardHandler,
                     new TaskData(new Object[]{new long[]{mCurrentCard.getId()},
                     Collection.DismissType.RESCHEDULE_CARDS, days})
             );
@@ -487,7 +487,7 @@ public class Reviewer extends AbstractFlashcardViewer {
         dialog.setArgs(title, message);
         Runnable confirm = () -> {
             Timber.i("NoteEditor:: ResetProgress button pressed");
-            TaskManager.launchCollectionTask(DISMISS_MULTI, mResetProgressCardHandler,
+            getCol().getTaskManager().launchCollectionTask(DISMISS_MULTI, mResetProgressCardHandler,
                     new TaskData(new Object[]{new long[]{mCurrentCard.getId()}, Collection.DismissType.RESET_CARDS}));
         };
         dialog.setConfirm(confirm);

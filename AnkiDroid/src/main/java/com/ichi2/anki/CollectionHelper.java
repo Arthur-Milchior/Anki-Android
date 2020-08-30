@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.ichi2.anki.exception.StorageAccessException;
+import com.ichi2.async.TaskManager;
 import com.ichi2.libanki.Collection;
 import com.ichi2.libanki.Storage;
 import com.ichi2.libanki.utils.SystemTime;
@@ -97,6 +98,11 @@ public class CollectionHelper {
     }
 
 
+    /** Uses only if you already know the col to be open. */
+    public @Nullable Collection getCol() {
+        return mCollection;
+    }
+
     /**
      * Get the single instance of the {@link Collection}, creating it if necessary  (lazy initialization).
      * @param context context which can be used to get the setting for the path to the Collection
@@ -106,11 +112,11 @@ public class CollectionHelper {
         if (colIsOpen()) {
             return mCollection;
         }
-        return getCol(context, new SystemTime());
+        return getCol(context, new SystemTime(), new TaskManager());
     }
 
     @VisibleForTesting
-    public synchronized <T extends Time> Collection<T> getCol(Context context, @NonNull T time) {
+    public synchronized <T extends Time> Collection<T> getCol(Context context, @NonNull T time, @NonNull TaskManager task) {
         // Open collection
         if (!colIsOpen()) {
             String path = getCollectionPath(context);
@@ -124,7 +130,7 @@ public class CollectionHelper {
             }
             // Open the database
             Timber.i("Begin openCollection: %s", path);
-            mCollection = Storage.Collection(context, path, false, true, time);
+            mCollection = Storage.Collection(context, path, false, true, time, task);
             Timber.i("End openCollection: %s", path);
         }
         return mCollection;

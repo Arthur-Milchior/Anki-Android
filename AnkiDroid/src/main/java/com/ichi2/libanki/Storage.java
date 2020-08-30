@@ -21,6 +21,7 @@ import android.content.Context;
 
 import com.ichi2.anki.exception.ConfirmModSchemaException;
 
+import com.ichi2.async.TaskManager;
 import com.ichi2.libanki.utils.SystemTime;
 import com.ichi2.libanki.utils.Time;
 import com.ichi2.utils.JSONArray;
@@ -32,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import timber.log.Timber;
 
 @SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes","PMD.AvoidReassigningParameters",
@@ -47,9 +47,9 @@ public class Storage {
 
 
     public static Collection<Time> Collection(Context context, String path, boolean server, boolean log) {
-        return Collection(context, path, server, log, new SystemTime());
+        return Collection(context, path, server, log, new SystemTime(), new TaskManager());
     }
-    public static <T extends Time> Collection<T> Collection(Context context, String path, boolean server, boolean log, @NonNull T time) {
+    public static <T extends Time> Collection<T> Collection(Context context, String path, boolean server, boolean log, @NonNull T time, @NonNull TaskManager taskManager) {
         assert path.endsWith(".anki2");
         File dbFile = new File(path);
         boolean create = !dbFile.exists();
@@ -65,7 +65,7 @@ public class Storage {
             }
             db.execute("PRAGMA temp_store = memory");
             // add db to col and do any remaining upgrades
-            Collection<T> col = new Collection(context, db, path, server, log, time);
+            Collection<T> col = new Collection(context, db, path, server, log, taskManager, time);
             if (ver < Consts.SCHEMA_VERSION) {
                 _upgrade(col, ver);
             } else if (ver > Consts.SCHEMA_VERSION) {

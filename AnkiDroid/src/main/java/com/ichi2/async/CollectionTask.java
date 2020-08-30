@@ -76,7 +76,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import timber.log.Timber;
 
-import static com.ichi2.async.TaskManager.setLatestInstance;
 import static com.ichi2.libanki.Collection.DismissType.BURY_CARD;
 import static com.ichi2.libanki.Collection.DismissType.BURY_NOTE;
 import static com.ichi2.libanki.Collection.DismissType.SUSPEND_NOTE;
@@ -145,7 +144,7 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
             // AsyncTask.cancel
             Timber.w(e, "Exception cancelling task");
         } finally {
-            TaskManager.removeTask(this);
+            getCol().getTaskManager().removeTask(this);
         }
         return false;
     }
@@ -167,7 +166,7 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
         mType = type;
         mListener = listener;
         mPreviousTask = previousTask;
-        TaskManager.addTasks(this);
+        getCol().getTaskManager().addTasks(this);
     }
 
     @Override
@@ -175,7 +174,7 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
         try {
             return actualDoInBackground(params[0]);
         } finally {
-            TaskManager.removeTask(this);
+            getCol().getTaskManager().removeTask(this);
         }
     }
 
@@ -201,7 +200,7 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
                 Timber.d(e, "previously running task was cancelled: %s", mPreviousTask.mType);
             }
         }
-        setLatestInstance(this);
+        getCol().getTaskManager().setLatestInstance(this);
         mContext = AnkiDroidApp.getInstance().getApplicationContext();
 
         // Skip the task if the collection cannot be opened
@@ -366,7 +365,7 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
 
     @Override
     protected void onCancelled(){
-        TaskManager.removeTask(this);
+        getCol().getTaskManager().removeTask(this);
         if (mListener != null) {
             mListener.onCancelled();
         }
@@ -380,7 +379,7 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
             DB db = col.getDb();
             db.getDatabase().beginTransaction();
             try {
-                TaskManager.publishProgress(this, new TaskData(col.addNote(note)));
+                col.getTaskManager().publishProgress(this, new TaskData(col.addNote(note)));
                 db.getDatabase().setTransactionSuccessful();
             } finally {
                 db.getDatabase().endTransaction();
@@ -420,9 +419,9 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
                     } else {
                         newCard = sched.getCard();
                     }
-                    TaskManager.publishProgress(this, new TaskData(newCard));
+                    col.getTaskManager().publishProgress(this, new TaskData(newCard));
                 } else {
-                    TaskManager.publishProgress(this, new TaskData(editCard, editNote.stringTags()));
+                    col.getTaskManager().publishProgress(this, new TaskData(editCard, editNote.stringTags()));
                 }
                 col.getDb().getDatabase().setTransactionSuccessful();
             } finally {
@@ -457,7 +456,7 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
                     // render cards before locking database
                     newCard._getQA(true);
                 }
-                TaskManager.publishProgress(this, new TaskData(newCard));
+                col.getTaskManager().publishProgress(this, new TaskData(newCard));
                 db.getDatabase().setTransactionSuccessful();
             } finally {
                 db.getDatabase().endTransaction();
@@ -580,7 +579,7 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
                     }
                 }
                 // With sHadCardQueue set, getCard() resets the scheduler prior to getting the next card
-                TaskManager.publishProgress(this, new TaskData(col.getSched().getCard(), 0));
+                col.getTaskManager().publishProgress(this, new TaskData(col.getSched().getCard(), 0));
                 col.getDb().getDatabase().setTransactionSuccessful();
             } finally {
                 col.getDb().getDatabase().endTransaction();
@@ -898,7 +897,7 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
                         col.remNotes(uniqueNoteIds);
                         sched.deferReset();
                         // pass back all cards because they can't be retrieved anymore by the caller (since the note is deleted)
-                        TaskManager.publishProgress(this, new TaskData(allCards.toArray(new Card[allCards.size()])));
+                        col.getTaskManager().publishProgress(this, new TaskData(allCards.toArray(new Card[allCards.size()])));
                         break;
                     }
 
@@ -978,7 +977,7 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
                         }
                         // In all cases schedule a new card so Reviewer doesn't sit on the old one
                         col.reset();
-                        TaskManager.publishProgress(this, new TaskData(sched.getCard(), 0));
+                        col.getTaskManager().publishProgress(this, new TaskData(sched.getCard(), 0));
                         break;
                     }
                 }
@@ -1047,7 +1046,7 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
             Card newCard = null;
             try {
                 newCard = nonTaskUndo(col);
-                TaskManager.publishProgress(this, new TaskData(newCard, 0));
+                col.getTaskManager().publishProgress(this, new TaskData(newCard, 0));
                 col.getDb().getDatabase().setTransactionSuccessful();
             } finally {
                 col.getDb().getDatabase().endTransaction();
@@ -1152,7 +1151,7 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
             // Update item
             card.load(false, column1Index, column2Index);
             float progress = (float) i / n * 100;
-            TaskManager.publishProgress(this, new TaskData((int) progress));
+            col.getTaskManager().publishProgress(this, new TaskData((int) progress));
         }
         return new TaskData(new Object[] { cards, invalidCardIds });
     }
@@ -1167,7 +1166,7 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
             return new TaskData(false);
         }
 
-        Collection.CheckDatabaseResult result = col.fixIntegrity(TaskManager.progressCallback(this, AnkiDroidApp.getAppResources()));
+        Collection.CheckDatabaseResult result = col.fixIntegrity(getCol().getTaskManager().progressCallback(this, AnkiDroidApp.getAppResources()));
         if (result.getFailed()) {
             //we can fail due to a locked database, which requires knowledge of the failure.
             return new TaskData(false, new Object[] { result });
@@ -1245,7 +1244,7 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
         Collection col = getCol();
         String path = param.getString();
         AnkiPackageImporter imp = new AnkiPackageImporter(col, path);
-        imp.setProgressCallback(TaskManager.progressCallback(this, res));
+        imp.setProgressCallback(getCol().getTaskManager().progressCallback(this, res));
         try {
             imp.run();
         } catch (ImportExportException e) {
@@ -1315,7 +1314,7 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
             }
         }
 
-        TaskManager.publishProgress(this, new TaskData(res.getString(R.string.importing_collection)));
+        col.getTaskManager().publishProgress(this, new TaskData(res.getString(R.string.importing_collection)));
         if (col != null) {
             // unload collection and trigger a backup
             CollectionHelper.getInstance().closeCollection(true, "Importing new collection");
@@ -1364,7 +1363,7 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
                     Utils.unzipFiles(zip, mediaDir, new String[] { c }, numToName);
                 }
                 ++i;
-                TaskManager.publishProgress(this, new TaskData(res.getString(R.string.import_media_count, (i + 1) * 100 / total)));
+                col.getTaskManager().publishProgress(this, new TaskData(res.getString(R.string.import_media_count, (i + 1) * 100 / total)));
             }
             zip.close();
             // delete tmp dir

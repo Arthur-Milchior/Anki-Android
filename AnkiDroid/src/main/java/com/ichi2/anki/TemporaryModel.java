@@ -147,13 +147,12 @@ public class TemporaryModel {
     }
 
 
-    public void saveToDatabase(TaskListener listener) {
+    public void saveToDatabase(TaskListener listener, TaskManager task) {
         Timber.d("saveToDatabase() called");
         dumpChanges();
         TemporaryModel.clearTempModelFiles();
         TaskData args = new TaskData(new Object[] {mEditedModel, getAdjustedTemplateChanges()});
-        TaskManager.launchCollectionTask(SAVE_MODEL, listener, args);
-
+        task.launchCollectionTask(SAVE_MODEL, listener, args);
     }
 
 

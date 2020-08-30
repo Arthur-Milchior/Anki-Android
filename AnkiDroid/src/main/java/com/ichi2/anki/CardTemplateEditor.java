@@ -495,7 +495,7 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
                             }
                             confirmButton.setEnabled(false);
                         }
-                        tempModel.saveToDatabase(saveModelAndExitHandler());
+                        tempModel.saveToDatabase(saveModelAndExitHandler(), col.getTaskManager());
                     } else {
                         Timber.d("CardTemplateEditor:: model has not changed, exiting");
                         mTemplateEditor.finishWithAnimation(ActivityTransitionAnimation.RIGHT);

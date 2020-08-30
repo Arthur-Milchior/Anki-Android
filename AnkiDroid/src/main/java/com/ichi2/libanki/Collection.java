@@ -39,7 +39,6 @@ import com.ichi2.libanki.sched.AbstractSched;
 import com.ichi2.libanki.sched.Sched;
 import com.ichi2.libanki.sched.SchedV2;
 import com.ichi2.libanki.template.Template;
-import com.ichi2.libanki.utils.SystemTime;
 import com.ichi2.libanki.utils.Time;
 import com.ichi2.upgrade.Upgrade;
 import com.ichi2.utils.DatabaseChangeDecorator;
@@ -56,7 +55,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -130,6 +128,7 @@ public class Collection<T extends Time> {
 
     private static final int fDefaultSchedulerVersion = 1;
     private static final List<Integer> fSupportedSchedulerVersions = Arrays.asList(1, 2);
+    @NonNull private final TaskManager mTaskManager;
 
     // Not in libAnki.
     private final T mTime;
@@ -171,11 +170,12 @@ public class Collection<T extends Time> {
     private static final int UNDO_SIZE_MAX = 20;
 
     @VisibleForTesting
-    public Collection(Context context, DB db, String path, boolean server, boolean log, @NonNull T time) {
+    public Collection(Context context, DB db, String path, boolean server, boolean log, @NonNull TaskManager taskManager, @NonNull T time) {
         mContext = context;
         mDebugLog = log;
         mDb = db;
         mPath = path;
+        mTaskManager = taskManager;
         mTime = time;
         _openLog();
         log(path, VersionUtils.getPkgVersionName());
@@ -2226,5 +2226,10 @@ public class Collection<T extends Time> {
     @NonNull
     public T getTime() {
         return mTime;
+    }
+
+    @NonNull
+    public TaskManager getTaskManager() {
+        return mTaskManager;
     }
 }
