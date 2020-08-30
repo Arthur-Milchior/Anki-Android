@@ -41,6 +41,7 @@ import com.ichi2.anim.ActivityTransitionAnimation;
 import com.ichi2.anki.dialogs.CustomStudyDialog;
 import com.ichi2.async.CollectionTask;
 import com.ichi2.async.TaskListener;
+import com.ichi2.async.TaskManager;
 import com.ichi2.compat.CompatHelper;
 import com.ichi2.libanki.Collection;
 import com.ichi2.libanki.Consts;
@@ -321,13 +322,13 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
                 Timber.i("StudyOptionsFragment:: rebuild cram deck button pressed");
                 mProgressDialog = StyledProgressDialog.show(getActivity(), "",
                         getResources().getString(R.string.rebuild_cram_deck), true);
-                CollectionTask.launchCollectionTask(REBUILD_CRAM, getCollectionTaskListener(true));
+                TaskManager.launchCollectionTask(REBUILD_CRAM, getCollectionTaskListener(true));
                 return true;
             case R.id.action_empty:
                 Timber.i("StudyOptionsFragment:: empty cram deck button pressed");
                 mProgressDialog = StyledProgressDialog.show(getActivity(), "",
                         getResources().getString(R.string.empty_cram_deck), false);
-                CollectionTask.launchCollectionTask(EMPTY_CRAM, getCollectionTaskListener(true));
+                TaskManager.launchCollectionTask(EMPTY_CRAM, getCollectionTaskListener(true));
                 return true;
             case R.id.action_rename:
                 ((DeckPicker) getActivity()).renameDeckDialog(getCol().getDecks().selected());
@@ -447,9 +448,9 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
                 }
                     mProgressDialog = StyledProgressDialog.show(getActivity(), "",
                             getResources().getString(R.string.rebuild_cram_deck), true);
-                    CollectionTask.launchCollectionTask(REBUILD_CRAM, getCollectionTaskListener(true));
+                    TaskManager.launchCollectionTask(REBUILD_CRAM, getCollectionTaskListener(true));
             } else {
-                CollectionTask.waitToFinish();
+                TaskManager.waitToFinish();
                 refreshInterface(true);
             }
         } else if (requestCode == AnkiActivity.REQUEST_REVIEW) {
@@ -503,7 +504,7 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
     protected void refreshInterface(boolean resetSched, boolean resetDecklist) {
         Timber.d("Refreshing StudyOptionsFragment");
         // Load the deck counts for the deck from Collection asynchronously
-        CollectionTask.launchCollectionTask(UPDATE_VALUES_FROM_DECK, getCollectionTaskListener(resetDecklist),
+        TaskManager.launchCollectionTask(UPDATE_VALUES_FROM_DECK, getCollectionTaskListener(resetDecklist),
                 new TaskData(new Object[]{resetSched}));
     }
 

@@ -22,6 +22,7 @@ import android.content.res.Resources;
 
 import com.ichi2.anki.exception.ImportExportException;
 import com.ichi2.async.CollectionTask;
+import com.ichi2.async.TaskManager;
 import com.ichi2.libanki.Collection;
 import com.ichi2.libanki.Utils;
 
@@ -43,7 +44,7 @@ public abstract class Importer {
     protected Collection mSrc;
 
     protected Context mContext;
-    protected CollectionTask.ProgressCallback mProgress;
+    protected TaskManager.ProgressCallback mProgress;
 
     public Importer(Collection col, String file) {
         mFile = file;
@@ -79,7 +80,7 @@ public abstract class Importer {
      * ***********************************************************
      */
 
-    public void setProgressCallback(CollectionTask.ProgressCallback progressCallback) {
+    public void setProgressCallback(TaskManager.ProgressCallback progressCallback) {
         mProgress = progressCallback;
     }
 
