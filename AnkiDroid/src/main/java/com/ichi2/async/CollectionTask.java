@@ -72,10 +72,10 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.compress.archivers.zip.ZipFile;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import timber.log.Timber;
 
+import static androidx.annotation.VisibleForTesting.PROTECTED;
 import static com.ichi2.libanki.Collection.DismissType.BURY_CARD;
 import static com.ichi2.libanki.Collection.DismissType.BURY_NOTE;
 import static com.ichi2.libanki.Collection.DismissType.SUSPEND_NOTE;
@@ -149,6 +149,11 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
         return false;
     }
 
+    @VisibleForTesting
+    public TaskListener getListener() {
+        return mListener;
+    }
+
     private Collection getCol() {
         return CollectionHelper.getInstance().getCol(mContext);
     }
@@ -162,6 +167,11 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
     private CollectionTask mPreviousTask;
 
 
+    @VisibleForTesting
+    public CollectionTask(TASK_TYPE type, TaskListener listener) {
+        this(type, listener, null);
+    }
+
     protected CollectionTask(TASK_TYPE type, TaskListener listener, CollectionTask previousTask) {
         mType = type;
         mListener = listener;
@@ -170,7 +180,8 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
     }
 
     @Override
-    protected TaskData doInBackground(TaskData... params) {
+    @VisibleForTesting(otherwise = PROTECTED)
+    public TaskData doInBackground(TaskData... params) {
         try {
             return actualDoInBackground(params[0]);
         } finally {
@@ -179,7 +190,7 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
     }
 
     // This method and those that are called here are executed in a new thread
-    protected TaskData actualDoInBackground(TaskData param) {
+    public TaskData actualDoInBackground(TaskData param) {
         super.doInBackground(param);
         // Wait for previous thread (if any) to finish before continuing
         if (mPreviousTask != null && mPreviousTask.getStatus() != AsyncTask.Status.FINISHED) {
