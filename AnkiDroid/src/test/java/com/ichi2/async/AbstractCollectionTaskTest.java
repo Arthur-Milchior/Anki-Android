@@ -33,7 +33,7 @@ public abstract class AbstractCollectionTaskTest extends RobolectricTest {
     protected TaskData execute(CollectionTask.TASK_TYPE taskType) {
         CollectionTask task = getCol().getTaskManager().launchCollectionTask(taskType);
         try {
-            return task.execute().get();
+            return task.execute(new TaskData[]{null}).get();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
