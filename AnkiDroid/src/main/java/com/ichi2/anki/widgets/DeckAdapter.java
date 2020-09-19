@@ -25,6 +25,7 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -109,7 +110,7 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.ViewHolder> {
         mLayoutInflater = layoutInflater;
         mDeckList = new ArrayList<>();
         // Get the colors from the theme attributes
-        int[] attrs = new int[] {
+        int[] attrs = new int[]{
                 R.attr.zeroCountColor,
                 R.attr.newCountColor,
                 R.attr.learnCountColor,
@@ -118,7 +119,7 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.ViewHolder> {
                 android.R.attr.textColor,
                 R.attr.dynDeckColor,
                 R.attr.expandRef,
-                R.attr.collapseRef };
+                R.attr.collapseRef};
         TypedArray ta = context.obtainStyledAttributes(attrs);
         mZeroCountColor = ta.getColor(0, ContextCompat.getColor(context, R.color.black));
         mNewCountColor = ta.getColor(1, ContextCompat.getColor(context, R.color.black));
@@ -148,7 +149,9 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.ViewHolder> {
         mDeckLongClickListener = listener;
     }
 
-    /** Sets whether the control should have partial transparency to allow a background to be seen */
+    /**
+     * Sets whether the control should have partial transparency to allow a background to be seen
+     */
     public void enablePartialTransparencyForBackground(boolean isTransparent) {
         mPartiallyTransparentForBackground = isTransparent;
     }
@@ -257,7 +260,7 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.ViewHolder> {
     }
 
 
-    private void setDeckExpander(ImageButton expander, ImageButton indent, AbstractDeckTreeNode node){
+    private void setDeckExpander(ImageButton expander, ImageButton indent, AbstractDeckTreeNode node) {
         boolean collapsed = mCol.getDecks().get(node.getDid()).optBoolean("collapsed", false);
         // Apply the correct expand/collapse drawable
         if (collapsed) {
@@ -310,7 +313,7 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.ViewHolder> {
     /**
      * Return the position of the deck in the deck list. If the deck is a child of a collapsed deck
      * (i.e., not visible in the deck list), then the position of the parent deck is returned instead.
-     *
+     * <p>
      * An invalid deck ID will return position 0.
      */
     public int findDeckPosition(long did) {
@@ -331,7 +334,7 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.ViewHolder> {
     @Nullable
     public Integer getEta() {
         if (mNumbersComputed) {
-            return mCol.getSched().eta(new int[] {mNew, mLrn, mRev});
+            return mCol.getSched().eta(new int[]{mNew, mLrn, mRev});
         } else {
             return null;
         }

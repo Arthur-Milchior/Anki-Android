@@ -20,23 +20,33 @@ import com.ichi2.libanki.utils.Time;
 
 public class MockTime extends Time {
 
-    /** Number of miliseconds between each call. */
+    /**
+     * Number of miliseconds between each call.
+     */
     private final int mStep;
-    /** Time since epoch in MS. */
+    /**
+     * Time since epoch in MS.
+     */
     private long mTime;
 
-    /** A clock at time Time, only changed explicitly*/
+    /**
+     * A clock at time Time, only changed explicitly
+     */
     public MockTime(long time) {
         this(time, 0);
     }
 
-    /** A clock at time Time, each call advance by step ms.*/
+    /**
+     * A clock at time Time, each call advance by step ms.
+     */
     public MockTime(long time, int step) {
         this.mTime = time;
         this.mStep = step;
     }
 
-    /** Time in milisecond since epoch. */
+    /**
+     * Time in milisecond since epoch.
+     */
     @Override
     public long intTimeMS() {
         long mTime = this.mTime;
@@ -44,27 +54,37 @@ public class MockTime extends Time {
         return mTime;
     }
 
-    /** Add ms milisecond*/
+    /**
+     * Add ms milisecond
+     */
     public void addMs(long ms) {
         mTime += ms;
     }
 
-    /** add s seconds */
+    /**
+     * add s seconds
+     */
     public void addS(long s) {
         addMs(s * 1000L);
     }
 
-    /** add m minutes */
+    /**
+     * add m minutes
+     */
     public void addM(long m) {
         addS(m * 60);
     }
 
-    /** add h hours*/
+    /**
+     * add h hours
+     */
     public void addH(long h) {
         addM(h * 60);
     }
 
-    /** add d days*/
+    /**
+     * add d days
+     */
     public void addD(long d) {
         addH(d * 24);
     }

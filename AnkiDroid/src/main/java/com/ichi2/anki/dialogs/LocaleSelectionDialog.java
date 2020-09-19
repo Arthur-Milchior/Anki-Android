@@ -49,18 +49,21 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java8.util.Lists;
 
-/** Locale selection dialog. Note: this must be dismissed onDestroy if not called from an activity implementing LocaleSelectionDialogHandler */
+/**
+ * Locale selection dialog. Note: this must be dismissed onDestroy if not called from an activity implementing LocaleSelectionDialogHandler
+ */
 public class LocaleSelectionDialog extends AnalyticsDialogFragment {
 
     private LocaleSelectionDialogHandler dialogHandler;
 
     public interface LocaleSelectionDialogHandler {
         void onSelectedLocale(@NonNull Locale selectedLocale);
+
         void onLocaleSelectionCancelled();
     }
-
 
 
     /**
@@ -161,6 +164,7 @@ public class LocaleSelectionDialog extends AnalyticsDialogFragment {
             public boolean onQueryTextSubmit(String query) {
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String newText) {
                 adapter.getFilter().filter(newText);
@@ -168,8 +172,6 @@ public class LocaleSelectionDialog extends AnalyticsDialogFragment {
             }
         });
     }
-
-
 
 
     public static class LocaleListAdapter extends RecyclerView.Adapter<LocaleListAdapter.TextViewHolder> implements Filterable {

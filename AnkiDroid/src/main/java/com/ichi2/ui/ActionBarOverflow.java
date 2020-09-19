@@ -8,12 +8,13 @@ import java.lang.reflect.Method;
 import androidx.annotation.CheckResult;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
 import timber.log.Timber;
 
 /**
  * Detection of whether an item is in the ActionBar overflow
  * WARN: When making changes to this code, also test with Proguard
- * */
+ */
 public class ActionBarOverflow {
     //Idea from: https://stackoverflow.com/a/29208483
 
@@ -44,7 +45,7 @@ public class ActionBarOverflow {
         sNativeClassRef = nativeImpl.first;
         sNativeIsActionButton = nativeImpl.second;
 
-        Pair<Class, Method> androidXImpl =  accessor.getPrivateMethod(ANDROIDX_CLASS, "isActionButton");
+        Pair<Class, Method> androidXImpl = accessor.getPrivateMethod(ANDROIDX_CLASS, "isActionButton");
         sAndroidXClassRef = androidXImpl.first;
         sAndroidXIsActionButton = androidXImpl.second;
     }
@@ -72,11 +73,11 @@ public class ActionBarOverflow {
     /**
      * Check if an item is showing (not in the overflow menu).
      *
-     * @param item
-     *            the MenuItem.
+     * @param item the MenuItem.
      * @return {@code true} if the MenuItem is visible on the ActionBar. {@code false} if not. {@code null if unknown}
      */
-    public static @Nullable Boolean isActionButton(MenuItem item) {
+    public static @Nullable
+    Boolean isActionButton(MenuItem item) {
         if (sNativeClassRef != null && sNativeClassRef.isInstance(item)) {
             return tryInvokeMethod(item, sNativeIsActionButton);
         } else if (sAndroidXClassRef != null && sAndroidXClassRef.isInstance(item)) {
@@ -91,7 +92,7 @@ public class ActionBarOverflow {
     private static Boolean tryInvokeMethod(MenuItem item, Method method) {
         try {
             return (boolean) method.invoke(item, (Object[]) null);
-        } catch (Exception  | NoSuchFieldError | NoSuchMethodError ex) {
+        } catch (Exception | NoSuchFieldError | NoSuchMethodError ex) {
             Timber.w(ex, "Error handling ActionBar class: %s", item.getClass().getName());
             return null;
         }
@@ -106,7 +107,7 @@ public class ActionBarOverflow {
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     static boolean hasUsableMethod() {
-        return  sNativeIsActionButton != null ||
+        return sNativeIsActionButton != null ||
                 sAndroidXIsActionButton != null;
 
     }

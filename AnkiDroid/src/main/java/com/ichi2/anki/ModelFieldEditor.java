@@ -44,13 +44,17 @@ import com.ichi2.utils.JSONException;
 import com.ichi2.utils.JSONObject;
 
 import java.util.ArrayList;
+
 import static com.ichi2.async.CollectionTask.TASK_TYPE.*;
+
 import com.ichi2.async.TaskData;
+
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.DialogFragment;
+
 import timber.log.Timber;
 
 public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDialog.LocaleSelectionDialogHandler {
@@ -147,8 +151,8 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
 
 
     /*
-      * Sets up the ArrayList containing the text for the main ListView
-      */
+     * Sets up the ArrayList containing the text for the main ListView
+     */
     private void setupLabels() {
         long noteTypeID = getIntent().getLongExtra("noteTypeID", 0);
         mMod = mCol.getModels().get(noteTypeID);
@@ -168,8 +172,8 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
 
 
     /*
-    * Creates a dialog to create a field
-    */
+     * Creates a dialog to create a field
+     */
     private void addFieldDialog() {
         mFieldNameInput = new EditText(this);
         mFieldNameInput.setSingleLine(true);
@@ -253,7 +257,7 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
 
     private void deleteField() {
         CollectionTask.launchCollectionTask(DELETE_FIELD, changeFieldHandler(),
-                                new TaskData(new Object[]{mMod, mNoteFields.getJSONObject(mCurrentPos)}));
+                new TaskData(new Object[]{mMod, mNoteFields.getJSONObject(mCurrentPos)}));
     }
 
 
@@ -272,36 +276,36 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
                 .customView(mFieldNameInput, true)
                 .onPositive((dialog, which) -> {
 
-                        String fieldLabel = mFieldNameInput.getText().toString()
-                                .replaceAll("[\\n\\r]", "");
-                        if (fieldLabel.length() == 0) {
-                            UIUtils.showThemedToast(this, getResources().getString(R.string.toast_empty_name), true);
-                        } else if (containsField(fieldLabel)) {
-                            UIUtils.showThemedToast(this, getResources().getString(R.string.toast_duplicate_field), true);
-                        } else {
-                            //Field is valid, now rename
-                            try {
-                                renameField();
-                            } catch (ConfirmModSchemaException e) {
+                    String fieldLabel = mFieldNameInput.getText().toString()
+                            .replaceAll("[\\n\\r]", "");
+                    if (fieldLabel.length() == 0) {
+                        UIUtils.showThemedToast(this, getResources().getString(R.string.toast_empty_name), true);
+                    } else if (containsField(fieldLabel)) {
+                        UIUtils.showThemedToast(this, getResources().getString(R.string.toast_duplicate_field), true);
+                    } else {
+                        //Field is valid, now rename
+                        try {
+                            renameField();
+                        } catch (ConfirmModSchemaException e) {
 
-                                // Handler mod schema confirmation
-                                ConfirmationDialog c = new ConfirmationDialog();
-                                c.setArgs(getResources().getString(R.string.full_sync_confirmation));
-                                Runnable confirm = () -> {
-                                    mCol.modSchemaNoCheck();
-                                    try {
-                                        renameField();
-                                    } catch (ConfirmModSchemaException e1) {
-                                        //This should never be thrown
-                                    }
-                                    dismissContextMenu();
-                                };
-                                c.setConfirm(confirm);
-                                c.setCancel(mConfirmDialogCancel);
-                                ModelFieldEditor.this.showDialogFragment(c);
-                            }
+                            // Handler mod schema confirmation
+                            ConfirmationDialog c = new ConfirmationDialog();
+                            c.setArgs(getResources().getString(R.string.full_sync_confirmation));
+                            Runnable confirm = () -> {
+                                mCol.modSchemaNoCheck();
+                                try {
+                                    renameField();
+                                } catch (ConfirmModSchemaException e1) {
+                                    //This should never be thrown
+                                }
+                                dismissContextMenu();
+                            };
+                            c.setConfirm(confirm);
+                            c.setCancel(mConfirmDialogCancel);
+                            ModelFieldEditor.this.showDialogFragment(c);
                         }
-                    })
+                    }
+                })
                 .negativeText(R.string.dialog_cancel)
                 .show();
     }
@@ -320,49 +324,49 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
                 .positiveText(R.string.dialog_ok)
                 .customView(mFieldNameInput, true)
                 .onPositive((dialog, which) -> {
-                        String newPosition = mFieldNameInput.getText().toString();
-                        int pos;
+                    String newPosition = mFieldNameInput.getText().toString();
+                    int pos;
+                    try {
+                        pos = Integer.parseInt(newPosition);
+                    } catch (NumberFormatException n) {
+                        UIUtils.showThemedToast(this, getResources().getString(R.string.toast_out_of_range), true);
+                        return;
+                    }
+
+                    if (pos < 1 || pos > mFieldLabels.size()) {
+                        UIUtils.showThemedToast(this, getResources().getString(R.string.toast_out_of_range), true);
+                    } else {
+                        changeHandler listener = changeFieldHandler();
+                        // Input is valid, now attempt to modify
                         try {
-                            pos = Integer.parseInt(newPosition);
-                        } catch (NumberFormatException n) {
-                            UIUtils.showThemedToast(this, getResources().getString(R.string.toast_out_of_range), true);
-                            return;
-                        }
+                            mCol.modSchema();
+                            CollectionTask.launchCollectionTask(REPOSITION_FIELD, listener,
+                                    new TaskData(new Object[]{mMod,
+                                            mNoteFields.getJSONObject(mCurrentPos), pos - 1}));
+                        } catch (ConfirmModSchemaException e) {
 
-                        if (pos < 1 || pos > mFieldLabels.size()) {
-                            UIUtils.showThemedToast(this, getResources().getString(R.string.toast_out_of_range), true);
-                        } else {
-                            changeHandler listener = changeFieldHandler();
-                            // Input is valid, now attempt to modify
-                            try {
-                                mCol.modSchema();
-                                CollectionTask.launchCollectionTask(REPOSITION_FIELD, listener,
-                                        new TaskData(new Object[]{mMod,
-                                                mNoteFields.getJSONObject(mCurrentPos), pos - 1}));
-                            } catch (ConfirmModSchemaException e) {
-
-                                // Handle mod schema confirmation
-                                ConfirmationDialog c = new ConfirmationDialog();
-                                c.setArgs(getResources().getString(R.string.full_sync_confirmation));
-                                Runnable confirm = () -> {
-                                    try {
-                                        mCol.modSchemaNoCheck();
-                                        String newPosition1 = mFieldNameInput.getText().toString();
-                                        int pos1 = Integer.parseInt(newPosition1);
-                                        CollectionTask.launchCollectionTask(REPOSITION_FIELD,
-                                                listener, new TaskData(new Object[]{mMod,
-                                                        mNoteFields.getJSONObject(mCurrentPos), pos1 - 1}));
-                                        dismissContextMenu();
-                                    } catch (JSONException e1) {
-                                        throw new RuntimeException(e1);
-                                    }
-                                };
-                                c.setConfirm(confirm);
-                                c.setCancel(mConfirmDialogCancel);
-                                ModelFieldEditor.this.showDialogFragment(c);
-                            }
+                            // Handle mod schema confirmation
+                            ConfirmationDialog c = new ConfirmationDialog();
+                            c.setArgs(getResources().getString(R.string.full_sync_confirmation));
+                            Runnable confirm = () -> {
+                                try {
+                                    mCol.modSchemaNoCheck();
+                                    String newPosition1 = mFieldNameInput.getText().toString();
+                                    int pos1 = Integer.parseInt(newPosition1);
+                                    CollectionTask.launchCollectionTask(REPOSITION_FIELD,
+                                            listener, new TaskData(new Object[]{mMod,
+                                                    mNoteFields.getJSONObject(mCurrentPos), pos1 - 1}));
+                                    dismissContextMenu();
+                                } catch (JSONException e1) {
+                                    throw new RuntimeException(e1);
+                                }
+                            };
+                            c.setConfirm(confirm);
+                            c.setCancel(mConfirmDialogCancel);
+                            ModelFieldEditor.this.showDialogFragment(c);
                         }
-                    })
+                    }
+                })
                 .negativeText(R.string.dialog_cancel)
                 .show();
     }
@@ -478,6 +482,7 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
     private changeHandler changeFieldHandler() {
         return new changeHandler(this);
     }
+
     private static class changeHandler extends TaskListenerWithContext<ModelFieldEditor> {
         public changeHandler(ModelFieldEditor modelFieldEditor) {
             super(modelFieldEditor);
@@ -591,7 +596,6 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
         String format = getString(R.string.model_field_editor_language_hint_dialog_success_result, selectedLocale.getDisplayName());
         UIUtils.showSimpleSnackbar(this, format, true);
     }
-
 
 
     @Override

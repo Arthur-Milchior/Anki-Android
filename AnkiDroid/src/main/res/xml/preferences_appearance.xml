@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 ~ Copyright (c) 2009 Nicolas Raoul <nicolas.raoul@gmail.com>
 ~ Copyright (c) 2009 Edu Zamora <edu.zasu@gmail.com>
 ~ Copyright (c) 2009 Jordi Chacon <jordi.chacon@gmail.com>
@@ -23,10 +22,10 @@
 <!-- Fonts & Style Prefrences -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://arbitrary.app.namespace/com.ichi2.anki"
-            android:title="@string/pref_cat_appearance"
-        android:key="appearance_preference_group"
-        android:summary="@string/pref_cat_appearance_summ">
-    <PreferenceCategory android:title="@string/pref_cat_themes" >
+    android:title="@string/pref_cat_appearance"
+    android:key="appearance_preference_group"
+    android:summary="@string/pref_cat_appearance_summ">
+    <PreferenceCategory android:title="@string/pref_cat_themes">
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/day_theme_labels"
@@ -40,7 +39,7 @@
             android:key="nightTheme"
             android:title="@string/night_theme" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/background_image_title" >
+    <PreferenceCategory android:title="@string/background_image_title">
         <CheckBoxPreference
             android:checked="false"
             android:defaultValue="0"
@@ -48,38 +47,38 @@
             android:shouldDisableView="true"
             android:title="@string/choose_an_image" />
     </PreferenceCategory>
-        <PreferenceCategory android:title="@string/pref_cat_fonts" >
-            <ListPreference
-                android:defaultValue="@string/empty_string"
-                android:key="defaultFont"
-                android:shouldDisableView="true"
-                android:title="@string/default_font" />
-            <ListPreference
-                android:defaultValue="0"
-                android:key="overrideFontBehavior"
-                android:entries="@array/override_font_labels"
-                android:entryValues="@array/override_font_values"
-                android:title="@string/override_font" />
-            <ListPreference
-                android:defaultValue="@string/empty_string"
-                android:key="browserEditorFont"
-                android:title="@string/pref_browser_editor_font" />
-            <com.ichi2.ui.SeekBarPreference
-                android:defaultValue="100"
-                android:key="relativeCardBrowserFontSize"
-                android:max="200"
-                android:summary="@string/preference_summary_percentage"
-                android:text=" %"
-                android:title="@string/card_browser_font_size"
-                app:interval="10"
-                app:min="10" />
-        </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_cat_fonts">
+        <ListPreference
+            android:defaultValue="@string/empty_string"
+            android:key="defaultFont"
+            android:shouldDisableView="true"
+            android:title="@string/default_font" />
+        <ListPreference
+            android:defaultValue="0"
+            android:key="overrideFontBehavior"
+            android:entries="@array/override_font_labels"
+            android:entryValues="@array/override_font_values"
+            android:title="@string/override_font" />
+        <ListPreference
+            android:defaultValue="@string/empty_string"
+            android:key="browserEditorFont"
+            android:title="@string/pref_browser_editor_font" />
+        <com.ichi2.ui.SeekBarPreference
+            android:defaultValue="100"
+            android:key="relativeCardBrowserFontSize"
+            android:max="200"
+            android:summary="@string/preference_summary_percentage"
+            android:text=" %"
+            android:title="@string/card_browser_font_size"
+            app:interval="10"
+            app:min="10" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/card_browser">
         <CheckBoxPreference
             android:checked="false"
             android:defaultValue="false"
             android:key="card_browser_show_media_filenames"
             android:title="@string/card_browser_hide_media"
-            android:summary="@string/card_browser_hide_media_summary"/>
+            android:summary="@string/card_browser_hide_media_summary" />
     </PreferenceCategory>
 </PreferenceScreen>

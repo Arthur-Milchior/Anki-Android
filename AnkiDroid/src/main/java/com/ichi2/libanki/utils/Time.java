@@ -25,36 +25,50 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-/** Allows injection of time dependencies */
+/**
+ * Allows injection of time dependencies
+ */
 public abstract class Time {
 
-    /** Date of this time */
+    /**
+     * Date of this time
+     */
     public Date getCurrentDate() {
         return new Date(intTimeMS());
     }
 
-    /**The time in integer seconds. */
+    /**
+     * The time in integer seconds.
+     */
     public long intTime() {
         return intTimeMS() / 1000L;
-    };
+    }
+
+    ;
 
     public abstract long intTimeMS();
 
-    /** Calendar for this date */
+    /**
+     * Calendar for this date
+     */
     public Calendar calendar() {
         Calendar cal = Calendar.getInstance();
         cal.setTime(getCurrentDate());
         return cal;
     }
 
-    /** Gregorian calendar for this date */
+    /**
+     * Gregorian calendar for this date
+     */
     public GregorianCalendar gregorianCalendar() {
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(getCurrentDate());
         return cal;
     }
 
-    /** Return a non-conflicting timestamp for table. */
+    /**
+     * Return a non-conflicting timestamp for table.
+     */
     public long timestampID(DB db, String table) {
         // be careful not to create multiple objects without flushing them, or they
         // may share an ID.
@@ -65,7 +79,9 @@ public abstract class Time {
         return t;
     }
 
-    /** Return the first safe ID to use. */
+    /**
+     * Return the first safe ID to use.
+     */
     public long maxID(DB db) {
         long now = intTimeMS();
         now = Math.max(now, db.queryLongScalar("SELECT MAX(id) FROM cards"));
@@ -99,13 +115,11 @@ public abstract class Time {
     }
 
 
-
-
     /**
-     *  Returns the effective date of the present moment.
-     *  If the time is prior the cut-off time (9:00am by default as of 11/02/10) return yesterday,
-     *  otherwise today
-     *  Note that the Date class is java.sql.Date whose constructor sets hours, minutes etc to zero
+     * Returns the effective date of the present moment.
+     * If the time is prior the cut-off time (9:00am by default as of 11/02/10) return yesterday,
+     * otherwise today
+     * Note that the Date class is java.sql.Date whose constructor sets hours, minutes etc to zero
      *
      * @param utcOffset The UTC offset in seconds we are going to use to determine today or yesterday.
      * @return The date (with time set to 00:00:00) that corresponds to today in Anki terms
@@ -115,7 +129,7 @@ public abstract class Time {
         // Timezone adjustment happens explicitly in Deck.updateCutoff(), but not in Deck.checkDailyStats()
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
-        Calendar cal = Time.gregorianCalendar( intTimeMS()- (long) utcOffset * 1000L);
+        Calendar cal = Time.gregorianCalendar(intTimeMS() - (long) utcOffset * 1000L);
         return java.sql.Date.valueOf(df.format(cal.getTime()));
     }
 }

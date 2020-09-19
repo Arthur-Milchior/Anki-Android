@@ -24,6 +24,7 @@ import com.ichi2.libanki.utils.Time;
 public class BasicControllerFactory implements IControllerFactory {
 
     private final Time mTime;
+
     private BasicControllerFactory(Time time) {
         mTime = time;
     }

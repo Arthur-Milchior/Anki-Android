@@ -40,6 +40,7 @@ import java.util.Locale;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
 import timber.log.Timber;
 
 public class ReadText {
@@ -301,6 +302,7 @@ public class ReadText {
                             }
                             listener.onDone();
                         }
+
                         @Override
                         @Deprecated
                         public void onError(String utteranceId) {
@@ -313,6 +315,7 @@ public class ReadText {
                                     v -> openTtsHelpUrl(helpUrl), ankiActivity.findViewById(R.id.root_layout),
                                     new Snackbar.Callback());
                         }
+
                         @Override
                         public void onStart(String arg0) {
                             // no nothing
@@ -330,7 +333,7 @@ public class ReadText {
 
 
     private static void openTtsHelpUrl(Uri helpUrl) {
-        AnkiActivity activity =  (AnkiActivity) mReviewer.get();
+        AnkiActivity activity = (AnkiActivity) mReviewer.get();
         activity.openUrl(helpUrl);
     }
 
@@ -370,7 +373,7 @@ public class ReadText {
         }
     }
 
-    interface ReadTextListener{
+    interface ReadTextListener {
         public void onDone();
     }
 

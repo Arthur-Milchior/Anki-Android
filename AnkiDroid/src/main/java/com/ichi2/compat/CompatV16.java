@@ -52,7 +52,9 @@ import java.util.HashMap;
 
 import timber.log.Timber;
 
-/** Implementation of {@link Compat} for SDK level 16 */
+/**
+ * Implementation of {@link Compat} for SDK level 16
+ */
 @TargetApi(16)
 public class CompatV16 implements Compat {
     // CookieSyncManager needs to be initialized before use.
@@ -79,6 +81,7 @@ public class CompatV16 implements Compat {
     // Immersive full screen isn't ready until API 19
     @SuppressWarnings("PMD.FieldDeclarationsShouldBeAtStartOfClass")
     protected static final int FULLSCREEN_ALL_GONE = 2;
+
     @Override
     public void setFullScreen(AbstractFlashcardViewer a) {
         a.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -93,7 +96,7 @@ public class CompatV16 implements Compat {
     @Override
     public void setSelectableBackground(View view) {
         Context context = view.getContext();
-        int[] attrs = new int[] {android.R.attr.colorBackground};
+        int[] attrs = new int[]{android.R.attr.colorBackground};
         TypedArray ta = context.obtainStyledAttributes(attrs);
         view.setBackgroundColor(ta.getColor(0, ContextCompat.getColor(context, R.color.white)));
         ta.recycle();
@@ -105,7 +108,9 @@ public class CompatV16 implements Compat {
 
     // Immersive mode introduced in API 19
     @Override
-    public boolean isImmersiveSystemUiVisible(AnkiActivity activity) { return false; }
+    public boolean isImmersiveSystemUiVisible(AnkiActivity activity) {
+        return false;
+    }
 
     @Override
     public void setupNotificationChannel(Context context, String id, String name) { /* pre-API26, do nothing */ }
@@ -134,23 +139,31 @@ public class CompatV16 implements Compat {
         picker.setCurrentHour(hour);
         picker.setCurrentMinute(minute);
     }
+
     @Override
     @SuppressWarnings("deprecation")
-    public int getHour(TimePicker picker) { return picker.getCurrentHour(); }
+    public int getHour(TimePicker picker) {
+        return picker.getCurrentHour();
+    }
+
     @Override
     @SuppressWarnings("deprecation")
-    public int getMinute(TimePicker picker) { return picker.getCurrentMinute(); }
+    public int getMinute(TimePicker picker) {
+        return picker.getCurrentMinute();
+    }
 
     // Until API 21 it's Camera v1
     @Override
     @SuppressWarnings("deprecation")
-    public int getCameraCount() { return android.hardware.Camera.getNumberOfCameras(); }
+    public int getCameraCount() {
+        return android.hardware.Camera.getNumberOfCameras();
+    }
 
     // Until API 26 just specify time, after that specify effect also
     @Override
     @SuppressWarnings("deprecation")
     public void vibrate(Context context, long durationMillis) {
-        Vibrator vibratorManager = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
+        Vibrator vibratorManager = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         if (vibratorManager != null) {
             vibratorManager.vibrate(durationMillis);
         }

@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
@@ -60,7 +61,9 @@ class Exporter {
         mDid = did;
     }
 
-    /** card ids of cards in deck self.did if it is set, all ids otherwise. */
+    /**
+     * card ids of cards in deck self.did if it is set, all ids otherwise.
+     */
     public Long[] cardIds() {
         Long[] cids;
         if (mDid == null) {
@@ -74,9 +77,9 @@ class Exporter {
 }
 
 
-@SuppressWarnings({"PMD.AvoidReassigningParameters","PMD.DefaultPackage",
-        "PMD.NPathComplexity","PMD.MethodNamingConventions","PMD.ExcessiveMethodLength",
-        "PMD.EmptyIfStmt","PMD.CollapsibleIfStatements"})
+@SuppressWarnings({"PMD.AvoidReassigningParameters", "PMD.DefaultPackage",
+        "PMD.NPathComplexity", "PMD.MethodNamingConventions", "PMD.ExcessiveMethodLength",
+        "PMD.EmptyIfStmt", "PMD.CollapsibleIfStatements"})
 class AnkiExporter extends Exporter {
     protected boolean mIncludeSched;
     protected boolean mIncludeMedia;
@@ -97,7 +100,7 @@ class AnkiExporter extends Exporter {
      * Export source database into new destination database Note: The following python syntax isn't supported in
      * Android: for row in mSrc.db.execute("select * from cards where id in "+ids2str(cids)): therefore we use a
      * different method for copying tables
-     * 
+     *
      * @param path String path to destination database
      * @throws JSONException
      * @throws IOException
@@ -132,10 +135,10 @@ class AnkiExporter extends Exporter {
             ArrayList<String> srcTags = mSrc.getDb().queryStringList(
                     "select tags from notes where id in " + strnids);
             ArrayList<Object[]> args = new ArrayList<>(srcTags.size());
-            Object [] arg = new Object[2];
+            Object[] arg = new Object[2];
             for (int row = 0; row < srcTags.size(); row++) {
-                arg[0]=removeSystemTags(srcTags.get(row));
-                arg[1]=uniqueNids.get(row);
+                arg[0] = removeSystemTags(srcTags.get(row));
+                arg[1] = uniqueNids.get(row);
                 args.add(row, arg);
             }
             mSrc.getDb().executeMany("UPDATE DST_DB.notes set tags=? where id=?", args);
@@ -259,6 +262,7 @@ class AnkiExporter extends Exporter {
      * Returns whether or not the specified model contains a reference to the given media file.
      * In order to ensure relatively fast operation we only check if the styling, front, back templates *contain* fname,
      * and thus must allow for occasional false positives.
+     *
      * @param model the model to scan
      * @param fname the name of the media file to check for
      * @return
@@ -313,7 +317,6 @@ class AnkiExporter extends Exporter {
         mDid = did;
     }
 }
-
 
 
 public final class AnkiPackageExporter extends AnkiExporter {
@@ -374,7 +377,7 @@ public final class AnkiPackageExporter extends AnkiExporter {
         int size = fileNames.size();
         int i = 0;
         File[] files = new File[size];
-        for (String fileName: fileNames){
+        for (String fileName : fileNames) {
             files[i++] = new File(mdir, fileName);
         }
         return _exportMedia(z, files, ValidateFiles.VALIDATE);
@@ -410,7 +413,7 @@ public final class AnkiPackageExporter extends AnkiExporter {
         z.write(colfile, CollectionHelper.COLLECTION_FILENAME);
         // and media
         prepareMedia();
-    	JSONObject media = _exportMedia(z, mMediaFiles, mCol.getMedia().dir());
+        JSONObject media = _exportMedia(z, mMediaFiles, mCol.getMedia().dir());
         // tidy up intermediate files
         SQLiteDatabase.deleteDatabase(new File(colfile));
         SQLiteDatabase.deleteDatabase(new File(path.replace(".apkg", ".media.ad.db2")));
@@ -451,7 +454,9 @@ public final class AnkiPackageExporter extends AnkiExporter {
     }
 
 
-    /** Whether media files should be validated before being added to the zip */
+    /**
+     * Whether media files should be validated before being added to the zip
+     */
     private enum ValidateFiles {
         VALIDATE,
         SKIP_VALIDATION
@@ -459,10 +464,9 @@ public final class AnkiPackageExporter extends AnkiExporter {
 }
 
 
-
 /**
  * Wrapper around standard Python zip class used in this module for exporting to APKG
- * 
+ *
  * @author Tim
  */
 class ZipFile {

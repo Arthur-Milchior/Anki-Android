@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_layout"
     android:layout_width="match_parent"
@@ -10,7 +9,7 @@
         android:id="@+id/deckpicker_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <include layout="@layout/toolbar" />
 
@@ -47,7 +46,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
                         android:layout_marginBottom="4dp"
-                        android:gravity="center"/>
+                        android:gravity="center" />
 
                 </RelativeLayout>
 
@@ -86,6 +85,7 @@
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
 
-    <include layout="@layout/anki_progress"/>
-    <include layout="@layout/floating_add_button"/>
+    <include layout="@layout/anki_progress" />
+
+    <include layout="@layout/floating_add_button" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

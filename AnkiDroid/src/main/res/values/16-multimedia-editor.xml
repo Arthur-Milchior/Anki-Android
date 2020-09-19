@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!--
+<?xml version='1.0' encoding='UTF-8'?><!--
 ~ 	Zaur Molotnikov & Bibek Shrestha
 ~ This program is free software; you can redistribute it and/or modify it under
 ~ the terms of the GNU General Public License as published by the Free Software
@@ -12,7 +11,8 @@
 ~
 ~ You should have received a copy of the GNU General Public License along with
 ~ this program.  If not, see <http://www.gnu.org/licenses/>.
---><resources>
+-->
+<resources>
     <!-- Main editor popup menu items -->
     <string name="multimedia_editor_popup_image">Add image</string>
     <string name="multimedia_editor_popup_audio_clip">Add audio clip</string>
@@ -110,8 +110,8 @@
     <string name="title_activity_translation">Translation</string>
     <string name="title_activity_load_pronounciation">Pronunciation</string>
 
-	<!-- Network failure -->
-	<string name="network_no_connection">No connection</string>
+    <!-- Network failure -->
+    <string name="network_no_connection">No connection</string>
 
     <!-- Crop function-->
     <string name="crop_image">Do you want to crop this image?</string>

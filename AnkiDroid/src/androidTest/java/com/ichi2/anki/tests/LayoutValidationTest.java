@@ -53,7 +53,7 @@ public class LayoutValidationTest {
             if (nonAnkiFieldNames.contains(f.getName())) {
                 continue;
             }
-            layouts.add(new Object[] {f.getInt(layout), f.getName() });
+            layouts.add(new Object[]{f.getInt(layout), f.getName()});
         }
 
         return layouts;
@@ -71,7 +71,9 @@ public class LayoutValidationTest {
         ensureNoCrashOnUiThread(() -> li.inflate(mResourceId, root, true));
     }
 
-    /** Crashing on the UI thread takes down the process */
+    /**
+     * Crashing on the UI thread takes down the process
+     */
     private void ensureNoCrashOnUiThread(Runnable runnable) throws Exception {
         AtomicReference<Exception> failed = new AtomicReference<>();
         AtomicBoolean hasRun = new AtomicBoolean(false);

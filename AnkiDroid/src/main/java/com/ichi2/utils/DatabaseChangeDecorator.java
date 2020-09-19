@@ -31,10 +31,12 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.sqlite.db.SupportSQLiteQuery;
 import androidx.sqlite.db.SupportSQLiteStatement;
 
-/** Detects any database modifications and notifies the sync status of the application */
+/**
+ * Detects any database modifications and notifies the sync status of the application
+ */
 public class DatabaseChangeDecorator implements SupportSQLiteDatabase {
 
-    private static final String[] MOD_SQLS = new String[] { "insert", "update", "delete" };
+    private static final String[] MOD_SQLS = new String[]{"insert", "update", "delete"};
 
     private final SupportSQLiteDatabase wrapped;
 

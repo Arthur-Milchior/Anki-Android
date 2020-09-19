@@ -21,6 +21,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
 import timber.log.Timber;
 
 
@@ -32,7 +33,8 @@ public abstract class AbstractSched {
      * Between two successive calls, either the last card returned by getCard should be sent to `answerCard`
      * or the scheduler should be reset (i.e. if there is a change of deck, an action undone, a card buried/rescheduled/suspended)
      */
-    public abstract @Nullable Card getCard();
+    public abstract @Nullable
+    Card getCard();
 
     /**
      * The collection saves some numbers such as counts, queues of cards to review, queues of decks potentially having some cards.
@@ -41,14 +43,22 @@ public abstract class AbstractSched {
     protected abstract void reset();
 
     public abstract void _updateCutoff();
-    /** Ensure that the question on the potential next card can be accessed quickly.
+
+    /**
+     * Ensure that the question on the potential next card can be accessed quickly.
      */
     public abstract void preloadNextCard();
+
     public abstract void resetCounts();
-    /** Ensures that reset is executed before the next card is selected */
-    public abstract void deferReset();
+
     /**
-     * @param undoneCard a card undone, send back to the reviewer.*/
+     * Ensures that reset is executed before the next card is selected
+     */
+    public abstract void deferReset();
+
+    /**
+     * @param undoneCard a card undone, send back to the reviewer.
+     */
     public abstract void deferReset(@Nullable Card undoneCard);
 
     /**
@@ -59,13 +69,15 @@ public abstract class AbstractSched {
      * Remove from filtered if required.
      * Remove the siblings for the queue for same day spacing
      * Bury siblings if required by the options
-     *  */
+     */
     public abstract void answerCard(@NonNull Card card, @Consts.BUTTON_TYPE int ease);
 
-    /** Number of new, rev and lrn card to review in selected deck. Sum of elements of counts.*/
+    /**
+     * Number of new, rev and lrn card to review in selected deck. Sum of elements of counts.
+     */
     public int count() {
         int s = 0;
-        for (int c: counts()) {
+        for (int c : counts()) {
             s += c;
         }
         return s;
@@ -76,16 +88,19 @@ public abstract class AbstractSched {
      * In sched V1, the number of remaining steps for cards in learning is returned
      * In sched V2, the number of cards in learning is returned.
      * The card currently in the reviewer is not counted.
-     *
+     * <p>
      * Technically, it counts the number of cards to review in current deck last time `reset` was called
      * Minus the number of cards returned by getCard.
      */
     // TODO: consider counting the card currently in the reviewer, this would simplify the code greatly
     // We almost never want to consider the card in the reviewer differently, and a lot of code is added to correct this.
-    public abstract @NonNull int[] counts();
+    public abstract @NonNull
+    int[] counts();
 
 
-    /** Number of new card in selected decks. Recompute it if we reseted.*/
+    /**
+     * Number of new card in selected decks. Recompute it if we reseted.
+     */
     public int newCount() {
         // We need to actually recompute the three elements, because we potentially need to deal with undid card
         // in any deck where it may be
@@ -93,160 +108,266 @@ public abstract class AbstractSched {
     }
 
 
-    /** Number of lrn card in selected decks. Recompute it if we reseted.*/
+    /**
+     * Number of lrn card in selected decks. Recompute it if we reseted.
+     */
     public int lrnCount() {
         return counts()[1];
     }
 
 
-    /** Number of rev card in selected decks. Recompute it if we reseted.*/
+    /**
+     * Number of rev card in selected decks. Recompute it if we reseted.
+     */
     public int revCount() {
         return counts()[2];
     }
+
     /**
      * Same as counts(), but also count `card`. In practice, we use it because `card` is in the reviewer and that is the
      * number we actually want.
      */
-    public abstract @NonNull int[] counts(@NonNull Card card);
+    public abstract @NonNull
+    int[] counts(@NonNull Card card);
+
     /**
      * Return counts over next DAYS. Includes today.
      */
     public abstract int dueForecast();
+
     public abstract int dueForecast(int days);
-    /** Which of the three numbers shown in reviewer/overview should the card be counted. 0:new, 1:rev, 2: any kind of learning.*/
+
+    /**
+     * Which of the three numbers shown in reviewer/overview should the card be counted. 0:new, 1:rev, 2: any kind of learning.
+     */
     @Consts.CARD_QUEUE
     public abstract int countIdx(@NonNull Card card);
-    /** Number of buttons to show in the reviewer for `card`.*/
+
+    /**
+     * Number of buttons to show in the reviewer for `card`.
+     */
     public abstract int answerButtons(@NonNull Card card);
+
     /**
      * Unbury all buried cards in all decks
      */
     public abstract void unburyCards();
+
     public abstract void unburyCardsForDeck();
+
     public abstract void _updateStats(Card card, String type, long cnt);
+
     public abstract void extendLimits(int newc, int rev);
+
     /**
      * Returns [deckname, did, rev, lrn, new]
      */
-    public abstract @NonNull List<DeckDueTreeNode> deckDueList();
-    /** load the due tree, but halt if deck task is cancelled*/
-    public abstract @Nullable List<DeckDueTreeNode> deckDueTree(CollectionTask collectionTask);
-    public abstract @NonNull List<DeckDueTreeNode> deckDueTree();
-    public abstract @NonNull List<DeckTreeNode> quickDeckDueTree();
-    /** New count for a single deck. */
+    public abstract @NonNull
+    List<DeckDueTreeNode> deckDueList();
+
+    /**
+     * load the due tree, but halt if deck task is cancelled
+     */
+    public abstract @Nullable
+    List<DeckDueTreeNode> deckDueTree(CollectionTask collectionTask);
+
+    public abstract @NonNull
+    List<DeckDueTreeNode> deckDueTree();
+
+    public abstract @NonNull
+    List<DeckTreeNode> quickDeckDueTree();
+
+    /**
+     * New count for a single deck.
+     */
     public abstract int _newForDeck(long did, int lim);
-    /** Limit for deck without parent limits. */
+
+    /**
+     * Limit for deck without parent limits.
+     */
     public abstract int _deckNewLimitSingle(Deck g);
+
     public abstract int totalNewForCurrentDeck();
+
     public abstract int totalRevForCurrentDeck();
-    public abstract @NonNull Pair<Integer, Integer> _fuzzIvlRange(int ivl);
-    /** Rebuild a dynamic deck. */
+
+    public abstract @NonNull
+    Pair<Integer, Integer> _fuzzIvlRange(int ivl);
+
+    /**
+     * Rebuild a dynamic deck.
+     */
     public abstract void rebuildDyn();
-    public abstract @Nullable List<Long> rebuildDyn(long did);
+
+    public abstract @Nullable
+    List<Long> rebuildDyn(long did);
+
     public abstract void emptyDyn(long did);
+
     public abstract void emptyDyn(long did, String lim);
+
     public abstract void remFromDyn(long[] cids);
-    public abstract @NonNull DeckConfig _cardConf(@NonNull Card card);
-    public abstract @NonNull String _deckLimit();
+
+    public abstract @NonNull
+    DeckConfig _cardConf(@NonNull Card card);
+
+    public abstract @NonNull
+    String _deckLimit();
+
     public abstract void _checkDay();
-    public abstract @NonNull CharSequence finishedMsg(@NonNull Context context);
-    public abstract @NonNull String _nextDueMsg(@NonNull Context context);
-    /** true if there are any rev cards due. */
+
+    public abstract @NonNull
+    CharSequence finishedMsg(@NonNull Context context);
+
+    public abstract @NonNull
+    String _nextDueMsg(@NonNull Context context);
+
+    /**
+     * true if there are any rev cards due.
+     */
     public abstract boolean revDue();
-    /** true if there are any new cards due. */
+
+    /**
+     * true if there are any new cards due.
+     */
     public abstract boolean newDue();
-    /** true if there are cards in learning, with review due the same
-     * day, in the selected decks. */
+
+    /**
+     * true if there are cards in learning, with review due the same
+     * day, in the selected decks.
+     */
     public abstract boolean hasCardsTodayAfterStudyAheadLimit();
+
     public abstract boolean haveBuried();
+
     /**
      * Return the next interval for a card and ease as a string.
-     *
+     * <p>
      * For a given card and ease, this returns a string that shows when the card will be shown again when the
      * specific ease button (AGAIN, GOOD etc.) is touched. This uses unit symbols like “s” rather than names
      * (“second”), like Anki desktop.
      *
      * @param context The app context, used for localization
-     * @param card The card being reviewed
-     * @param ease The button number (easy, good etc.)
+     * @param card    The card being reviewed
+     * @param ease    The button number (easy, good etc.)
      * @return A string like “1 min” or “1.7 mo”
      */
-    public abstract @NonNull String nextIvlStr(@NonNull Context context, @NonNull Card card, @Consts.BUTTON_TYPE int ease);
+    public abstract @NonNull
+    String nextIvlStr(@NonNull Context context, @NonNull Card card, @Consts.BUTTON_TYPE int ease);
+
     /**
      * Return the next interval for CARD, in seconds.
      */
     public abstract long nextIvl(@NonNull Card card, @Consts.BUTTON_TYPE int ease);
 
-    protected abstract @NonNull String queueIsBuriedSnippet();
-    protected abstract @NonNull String _restoreQueueSnippet();
+    protected abstract @NonNull
+    String queueIsBuriedSnippet();
+
+    protected abstract @NonNull
+    String _restoreQueueSnippet();
+
     /**
      * Suspend cards.
      */
     public abstract void suspendCards(@NonNull long[] ids);
+
     /**
      * Unsuspend cards
      */
     public abstract void unsuspendCards(@NonNull long[] ids);
+
     public abstract void buryCards(@NonNull long[] cids);
+
     @VisibleForTesting
     public abstract void buryCards(@NonNull long[] cids, boolean manual);
+
     /**
      * Bury all cards for note until next session.
+     *
      * @param nid The id of the targeted note.
      */
     public abstract void buryNote(long nid);
-    /** Put cards at the end of the new queue. */
+
+    /**
+     * Put cards at the end of the new queue.
+     */
     public abstract void forgetCards(@NonNull long[] ids);
+
     /**
      * Put cards in review queue with a new interval in days (min, max).
      *
-     * @param ids The list of card ids to be affected
+     * @param ids  The list of card ids to be affected
      * @param imin the minimum interval (inclusive)
      * @param imax The maximum interval (inclusive)
      */
     public abstract void reschedCards(@NonNull long[] ids, int imin, int imax);
+
     /**
      * Completely reset cards for export.
      */
     public abstract void resetCards(@NonNull Long[] ids);
+
     public abstract void sortCards(@NonNull long[] cids, int start);
+
     public abstract void sortCards(@NonNull long[] cids, int start, int step, boolean shuffle, boolean shift);
+
     public abstract void randomizeCards(long did);
+
     public abstract void orderCards(long did);
+
     public abstract void resortConf(@NonNull DeckConfig conf);
+
     /**
      * for post-import
      */
     public abstract void maybeRandomizeDeck();
+
     public abstract void maybeRandomizeDeck(@NonNull Long did);
+
     public abstract boolean haveBuried(long did);
+
     public enum UnburyType {
         ALL,
         MANUAL,
         SIBLINGS;
     }
+
     public abstract void unburyCardsForDeck(@NonNull UnburyType type);
+
     public abstract void unburyCardsForDeck(long did);
-    public abstract @NonNull String getName();
+
+    public abstract @NonNull
+    String getName();
+
     public abstract int getToday();
+
     public abstract void setToday(int today);
+
     public abstract long getDayCutoff();
 
     protected abstract void incrReps();
+
     protected abstract void decrReps();
-    /** Number of repetitions today*/
+
+    /**
+     * Number of repetitions today
+     */
     public abstract int getReps();
-    /** Number of cards in the current decks, its descendants and ancestors. */
+
+    /**
+     * Number of cards in the current decks, its descendants and ancestors.
+     */
     public abstract int cardCount();
 
     public abstract int eta(int[] counts);
+
     /**
      * Return an estimate, in minutes, for how long it will take to complete all the reps in {@code counts}.
-     *
+     * <p>
      * The estimator builds rates for each queue type by looking at 10 days of history from the revlog table. For
      * efficiency, and to maintain the same rates for a review session, the rates are cached and reused until a
      * reload is forced.
-     *
+     * <p>
      * Notes:
      * - Because the revlog table does not record deck IDs, the rates cannot be reduced to a single deck and thus cover
      * the whole collection which may be inaccurate for some decks.
@@ -258,22 +379,29 @@ public abstract class AbstractSched {
      * @param reload Force rebuild of estimator rates using the revlog.
      */
     public abstract int eta(int[] counts, boolean reload);
+
     /**
      * Change the counts to reflect that `card` should not be counted anymore. In practice, it means that the card has
      * been sent to the reviewer. Either through `getCard()` or through `undo`. Assumes that card's queue has not yet
-     * changed. */
+     * changed.
+     */
     public abstract void decrementCounts(Card card);
+
     public abstract boolean leechActionSuspend(Card card);
+
     public abstract void setContext(@Nullable WeakReference<Activity> contextReference);
-    public abstract @NonNull int[] recalculateCounts();
+
+    public abstract @NonNull
+    int[] recalculateCounts();
+
     public abstract void setReportLimit(int reportLimit);
 
     /**
      * Reverts answering a card.
-     * 
-     * @param card The data of the card before the review was made
+     *
+     * @param card     The data of the card before the review was made
      * @param wasLeech Whether the card was a leech before the review was made (if false, remove the leech tag)
-     * */
+     */
     public abstract void undoReview(@NonNull Card card, boolean wasLeech);
 
 
@@ -281,9 +409,11 @@ public abstract class AbstractSched {
         int operation(Deck g);
     }
 
-    /** Given a deck, compute the number of cards to see today, taking its pre-computed limit into consideration.  It
+    /**
+     * Given a deck, compute the number of cards to see today, taking its pre-computed limit into consideration.  It
      * considers either review or new cards. Used by WalkingCount to consider all subdecks and parents of a specific
-     * decks.*/
+     * decks.
+     */
     public interface CountMethod {
         int operation(long did, int lim);
     }
@@ -311,19 +441,25 @@ public abstract class AbstractSched {
 
     /**
      * Notifies the scheduler that the provided card is being reviewed. Ensures that a different card is prefetched.
-     *
+     * <p>
      * Note that counts() does not consider current card, since number are decreased as soon as a card is sent to reviewer.
      *
      * @param card the current card in the reviewer
      */
     public abstract void setCurrentCard(@NonNull Card card);
-    /** Notifies the scheduler that there is no more current card. This is the case when a card is answered, when the
-     * scheduler is reset... */
+
+    /**
+     * Notifies the scheduler that there is no more current card. This is the case when a card is answered, when the
+     * scheduler is reset...
+     */
     public abstract void discardCurrentCard();
 
     public abstract Collection getCol();
 
-    /** The button to press to enter "good" on a new card. */
+    /**
+     * The button to press to enter "good" on a new card.
+     */
     @VisibleForTesting
-    public abstract @Consts.BUTTON_TYPE int getGoodNewButton();
+    public abstract @Consts.BUTTON_TYPE
+    int getGoodNewButton();
 }

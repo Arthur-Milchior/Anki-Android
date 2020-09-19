@@ -20,7 +20,9 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class ImageFieldTest {
 
-    /** #5237 - quotation marks on Android differed from Windows */
+    /**
+     * #5237 - quotation marks on Android differed from Windows
+     */
     @Test
     public void imageValueIsConsistentWithAnkiDesktop() {
         //Arrange

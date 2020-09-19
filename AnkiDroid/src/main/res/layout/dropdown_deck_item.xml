@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Reference: appcompat's support_simple_spinner_dropdown_item -->
+<?xml version="1.0" encoding="utf-8"?><!-- Reference: appcompat's support_simple_spinner_dropdown_item -->
 <CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dropdown_deck_name"

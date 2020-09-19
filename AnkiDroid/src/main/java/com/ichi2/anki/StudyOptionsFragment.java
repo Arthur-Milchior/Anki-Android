@@ -51,7 +51,9 @@ import com.ichi2.themes.StyledProgressDialog;
 import com.ichi2.utils.HtmlUtils;
 
 import timber.log.Timber;
+
 import static com.ichi2.async.CollectionTask.TASK_TYPE.*;
+
 import com.ichi2.async.TaskData;
 
 public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItemClickListener {
@@ -79,7 +81,9 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
      */
     private int mCurrentContentView = CONTENT_STUDY_OPTIONS;
 
-    /** Alerts to inform the user about different situations */
+    /**
+     * Alerts to inform the user about different situations
+     */
     private MaterialDialog mProgressDialog;
 
     /**
@@ -122,7 +126,7 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
             }
         }
     };
-    
+
     public interface StudyOptionsListener {
         void onRequireDeckListUpdate();
     }
@@ -144,6 +148,7 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
     /**
      * Open the FilteredDeckOptions activity to allow the user to modify the parameters of the
      * filtered deck.
+     *
      * @param defaultConfig If true, signals to the FilteredDeckOptions activity that the filtered
      *                      deck has no options associated with it yet and should use a default
      *                      set of values.
@@ -158,6 +163,7 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
 
     /**
      * Get a new instance of the fragment.
+     *
      * @param withDeckOptions If true, the fragment will load a new activity on top of itself
      *                        which shows the current deck's options. Set to true when programmatically
      *                        opening a new filtered deck for the first time.
@@ -278,7 +284,7 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
     private void showCustomStudyContextMenu() {
         CustomStudyDialog d = CustomStudyDialog.newInstance(CustomStudyDialog.CONTEXT_MENU_STANDARD,
                 getCol().getDecks().selected());
-        ((AnkiActivity)getActivity()).showDialogFragment(d);
+        ((AnkiActivity) getActivity()).showDialogFragment(d);
     }
 
 
@@ -456,9 +462,9 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
                 if (deck.getInt("dyn") != 0 && deck.has("empty")) {
                     deck.remove("empty");
                 }
-                    mProgressDialog = StyledProgressDialog.show(getActivity(), "",
-                            getResources().getString(R.string.rebuild_filtered_deck), true);
-                    CollectionTask.launchCollectionTask(REBUILD_CRAM, getCollectionTaskListener(true));
+                mProgressDialog = StyledProgressDialog.show(getActivity(), "",
+                        getResources().getString(R.string.rebuild_filtered_deck), true);
+                CollectionTask.launchCollectionTask(REBUILD_CRAM, getCollectionTaskListener(true));
             } else {
                 CollectionTask.waitToFinish();
                 refreshInterface(true);
@@ -687,8 +693,11 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
         };
     }
 
-    /** Open cram deck option if deck is opened for the first time
-     * @return Whether we opened the deck options */
+    /**
+     * Open cram deck option if deck is opened for the first time
+     *
+     * @return Whether we opened the deck options
+     */
     private boolean tryOpenCramDeckOptions() {
         if (!mLoadWithDeckOptions) {
             return false;

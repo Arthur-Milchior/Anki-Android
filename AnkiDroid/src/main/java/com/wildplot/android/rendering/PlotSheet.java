@@ -180,7 +180,7 @@ public class PlotSheet implements Drawable {
      * @return the point in graphical coordinates
      */
     public float[] toGraphicPoint(double x, double y, RectangleWrap field) {
-        return new float[] {xToGraphic(x, field), yToGraphic(y, field)};
+        return new float[]{xToGraphic(x, field), yToGraphic(y, field)};
     }
 
 
@@ -428,7 +428,7 @@ public class PlotSheet implements Drawable {
      * @return the size of the outer frame for left, right, upper and bottom frame
      */
     public float[] getFrameThickness() {
-        return new float[] {leftFrameThickness, rightFrameThickness, upperFrameThickness, bottomFrameThickness};
+        return new float[]{leftFrameThickness, rightFrameThickness, upperFrameThickness, bottomFrameThickness};
     }
 
 

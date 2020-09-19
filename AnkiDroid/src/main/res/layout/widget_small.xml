@@ -16,7 +16,7 @@
         android:contentDescription="@string/widget_small_button"
         android:focusable="false"
         android:scaleType="fitCenter"
-        android:src="@drawable/widget_bg_small"/>
+        android:src="@drawable/widget_bg_small" />
 
     <RelativeLayout
         android:id="@+id/ankidroid_widget_text_layout"
@@ -25,7 +25,7 @@
         android:clickable="false"
         android:focusable="false"
         android:orientation="horizontal"
-        android:padding="4dip" >
+        android:padding="4dip">
 
         <TextView
             android:id="@+id/widget_due"
@@ -62,5 +62,5 @@
         android:focusable="false"
         android:scaleType="fitCenter"
         android:visibility="gone"
-        android:src="@drawable/widget_bg_small_finish"/>
+        android:src="@drawable/widget_bg_small_finish" />
 </FrameLayout>

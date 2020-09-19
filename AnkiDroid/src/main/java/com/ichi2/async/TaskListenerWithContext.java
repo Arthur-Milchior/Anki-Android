@@ -4,10 +4,13 @@ import java.lang.ref.WeakReference;
 
 import androidx.annotation.NonNull;
 
-/** Similar to task listener, but if the context disappear, no action are executed.
- * We ensure that the context can't disappear during the execution of the methods. */
+/**
+ * Similar to task listener, but if the context disappear, no action are executed.
+ * We ensure that the context can't disappear during the execution of the methods.
+ */
 public abstract class TaskListenerWithContext<CTX> extends TaskListener {
     private WeakReference<CTX> mContext;
+
     protected TaskListenerWithContext(CTX context) {
         mContext = new WeakReference<>(context);
     }
@@ -18,7 +21,9 @@ public abstract class TaskListenerWithContext<CTX> extends TaskListener {
         if (context != null) {
             actualOnPreExecute(context);
         }
-    };
+    }
+
+    ;
 
 
     final public void onProgressUpdate(TaskData value) {
@@ -40,7 +45,9 @@ public abstract class TaskListenerWithContext<CTX> extends TaskListener {
     }
 
 
-    /** Invoked before the task is started. Assumes context exists. */
+    /**
+     * Invoked before the task is started. Assumes context exists.
+     */
     public abstract void actualOnPreExecute(@NonNull CTX context);
 
 
@@ -68,7 +75,9 @@ public abstract class TaskListenerWithContext<CTX> extends TaskListener {
     }
 
 
-    /** Assumes context exists. */
+    /**
+     * Assumes context exists.
+     */
     public void actualOnCancelled(@NonNull CTX context) {
         // most implementations do nothing with this, provide them a default implementation
     }

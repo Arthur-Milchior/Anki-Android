@@ -15,14 +15,14 @@ import com.ichi2.utils.Permissions;
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+
 import timber.log.Timber;
 
 /**
  * Class which handles how the application responds to different intents, forcing it to always be single task,
  * but allowing custom behavior depending on the intent
- * 
- * @author Tim
  *
+ * @author Tim
  */
 
 public class IntentHandler extends Activity {

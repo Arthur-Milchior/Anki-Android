@@ -16,9 +16,13 @@
 package com.ichi2.anki.widgets;
 
 import android.content.Context;
+
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
 import com.google.android.material.snackbar.Snackbar;
+
 import androidx.core.view.ViewCompat;
+
 import android.util.AttributeSet;
 import android.view.View;
 

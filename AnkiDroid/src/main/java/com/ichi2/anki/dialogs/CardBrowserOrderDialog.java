@@ -1,4 +1,3 @@
-
 package com.ichi2.anki.dialogs;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -16,7 +15,7 @@ public class CardBrowserOrderDialog extends AnalyticsDialogFragment {
 
 
     public static CardBrowserOrderDialog newInstance(int order, boolean isOrderAsc,
-            MaterialDialog.ListCallbackSingleChoice orderDialogListener) {
+                                                     MaterialDialog.ListCallbackSingleChoice orderDialogListener) {
         CardBrowserOrderDialog f = new CardBrowserOrderDialog();
         Bundle args = new Bundle();
         args.putInt("order", order);

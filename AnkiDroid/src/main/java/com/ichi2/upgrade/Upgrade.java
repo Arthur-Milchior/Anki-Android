@@ -1,4 +1,3 @@
-
 package com.ichi2.upgrade;
 
 import com.ichi2.libanki.Collection;

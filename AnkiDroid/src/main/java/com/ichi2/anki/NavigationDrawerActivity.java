@@ -21,13 +21,16 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+
 import com.google.android.material.navigation.NavigationView;
+
 import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,9 +38,11 @@ import android.view.View;
 import com.ichi2.anim.ActivityTransitionAnimation;
 import com.ichi2.compat.CompatHelper;
 import com.ichi2.themes.Themes;
+
 import androidx.drawerlayout.widget.ClosableDrawerLayout;
 
 import androidx.drawerlayout.widget.DrawerLayout;
+
 import timber.log.Timber;
 
 
@@ -95,7 +100,9 @@ public abstract class NavigationDrawerActivity extends AnkiActivity implements N
         View actionLayout = mNavigationView.getMenu().findItem(R.id.nav_night_mode).getActionView();
         mNightModeSwitch = actionLayout.findViewById(R.id.switch_compat);
         mNightModeSwitch.setChecked(preferences.getBoolean(NIGHT_MODE_PREFERENCE, false));
-        mNightModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> { applyNightMode(isChecked); });
+        mNightModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            applyNightMode(isChecked);
+        });
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the sliding drawer and the action bar app icon
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, 0, 0) {

@@ -3,11 +3,13 @@ package com.ichi2.anki.dialogs;
 import android.app.Dialog;
 import android.content.res.Resources;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -66,7 +68,7 @@ public class TagsDialog extends AnalyticsDialogFragment {
     private MaterialDialog mDialog;
 
     public static TagsDialog newInstance(int type, ArrayList<String> checked_tags,
-                                            ArrayList<String> all_tags) {
+                                         ArrayList<String> all_tags) {
         TagsDialog t = new TagsDialog();
 
         Bundle args = new Bundle();
@@ -273,9 +275,10 @@ public class TagsDialog extends AnalyticsDialogFragment {
         mTagsDialogListener = selectedTagsListener;
     }
 
-    public class TagsArrayAdapter extends  RecyclerView.Adapter<TagsArrayAdapter.ViewHolder> implements Filterable{
+    public class TagsArrayAdapter extends RecyclerView.Adapter<TagsArrayAdapter.ViewHolder> implements Filterable {
         public class ViewHolder extends RecyclerView.ViewHolder {
             private CheckedTextView mTagItemCheckedTextView;
+
             public ViewHolder(CheckedTextView ctv) {
                 super(ctv);
                 mTagItemCheckedTextView = ctv;
@@ -284,7 +287,7 @@ public class TagsDialog extends AnalyticsDialogFragment {
 
         public ArrayList<String> mTagsList;
 
-        public  TagsArrayAdapter() {
+        public TagsArrayAdapter() {
             mTagsList = new ArrayList<>();
             mTagsList.addAll(mAllTags);
             sortData();
@@ -300,7 +303,7 @@ public class TagsDialog extends AnalyticsDialogFragment {
         }
 
         @Override
-        public TagsArrayAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent,int viewType) {
+        public TagsArrayAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.tags_item_list_dialog, parent, false);
 
@@ -338,6 +341,7 @@ public class TagsDialog extends AnalyticsDialogFragment {
         /* Custom Filter class - as seen in http://stackoverflow.com/a/29792313/1332026 */
         private class TagsFilter extends Filter {
             private ArrayList<String> mFilteredTags;
+
             private TagsFilter() {
                 super();
                 mFilteredTags = new ArrayList<>();

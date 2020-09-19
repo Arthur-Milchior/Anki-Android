@@ -54,8 +54,7 @@ public class DBTest {
         try {
             illFatedDB.execute("CREATE TABLE test_table (test_column INTEGER NOT NULL);");
             Assert.fail("There should have been a corruption exception");
-        }
-        catch (SQLiteDatabaseCorruptException e) {
+        } catch (SQLiteDatabaseCorruptException e) {
             // do nothing, it is expected
         }
 
@@ -67,7 +66,6 @@ public class DBTest {
         illFatedDB.close();
         SQLiteDatabase.deleteDatabase(illFatedDBFile);
     }
-
 
 
     // Test fixture that lets us inspect corruption handler status

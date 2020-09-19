@@ -25,6 +25,7 @@ public class Assert {
             throw new AssertionError();
         }
     }
+
     @Contract("false, _, _ -> fail")
     public static void that(boolean condition, String message, Object... args) {
         if (!condition) {

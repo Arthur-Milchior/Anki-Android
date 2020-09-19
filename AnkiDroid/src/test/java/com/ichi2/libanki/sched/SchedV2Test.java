@@ -326,11 +326,11 @@ public class SchedV2Test extends RobolectricTest {
         col.reset();
         Card c = col.getSched().getCard();
         DeckConfig conf = col.getSched()._cardConf(c);
-        conf.getJSONObject("new").put("delays", new JSONArray(new double[] {1, 2, 3, 4, 5}));
+        conf.getJSONObject("new").put("delays", new JSONArray(new double[]{1, 2, 3, 4, 5}));
         col.getDecks().save(conf);
         col.getSched().answerCard(c, 2);
         // should handle gracefully
-        conf.getJSONObject("new").put("delays", new JSONArray(new double[] {1}));
+        conf.getJSONObject("new").put("delays", new JSONArray(new double[]{1}));
         col.getDecks().save(conf);
         col.getSched().answerCard(c, 2);
     }
@@ -351,7 +351,7 @@ public class SchedV2Test extends RobolectricTest {
         Card c = col.getSched().getCard();
         assertNotNull(c);
         DeckConfig conf = col.getSched()._cardConf(c);
-        conf.getJSONObject("new").put("delays", new JSONArray(new double[] {0.5, 3, 10}));
+        conf.getJSONObject("new").put("delays", new JSONArray(new double[]{0.5, 3, 10}));
         col.getDecks().save(conf);
         // fail it
         col.getSched().answerCard(c, 1);
@@ -367,7 +367,7 @@ public class SchedV2Test extends RobolectricTest {
         // it should be due in 3 minutes
         long dueIn = c.getDue() - col.getTime().intTime();
         assertThat(dueIn, is(greaterThanOrEqualTo(178L)));
-        assertThat(dueIn, is(lessThanOrEqualTo((long)(180 * 1.25))));
+        assertThat(dueIn, is(lessThanOrEqualTo((long) (180 * 1.25))));
         assertEquals(2, c.getLeft() % 1000);
         assertEquals(2, c.getLeft() / 1000);
         // check log is accurate
@@ -381,7 +381,7 @@ public class SchedV2Test extends RobolectricTest {
         // it should be due in 10 minutes
         dueIn = c.getDue() - col.getTime().intTime();
         assertThat(dueIn, is(greaterThanOrEqualTo(599L)));
-        assertThat(dueIn, is(lessThanOrEqualTo((long)(600 * 1.25))));
+        assertThat(dueIn, is(lessThanOrEqualTo((long) (600 * 1.25))));
         assertEquals(1, c.getLeft() % 1000);
         assertEquals(1, c.getLeft() / 1000);
         // the next pass should graduate the card
@@ -449,7 +449,7 @@ public class SchedV2Test extends RobolectricTest {
         c.flush();
 
         DeckConfig conf = col.getDecks().confForDid(1);
-        conf.getJSONObject("lapse").put("delays", new JSONArray(new double[] {}));
+        conf.getJSONObject("lapse").put("delays", new JSONArray(new double[]{}));
         col.getDecks().save(conf);
 
         // fail the card
@@ -500,14 +500,14 @@ public class SchedV2Test extends RobolectricTest {
         col.reset();
         Card c = col.getSched().getCard();
         DeckConfig conf = col.getSched()._cardConf(c);
-        conf.getJSONObject("new").put("delays", new JSONArray(new double[] {1, 10, 1440, 2880}));
+        conf.getJSONObject("new").put("delays", new JSONArray(new double[]{1, 10, 1440, 2880}));
         col.getDecks().save(conf);
         // pass it
         col.getSched().answerCard(c, 3);
         // two reps to graduate, 1 more today
         assertEquals(3, c.getLeft() % 1000);
         assertEquals(1, c.getLeft() / 1000);
-        assertArrayEquals(new int[] {0, 1, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
         c = col.getSched().getCard();
 
         assertEquals(SECONDS_PER_DAY, col.getSched().nextIvl(c, 3));
@@ -520,7 +520,7 @@ public class SchedV2Test extends RobolectricTest {
         c.setDue(c.getDue() - 1);
         c.flush();
         col.reset();
-        assertArrayEquals(new int[] {0, 1, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
         c = col.getSched().getCard();
         // nextIvl should work
         assertEquals(SECONDS_PER_DAY * 2, col.getSched().nextIvl(c, 3));
@@ -545,14 +545,14 @@ public class SchedV2Test extends RobolectricTest {
         c.setDue(0);
         c.flush();
         col.reset();
-        assertArrayEquals(new int[] {0, 0, 1}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 0, 1}, col.getSched().counts());
         conf = col.getSched()._cardConf(c);
-        conf.getJSONObject("lapse").put("delays", new JSONArray(new double[] {1440}));
+        conf.getJSONObject("lapse").put("delays", new JSONArray(new double[]{1440}));
         col.getDecks().save(conf);
         c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
         assertEquals(QUEUE_TYPE_DAY_LEARN_RELEARN, c.getQueue());
-        assertArrayEquals(new int[] {0, 0, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 0, 0}, col.getSched().counts());
     }
 
 
@@ -683,12 +683,12 @@ public class SchedV2Test extends RobolectricTest {
         // .counts() should match
         col.getDecks().select(child.getLong("id"));
         col.reset();
-        assertArrayEquals(new int[] {0, 0, 5}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 0, 5}, col.getSched().counts());
 
         // answering a card in the child should decrement parent count
         Card c = col.getSched().getCard();
         col.getSched().answerCard(c, 3);
-        assertArrayEquals(new int[] {0, 0, 4}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 0, 4}, col.getSched().counts());
 
         tree = col.getSched().deckDueTree().get(1);
         assertEquals(4, tree.getRevCount());
@@ -798,8 +798,8 @@ public class SchedV2Test extends RobolectricTest {
         col.addNote(note);
         col.reset();
         DeckConfig conf = col.getDecks().confForDid(1);
-        conf.getJSONObject("new").put("delays", new JSONArray(new double[] {0.5, 3, 10}));
-        conf.getJSONObject("lapse").put("delays", new JSONArray(new double[] {1, 5, 9}));
+        conf.getJSONObject("new").put("delays", new JSONArray(new double[]{0.5, 3, 10}));
+        conf.getJSONObject("lapse").put("delays", new JSONArray(new double[]{1, 5, 9}));
         col.getDecks().save(conf);
         Card c = col.getSched().getCard();
         // new cards
@@ -841,7 +841,7 @@ public class SchedV2Test extends RobolectricTest {
         // failing it should put it at 60s
         assertEquals(60, col.getSched().nextIvl(c, 1));
         // or 1 day if relearn is false
-        conf.getJSONObject("lapse").put("delays", new JSONArray(new double[] {}));
+        conf.getJSONObject("lapse").put("delays", new JSONArray(new double[]{}));
         col.getDecks().save(conf);
         assertEquals(1 * SECONDS_PER_DAY, col.getSched().nextIvl(c, 1));
         // (* 100 1.2 SECONDS_PER_DAY)10368000.0
@@ -867,10 +867,10 @@ public class SchedV2Test extends RobolectricTest {
         col.addNote(note);
         Card c2 = note.cards().get(0);
         // burying
-        col.getSched().buryCards(new long[] {c.getId()}, true);
+        col.getSched().buryCards(new long[]{c.getId()}, true);
         c.load();
         assertEquals(QUEUE_TYPE_MANUALLY_BURIED, c.getQueue());
-        col.getSched().buryCards(new long[] {c2.getId()}, false);
+        col.getSched().buryCards(new long[]{c2.getId()}, false);
         c2.load();
         assertEquals(QUEUE_TYPE_SIBLING_BURIED, c2.getQueue());
 
@@ -887,12 +887,12 @@ public class SchedV2Test extends RobolectricTest {
         c2.load();
         assertEquals(QUEUE_TYPE_NEW, c2.getQueue());
 
-        col.getSched().buryCards(new long[] {c.getId(), c2.getId()});
+        col.getSched().buryCards(new long[]{c.getId(), c2.getId()});
         col.getSched().unburyCardsForDeck(AbstractSched.UnburyType.ALL);
 
         col.reset();
 
-        assertArrayEquals(new int[] {2, 0, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{2, 0, 0}, col.getSched().counts());
     }
 
 
@@ -906,11 +906,11 @@ public class SchedV2Test extends RobolectricTest {
         // suspending
         col.reset();
         assertNotNull(col.getSched().getCard());
-        col.getSched().suspendCards(new long[] {c.getId()});
+        col.getSched().suspendCards(new long[]{c.getId()});
         col.reset();
         assertNull(col.getSched().getCard());
         // unsuspending
-        col.getSched().unsuspendCards(new long[] {c.getId()});
+        col.getSched().unsuspendCards(new long[]{c.getId()});
         col.reset();
         assertNotNull(col.getSched().getCard());
         // should cope with rev cards being relearnt
@@ -926,8 +926,8 @@ public class SchedV2Test extends RobolectricTest {
         long due = c.getDue();
         assertEquals(QUEUE_TYPE_LRN, c.getQueue());
         assertEquals(CARD_TYPE_RELEARNING, c.getType());
-        col.getSched().suspendCards(new long[] {c.getId()});
-        col.getSched().unsuspendCards(new long[] {c.getId()});
+        col.getSched().suspendCards(new long[]{c.getId()});
+        col.getSched().unsuspendCards(new long[]{c.getId()});
         c.load();
         assertEquals(QUEUE_TYPE_LRN, c.getQueue());
         assertEquals(CARD_TYPE_RELEARNING, c.getType());
@@ -940,7 +940,7 @@ public class SchedV2Test extends RobolectricTest {
         c.load();
         assertNotEquals(1, c.getDue());
         assertNotEquals(1, c.getDid());
-        col.getSched().suspendCards(new long[] {c.getId()});
+        col.getSched().suspendCards(new long[]{c.getId()});
         c.load();
         assertNotEquals(1, c.getDue());
         assertNotEquals(1, c.getDid());
@@ -965,7 +965,7 @@ public class SchedV2Test extends RobolectricTest {
         c.startTimer();
         c.flush();
         col.reset();
-        assertArrayEquals(new int[] {0, 0, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 0, 0}, col.getSched().counts());
         // create a dynamic deck and refresh it
         long did = col.getDecks().newDyn("Cram");
         col.getSched().rebuildDyn(did);
@@ -975,14 +975,14 @@ public class SchedV2Test extends RobolectricTest {
            assertEquals(1, sorted(col.getSched().deckDueTree().getChildren())[0].review_count);
         */
         // and should appear in the counts
-        assertArrayEquals(new int[] {0, 0, 1}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 0, 1}, col.getSched().counts());
         // grab it and check estimates
         c = col.getSched().getCard();
         assertEquals(4, col.getSched().answerButtons(c));
         assertEquals(600, col.getSched().nextIvl(c, 1));
         assertEquals(Math.round(75 * 1.2) * SECONDS_PER_DAY, col.getSched().nextIvl(c, 2));
-        assertThat(col.getSched().nextIvl(c, 3), is((long)(75 * 2.5) * SECONDS_PER_DAY));
-        assertThat(col.getSched().nextIvl(c, 4), is((long)(75 * 2.5 * 1.15) * SECONDS_PER_DAY));
+        assertThat(col.getSched().nextIvl(c, 3), is((long) (75 * 2.5) * SECONDS_PER_DAY));
+        assertThat(col.getSched().nextIvl(c, 4), is((long) (75 * 2.5 * 1.15) * SECONDS_PER_DAY));
 
         // answer 'good'
         col.getSched().answerCard(c, 3);
@@ -1019,7 +1019,7 @@ public class SchedV2Test extends RobolectricTest {
         // fail the card outside filtered deck
         Card c = col.getSched().getCard();
         DeckConfig conf = col.getSched()._cardConf(c);
-        conf.getJSONObject("new").put("delays", new JSONArray(new double[] {1, 10, 61}));
+        conf.getJSONObject("new").put("delays", new JSONArray(new double[]{1, 10, 61}));
         col.getDecks().save(conf);
 
         col.getSched().answerCard(c, 1);
@@ -1154,21 +1154,21 @@ public class SchedV2Test extends RobolectricTest {
         note.setItem("Back", "two");
         col.addNote(note);
         col.reset();
-        assertArrayEquals(new int[] {1, 0, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{1, 0, 0}, col.getSched().counts());
         Card c = col.getSched().getCard();
         // counter's been decremented but idx indicates 1
-        assertArrayEquals(new int[] {0, 0, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 0, 0}, col.getSched().counts());
         assertEquals(0, col.getSched().countIdx(c));
         // answer to move to learn queue
         col.getSched().answerCard(c, 1);
-        assertArrayEquals(new int[] {0, 1, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
         // fetching again will decrement the count
         c = col.getSched().getCard();
-        assertArrayEquals(new int[] {0, 0, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 0, 0}, col.getSched().counts());
         assertEquals(1, col.getSched().countIdx(c));
         // answering should add it back again
         col.getSched().answerCard(c, 1);
-        assertArrayEquals(new int[] {0, 1, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
     }
 
 
@@ -1180,37 +1180,37 @@ public class SchedV2Test extends RobolectricTest {
         col.addNote(note);
         col.reset();
         // lrnReps should be accurate on pass/fail
-        assertArrayEquals(new int[] {1, 0, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{1, 0, 0}, col.getSched().counts());
         col.getSched().answerCard(col.getSched().getCard(), 1);
-        assertArrayEquals(new int[] {0, 1, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
         col.getSched().answerCard(col.getSched().getCard(), 1);
-        assertArrayEquals(new int[] {0, 1, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
         col.getSched().answerCard(col.getSched().getCard(), 3);
-        assertArrayEquals(new int[] {0, 1, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
         col.getSched().answerCard(col.getSched().getCard(), 1);
-        assertArrayEquals(new int[] {0, 1, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
         col.getSched().answerCard(col.getSched().getCard(), 3);
-        assertArrayEquals(new int[] {0, 1, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
         col.getSched().answerCard(col.getSched().getCard(), 3);
-        assertArrayEquals(new int[] {0, 0, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 0, 0}, col.getSched().counts());
         note = col.newNote();
         note.setItem("Front", "two");
         col.addNote(note);
         col.reset();
         // initial pass should be correct too
         col.getSched().answerCard(col.getSched().getCard(), 3);
-        assertArrayEquals(new int[] {0, 1, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
         col.getSched().answerCard(col.getSched().getCard(), 1);
-        assertArrayEquals(new int[] {0, 1, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
         col.getSched().answerCard(col.getSched().getCard(), 4);
-        assertArrayEquals(new int[] {0, 0, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 0, 0}, col.getSched().counts());
         // immediate graduate should work
         note = col.newNote();
         note.setItem("Front", "three");
         col.addNote(note);
         col.reset();
         col.getSched().answerCard(col.getSched().getCard(), 4);
-        assertArrayEquals(new int[] {0, 0, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 0, 0}, col.getSched().counts());
         // and failing a review should too
         note = col.newNote();
         note.setItem("Front", "three");
@@ -1221,9 +1221,9 @@ public class SchedV2Test extends RobolectricTest {
         c.setDue(col.getSched().getToday());
         c.flush();
         col.reset();
-        assertArrayEquals(new int[] {0, 0, 1}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 0, 1}, col.getSched().counts());
         col.getSched().answerCard(col.getSched().getCard(), 1);
-        assertArrayEquals(new int[] {0, 1, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{0, 1, 0}, col.getSched().counts());
     }
 
 
@@ -1359,8 +1359,8 @@ public class SchedV2Test extends RobolectricTest {
         col.addNote(note);
         // should get top level one first, then ::1, then ::2
         col.reset();
-        assertArrayEquals(new int[] {3, 0, 0}, col.getSched().counts());
-        for (String i : new String[] {"one", "three", "two"}) {
+        assertArrayEquals(new int[]{3, 0, 0}, col.getSched().counts());
+        for (String i : new String[]{"one", "three", "two"}) {
             Card c = col.getSched().getCard();
             assertEquals(i, c.note().getItem("Front"));
             col.getSched().answerCard(c, 3);
@@ -1425,10 +1425,10 @@ public class SchedV2Test extends RobolectricTest {
         c.setDue(0);
         c.flush();
         col.reset();
-        assertArrayEquals(new int[] {0, 0, 1}, col.getSched().counts());
-        col.getSched().forgetCards(new long[] {c.getId()});
+        assertArrayEquals(new int[]{0, 0, 1}, col.getSched().counts());
+        col.getSched().forgetCards(new long[]{c.getId()});
         col.reset();
-        assertArrayEquals(new int[] {1, 0, 0}, col.getSched().counts());
+        assertArrayEquals(new int[]{1, 0, 0}, col.getSched().counts());
     }
 
 
@@ -1439,13 +1439,13 @@ public class SchedV2Test extends RobolectricTest {
         note.setItem("Front", "one");
         col.addNote(note);
         Card c = note.cards().get(0);
-        col.getSched().reschedCards(new long[] {c.getId()}, 0, 0);
+        col.getSched().reschedCards(new long[]{c.getId()}, 0, 0);
         c.load();
         assertEquals(col.getSched().getToday(), c.getDue());
         assertEquals(1, c.getIvl());
         assertEquals(QUEUE_TYPE_REV, c.getType());
         assertEquals(CARD_TYPE_REV, c.getQueue());
-        col.getSched().reschedCards(new long[] {c.getId()}, 1, 1);
+        col.getSched().reschedCards(new long[]{c.getId()}, 1, 1);
         c.load();
         assertEquals(col.getSched().getToday() + 1, c.getDue());
         assertEquals(+1, c.getIvl());
@@ -1471,7 +1471,7 @@ public class SchedV2Test extends RobolectricTest {
         c.flush();
         col.reset();
         col.getSched().answerCard(c, 1);
-        col.getSched()._cardConf(c).getJSONObject("lapse").put("delays", new JSONArray(new double[] {}));
+        col.getSched()._cardConf(c).getJSONObject("lapse").put("delays", new JSONArray(new double[]{}));
         col.getSched().answerCard(c, 1);
     }
 
@@ -1528,7 +1528,7 @@ public class SchedV2Test extends RobolectricTest {
         col.reset();
         c = col.getSched().getCard();
         col.getSched().answerCard(c, 1);
-        col.getSched().buryCards(new long[] {c.getId()});
+        col.getSched().buryCards(new long[]{c.getId()});
         c.load();
         assertEquals(QUEUE_TYPE_MANUALLY_BURIED, c.getQueue());
 
@@ -1548,7 +1548,7 @@ public class SchedV2Test extends RobolectricTest {
         // make sure relearning cards transition correctly to v1
         col.changeSchedulerVer(2);
         // card with 100 day interval, answering again
-        col.getSched().reschedCards(new long[] {c.getId()}, 100, 100);
+        col.getSched().reschedCards(new long[]{c.getId()}, 100, 100);
         c.load();
         c.setDue(0);
         c.flush();
@@ -1614,10 +1614,10 @@ public class SchedV2Test extends RobolectricTest {
         Card c = col.getSched().getCard();
         col.getSched().answerCard(c, 2);
         // should be due in ~ 5.5 mins
-        long expected = col.getTime().intTime() + (int)(5.5 * 60);
+        long expected = col.getTime().intTime() + (int) (5.5 * 60);
         long due = c.getDue();
         assertThat(expected - 10, is(lessThan(due)));
-        assertThat(due, is(lessThanOrEqualTo((long)(expected * 1.25))));
+        assertThat(due, is(lessThanOrEqualTo((long) (expected * 1.25))));
 
         long ivl = col.getDb().queryLongScalar("select ivl from revlog");
         assertEquals((long) (-5.5 * 60), ivl);

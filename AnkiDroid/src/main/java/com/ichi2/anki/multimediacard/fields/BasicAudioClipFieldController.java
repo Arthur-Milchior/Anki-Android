@@ -100,7 +100,7 @@ public class BasicAudioClipFieldController extends FieldControllerBase implement
         Uri selectedClip = data.getData();
 
         // Get information about the selected document
-        String[] queryColumns = { MediaStore.MediaColumns.DISPLAY_NAME, MediaStore.MediaColumns.SIZE, MediaStore.MediaColumns.MIME_TYPE };
+        String[] queryColumns = {MediaStore.MediaColumns.DISPLAY_NAME, MediaStore.MediaColumns.SIZE, MediaStore.MediaColumns.MIME_TYPE};
         String[] audioClipFullNameParts;
         try (Cursor cursor = mActivity.getContentResolver().query(selectedClip, queryColumns, null, null, null)) {
             if (cursor == null) {
@@ -115,7 +115,7 @@ public class BasicAudioClipFieldController extends FieldControllerBase implement
             if (audioClipFullNameParts.length < 2) {
                 try {
                     Timber.i("Audio clip name does not have extension, using second half of mime type");
-                    audioClipFullNameParts = new String[] {audioClipFullName, cursor.getString(2).split("\\/")[1]};
+                    audioClipFullNameParts = new String[]{audioClipFullName, cursor.getString(2).split("\\/")[1]};
                 } catch (Exception e) {
                     // This code is difficult to stabilize - it is not clear how to handle files with no extension
                     // and apparently we may fail to get MIME_TYPE information - in that case we will gather information

@@ -6,6 +6,7 @@ import com.ichi2.libanki.Card;
 import com.ichi2.libanki.Collection;
 
 import androidx.annotation.NonNull;
+
 import timber.log.Timber;
 
 import org.junit.Assert;
@@ -15,10 +16,14 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-/** Assertion methods that aren't currently supported by our dependencies */
+/**
+ * Assertion methods that aren't currently supported by our dependencies
+ */
 public class AnkiAssert {
 
-    /** Helper to sort out "JUnit tests should include assert() or fail()" quality check */
+    /**
+     * Helper to sort out "JUnit tests should include assert() or fail()" quality check
+     */
     public static void assertDoesNotThrow(@NonNull Runnable runnable) {
         try {
             runnable.run();

@@ -85,7 +85,7 @@ public class StepsPreference extends EditTextPreference {
     /**
      * Check if the string is a valid format for steps and return that string, reformatted for better usability if
      * needed.
-     * 
+     *
      * @param steps User input in text editor.
      * @return The correctly formatted string or null if the input is not valid.
      */
@@ -105,7 +105,7 @@ public class StepsPreference extends EditTextPreference {
 
     /**
      * Convert steps format.
-     * 
+     *
      * @param a JSONArray representation of steps.
      * @return The steps as a space-separated string.
      */
@@ -121,7 +121,7 @@ public class StepsPreference extends EditTextPreference {
     /**
      * Convert steps format. For better usability, rounded floats are converted to integers (e.g., 1.0 is converted to
      * 1).
-     * 
+     *
      * @param steps String representation of steps.
      * @return The steps as a JSONArray or null if the steps are not valid.
      */

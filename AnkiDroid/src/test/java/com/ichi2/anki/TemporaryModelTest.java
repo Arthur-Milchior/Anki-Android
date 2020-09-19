@@ -17,6 +17,7 @@
 package com.ichi2.anki;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import android.os.Bundle;
 
 import org.junit.Assert;

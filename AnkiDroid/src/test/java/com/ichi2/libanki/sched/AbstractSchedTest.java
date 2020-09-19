@@ -61,7 +61,7 @@ public class AbstractSchedTest extends RobolectricTest {
     @Parameters(name = "SchedV{0}")
     public static java.util.Collection<Object[]> initParameters() {
         // This does one run with schedVersion injected as 1, and one run as 2
-        return Arrays.asList(new Object[][] { { 1 }, { 2 } });
+        return Arrays.asList(new Object[][]{{1}, {2}});
     }
 
     @Before
@@ -88,7 +88,7 @@ public class AbstractSchedTest extends RobolectricTest {
         int[] countsBeforeUndo = sched.counts();
         // Not shown in the UI, but there is a state where the card has been removed from the queue, but not answered
         // where the counts are decremented.
-        assertThat(countsBeforeUndo, is(new int[] { 0, 0, 0 }));
+        assertThat(countsBeforeUndo, is(new int[]{0, 0, 0}));
 
         sched.answerCard(cardBeforeUndo, EASE_3);
 
@@ -165,14 +165,14 @@ public class AbstractSchedTest extends RobolectricTest {
         final int nbNote = 2;
         Note[] notes = new Note[nbNote];
         for (int i = 0; i < nbNote; i++) {
-            Note note  = addNoteUsingBasicAndReversedModel("front", "back");
+            Note note = addNoteUsingBasicAndReversedModel("front", "back");
             notes[i] = note;
         }
         col.reset();
 
         for (int i = 0; i < nbNote; i++) {
             Card card = sched.getCard();
-            assertArrayEquals(new int[] {nbNote * 2 - i, 0, 0}, sched.counts(card));
+            assertArrayEquals(new int[]{nbNote * 2 - i, 0, 0}, sched.counts(card));
             assertEquals(notes[i].firstCard().getId(), card.getId());
             assertEquals(Consts.QUEUE_TYPE_NEW, card.getQueue());
             sched.answerCard(card, sched.answerButtons(card));
@@ -255,7 +255,7 @@ public class AbstractSchedTest extends RobolectricTest {
             assertNewCountsIs("All daily limits are 0", 0, 0, 0, 0);
             increaseAndAssertNewCountsIs("Adding a review in C add it in its parents too", cId, 1, 1, 1, 0);
             increaseAndAssertNewCountsIs("Adding a review in A add it in its children too", aId, 2, 2, 2, 1);
-            increaseAndAssertNewCountsIs("Adding a review in B add it in its parents and children too", bId,3, 3, 3, 2);
+            increaseAndAssertNewCountsIs("Adding a review in B add it in its parents and children too", bId, 3, 3, 3, 2);
             increaseAndAssertNewCountsIs("Adding a review in D add it in its parents too", dId, 4, 4, 3, 3);
             increaseAndAssertNewCountsIs("Adding a review in D add it in its parents too", dId, 5, 5, 3, 4);
 
@@ -291,7 +291,9 @@ mw.col.sched.extendLimits(1, 0)
         }
     }
 
-    /** Those test may be unintuitive, but they follow upstream as close as possible. */
+    /**
+     * Those test may be unintuitive, but they follow upstream as close as possible.
+     */
     @Test
     public void increaseToday() {
         new IncreaseToday().test();
@@ -301,7 +303,7 @@ mw.col.sched.extendLimits(1, 0)
     protected void undoAndRedo(boolean preload) {
         Collection col = getCol();
         DeckConfig conf = col.getDecks().confForDid(1);
-        conf.getJSONObject("new").put("delays", new JSONArray(new double[] {1, 3, 5, 10}));
+        conf.getJSONObject("new").put("delays", new JSONArray(new double[]{1, 3, 5, 10}));
         col.getConf().put("collapseTime", 20 * 60);
         AbstractSched sched = col.getSched();
 
@@ -378,7 +380,6 @@ mw.col.sched.extendLimits(1, 0)
         boolean hasMatch = decks.all().stream().anyMatch(x -> name.equals(x.getString("name")));
         assertThat(String.format("Deck %s should exist", name), hasMatch, is(true));
     }
-
 
 
     @Test

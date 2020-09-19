@@ -15,7 +15,6 @@ import com.ichi2.utils.JSONObject;
 import java.util.ArrayList;
 
 
-
 public final class DeckDropDownAdapter extends BaseAdapter {
 
     public interface SubtitleListener {

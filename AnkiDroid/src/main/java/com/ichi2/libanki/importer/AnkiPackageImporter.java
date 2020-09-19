@@ -1,5 +1,5 @@
 /***************************************************************************************
-  * Copyright (c) 2016 Houssam Salem <houssam.salem.au@gmail.com>                        *
+ * Copyright (c) 2016 Houssam Salem <houssam.salem.au@gmail.com>                        *
  *                                                                                      *
  * This program is free software; you can redistribute it and/or modify it under        *
  * the terms of the GNU General Public License as published by the Free Software        *
@@ -34,6 +34,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.commons.compress.archivers.zip.ZipFile;
 
 import timber.log.Timber;
@@ -130,7 +131,7 @@ public class AnkiPackageImporter extends Anki2Importer {
                 while (jr.hasNext()) {
                     num = jr.nextName();
                     name = jr.nextString();
-                    File file= new File(dir, name);
+                    File file = new File(dir, name);
                     if (!Utils.isInside(file, dir)) {
                         throw (new RuntimeException("Invalid file"));
                     }

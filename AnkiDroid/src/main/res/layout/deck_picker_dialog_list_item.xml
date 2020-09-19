@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright (c) 2020 David Allison <davidallisongithub@gmail.com>
 
   This program is free software; you can redistribute it and/or modify it under
@@ -31,5 +30,4 @@
     android:textSize="20sp"
     android:textIsSelectable="false"
     android:focusable="true"
-    android:clickable="true"
-     />
+    android:clickable="true" />

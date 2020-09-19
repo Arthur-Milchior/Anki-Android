@@ -33,6 +33,7 @@ import javax.annotation.CheckReturnValue;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import timber.log.Timber;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -137,7 +138,7 @@ public class CardBrowserTest extends RobolectricTest {
     @Ignore("Not yet implemented, feature has performance implications in large collections, instead we remove selections")
     public void selectionsAreCorrectWhenNonExistingCardIsRemoved() {
         CardBrowser browser = getBrowserWithNotes(7);
-        browser.checkedCardsAtPositions(new int[] {1, 3, 5, 6});
+        browser.checkedCardsAtPositions(new int[]{1, 3, 5, 6});
         deleteCardAtPosition(browser, 2); //delete non-selected
         deleteCardAtPosition(browser, 3); //delete selected, ensure it's not still selected
 
@@ -208,7 +209,7 @@ public class CardBrowserTest extends RobolectricTest {
         addDeck("ZZ");
         selectDefaultDeck();
         CardBrowser b = getBrowserWithNotes(5);
-        b.checkedCardsAtPositions(new int[] {0, 2});
+        b.checkedCardsAtPositions(new int[]{0, 2});
 
         List<Long> cardIds = b.getCheckedCardIds();
 
@@ -232,13 +233,13 @@ public class CardBrowserTest extends RobolectricTest {
         long dynId = addDynamicDeck("World");
         selectDefaultDeck();
         CardBrowser b = getBrowserWithNotes(5);
-        b.checkedCardsAtPositions(new int[] {0, 2});
+        b.checkedCardsAtPositions(new int[]{0, 2});
 
         List<Long> cardIds = b.getCheckedCardIds();
 
         b.executeChangeCollectionTask(toLongArray(cardIds), dynId);
 
-        for (Long cardId: cardIds) {
+        for (Long cardId : cardIds) {
             assertThat("Deck should not be changed", getCol().getCard(cardId).getDid(), not(dynId));
         }
     }
@@ -335,9 +336,9 @@ public class CardBrowserTest extends RobolectricTest {
     }
 
     //There has to be a better way :(
-    private long[] toLongArray(List<Long> list){
+    private long[] toLongArray(List<Long> list) {
         long[] ret = new long[list.size()];
-        for(int i = 0; i < ret.length; i++) {
+        for (int i = 0; i < ret.length; i++) {
             ret[i] = list.get(i);
         }
         return ret;
@@ -350,7 +351,7 @@ public class CardBrowserTest extends RobolectricTest {
 
 
     private CardBrowser getBrowserWithNotes(int count) {
-        for(int i = 0; i < count; i ++) {
+        for (int i = 0; i < count; i++) {
             addNoteUsingBasicModel(Integer.toString(i), "back");
         }
         ActivityController<CardBrowser> multimediaController = Robolectric.buildActivity(CardBrowser.class, new Intent())
@@ -360,7 +361,7 @@ public class CardBrowserTest extends RobolectricTest {
     }
 
     private void removeCardFromCollection(Long cardId) {
-        getCol().remCards(Arrays.asList(new Long[] {cardId}));
+        getCol().remCards(Arrays.asList(new Long[]{cardId}));
     }
 
     @CheckReturnValue

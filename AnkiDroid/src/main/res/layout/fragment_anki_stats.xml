@@ -13,7 +13,8 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_margin="0dp"
-        android:visibility="visible"/>
+        android:visibility="visible" />
+
     <ProgressBar
         android:id="@+id/progress_bar_stats"
         android:layout_width="wrap_content"
@@ -21,5 +22,5 @@
         android:indeterminate="true"
         android:layout_alignParentEnd="false"
         android:layout_alignParentRight="false"
-        android:layout_centerInParent="true"/>
+        android:layout_centerInParent="true" />
 </RelativeLayout>

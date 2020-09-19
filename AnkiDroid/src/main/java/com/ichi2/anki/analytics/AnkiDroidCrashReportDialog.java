@@ -38,6 +38,7 @@ import org.acra.dialog.CrashReportDialog;
 import org.acra.dialog.CrashReportDialogHelper;
 
 import androidx.annotation.NonNull;
+
 import timber.log.Timber;
 
 /**
@@ -60,14 +61,13 @@ public class AnkiDroidCrashReportDialog extends CrashReportDialog implements Dia
         try {
             CoreConfigurationBuilder builder = AnkiDroidApp.getInstance().getAcraCoreConfigBuilder();
             DialogConfiguration dialogConfig =
-                    (DialogConfiguration)builder.getPluginConfigurationBuilder((DialogConfigurationBuilder.class)).build();
+                    (DialogConfiguration) builder.getPluginConfigurationBuilder((DialogConfigurationBuilder.class)).build();
 
             dialogBuilder.setIcon(dialogConfig.resIcon());
             dialogBuilder.setTitle(dialogConfig.title());
             dialogBuilder.setPositiveButton(dialogConfig.positiveButtonText(), AnkiDroidCrashReportDialog.this);
             dialogBuilder.setNegativeButton(dialogConfig.negativeButtonText(), AnkiDroidCrashReportDialog.this);
-        }
-        catch (ACRAConfigurationException ace) {
+        } catch (ACRAConfigurationException ace) {
             Timber.e(ace, "Unable to initialize ACRA while creating ACRA dialog?");
         }
         mHelper = new CrashReportDialogHelper(this, getIntent());
@@ -83,11 +83,12 @@ public class AnkiDroidCrashReportDialog extends CrashReportDialog implements Dia
      * Build the custom view used by the dialog
      */
     @Override
-    protected @NonNull View buildCustomView( Bundle savedInstanceState) {
+    protected @NonNull
+    View buildCustomView(Bundle savedInstanceState) {
         SharedPreferences preferences = AnkiDroidApp.getSharedPrefs(this);
         LayoutInflater inflater = getLayoutInflater();
         @SuppressLint("InflateParams") // when you inflate into an alert dialog, you have no parent view
-        View rootView = inflater.inflate(R.layout.feedback, null);
+                View rootView = inflater.inflate(R.layout.feedback, null);
         mAlwaysReportCheckBox = rootView.findViewById(R.id.alwaysReportCheckbox);
         mAlwaysReportCheckBox.setChecked(preferences.getBoolean("autoreportCheckboxValue", true));
         mUserComment = rootView.findViewById(R.id.etFeedbackText);

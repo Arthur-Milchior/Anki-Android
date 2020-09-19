@@ -47,7 +47,7 @@ public class BasicImageFieldControllerTest extends MultimediaEditFieldActivityTe
         BasicImageFieldController controller = getValidControllerNoImage();
         assertThat(controller.isShowingPreview(), is(false));
 
-        File f =  Mockito.mock(File.class);
+        File f = Mockito.mock(File.class);
         when(f.exists()).thenReturn(false);
 
         controller.setImagePreview(f, 100);
@@ -62,7 +62,7 @@ public class BasicImageFieldControllerTest extends MultimediaEditFieldActivityTe
         BasicImageFieldController controller = getValidControllerNoImage();
         assertThat(controller.isShowingPreview(), is(false));
 
-        File f =  Mockito.mock(File.class);
+        File f = Mockito.mock(File.class);
         when(f.exists()).thenReturn(true); //true, but it'll throw due to being a mock.
 
         controller.setImagePreview(f, 100);

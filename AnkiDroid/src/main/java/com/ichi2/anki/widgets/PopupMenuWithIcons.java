@@ -2,8 +2,11 @@ package com.ichi2.anki.widgets;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+
 import android.content.Context;
+
 import androidx.appcompat.widget.PopupMenu;
+
 import android.view.View;
 
 /**
@@ -12,7 +15,7 @@ import android.view.View;
 public class PopupMenuWithIcons extends PopupMenu {
 
     public PopupMenuWithIcons(Context context, View anchor, boolean showIcons) {
-        super(context, anchor);       
+        super(context, anchor);
         if (showIcons) {
             try {
                 Field[] fields = PopupMenu.class.getDeclaredFields();
@@ -28,7 +31,8 @@ public class PopupMenuWithIcons extends PopupMenu {
                         break;
                     }
                 }
-            } catch (Exception e) {}        
+            } catch (Exception e) {
+            }
         }
     }
 }

@@ -22,6 +22,7 @@ import com.ichi2.utils.JSONObject;
 import java.util.Calendar;
 
 import androidx.annotation.NonNull;
+
 import timber.log.Timber;
 
 import static com.ichi2.anki.DeckOptions.reminderToCalendar;
@@ -101,20 +102,20 @@ public class BootService extends BroadcastReceiver {
 
                 if (reminder.getBoolean("enabled")) {
                     final PendingIntent reminderIntent = PendingIntent.getBroadcast(
-                                                                                    context,
-                                                                                    (int) deckConfiguration.getLong("id"),
-                                                                                    new Intent(context, ReminderService.class).putExtra(ReminderService.EXTRA_DECK_OPTION_ID,
-                                                                                            deckConfiguration.getLong("id")),
-                                                                                    0
-                                                                                    );
+                            context,
+                            (int) deckConfiguration.getLong("id"),
+                            new Intent(context, ReminderService.class).putExtra(ReminderService.EXTRA_DECK_OPTION_ID,
+                                    deckConfiguration.getLong("id")),
+                            0
+                    );
                     final Calendar calendar = reminderToCalendar(col.getTime(), reminder);
 
                     alarmManager.setRepeating(
-                                              AlarmManager.RTC_WAKEUP,
-                                              calendar.getTimeInMillis(),
-                                              AlarmManager.INTERVAL_DAY,
-                                              reminderIntent
-                                              );
+                            AlarmManager.RTC_WAKEUP,
+                            calendar.getTimeInMillis(),
+                            AlarmManager.INTERVAL_DAY,
+                            reminderIntent
+                    );
                 }
             }
         }

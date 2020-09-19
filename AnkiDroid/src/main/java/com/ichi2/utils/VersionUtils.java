@@ -79,11 +79,12 @@ public class VersionUtils {
 
     /**
      * Return whether the package version code is set to that for release version
+     *
      * @return whether build number in manifest version code is '3'
      */
     public static boolean isReleaseVersion() {
         String versionCode = Long.toString(getPkgVersionCode());
         Timber.d("isReleaseVersion() versionCode: %s", versionCode);
-        return versionCode.charAt(versionCode.length()-3)=='3';
+        return versionCode.charAt(versionCode.length() - 3) == '3';
     }
 }

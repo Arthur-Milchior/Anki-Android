@@ -51,7 +51,7 @@ import timber.log.Timber;
  * @see SSLSocketFactory
  */
 public class Tls12SocketFactory extends SSLSocketFactory {
-    private static final String[] TLS_V12_ONLY =  {"TLSv1.2"};
+    private static final String[] TLS_V12_ONLY = {"TLSv1.2"};
 
     private final SSLSocketFactory delegate;
 
@@ -70,7 +70,7 @@ public class Tls12SocketFactory extends SSLSocketFactory {
                 Timber.d("Finished: Creating unified TrustManager");
 
                 SSLContext sc = SSLContext.getInstance("TLSv1.2");
-                sc.init(null, new TrustManager[] {trustManager}, null);
+                sc.init(null, new TrustManager[]{trustManager}, null);
                 Tls12SocketFactory socketFactory = new Tls12SocketFactory(sc.getSocketFactory());
                 client.sslSocketFactory(socketFactory, trustManager);
 

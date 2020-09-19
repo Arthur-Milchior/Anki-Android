@@ -148,7 +148,7 @@ public class ImportTest {
         os.close();
         imp = new Anki2Importer(empty, testCol.getPath());
         imp.run();
-        expected =  Arrays.asList("foo.mp3", String.format("foo_%s.mp3", mid));
+        expected = Arrays.asList("foo.mp3", String.format("foo_%s.mp3", mid));
         actual = Arrays.asList(new File(empty.getMedia().dir()).list());
         actual.retainAll(expected);
         assertEquals(expected.size(), actual.size());
@@ -192,7 +192,7 @@ public class ImportTest {
         assertEquals(2, new File(testCol.getMedia().dir()).list().length);
     }
 
-    @Test		
+    @Test
     public void testAnki2DiffmodelTemplates() throws IOException, JSONException, ImportExportException {
         // different from the above as this one tests only the template text being
         // changed, not the number of cards/fields
@@ -301,7 +301,7 @@ public class ImportTest {
 
     @Test
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.O)
-    public void testCsv2() throws  IOException, ConfirmModSchemaException {
+    public void testCsv2() throws IOException, ConfirmModSchemaException {
         Models mm = testCol.getModels();
         Model m = mm.current();
         JSONObject f = mm.newField("Three");

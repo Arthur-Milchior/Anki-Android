@@ -5,5 +5,5 @@
         android:id="@+id/action_add_new_note_type"
         android:title="@string/model_editor_action_add_model"
         android:icon="@drawable/ic_add_white_24dp"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 </menu>

@@ -27,6 +27,7 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Objects;
+
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 
@@ -46,8 +47,7 @@ public class UtilsTest {
                 Utils.unzipFiles(zipFile, "/tmp", new String[]{ze2.getName()}, null);
             }
             Assert.fail("Expected an IOException");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Assert.assertEquals("File is outside extraction target directory.", e.getMessage());
         }
     }

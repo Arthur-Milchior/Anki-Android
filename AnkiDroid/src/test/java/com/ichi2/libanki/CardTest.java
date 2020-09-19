@@ -227,13 +227,13 @@ public class CardTest extends RobolectricTest {
         assertNoteOrdinalAre(note, new Integer[]{0, 1});
     }
 
-    private void  assertNoteOrdinalAre(Note note, Integer[] ords) {
+    private void assertNoteOrdinalAre(Note note, Integer[] ords) {
         ArrayList<Card> cards = note.cards();
         assumeThat(cards.size(), is(ords.length));
-        for (Card card: cards) {
+        for (Card card : cards) {
             Integer ord = card.getOrd();
             assumeThat(ords, hasItemInArray(ord));
         }
     }
-    
+
 }

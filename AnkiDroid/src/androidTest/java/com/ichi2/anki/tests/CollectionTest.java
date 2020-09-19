@@ -1,6 +1,7 @@
 package com.ichi2.anki.tests;
 
 import android.Manifest;
+
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
 

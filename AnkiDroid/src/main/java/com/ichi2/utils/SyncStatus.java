@@ -84,12 +84,16 @@ public enum SyncStatus {
     }
 
 
-    /** Whether data has been changed - to be converted to Rust */
+    /**
+     * Whether data has been changed - to be converted to Rust
+     */
     public static boolean hasDatabaseChanges() {
         return AnkiDroidApp.getSharedPrefs(AnkiDroidApp.getInstance()).getBoolean("changesSinceLastSync", false);
     }
 
-    /** To be converted to Rust */
+    /**
+     * To be converted to Rust
+     */
     public static void markDataAsChanged() {
         if (sPauseCheckingDatabase) {
             return;
@@ -99,7 +103,9 @@ public enum SyncStatus {
     }
 
 
-    /** To be converted to Rust */
+    /**
+     * To be converted to Rust
+     */
     public static void markSyncCompleted() {
         sMarkedInMemory = false;
         AnkiDroidApp.getSharedPrefs(AnkiDroidApp.getInstance()).edit().putBoolean("changesSinceLastSync", false).apply();
@@ -115,7 +121,9 @@ public enum SyncStatus {
         }
     }
 
-    /** Whether a change in data has been detected - used as a heuristic to stop slow operations */
+    /**
+     * Whether a change in data has been detected - used as a heuristic to stop slow operations
+     */
     public static boolean hasBeenMarkedAsChangedInMemory() {
         return sMarkedInMemory;
     }

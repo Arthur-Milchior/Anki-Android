@@ -16,6 +16,7 @@
 package com.ichi2.anki.tests.libanki;
 
 import android.Manifest;
+
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
 
@@ -217,7 +218,7 @@ public class MediaTest {
         assertEquals(1, added(testCol).size());
         assertEquals(0, removed(testCol).size());
         // but if we add another file, it will
-        path = new File(path.getAbsolutePath()+"2");
+        path = new File(path.getAbsolutePath() + "2");
         os = new FileOutputStream(path, true);
         os.write("yo".getBytes());
         os.close();

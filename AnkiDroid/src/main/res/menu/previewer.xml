@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~  Copyright (c) 2020 David Allison <davidallisongithub@gmail.com>
   ~
   ~  This program is free software; you can redistribute it and/or modify it under
@@ -16,10 +15,10 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ankidroid="http://schemas.android.com/apk/res-auto" >
+    xmlns:ankidroid="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_edit"
         android:icon="@drawable/ic_mode_edit_white_24dp"
         android:title="@string/cardeditor_title_edit_card"
-        ankidroid:showAsAction="ifRoom"/>
+        ankidroid:showAsAction="ifRoom" />
 </menu>

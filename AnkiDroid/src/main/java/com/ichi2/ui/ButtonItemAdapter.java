@@ -26,6 +26,7 @@ package com.ichi2.ui;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,10 +62,11 @@ public class ButtonItemAdapter extends RecyclerView.Adapter<ButtonItemAdapter.Bu
     }
 
     @Override
-    public @NonNull ButtonVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public @NonNull
+    ButtonVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View view =
                 LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.card_browser_item_my_searches_dialog, parent, false);
+                        .inflate(R.layout.card_browser_item_my_searches_dialog, parent, false);
         return new ButtonVH(view, this);
     }
 
@@ -110,8 +112,7 @@ public class ButtonItemAdapter extends RecyclerView.Adapter<ButtonItemAdapter.Bu
             }
             if (view instanceof ImageButton) {
                 adapter.buttonCallback.onButtonClicked(items.get(getAdapterPosition()));
-            }
-            else {
+            } else {
                 adapter.itemCallback.onItemClicked(items.get(getAdapterPosition()));
             }
         }

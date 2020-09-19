@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import androidx.annotation.Nullable;
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory;
 import androidx.test.core.app.ApplicationProvider;
+
 import timber.log.Timber;
 
 import static android.os.Looper.getMainLooper;
@@ -118,7 +119,7 @@ public class RobolectricTest {
 
 
     protected void clickDialogButton(DialogAction button, boolean checkDismissed) {
-        MaterialDialog dialog = (MaterialDialog)ShadowDialog.getLatestDialog();
+        MaterialDialog dialog = (MaterialDialog) ShadowDialog.getLatestDialog();
         dialog.getActionButton(button).performClick();
         if (checkDismissed) {
             Assert.assertTrue("Dialog not dismissed?", shadowOf(dialog).hasBeenDismissed());
@@ -131,7 +132,7 @@ public class RobolectricTest {
      * @param checkDismissed true if you want to check for dismissed, will return null even if dialog exists but has been dismissed
      */
     protected String getDialogText(boolean checkDismissed) {
-        MaterialDialog dialog = (MaterialDialog)ShadowDialog.getLatestDialog();
+        MaterialDialog dialog = (MaterialDialog) ShadowDialog.getLatestDialog();
         if (dialog == null || dialog.getContentView() == null) {
             return null;
         }
@@ -147,11 +148,17 @@ public class RobolectricTest {
     // Robolectric needs some help sometimes in form of a manual kick, then a wait, to stabilize UI activity
     protected void advanceRobolectricLooper() {
         shadowOf(getMainLooper()).idle();
-        try { Thread.sleep(500); } catch (Exception e) { Timber.e(e); }
+        try {
+            Thread.sleep(500);
+        } catch (Exception e) {
+            Timber.e(e);
+        }
 
     }
 
-    /** This can probably be implemented in a better manner */
+    /**
+     * This can probably be implemented in a better manner
+     */
     protected void waitForAsyncTasksToComplete() {
         advanceRobolectricLooper();
     }
@@ -171,9 +178,11 @@ public class RobolectricTest {
     }
 
 
-    /** A collection. Created one second ago, not near cutoff time.
-    * Each time time is checked, it advance by 10 ms. Not enough to create any change visible to user, but ensure
-     * we don't get two equal time.*/
+    /**
+     * A collection. Created one second ago, not near cutoff time.
+     * Each time time is checked, it advance by 10 ms. Not enough to create any change visible to user, but ensure
+     * we don't get two equal time.
+     */
     protected Collection getCol() {
         // 2020/08/07, 07:00:00. Normally not near day cutoff.
         MockTime time = new MockTime(1596783600000L, 10);
@@ -184,7 +193,9 @@ public class RobolectricTest {
         return (MockTime) getCol().getTime();
     }
 
-    /** Call this method in your test if you to test behavior with a null collection */
+    /**
+     * Call this method in your test if you to test behavior with a null collection
+     */
     protected void enableNullCollection() {
         CollectionHelper.LazyHolder.INSTANCE = new CollectionHelper() {
             @Override
@@ -194,7 +205,9 @@ public class RobolectricTest {
         };
     }
 
-    /** Restore regular collection behavior */
+    /**
+     * Restore regular collection behavior
+     */
     protected void disableNullCollection() {
         CollectionHelper.LazyHolder.INSTANCE = new CollectionHelper();
     }
@@ -227,7 +240,7 @@ public class RobolectricTest {
             throw new IllegalArgumentException(String.format("Could not find model '%s'", name));
         }
         Note n = getCol().newNote(model);
-        for(int i = 0; i < fields.length; i++) {
+        for (int i = 0; i < fields.length; i++) {
             n.setField(i, fields[i]);
         }
         if (getCol().addNote(n) == 0) {
@@ -288,15 +301,13 @@ public class RobolectricTest {
     }
 
 
-
-
     protected synchronized void waitForTask(CollectionTask.TASK_TYPE taskType, int timeoutMs) throws InterruptedException {
         waitForTask(taskType, null, timeoutMs);
     }
 
 
     protected synchronized void waitForTask(CollectionTask.TASK_TYPE taskType, @Nullable TaskData data, int timeoutMs) throws InterruptedException {
-        boolean[] completed = new boolean[] { false };
+        boolean[] completed = new boolean[]{false};
         TaskListener listener = new TaskListener() {
             @Override
             public void onPreExecute() {
@@ -325,6 +336,7 @@ public class RobolectricTest {
             throw new IllegalStateException(String.format("Task %s didn't finish in %d ms", taskType, timeoutMs));
         }
     }
+
     /**
      * Call to assume that <code>actual</code> satisfies the condition specified by <code>matcher</code>.
      * If not, the test halts and is ignored.
@@ -336,8 +348,8 @@ public class RobolectricTest {
      *   int x = 1 / 0; // will never execute
      * </pre>
      *
-     * @param <T> the static type accepted by the matcher (this can flag obvious compile-time problems such as {@code assumeThat(1, is("a"))}
-     * @param actual the computed value being compared
+     * @param <T>     the static type accepted by the matcher (this can flag obvious compile-time problems such as {@code assumeThat(1, is("a"))}
+     * @param actual  the computed value being compared
      * @param matcher an expression, built of {@link Matcher}s, specifying allowed values
      * @see org.hamcrest.CoreMatchers
      * @see org.junit.matchers.JUnitMatchers
@@ -358,8 +370,8 @@ public class RobolectricTest {
      *   int x = 1 / 0; // will never execute
      * </pre>
      *
-     * @param <T> the static type accepted by the matcher (this can flag obvious compile-time problems such as {@code assumeThat(1, is("a"))}
-     * @param actual the computed value being compared
+     * @param <T>     the static type accepted by the matcher (this can flag obvious compile-time problems such as {@code assumeThat(1, is("a"))}
+     * @param actual  the computed value being compared
      * @param matcher an expression, built of {@link Matcher}s, specifying allowed values
      * @see org.hamcrest.CoreMatchers
      * @see org.junit.matchers.JUnitMatchers
@@ -370,12 +382,11 @@ public class RobolectricTest {
     }
 
 
-
     /**
      * If called with an expression evaluating to {@code false}, the test will halt and be ignored.
      *
-     * @param b If <code>false</code>, the method will attempt to stop the test and ignore it by
-     * throwing {@link AssumptionViolatedException}.
+     * @param b       If <code>false</code>, the method will attempt to stop the test and ignore it by
+     *                throwing {@link AssumptionViolatedException}.
      * @param message A message to pass to {@link AssumptionViolatedException}.
      */
     public void assumeTrue(String message, boolean b) {

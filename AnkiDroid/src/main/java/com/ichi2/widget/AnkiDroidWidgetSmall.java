@@ -51,7 +51,6 @@ public class AnkiDroidWidgetSmall extends AppWidgetProvider {
     }
 
 
-
     @Override
     public void onEnabled(Context context) {
         super.onEnabled(context);
@@ -96,13 +95,13 @@ public class AnkiDroidWidgetSmall extends AppWidgetProvider {
             int horizontal, vertical;
             float text;
             if ((width / height) > 0.8) {
-                horizontal = (int) (((width - (height * 0.8))/2 + 4) * scale + 0.5f);
+                horizontal = (int) (((width - (height * 0.8)) / 2 + 4) * scale + 0.5f);
                 vertical = (int) (4 * scale + 0.5f);
-                text = (float)(Math.sqrt(height * 0.8 / width) * 18);
+                text = (float) (Math.sqrt(height * 0.8 / width) * 18);
             } else {
-                vertical = (int) (((height - (width * 1.25))/2 + 4) * scale + 0.5f);
+                vertical = (int) (((height - (width * 1.25)) / 2 + 4) * scale + 0.5f);
                 horizontal = (int) (4 * scale + 0.5f);
-                text = (float)(Math.sqrt(width * 1.25 / height) * 18);
+                text = (float) (Math.sqrt(width * 1.25 / height) * 18);
             }
 
             updateViews.setTextViewTextSize(R.id.widget_due, TypedValue.COMPLEX_UNIT_SP, text);
@@ -114,11 +113,15 @@ public class AnkiDroidWidgetSmall extends AppWidgetProvider {
 
     public static class UpdateService extends Service {
 
-        /** The cached number of total due cards. */
+        /**
+         * The cached number of total due cards.
+         */
         private int dueCardsCount;
 
 
-        /** The cached estimated reviewing time. */
+        /**
+         * The cached estimated reviewing time.
+         */
         private int eta;
 
         public void doUpdate(Context context) {

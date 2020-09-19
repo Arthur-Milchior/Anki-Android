@@ -26,7 +26,7 @@ import androidx.test.internal.runner.TestRequestBuilder;
 
 /**
  * A class which allows loading MultiDex tests on Android < 21
- *
+ * <p>
  * This is in androidx to override package-level functions
  */
 @SuppressWarnings("unused") //referenced by build.gradle

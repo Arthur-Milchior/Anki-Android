@@ -7,8 +7,10 @@ import com.ichi2.utils.JSONObject;
 import androidx.annotation.StringRes;
 
 public class StdModels {
-    /** Essentially, the default name. As a resource, so that it can
-     * be localized later. */
+    /**
+     * Essentially, the default name. As a resource, so that it can
+     * be localized later.
+     */
     @StringRes
     private int defaultName;
     /**
@@ -74,71 +76,71 @@ public class StdModels {
             R.string.basic_model_name);
 
     public static final StdModels basicTypingModel = new StdModels
-        ( (Models mm, String name) -> {
-        Model m = basicModel._new(mm, name);
-        JSONObject t = m.getJSONArray("tmpls").getJSONObject(0);
-        String frontName = m.getJSONArray("flds").getJSONObject(0).getString("name");
-        String backName = m.getJSONArray("flds").getJSONObject(1).getString("name");
-        t.put("qfmt", "{{" + frontName + "}}\n\n{{type:" + backName + "}}");
-        t.put("afmt", "{{" + frontName + "}}\n\n<hr id=answer>\n\n{{type:" + backName + "}}");
-        return m;
-    },
-        R.string.basic_typing_model_name);
+            ((Models mm, String name) -> {
+                Model m = basicModel._new(mm, name);
+                JSONObject t = m.getJSONArray("tmpls").getJSONObject(0);
+                String frontName = m.getJSONArray("flds").getJSONObject(0).getString("name");
+                String backName = m.getJSONArray("flds").getJSONObject(1).getString("name");
+                t.put("qfmt", "{{" + frontName + "}}\n\n{{type:" + backName + "}}");
+                t.put("afmt", "{{" + frontName + "}}\n\n<hr id=answer>\n\n{{type:" + backName + "}}");
+                return m;
+            },
+                    R.string.basic_typing_model_name);
 
     public static final StdModels forwardReverseModel = new StdModels
-        ( (Models mm, String name) -> {
-        Model m = basicModel._new(mm, name);
-        String frontName = m.getJSONArray("flds").getJSONObject(0).getString("name");
-        String backName = m.getJSONArray("flds").getJSONObject(1).getString("name");
-        String cardTwoName = AnkiDroidApp.getAppResources().getString(R.string.card_two_name);
-        JSONObject t = mm.newTemplate(cardTwoName);
-        t.put("qfmt", "{{" + backName + "}}");
-        t.put("afmt", "{{FrontSide}}\n\n<hr id=answer>\n\n{{"+frontName+"}}");
-        mm.addTemplateInNewModel(m, t);
-        return m;
-    },
-        R.string.forward_reverse_model_name);
+            ((Models mm, String name) -> {
+                Model m = basicModel._new(mm, name);
+                String frontName = m.getJSONArray("flds").getJSONObject(0).getString("name");
+                String backName = m.getJSONArray("flds").getJSONObject(1).getString("name");
+                String cardTwoName = AnkiDroidApp.getAppResources().getString(R.string.card_two_name);
+                JSONObject t = mm.newTemplate(cardTwoName);
+                t.put("qfmt", "{{" + backName + "}}");
+                t.put("afmt", "{{FrontSide}}\n\n<hr id=answer>\n\n{{" + frontName + "}}");
+                mm.addTemplateInNewModel(m, t);
+                return m;
+            },
+                    R.string.forward_reverse_model_name);
 
     public static final StdModels forwardOptionalReverseModel = new StdModels
-        ( (Models mm, String name) -> {
-        Model m = forwardReverseModel._new(mm, name);
-        String av = AnkiDroidApp.getAppResources().getString(R.string.field_to_ask_front_name);
-        JSONObject fm = mm.newField(av);
-        mm.addFieldInNewModel(m, fm);
-        JSONObject t = m.getJSONArray("tmpls").getJSONObject(1);
-        t.put("qfmt", "{{#" + av +"}}" + t.getString("qfmt") + "{{/" + av +"}}");
-        return m;
-    },
-        R.string.forward_optional_reverse_model_name);
+            ((Models mm, String name) -> {
+                Model m = forwardReverseModel._new(mm, name);
+                String av = AnkiDroidApp.getAppResources().getString(R.string.field_to_ask_front_name);
+                JSONObject fm = mm.newField(av);
+                mm.addFieldInNewModel(m, fm);
+                JSONObject t = m.getJSONArray("tmpls").getJSONObject(1);
+                t.put("qfmt", "{{#" + av + "}}" + t.getString("qfmt") + "{{/" + av + "}}");
+                return m;
+            },
+                    R.string.forward_optional_reverse_model_name);
 
     public static final StdModels clozeModel = new StdModels
-        ( (Models mm, String name) -> {
-        Model m = mm.newModel(name);
-        m.put("type", Consts.MODEL_CLOZE);
-        String txt = AnkiDroidApp.getAppResources().getString(R.string.text_field_name);
-        JSONObject fm = mm.newField(txt);
-        mm.addFieldInNewModel(m, fm);
-        String fieldExtraName = AnkiDroidApp.getAppResources().getString(R.string.extra_field_name);
-        fm = mm.newField(fieldExtraName);
-        mm.addFieldInNewModel(m, fm);
-        String cardTypeClozeName = AnkiDroidApp.getAppResources().getString(R.string.card_cloze_name);
-        JSONObject t = mm.newTemplate(cardTypeClozeName);
-        String fmt = "{{cloze:" + txt + "}}";
-        m.put("css", m.getString("css") + ".cloze {" + "font-weight: bold;" + "color: blue;" + "}");
-        t.put("qfmt", fmt);
-        t.put("afmt", fmt + "<br>\n{{" + fieldExtraName + "}}");
-        mm.addTemplateInNewModel(m, t);
-        return m;
-    },
-        R.string.cloze_model_name);
+            ((Models mm, String name) -> {
+                Model m = mm.newModel(name);
+                m.put("type", Consts.MODEL_CLOZE);
+                String txt = AnkiDroidApp.getAppResources().getString(R.string.text_field_name);
+                JSONObject fm = mm.newField(txt);
+                mm.addFieldInNewModel(m, fm);
+                String fieldExtraName = AnkiDroidApp.getAppResources().getString(R.string.extra_field_name);
+                fm = mm.newField(fieldExtraName);
+                mm.addFieldInNewModel(m, fm);
+                String cardTypeClozeName = AnkiDroidApp.getAppResources().getString(R.string.card_cloze_name);
+                JSONObject t = mm.newTemplate(cardTypeClozeName);
+                String fmt = "{{cloze:" + txt + "}}";
+                m.put("css", m.getString("css") + ".cloze {" + "font-weight: bold;" + "color: blue;" + "}");
+                t.put("qfmt", fmt);
+                t.put("afmt", fmt + "<br>\n{{" + fieldExtraName + "}}");
+                mm.addTemplateInNewModel(m, t);
+                return m;
+            },
+                    R.string.cloze_model_name);
 
     public static StdModels[] stdModels =
-    {
-        basicModel,
-        basicTypingModel,
-        forwardReverseModel,
-        forwardOptionalReverseModel,
-        clozeModel,
-    };
+            {
+                    basicModel,
+                    basicTypingModel,
+                    forwardReverseModel,
+                    forwardOptionalReverseModel,
+                    clozeModel,
+            };
 }
 

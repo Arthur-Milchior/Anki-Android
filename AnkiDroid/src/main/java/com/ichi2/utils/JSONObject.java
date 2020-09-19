@@ -1,34 +1,34 @@
-/*  
+/*
  *  Copyright (c) 2020 Arthur Milchior <arthur@milchior.fr>
- *  
- *  This file is free software: you may copy, redistribute and/or modify it  
- *  under the terms of the GNU General Public License as published by the  
- *  Free Software Foundation, either version 3 of the License, or (at your  
- *  option) any later version.  
- *  
- *  This file is distributed in the hope that it will be useful, but  
- *  WITHOUT ANY WARRANTY; without even the implied warranty of  
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
- *  General Public License for more details.  
- *  
- *  You should have received a copy of the GNU General Public License  
+ *
+ *  This file is free software: you may copy, redistribute and/or modify it
+ *  under the terms of the GNU General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ *
+ *  This file is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
- *  This file incorporates work covered by the following copyright and  
- *  permission notice:  
- *  
+ *
+ *  This file incorporates work covered by the following copyright and
+ *  permission notice:
+ *
  *    Copyright (c) 2002 JSON.org
- *    
+ *
  *    Permission is hereby granted, free of charge, to any person obtaining a copy
  *    of this software and associated documentation files (the "Software"), to deal
  *    in the Software without restriction, including without limitation the rights
  *    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *    copies of the Software, and to permit persons to whom the Software is
  *    furnished to do so, subject to the following conditions:
- *   
+ *
  *    The above copyright notice and this permission notice shall be included in all
  *    copies or substantial portions of the Software.
- *   
+ *
  *    The Software shall be used for Good, not Evil.
  *
  *    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -37,7 +37,7 @@
  *    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  *    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- *    SOFTWARE. 
+ *    SOFTWARE.
  */
 
 package com.ichi2.utils;
@@ -46,7 +46,6 @@ package com.ichi2.utils;
  * Each method similar to the methods in JSONObjects. Name changed to add a ,
  * and it throws JSONException instead of JSONException.
  * Furthermore, it returns JSONObject and JSONArray
- *
  */
 
 import java.util.Iterator;
@@ -138,15 +137,15 @@ public class JSONObject extends org.json.JSONObject implements Iterable<String> 
 
     public JSONObject(JSONObject copyFrom) {
         this();
-        for (String key: copyFrom) {
+        for (String key : copyFrom) {
             put(key, copyFrom.get(key));
         }
     }
 
     /**
-        Iters on the keys. (Similar to iteration in Python's
-        dictionnary.
-    */
+     Iters on the keys. (Similar to iteration in Python's
+     dictionnary.
+     */
     public Iterator<String> iterator() {
         return keys();
     }
@@ -163,7 +162,7 @@ public class JSONObject extends org.json.JSONObject implements Iterable<String> 
      * @param obj A json object
      * @return Exactly the same object, with a different type.
      */
-    public static JSONObject objectToObject(org.json.JSONObject obj){
+    public static JSONObject objectToObject(org.json.JSONObject obj) {
         Assert.that(obj == null || (obj instanceof JSONObject), "Object %s should have been an instance of our JSONObject.", obj);
         return (JSONObject) obj;
     }
@@ -290,7 +289,7 @@ public class JSONObject extends org.json.JSONObject implements Iterable<String> 
         try {
             return JSONArray.arrayToArray(super.getJSONArray(name));
         } catch (org.json.JSONException e) {
-            throw new RuntimeException (e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -299,7 +298,7 @@ public class JSONObject extends org.json.JSONObject implements Iterable<String> 
         try {
             return objectToObject(super.getJSONObject(name));
         } catch (org.json.JSONException e) {
-            throw new RuntimeException (e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -317,7 +316,7 @@ public class JSONObject extends org.json.JSONObject implements Iterable<String> 
         try {
             return org.json.JSONObject.numberToString(number);
         } catch (org.json.JSONException e) {
-            throw new RuntimeException (e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -350,19 +349,18 @@ public class JSONObject extends org.json.JSONObject implements Iterable<String> 
 
     /** deep clone this into clone.
 
-        Given a subtype `T` of JSONObject, and a JSONObject `j`, we could do
-        ```
-        T t = new T();
-        j.deepClonedInto(t);
-        ```
-        in order to obtain a deep clone of `j` of type ```T```. */
+     Given a subtype `T` of JSONObject, and a JSONObject `j`, we could do
+     ```
+     T t = new T();
+     j.deepClonedInto(t);
+     ```
+     in order to obtain a deep clone of `j` of type ```T```. */
     @CheckResult
     protected <T extends JSONObject> T deepClonedInto(T clone) {
-        for (String key: this) {
+        for (String key : this) {
             if (get(key) instanceof JSONObject) {
                 clone.put(key, getJSONObject(key).deepClone());
-            }
-            else if (get(key) instanceof JSONArray) {
+            } else if (get(key) instanceof JSONArray) {
                 clone.put(key, getJSONArray(key).deepClone());
             } else {
                 clone.put(key, get(key));

@@ -11,7 +11,9 @@ import android.os.AsyncTask;
  */
 public abstract class TaskListener {
 
-    /** Invoked before the task is started. */
+    /**
+     * Invoked before the task is started.
+     */
     public abstract void onPreExecute();
 
 

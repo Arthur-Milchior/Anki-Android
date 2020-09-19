@@ -35,6 +35,7 @@ import java.util.zip.ZipInputStream;
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import timber.log.Timber;
 
 public class ImportUtils {
@@ -47,7 +48,7 @@ public class ImportUtils {
      * This code is used in multiple places to handle package imports
      *
      * @param context for use in resource resolution and path finding
-     * @param intent contains the file to import
+     * @param intent  contains the file to import
      * @return null if successful, otherwise error message
      */
     @NonNull
@@ -63,7 +64,9 @@ public class ImportUtils {
         return filename != null && (filename.toLowerCase().endsWith(".colpkg") || "collection.apkg".equals(filename));
     }
 
-    /** @return Whether the file is either a deck, or a collection package */
+    /**
+     * @return Whether the file is either a deck, or a collection package
+     */
     @Contract("null -> false")
     public static boolean isValidPackageName(@Nullable String filename) {
         return FileImporter.isDeckPackage(filename) || isCollectionPackage(filename);
@@ -84,7 +87,7 @@ public class ImportUtils {
          * This code is used in multiple places to handle package imports
          *
          * @param context for use in resource resolution and path finding
-         * @param intent contains the file to import
+         * @param intent  contains the file to import
          * @return null if successful, otherwise error message
          */
         @NonNull
@@ -251,7 +254,7 @@ public class ImportUtils {
         @Nullable
         protected String getFileNameFromContentProvider(Context context, Uri data) {
             String filename = null;
-            try (Cursor cursor = context.getContentResolver().query(data, new String[] {OpenableColumns.DISPLAY_NAME}, null, null, null)) {
+            try (Cursor cursor = context.getContentResolver().query(data, new String[]{OpenableColumns.DISPLAY_NAME}, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
                     filename = cursor.getString(0);
                     Timber.d("handleFileImport() Importing from content provider: %s", filename);
@@ -279,6 +282,7 @@ public class ImportUtils {
 
         /**
          * Send a Message to AnkiDroidApp so that the DialogMessageHandler shows the Import apkg dialog.
+         *
          * @param path path to apkg file which will be imported
          */
         private static void sendShowImportFileDialogMsg(String path) {
@@ -321,6 +325,7 @@ public class ImportUtils {
 
         /**
          * Check if the InputStream is to a valid non-empty zip file
+         *
          * @param data uri from which to get input stream
          * @return whether or not valid zip file
          */
@@ -366,7 +371,8 @@ public class ImportUtils {
 
         /**
          * Copy the data from the intent to a temporary file
-         * @param data intent from which to get input stream
+         *
+         * @param data     intent from which to get input stream
          * @param tempPath temporary path to store the cached file
          * @return whether or not copy was successful
          */
@@ -422,7 +428,7 @@ public class ImportUtils {
         }
 
 
-        private static String getInvalidZipException(Context ctx, @SuppressWarnings( {"unused", "RedundantSuppression"}) File file, Exception e) {
+        private static String getInvalidZipException(Context ctx, @SuppressWarnings({"unused", "RedundantSuppression"}) File file, Exception e) {
             // This occurs when there is random corruption in a zip file
             if (e instanceof IOException && "central directory is empty, can't expand corrupt archive.".equals(e.getMessage())) {
                 return ctx.getString(R.string.import_error_corrupt_zip, e.getLocalizedMessage());

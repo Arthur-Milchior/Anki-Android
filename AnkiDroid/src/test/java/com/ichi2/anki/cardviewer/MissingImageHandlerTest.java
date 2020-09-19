@@ -101,7 +101,9 @@ public class MissingImageHandlerTest {
 
     @Test
     public void uiFailureDoesNotCrash() {
-        MissingImageHandler sut = new MissingImageHandler((f) -> { throw new RuntimeException("expected"); });
+        MissingImageHandler sut = new MissingImageHandler((f) -> {
+            throw new RuntimeException("expected");
+        });
         sut.processFailure(getValidRequest("example.jpg"));
         assertThat("Irrelevant assert to stop lint warnings", mTimesCalled, is(0));
     }
@@ -109,13 +111,13 @@ public class MissingImageHandlerTest {
 
     private WebResourceRequest getValidRequest(String fileName) {
         // actual URL on Android 9
-        String url =  String.format("file:///storage/emulated/0/AnkiDroid/collection.media/%s", fileName);
+        String url = String.format("file:///storage/emulated/0/AnkiDroid/collection.media/%s", fileName);
         return getWebResourceRequest(url);
     }
 
     private WebResourceRequest getInvalidRequest(@SuppressWarnings("SameParameterValue") String fileName) {
         // no collection.media in the URL
-        String url =  String.format("file:///storage/emulated/0/AnkiDroid/%s", fileName);
+        String url = String.format("file:///storage/emulated/0/AnkiDroid/%s", fileName);
         return getWebResourceRequest(url);
     }
 

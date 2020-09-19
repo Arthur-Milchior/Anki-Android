@@ -12,7 +12,9 @@ public class NoSuchDeckException extends Exception {
         this.mDeckId = deckId;
     }
 
-    /** The ID of the accessed deck */
+    /**
+     * The ID of the accessed deck
+     */
     public long getDeckId() {
         return mDeckId;
     }

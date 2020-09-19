@@ -1,8 +1,8 @@
-
 package com.ichi2.anki.dialogs;
 
 import android.content.res.Resources;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -15,6 +15,7 @@ public class ExportDialog extends AnalyticsDialogFragment {
     public interface ExportDialogListener {
 
         void exportApkg(String path, Long did, boolean includeSched, boolean includeMedia);
+
         void dismissAllDialogFragments();
     }
 
@@ -26,8 +27,8 @@ public class ExportDialog extends AnalyticsDialogFragment {
 
     /**
      * A set of dialogs which deal with importing a file
-     * 
-     * @param did An integer which specifies which of the sub-dialogs to show
+     *
+     * @param did           An integer which specifies which of the sub-dialogs to show
      * @param dialogMessage An optional string which can be used to show a custom message or specify import path
      */
     public static ExportDialog newInstance(@NonNull String dialogMessage, Long did) {
@@ -60,10 +61,10 @@ public class ExportDialog extends AnalyticsDialogFragment {
             checked = new Integer[]{};
         } else {
             mIncludeSched = true;
-            checked = new Integer[]{ INCLUDE_SCHED };
+            checked = new Integer[]{INCLUDE_SCHED};
         }
-        final String[] items = { res.getString(R.string.export_include_schedule),
-                res.getString(R.string.export_include_media) };
+        final String[] items = {res.getString(R.string.export_include_schedule),
+                res.getString(R.string.export_include_media)};
 
         MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity())
                 .title(R.string.export)

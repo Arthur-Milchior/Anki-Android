@@ -46,7 +46,7 @@ public class CsvProcessIntegrationTest {
     @Test
     public void quotedDelimiterTest() {
         String input = "\"John \"\"Da Man\"\"\",Rep,120 Fake St.,Falsey, NJ,00000";
-        CsvDialect dialect =  new CsvSniffer().sniff(input, null);
+        CsvDialect dialect = new CsvSniffer().sniff(input, null);
 
         assertThat("doublequote", dialect.mDoublequote, is(true));
         assertThat("skipinitialspace", dialect.mSkipInitialSpace, is(false));

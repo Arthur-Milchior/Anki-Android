@@ -48,7 +48,7 @@ public class Threads {
 
     /**
      * Creates a {@link ThreadChecker} that validates all access are done on the given thread.
-     * 
+     *
      * @param thread on which accesses should occur
      */
     public static ThreadChecker newSingleThreadChecker(@NonNull Thread thread) {
@@ -116,7 +116,9 @@ public class Threads {
      */
     private static class SingleThreadChecker implements ThreadChecker {
 
-        /** The thread that is allowed access. */
+        /**
+         * The thread that is allowed access.
+         */
         private Thread mThread;
 
 
@@ -125,7 +127,7 @@ public class Threads {
          * <p>
          * If passed {@code null}, it will detect the first thread that calls {@link #checkThread()} and make sure all
          * future accesses are from that thread.
-         * 
+         *
          * @param thread that is allowed access
          */
         private SingleThreadChecker(Thread thread) {

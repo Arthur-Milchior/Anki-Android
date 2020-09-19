@@ -20,9 +20,7 @@ public class Term implements TreeElement {
     private TopLevelParser parser;
 
 
-
     public enum TermType {TERM_MUL_FACTOR, TERM_DIV_FACTOR, FACTOR, INVALID}
-
 
 
     private TermType termType = TermType.INVALID;

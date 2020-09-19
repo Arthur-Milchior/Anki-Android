@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileInputStream;
 
 import androidx.annotation.Nullable;
+
 import timber.log.Timber;
 
 public class BitmapUtil {

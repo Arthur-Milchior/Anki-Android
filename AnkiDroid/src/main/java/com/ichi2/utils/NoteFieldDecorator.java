@@ -83,10 +83,10 @@ public class NoteFieldDecorator {
         StringBuilder revuelto = new StringBuilder();
         for (int i = 0; i < huevo.length(); i++) {
             char c = huevo.charAt(i);
-            if       (c >= 'a' && c <= 'm') c += 13;
-            else if  (c >= 'A' && c <= 'M') c += 13;
-            else if  (c >= 'n' && c <= 'z') c -= 13;
-            else if  (c >= 'N' && c <= 'Z') c -= 13;
+            if (c >= 'a' && c <= 'm') c += 13;
+            else if (c >= 'A' && c <= 'M') c += 13;
+            else if (c >= 'n' && c <= 'z') c -= 13;
+            else if (c >= 'N' && c <= 'Z') c -= 13;
             revuelto.append(c);
         }
         return revuelto.toString();

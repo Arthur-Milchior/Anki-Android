@@ -27,6 +27,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.Point;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
@@ -136,7 +137,8 @@ public class Whiteboard extends View {
     }
 
 
-    /** Handle motion events to draw using the touch screen or to interact with the flashcard behind
+    /**
+     * Handle motion events to draw using the touch screen or to interact with the flashcard behind
      * the whiteboard by using a second finger.
      *
      * @param event The motion event.
@@ -153,7 +155,7 @@ public class Whiteboard extends View {
      *
      * @param event The motion event.
      * @return True if the event was handled, false otherwise or when drawing was aborted due to
-     *              detection of a multitouch event.
+     * detection of a multitouch event.
      */
     private boolean handleDrawEvent(MotionEvent event) {
         float x = event.getX();
@@ -242,7 +244,9 @@ public class Whiteboard extends View {
         return mUndo.size();
     }
 
-    /** @return Whether there are strokes to undo */
+    /**
+     * @return Whether there are strokes to undo
+     */
     public boolean undoEmpty() {
         return mUndo.empty();
     }

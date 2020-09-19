@@ -55,7 +55,9 @@ public abstract class FieldControllerBase implements IFieldController {
     @Override
     public void setEditingActivity(MultimediaEditFieldActivity activity) {
         mActivity = activity;
-    };
+    }
+
+    ;
 
 
     @Override

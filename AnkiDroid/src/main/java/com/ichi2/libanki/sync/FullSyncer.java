@@ -40,7 +40,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import timber.log.Timber;
 
-@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes","PMD.NPathComplexity"})
+@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "PMD.NPathComplexity"})
 public class FullSyncer extends HttpSyncer {
 
     private Collection mCol;
@@ -100,7 +100,7 @@ public class FullSyncer extends HttpSyncer {
             throw new RuntimeException(e);
         } catch (IOException e) {
             Timber.e(e, "Full sync failed to download collection.");
-            return new Object[] { "sdAccessError" };
+            return new Object[]{"sdAccessError"};
         } finally {
             body.close();
         }
@@ -112,11 +112,11 @@ public class FullSyncer extends HttpSyncer {
             tempDb = new DB(tpath);
             if (!"ok".equalsIgnoreCase(tempDb.queryString("PRAGMA integrity_check"))) {
                 Timber.e("Full sync - downloaded file corrupt");
-                return new Object[] { "remoteDbError" };
+                return new Object[]{"remoteDbError"};
             }
         } catch (SQLiteDatabaseCorruptException e) {
             Timber.e("Full sync - downloaded file corrupt");
-            return new Object[] { "remoteDbError" };
+            return new Object[]{"remoteDbError"};
         } finally {
             if (tempDb != null) {
                 tempDb.close();
@@ -127,10 +127,10 @@ public class FullSyncer extends HttpSyncer {
         File newFile = new File(tpath);
         if (newFile.renameTo(new File(path))) {
             Timber.i("Full Sync Success: Overwritten collection with downloaded file");
-            return new Object[] { "success" };
+            return new Object[]{"success"};
         } else {
             Timber.w("Full Sync: Error overwriting collection with downloaded file");
-            return new Object[] { "overwriteError" };
+            return new Object[]{"overwriteError"};
         }
     }
 
@@ -140,10 +140,10 @@ public class FullSyncer extends HttpSyncer {
         // make sure it's ok before we try to upload
         mCon.publishProgress(R.string.sync_check_upload_file);
         if (!"ok".equalsIgnoreCase(mCol.getDb().queryString("PRAGMA integrity_check"))) {
-            return new Object[] { "dbError" };
+            return new Object[]{"dbError"};
         }
         if (!mCol.basicCheck()) {
-            return new Object[] { "dbError" };
+            return new Object[]{"dbError"};
         }
         // apply some adjustments, then upload
         mCol.beforeUpload();
@@ -158,9 +158,9 @@ public class FullSyncer extends HttpSyncer {
             int status = ret.code();
             if (status != 200) {
                 // error occurred
-                return new Object[] { "error", status, ret.message() };
+                return new Object[]{"error", status, ret.message()};
             } else {
-                return new Object[] { ret.body().string() };
+                return new Object[]{ret.body().string()};
             }
         } catch (IllegalStateException | IOException e) {
             throw new RuntimeException(e);

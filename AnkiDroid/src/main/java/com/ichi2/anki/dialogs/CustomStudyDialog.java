@@ -20,8 +20,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+
 import timber.log.Timber;
 
 import android.text.Editable;
@@ -57,7 +59,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
 import static com.ichi2.async.CollectionTask.TASK_TYPE.*;
+
 import com.ichi2.async.TaskData;
 
 
@@ -81,6 +85,7 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
 
     public interface CustomStudyListener {
         void onCreateCustomStudySession();
+
         void onExtendStudyLimits();
     }
 
@@ -117,12 +122,13 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
 
     /**
      * Build a context menu for custom study
+     *
      * @param id
      * @return
      */
     private MaterialDialog buildContextMenu(int id) {
         int[] listIds = getListIds(id);
-        final boolean jumpToReviewer = getArguments ().getBoolean("jumpToReviewer");
+        final boolean jumpToReviewer = getArguments().getBoolean("jumpToReviewer");
         return new MaterialDialog.Builder(this.getActivity())
                 .title(R.string.custom_study)
                 .cancelable(true)
@@ -175,6 +181,7 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
 
     /**
      * Build an input dialog that is used to get a parameter related to custom study from the user
+     *
      * @param dialogId
      * @return
      */
@@ -203,7 +210,7 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
         // deck id
         final long did = getArguments().getLong("did");
         // Whether or not to jump straight to the reviewer
-        final boolean jumpToReviewer = getArguments ().getBoolean("jumpToReviewer");
+        final boolean jumpToReviewer = getArguments().getBoolean("jumpToReviewer");
         // Set builder parameters
         MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity())
                 .customView(v, true)
@@ -243,22 +250,22 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
                         case CUSTOM_STUDY_FORGOT: {
                             JSONArray ar = new JSONArray();
                             ar.put(0, 1);
-                            createCustomStudySession(ar, new Object[] {String.format(Locale.US,
-                                                                                     "rated:%d:1", n), Consts.DYN_MAX_SIZE, Consts.DYN_RANDOM}, false);
+                            createCustomStudySession(ar, new Object[]{String.format(Locale.US,
+                                    "rated:%d:1", n), Consts.DYN_MAX_SIZE, Consts.DYN_RANDOM}, false);
                             break;
                         }
                         case CUSTOM_STUDY_AHEAD: {
-                            createCustomStudySession(new JSONArray(), new Object[] {String.format(Locale.US,
+                            createCustomStudySession(new JSONArray(), new Object[]{String.format(Locale.US,
                                     "prop:due<=%d", n), Consts.DYN_MAX_SIZE, Consts.DYN_DUE}, true);
                             break;
                         }
                         case CUSTOM_STUDY_RANDOM: {
                             createCustomStudySession(new JSONArray(),
-                                    new Object[] {"", n, Consts.DYN_RANDOM}, true);
+                                    new Object[]{"", n, Consts.DYN_RANDOM}, true);
                             break;
                         }
                         case CUSTOM_STUDY_PREVIEW: {
-                            createCustomStudySession(new JSONArray(), new Object[] {"is:new added:" +
+                            createCustomStudySession(new JSONArray(), new Object[]{"is:new added:" +
                                     Integer.toString(n), Consts.DYN_MAX_SIZE, Consts.DYN_OLDEST}, false);
                             break;
                         }
@@ -331,12 +338,13 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
             }
             sb.append("(").append(TextUtils.join(" or ", arr)).append(")");
         }
-        createCustomStudySession(new JSONArray(), new Object[] {sb.toString(),
+        createCustomStudySession(new JSONArray(), new Object[]{sb.toString(),
                 Consts.DYN_MAX_SIZE, Consts.DYN_RANDOM}, true);
     }
 
     /**
      * Retrieve the list of ids to put in the context menu list
+     *
      * @param dialogId option to specify which tasks are shown in the list
      * @return the ids of which values to show
      */
@@ -345,12 +353,12 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
         switch (dialogId) {
             case CONTEXT_MENU_STANDARD:
                 // Standard context menu
-                return new int[] {CUSTOM_STUDY_NEW, CUSTOM_STUDY_REV, CUSTOM_STUDY_FORGOT, CUSTOM_STUDY_AHEAD,
+                return new int[]{CUSTOM_STUDY_NEW, CUSTOM_STUDY_REV, CUSTOM_STUDY_FORGOT, CUSTOM_STUDY_AHEAD,
                         CUSTOM_STUDY_RANDOM, CUSTOM_STUDY_PREVIEW, CUSTOM_STUDY_TAGS};
             case CONTEXT_MENU_LIMITS:
                 // Special custom study options to show when the daily study limit has been reached
                 if (col.getSched().newDue() && col.getSched().revDue()) {
-                    return new int[] {CUSTOM_STUDY_NEW, CUSTOM_STUDY_REV, DECK_OPTIONS, MORE_OPTIONS};
+                    return new int[]{CUSTOM_STUDY_NEW, CUSTOM_STUDY_REV, DECK_OPTIONS, MORE_OPTIONS};
                 } else {
                     if (col.getSched().newDue()) {
                         return new int[]{CUSTOM_STUDY_NEW, DECK_OPTIONS, MORE_OPTIONS};
@@ -360,7 +368,7 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
                 }
             case CONTEXT_MENU_EMPTY_SCHEDULE:
                 // Special custom study options to show when extending the daily study limits is not applicable
-                return new int[] {CUSTOM_STUDY_FORGOT, CUSTOM_STUDY_AHEAD, CUSTOM_STUDY_RANDOM,
+                return new int[]{CUSTOM_STUDY_FORGOT, CUSTOM_STUDY_AHEAD, CUSTOM_STUDY_RANDOM,
                         CUSTOM_STUDY_PREVIEW, CUSTOM_STUDY_TAGS, DECK_OPTIONS};
             default:
                 break;
@@ -424,8 +432,9 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
 
     /**
      * Create a custom study session
-     * @param delays delay options for scheduling algorithm
-     * @param terms search terms
+     *
+     * @param delays  delay options for scheduling algorithm
+     * @param terms   search terms
      * @param resched whether to reschedule the cards based on the answers given (or ignore them if false)
      */
     private void createCustomStudySession(JSONArray delays, Object[] terms, Boolean resched) {
@@ -441,9 +450,9 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
             if (cur.getInt("dyn") != 1) {
                 Timber.w("Deck: '%s' was non-dynamic", customStudyDeck);
                 new MaterialDialog.Builder(getActivity())
-                    .content(R.string.custom_study_deck_exists)
-                    .negativeText(R.string.dialog_cancel)
-                    .build().show();
+                        .content(R.string.custom_study_deck_exists)
+                        .negativeText(R.string.dialog_cancel)
+                        .build().show();
                 return;
             } else {
                 Timber.i("Emptying dynamic deck '%s' for custom study", customStudyDeck);
@@ -503,9 +512,10 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
     }
 
 
-    private CreateCustomStudySessionListener createCustomStudySessionListener(){
+    private CreateCustomStudySessionListener createCustomStudySessionListener() {
         return new CreateCustomStudySessionListener(getAnkiActivity());
     }
+
     private static class CreateCustomStudySessionListener extends TaskListenerWithContext<AnkiActivity> {
         public CreateCustomStudySessionListener(AnkiActivity activity) {
             super(activity);

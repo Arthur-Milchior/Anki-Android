@@ -36,17 +36,21 @@ import com.ichi2.async.TaskListener;
 import com.ichi2.compat.CompatHelper;
 import com.ichi2.libanki.Model;
 import com.ichi2.utils.JSONObject;
+
 import static com.ichi2.async.CollectionTask.TASK_TYPE.*;
+
 import com.ichi2.async.TaskData;
 
 
 public class TemporaryModel {
 
-    public enum ChangeType { ADD, DELETE }
+    public enum ChangeType {ADD, DELETE}
+
     public static final String INTENT_MODEL_FILENAME = "editedModelFilename";
     private ArrayList<Object[]> mTemplateChanges = new ArrayList<>();
     private String mEditedModelFileName = null;
-    private final @NonNull Model mEditedModel;
+    private final @NonNull
+    Model mEditedModel;
 
 
     public TemporaryModel(@NonNull Model model) {
@@ -61,7 +65,8 @@ public class TemporaryModel {
      * @param bundle a Bundle that should contain persisted JSON under INTENT_MODEL_FILENAME key
      * @return re-hydrated TemporaryModel or null if there was a problem, null means should reload from database
      */
-    public static @Nullable TemporaryModel fromBundle(Bundle bundle) {
+    public static @Nullable
+    TemporaryModel fromBundle(Bundle bundle) {
         String mEditedModelFileName = bundle.getString(INTENT_MODEL_FILENAME);
         // Bundle.getString is @Nullable, so we have to check.
         if (mEditedModelFileName == null) {
@@ -150,7 +155,7 @@ public class TemporaryModel {
         Timber.d("saveToDatabase() called");
         dumpChanges();
         TemporaryModel.clearTempModelFiles();
-        TaskData args = new TaskData(new Object[] {mEditedModel, getAdjustedTemplateChanges()});
+        TaskData args = new TaskData(new Object[]{mEditedModel, getAdjustedTemplateChanges()});
         CollectionTask.launchCollectionTask(SAVE_MODEL, listener, args);
 
     }
@@ -173,6 +178,7 @@ public class TemporaryModel {
 
     /**
      * Save the current model to a temp file in the application internal cache directory
+     *
      * @return String representing the absolute path of the saved file, or null if there was a problem
      */
     public static @Nullable
@@ -192,6 +198,7 @@ public class TemporaryModel {
 
     /**
      * Get the model temporarily saved into the file represented by the given path
+     *
      * @return JSONObject holding the model, or null if there was a problem
      */
     public static Model getTempModel(@NonNull String tempModelFileName) throws IOException {
@@ -206,12 +213,14 @@ public class TemporaryModel {
     }
 
 
-    /** Clear any temp model files saved into internal cache directory */
+    /**
+     * Clear any temp model files saved into internal cache directory
+     */
     public static int clearTempModelFiles() {
         int deleteCount = 0;
         for (File c : AnkiDroidApp.getInstance().getCacheDir().listFiles()) {
             String absolutePath = c.getAbsolutePath();
-            if (absolutePath.contains("editedTemplate") && absolutePath.endsWith("json") ) {
+            if (absolutePath.contains("editedTemplate") && absolutePath.endsWith("json")) {
                 if (!c.delete()) {
                     Timber.w("Unable to delete temp file %s", c.getAbsolutePath());
                 } else {
@@ -224,7 +233,6 @@ public class TemporaryModel {
     }
 
 
-
     /**
      * Template deletes shift card ordinals in the database. To operate without saving, we must keep track to apply in order.
      * In addition, we don't want to persist a template add just to delete it later, so we combine those if they happen
@@ -233,26 +241,26 @@ public class TemporaryModel {
         Timber.d("addTemplateChange() type %s for ordinal %s", type, ordinal);
         ArrayList<Object[]> templateChanges = getTemplateChanges();
 
-        Object[] change = new Object[] {ordinal, type};
+        Object[] change = new Object[]{ordinal, type};
 
         // If we are deleting something we added but have not saved, edit it out of the change list
         if (type == ChangeType.DELETE) {
             int ordinalAdjustment = 0;
             for (int i = templateChanges.size() - 1; i >= 0; i--) {
-                Object[] oldChange = templateChanges.get(i );
-                switch ((ChangeType)oldChange[1]) {
+                Object[] oldChange = templateChanges.get(i);
+                switch ((ChangeType) oldChange[1]) {
                     case DELETE: {
                         // Deleting an ordinal at or below us? Adjust our comparison basis...
-                        if ((Integer)oldChange[0] - ordinalAdjustment <= ordinal) {
+                        if ((Integer) oldChange[0] - ordinalAdjustment <= ordinal) {
                             ordinalAdjustment++;
                             continue;
                         }
                         break;
                     }
                     case ADD:
-                        if (ordinal == (Integer)oldChange[0] - ordinalAdjustment) {
+                        if (ordinal == (Integer) oldChange[0] - ordinalAdjustment) {
                             // Deleting something we added this session? Edit it out via compaction
-                            compactTemplateChanges((Integer)oldChange[0]);
+                            compactTemplateChanges((Integer) oldChange[0]);
                             return;
                         }
                         break;
@@ -291,6 +299,7 @@ public class TemporaryModel {
     /**
      * Check if the change at the given index in the changes array is an addition from this editing session
      * (and thus is not in the database yet, and possibly needing ordinal adjustment from subsequent deletes)
+     *
      * @param changesIndex the index of the template in the changes array
      * @return either ordinal adjusted by any pending deletes if it is a pending add, or -1 if the ordinal is not an add
      */
@@ -350,7 +359,7 @@ public class TemporaryModel {
             int ordinalAdjustment = 0;
 
             // We need an initializer. Though proposed change is checked last, it's a reasonable default initializer.
-            Object[] currentChange = { ord, ChangeType.DELETE };
+            Object[] currentChange = {ord, ChangeType.DELETE};
             if (i < mTemplateChanges.size()) {
                 // Until we exhaust the pending change list we will use them
                 currentChange = mTemplateChanges.get(i);
@@ -366,7 +375,7 @@ public class TemporaryModel {
                 Object[] previousChange = mTemplateChanges.get(j);
 
                 // Is previous change a delete? Lower ordinal than current change?
-                if ((previousChange[1] == ChangeType.DELETE) && ((int)previousChange[0] <= (int)currentChange[0])) {
+                if ((previousChange[1] == ChangeType.DELETE) && ((int) previousChange[0] <= (int) currentChange[0])) {
                     // If so, that is the case where things shift. It means our ordinals moved and original ord is higher
                     ordinalAdjustment++;
                 }
@@ -374,7 +383,7 @@ public class TemporaryModel {
 
             // We know how many times ordinals smaller than the current were deleted so we have the total adjustment
             // Save this pending delete at it's original / db-relative position
-            deletedDbOrds.add((int)currentChange[0] + ordinalAdjustment);
+            deletedDbOrds.add((int) currentChange[0] + ordinalAdjustment);
         }
 
         int[] deletedDbOrdInts = new int[deletedDbOrds.size()];
@@ -399,7 +408,8 @@ public class TemporaryModel {
     }
 
 
-    public @NonNull ArrayList<Object[]> getTemplateChanges() {
+    public @NonNull
+    ArrayList<Object[]> getTemplateChanges() {
         if (mTemplateChanges == null) {
             mTemplateChanges = new ArrayList<>();
         }
@@ -411,9 +421,10 @@ public class TemporaryModel {
      * Adjust the ordinals in our accrued change list so that any pending adds have the correct
      * ordinal after taking into account any pending deletes
      *
-     * @return ArrayList<Object[2]> of [ordinal][ChangeType] entries
+     * @return ArrayList<Object [ 2 ]> of [ordinal][ChangeType] entries
      */
-    public @NonNull ArrayList<Object[]> getAdjustedTemplateChanges() {
+    public @NonNull
+    ArrayList<Object[]> getAdjustedTemplateChanges() {
         ArrayList<Object[]> changes = getTemplateChanges();
         ArrayList<Object[]> adjustedChanges = new ArrayList<>();
 
@@ -424,7 +435,7 @@ public class TemporaryModel {
         for (int i = 0; i < changes.size(); i++) {
             Object[] change = changes.get(i);
             Object[] adjustedChange = {change[0], change[1]};
-            switch ((ChangeType)adjustedChange[1]) {
+            switch ((ChangeType) adjustedChange[1]) {
                 case ADD:
                     adjustedChange[0] = TemporaryModel.getAdjustedAddOrdinalAtChangeIndex(this, i);
                     Timber.d("getAdjustedTemplateChanges() change %s ordinal adjusted from %s to %s", i, change[0], adjustedChange[0]);
@@ -450,8 +461,8 @@ public class TemporaryModel {
         int ordinalAdjustment = 0;
         for (int i = 0; i < mTemplateChanges.size(); i++) {
             Object[] change = mTemplateChanges.get(i);
-            int ordinal = (Integer)change[0];
-            ChangeType changeType = (ChangeType)change[1];
+            int ordinal = (Integer) change[0];
+            ChangeType changeType = (ChangeType) change[1];
             Timber.d("compactTemplateChanges() examining change entry %s / %s", ordinal, changeType);
 
             // Only make adjustments after the ordinal we want to delete was added

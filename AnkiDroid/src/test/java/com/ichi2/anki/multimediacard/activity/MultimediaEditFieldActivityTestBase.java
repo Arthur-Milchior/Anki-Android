@@ -27,7 +27,7 @@ public abstract class MultimediaEditFieldActivityTestBase extends RobolectricTes
         ShadowApplication app = Shadows.shadowOf(application);
         app.grantPermissions(Manifest.permission.CAMERA);
     }
-    
+
     protected IFieldController getControllerForField(IField field, IMultimediaEditableNote note, int fieldIndex) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra(MultimediaEditFieldActivity.EXTRA_FIELD_INDEX, fieldIndex);

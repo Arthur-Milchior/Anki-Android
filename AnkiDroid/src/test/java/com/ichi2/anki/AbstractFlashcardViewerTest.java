@@ -89,7 +89,7 @@ public class AbstractFlashcardViewerTest extends RobolectricTest {
     }
 
     @Test
-    public void testTypeAnsAnswerFilterNormalIncorrect()  {
+    public void testTypeAnsAnswerFilterNormalIncorrect() {
         String buf = "<style>.card {\n" +
                 " font-family: arial;\n" +
                 " font-size: 20px;\n" +
@@ -277,16 +277,19 @@ public class AbstractFlashcardViewerTest extends RobolectricTest {
         String url = "signal:answer_ease1";
         assertEquals(ANSWER_ORDINAL_1, getSignalFromUrl(url));
     }
+
     @Test
     public void ease2IsParsedFromSignal() {
         String url = "signal:answer_ease2";
         assertEquals(ANSWER_ORDINAL_2, getSignalFromUrl(url));
     }
+
     @Test
     public void ease3IsParsedFromSignal() {
         String url = "signal:answer_ease3";
         assertEquals(ANSWER_ORDINAL_3, getSignalFromUrl(url));
     }
+
     @Test
     public void ease4IsParsedFromSignal() {
         String url = "signal:answer_ease4";
@@ -335,7 +338,9 @@ public class AbstractFlashcardViewerTest extends RobolectricTest {
         viewer.loadInitialCard();
         // Without this, AbstractFlashcardViewer.mCard is still null, and RobolectricTest.tearDown executes before
         // AsyncTasks spawned by by loading the viewer finish. Is there a way to synchronize these things while under test?
-        try { Thread.sleep(2000); } catch (Throwable t) { /* nothing */ }
+        try {
+            Thread.sleep(2000);
+        } catch (Throwable t) { /* nothing */ }
         shadowOf(getMainLooper()).idle();
         return viewer;
     }

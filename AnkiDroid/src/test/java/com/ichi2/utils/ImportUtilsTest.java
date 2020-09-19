@@ -132,7 +132,7 @@ public class ImportUtilsTest extends RobolectricTest {
     @NonNull
     private ClipData clipDataUriFromFile(String fileName) {
         ClipData.Item item = new ClipData.Item(Uri.parse("content://" + fileName));
-        ClipDescription description = new ClipDescription("", new String[] {});
+        ClipDescription description = new ClipDescription("", new String[]{});
         return new ClipData(description, item);
     }
 

@@ -12,7 +12,9 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
-/** Handles the star and flag marker for the card viewer */
+/**
+ * Handles the star and flag marker for the card viewer
+ */
 public class CardMarker {
 
     public static final int FLAG_NONE = 0;
@@ -23,7 +25,8 @@ public class CardMarker {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({FLAG_NONE, FLAG_RED, FLAG_ORANGE, FLAG_GREEN, FLAG_BLUE})
-    public @interface FlagDef {}
+    public @interface FlagDef {
+    }
 
     @NonNull
     private final ImageView markView;
@@ -35,7 +38,9 @@ public class CardMarker {
         this.flagView = flagView;
     }
 
-    /** Sets the mark icon on a card (the star) */
+    /**
+     * Sets the mark icon on a card (the star)
+     */
     public void displayMark(boolean markStatus) {
         if (markStatus) {
             markView.setVisibility(View.VISIBLE);
@@ -45,7 +50,9 @@ public class CardMarker {
         }
     }
 
-    /** Sets the flag icon on the card */
+    /**
+     * Sets the flag icon on the card
+     */
     public void displayFlag(@FlagDef int flagStatus) {
         switch (flagStatus) {
             case FLAG_RED:

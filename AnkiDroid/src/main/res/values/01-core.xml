@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!--
+<?xml version='1.0' encoding='UTF-8'?><!--
 ~ Copyright (c) 2009 Andrew <andrewdubya@gmail>
 ~ Copyright (c) 2009 Edu Zamora <edu.zasu@gmail.com>
 ~ Copyright (c) 2009 Daniel Svärd <daniel.svard@gmail.com>
@@ -17,7 +16,8 @@
 ~
 ~ You should have received a copy of the GNU General Public License along with
 ~ this program.  If not, see <http://www.gnu.org/licenses/>.
---><resources>
+-->
+<resources>
     <!-- Navigation drawer items-->
     <string name="decks">Decks</string>
     <string name="card_browser">Card browser</string>

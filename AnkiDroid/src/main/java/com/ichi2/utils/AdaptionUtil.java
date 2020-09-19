@@ -149,7 +149,7 @@ public class AdaptionUtil {
     }
 
 
-    @SuppressWarnings( {"unused", "RedundantSuppression"})
+    @SuppressWarnings({"unused", "RedundantSuppression"})
     public static boolean shouldCurrentUserBuyDifferentPhone() {
         return isRunningMiui();
     }

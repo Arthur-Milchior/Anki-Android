@@ -44,33 +44,33 @@ import androidx.annotation.VisibleForTesting;
 import static com.ichi2.libanki.stats.Stats.SECONDS_PER_DAY;
 
 /**
- A Card is the ultimate entity subject to review; it encapsulates the scheduling parameters (from which to derive
- the next interval), the note it is derived from (from which field data is retrieved), its own ownership (which deck it
- currently belongs to), and the retrieval of presentation elements (filled-in templates).
- 
- Card presentation has two components: the question (front) side and the answer (back) side. The presentation of the
- card is derived from the template of the card's Card Type. The Card Type is a component of the Note Type (see Models)
- that this card is derived from.
- 
- This class is responsible for:
- - Storing and retrieving database entries that map to Cards in the Collection
- - Providing the HTML representation of the Card's question and answer
- - Recording the results of review (answer chosen, time taken, etc)
-
- It does not:
- - Generate new cards (see Collection)
- - Store the templates or the style sheet (see Models)
- 
- Type: 0=new, 1=learning, 2=due
- Queue: same as above, and:
-        -1=suspended, -2=user buried, -3=sched buried
- Due is used differently for different queues.
- - new queue: note id or random int
- - rev queue: integer day
- - lrn queue: integer timestamp
+ * A Card is the ultimate entity subject to review; it encapsulates the scheduling parameters (from which to derive
+ * the next interval), the note it is derived from (from which field data is retrieved), its own ownership (which deck it
+ * currently belongs to), and the retrieval of presentation elements (filled-in templates).
+ * <p>
+ * Card presentation has two components: the question (front) side and the answer (back) side. The presentation of the
+ * card is derived from the template of the card's Card Type. The Card Type is a component of the Note Type (see Models)
+ * that this card is derived from.
+ * <p>
+ * This class is responsible for:
+ * - Storing and retrieving database entries that map to Cards in the Collection
+ * - Providing the HTML representation of the Card's question and answer
+ * - Recording the results of review (answer chosen, time taken, etc)
+ * <p>
+ * It does not:
+ * - Generate new cards (see Collection)
+ * - Store the templates or the style sheet (see Models)
+ * <p>
+ * Type: 0=new, 1=learning, 2=due
+ * Queue: same as above, and:
+ * -1=suspended, -2=user buried, -3=sched buried
+ * Due is used differently for different queues.
+ * - new queue: note id or random int
+ * - rev queue: integer day
+ * - lrn queue: integer timestamp
  */
-@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes","PMD.ExcessiveMethodLength","PMD.FieldDeclarationsShouldBeAtStartOfClass",
-                    "PMD.MethodNamingConventions"})
+@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "PMD.ExcessiveMethodLength", "PMD.FieldDeclarationsShouldBeAtStartOfClass",
+        "PMD.MethodNamingConventions"})
 public class Card implements Cloneable {
 
     public static final int TYPE_REV = 2;
@@ -175,7 +175,6 @@ public class Card implements Cloneable {
     }
 
 
-
     public void flush() {
         flush(true);
     }
@@ -187,12 +186,12 @@ public class Card implements Cloneable {
         }
         // bug check
         //if ((mQueue == Consts.QUEUE_TYPE_REV && mODue != 0) && !mCol.getDecks().isDyn(mDid)) {
-            // TODO: runHook("odueInvalid");
+        // TODO: runHook("odueInvalid");
         //}
         assert (mDue < Long.valueOf("4294967296"));
         mCol.getDb().execute(
                 "insert or replace into cards values " +
-                "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 mId,
                 mNid,
                 mDid,
@@ -221,7 +220,7 @@ public class Card implements Cloneable {
         mUsn = mCol.usn();
         // bug check
         //if ((mQueue == Consts.QUEUE_TYPE_REV && mODue != 0) && !mCol.getDecks().isDyn(mDid)) {
-            // TODO: runHook("odueInvalid");
+        // TODO: runHook("odueInvalid");
         //}
         assert (mDue < Long.valueOf("4294967296"));
 
@@ -384,7 +383,7 @@ public class Card implements Cloneable {
 
     /**
      * Save the currently elapsed reviewing time so it can be restored on resume.
-     *
+     * <p>
      * Use this method whenever a review session (activity) has been paused. Use the resumeTimer()
      * method when the session resumes to start counting review time again.
      */
@@ -395,7 +394,7 @@ public class Card implements Cloneable {
 
     /**
      * Resume the timer that counts the time spent reviewing this card.
-     *
+     * <p>
      * Unlike the desktop client, AnkiDroid must pause and resume the process in the middle of
      * reviewing. This method is required to keep track of the actual amount of time spent in
      * the reviewer and *must* be called on resume before any calls to timeTaken() take place
@@ -405,7 +404,9 @@ public class Card implements Cloneable {
         mTimerStarted = getCol().getTime().intTime() - mElapsedTime;
     }
 
-    public void setTimerStarted(long timeStarted){ mTimerStarted = timeStarted; }
+    public void setTimerStarted(long timeStarted) {
+        mTimerStarted = timeStarted;
+    }
 
     public long getId() {
         return mId;
@@ -422,7 +423,7 @@ public class Card implements Cloneable {
     }
 
     public long getMod() {
-        return mMod ;
+        return mMod;
     }
 
 
@@ -608,7 +609,7 @@ public class Card implements Cloneable {
 
     public Card clone() {
         try {
-            return (Card)super.clone();
+            return (Card) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
@@ -638,7 +639,7 @@ public class Card implements Cloneable {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Card) {
-            return this.getId() == ((Card)obj).getId();
+            return this.getId() == ((Card) obj).getId();
         }
         return super.equals(obj);
     }
@@ -646,7 +647,7 @@ public class Card implements Cloneable {
     @Override
     public int hashCode() {
         // Map a long to an int. For API>=24 you would just do `Long.hashCode(this.getId())`
-        return (int)(this.getId()^(this.getId()>>>32));
+        return (int) (this.getId() ^ (this.getId() >>> 32));
     }
 
     public static int intToFlag(int flags) {
@@ -706,7 +707,9 @@ public class Card implements Cloneable {
         return LanguageUtil.getShortDateFormatFromS(date);
     }
 
-    /** Non libAnki */
+    /**
+     * Non libAnki
+     */
     public boolean isDynamic() {
         //I have cards in my collection with oDue <> 0 and oDid = 0.
         //These are not marked as dynamic.
@@ -721,12 +724,13 @@ public class Card implements Cloneable {
         return this.getType() == Consts.CARD_TYPE_NEW;
     }
 
-    /** A cache represents an intermediary step between a card id and a card object. Creating a Card has some fixed cost
+    /**
+     * A cache represents an intermediary step between a card id and a card object. Creating a Card has some fixed cost
      * in term of database access. Using an id has an unknown cost: none if the card is never accessed, heavy if the
      * card is accessed a lot of time. CardCache ensure that the cost is paid at most once, by waiting for first access
      * to load the data, and then saving them. Since CPU and RAM is usually less of a bottleneck than database access,
      * it may often be worth using this cache.
-     *
+     * <p>
      * Beware that the card is loaded only once. Change in the database are not reflected, so use it only if you can
      * safely assume that the card has not changed. That is
      * long id;
@@ -739,7 +743,7 @@ public class Card implements Cloneable {
      * Card card = cache.getCard();
      * ....
      * Card card2 = cache.getCard();
-     *
+     * <p>
      * It is equivalent to:
      * long id;
      * Card.Cache cache = new Cache(col, id);
@@ -760,14 +764,18 @@ public class Card implements Cloneable {
             mId = id;
         }
 
-        /** Copy of cache. Useful to create a copy of a subclass without loosing card if it is loaded. */
+        /**
+         * Copy of cache. Useful to create a copy of a subclass without loosing card if it is loaded.
+         */
         protected Cache(Cache cache) {
             mCol = cache.mCol;
             mId = cache.mId;
             mCard = cache.mCard;
         }
 
-        /** Copy of cache. Useful to create a copy of a subclass without loosing card if it is loaded. */
+        /**
+         * Copy of cache. Useful to create a copy of a subclass without loosing card if it is loaded.
+         */
         public Cache(Card card) {
             mCol = card.mCol;
             mId = card.getId();
@@ -777,7 +785,8 @@ public class Card implements Cloneable {
         /**
          * The card with id given at creation. Note that it has content of the time at which the card was loaded, which
          * may have changed in database. So it is not equivalent to getCol().getCard(getId()). If you need fresh data, reload
-         * first.*/
+         * first.
+         */
         @NonNull
         public synchronized Card getCard() {
             if (mCard == null) {
@@ -786,7 +795,9 @@ public class Card implements Cloneable {
             return mCard;
         }
 
-        /** Next access to card will reload the card from the database. */
+        /**
+         * Next access to card will reload the card from the database.
+         */
         public synchronized void reload() {
             mCard = null;
         }
@@ -805,7 +816,9 @@ public class Card implements Cloneable {
             return Long.valueOf(mId).hashCode();
         }
 
-        /** The cloned version represents the same card but data are not loaded. */
+        /**
+         * The cloned version represents the same card but data are not loaded.
+         */
         @NonNull
         public Cache clone() {
             return new Cache(mCol, mId);

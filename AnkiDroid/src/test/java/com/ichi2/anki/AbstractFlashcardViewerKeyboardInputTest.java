@@ -32,7 +32,7 @@ public class AbstractFlashcardViewerKeyboardInputTest {
 
         underTest.handleKeyPress(KeyEvent.KEYCODE_SPACE);
 
-        assertThat("Space should display answer on any card viewer",  underTest.didDisplayAnswer());
+        assertThat("Space should display answer on any card viewer", underTest.didDisplayAnswer());
     }
 
     @Test
@@ -41,7 +41,7 @@ public class AbstractFlashcardViewerKeyboardInputTest {
 
         underTest.handleKeyPress(KeyEvent.KEYCODE_ENTER);
 
-        assertThat("Enter should display answer on any card viewer",  underTest.didDisplayAnswer());
+        assertThat("Enter should display answer on any card viewer", underTest.didDisplayAnswer());
     }
 
     @Test
@@ -50,7 +50,7 @@ public class AbstractFlashcardViewerKeyboardInputTest {
 
         underTest.handleKeyPress(KeyEvent.KEYCODE_NUMPAD_ENTER);
 
-        assertThat("NumPad Enter should display answer on any card viewer",  underTest.didDisplayAnswer());
+        assertThat("NumPad Enter should display answer on any card viewer", underTest.didDisplayAnswer());
     }
 
     @Test
@@ -94,7 +94,9 @@ public class AbstractFlashcardViewerKeyboardInputTest {
             mDisplayAnswer = true;
         }
 
-        public boolean didDisplayAnswer() { return mDisplayAnswer; }
+        public boolean didDisplayAnswer() {
+            return mDisplayAnswer;
+        }
 
         public void handleKeyPress(int keycode) {
             //COULD_BE_BETTER: Saves 20 seconds on tests to remove AndroidJUnit4,
@@ -110,7 +112,9 @@ public class AbstractFlashcardViewerKeyboardInputTest {
                 Timber.e(e);
             }
         }
-        @Override protected void setTitle() {
+
+        @Override
+        protected void setTitle() {
             //required for interface. Intentionally left blank
         }
 

@@ -6,6 +6,7 @@
     android:paddingBottom="7dip"
     android:paddingLeft="@dimen/keyline_1"
     android:paddingRight="5dip">
+
     <TextView
         android:id="@+id/model_list_item_1"
         android:textSize="20sp"
@@ -16,11 +17,12 @@
         android:maxLines="1"
 
         android:layout_height="wrap_content" />
+
     <TextView
         android:id="@+id/model_list_item_2"
         android:layout_width="wrap_content"
         android:textSize="14sp"
         android:gravity="left"
         android:textColor="?android:textColorSecondary"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 </LinearLayout>

@@ -21,6 +21,7 @@ package com.ichi2.themes;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+
 import androidx.core.content.ContextCompat;
 
 import com.ichi2.anki.AnkiDroidApp;
@@ -91,7 +92,7 @@ public class Themes {
 
 
     public static int getResFromAttr(Context context, int resAttr) {
-        int[] attrs = new int[] {resAttr};
+        int[] attrs = new int[]{resAttr};
         return getResFromAttr(context, attrs)[0];
     }
 
@@ -105,7 +106,7 @@ public class Themes {
     }
 
     public static int getColorFromAttr(Context context, int colorAttr) {
-        int[] attrs = new int[] {colorAttr};
+        int[] attrs = new int[]{colorAttr};
         return getColorFromAttr(context, attrs)[0];
     }
 

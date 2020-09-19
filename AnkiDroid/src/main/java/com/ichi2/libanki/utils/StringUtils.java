@@ -26,13 +26,15 @@ public class StringUtils {
 
     private static Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+", Pattern.MULTILINE | Pattern.DOTALL);
 
-    /** Equivalent to the python string.split() */
+    /**
+     * Equivalent to the python string.split()
+     */
     @NonNull
     public static List<String> splitOnWhitespace(@NonNull String value) {
         String[] split = WHITESPACE_PATTERN.split(value);
         List<String> ret = new ArrayList<>();
         for (String s : split) {
-            if(s.length() > 0) {
+            if (s.length() > 0) {
                 ret.add(s);
             }
         }

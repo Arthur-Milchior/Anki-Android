@@ -24,8 +24,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/** Accepts peripheral input, mapping via various keybinding strategies,
- * and converting them to commands for the Reviewer. */
+/**
+ * Accepts peripheral input, mapping via various keybinding strategies,
+ * and converting them to commands for the Reviewer.
+ */
 public class PeripheralKeymap {
 
     private final ReviewerUi mReviewerUI;
@@ -51,7 +53,7 @@ public class PeripheralKeymap {
             if (command.isAnswer()) {
                 mAnswerKeyMap.addCommand(command);
             }
-         }
+        }
 
         mHasSetup = true;
     }

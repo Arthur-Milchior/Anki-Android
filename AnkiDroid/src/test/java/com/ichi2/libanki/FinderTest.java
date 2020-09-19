@@ -33,6 +33,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import timber.log.Timber;
 
 import static com.ichi2.libanki.Consts.CARD_TYPE_REV;
@@ -94,7 +95,7 @@ public class FinderTest extends RobolectricTest {
 
     @NonNull
     private Card buryManually(SchedV2 sched, long id) {
-        sched.buryCards(new long[] {id}, true);
+        sched.buryCards(new long[]{id}, true);
         Card manuallyBuriedCard = new Card(getCol(), id);
         assertThat(manuallyBuriedCard.getQueue(), is(Consts.QUEUE_TYPE_MANUALLY_BURIED));
         return manuallyBuriedCard;
@@ -179,18 +180,18 @@ public class FinderTest extends RobolectricTest {
         c.setType(CARD_TYPE_REV);
         assertEquals(0, col.findCards("is:review").size());
         c.flush();
-        assertEqualsArrayList((new Long[] {c.getId()}), col.findCards("is:review"));
+        assertEqualsArrayList((new Long[]{c.getId()}), col.findCards("is:review"));
         assertEquals(0, col.findCards("is:due").size());
         c.setDue(0);
         c.setQueue(QUEUE_TYPE_REV);
         c.flush();
-        assertEqualsArrayList((new Long[] {c.getId()}), col.findCards("is:due"));
+        assertEqualsArrayList((new Long[]{c.getId()}), col.findCards("is:due"));
         assertEquals(4, col.findCards("-is:due").size());
         c.setQueue(QUEUE_TYPE_SUSPENDED);
         // ensure this card gets a later mod time
         c.flush();
         col.getDb().execute("update cards set mod = mod + 1 where id = ?", c.getId());
-        assertEqualsArrayList((new Long[] {c.getId()}), col.findCards("is:suspended"));
+        assertEqualsArrayList((new Long[]{c.getId()}), col.findCards("is:suspended"));
         // nids
         assertEquals(0, col.findCards("nid:54321").size());
         assertEquals(2, col.findCards("nid:" + note.getId()).size());

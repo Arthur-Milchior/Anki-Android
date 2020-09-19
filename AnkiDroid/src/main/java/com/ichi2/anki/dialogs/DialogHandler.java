@@ -23,17 +23,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.VisibleForTesting;
+
 import timber.log.Timber;
 
 
 /**
  * We're not allowed to commit fragment transactions from Loader.onLoadCompleted(),
- * and it's unsafe to commit them from an AsyncTask onComplete event, so we work 
+ * and it's unsafe to commit them from an AsyncTask onComplete event, so we work
  * around this by using a message handler.
  */
 public class DialogHandler extends Handler {
 
-    public static final long INTENT_SYNC_MIN_INTERVAL = 2*60000;    // 2min minimum sync interval
+    public static final long INTENT_SYNC_MIN_INTERVAL = 2 * 60000;    // 2min minimum sync interval
 
     /**
      * Handler messages
@@ -63,7 +64,7 @@ public class DialogHandler extends Handler {
 
     WeakReference<AnkiActivity> mActivity;
     private static Message sStoredMessage;
-    
+
     public DialogHandler(AnkiActivity activity) {
         // Use weak reference to main activity to prevent leaking the activity when it's closed
         mActivity = new WeakReference<>(activity);
@@ -92,10 +93,10 @@ public class DialogHandler extends Handler {
             // Export complete
             AsyncDialogFragment f = DeckPickerExportCompleteDialog.newInstance(msgData.getString("exportPath"));
             mActivity.get().showAsyncDialogFragment(f);
-        } else if (msg.what == MSG_SHOW_MEDIA_CHECK_COMPLETE_DIALOG) {            
+        } else if (msg.what == MSG_SHOW_MEDIA_CHECK_COMPLETE_DIALOG) {
             // Media check results
             int id = msgData.getInt("dialogType");
-            if (id!=MediaCheckDialog.DIALOG_CONFIRM_MEDIA_CHECK) {
+            if (id != MediaCheckDialog.DIALOG_CONFIRM_MEDIA_CHECK) {
                 List<List<String>> checkList = new ArrayList<>();
                 checkList.add(msgData.getStringArrayList("nohave"));
                 checkList.add(msgData.getStringArrayList("unused"));
@@ -107,7 +108,7 @@ public class DialogHandler extends Handler {
             ((DeckPicker) mActivity.get()).showDatabaseErrorDialog(msgData.getInt("dialogType"));
         } else if (msg.what == MSG_SHOW_FORCE_FULL_SYNC_DIALOG) {
             // Confirmation dialog for forcing full sync
-            ConfirmationDialog dialog = new ConfirmationDialog ();
+            ConfirmationDialog dialog = new ConfirmationDialog();
             Runnable confirm = new Runnable() {
                 @Override
                 public void run() {
@@ -145,6 +146,7 @@ public class DialogHandler extends Handler {
 
     /**
      * Store a persistent message to static variable
+     *
      * @param message Message to store
      */
     public static void storeMessage(Message message) {

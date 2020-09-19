@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingTop="12dp" >
+    android:paddingTop="12dp">
     <!-- Front -->
     <TextView
         android:layout_width="fill_parent"
@@ -13,24 +13,27 @@
         android:layout_margin="5dp"
         android:focusable="true"
         android:text="@string/card_template_editor_front" />
+
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:fadeScrollbars="false"
-        android:fillViewport="true" >
+        android:fillViewport="true">
+
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="vertical" >
+            android:orientation="vertical">
+
             <EditText
                 android:id="@+id/front_edit"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_margin="5dp"
                 android:contentDescription="@string/card_template_editor_front"
-                android:inputType="textMultiLine"/>
+                android:inputType="textMultiLine" />
         </LinearLayout>
     </ScrollView>
     <!-- Styling -->
@@ -40,17 +43,20 @@
         android:layout_margin="5dp"
         android:focusable="true"
         android:text="@string/card_template_editor_styling" />
+
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:fadeScrollbars="false"
-        android:fillViewport="true" >
+        android:fillViewport="true">
+
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="vertical" >
+            android:orientation="vertical">
+
             <EditText
                 android:id="@+id/styling_edit"
                 android:layout_width="fill_parent"
@@ -58,7 +64,7 @@
                 android:layout_margin="5dp"
                 android:contentDescription="@string/card_template_editor_styling"
                 android:text=""
-                android:inputType="textMultiLine"/>
+                android:inputType="textMultiLine" />
         </LinearLayout>
     </ScrollView>
     <!-- Back -->
@@ -68,24 +74,27 @@
         android:layout_margin="5dp"
         android:focusable="true"
         android:text="@string/card_template_editor_back" />
+
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:fadeScrollbars="false"
-        android:fillViewport="true" >
+        android:fillViewport="true">
+
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="vertical" >
+            android:orientation="vertical">
+
             <EditText
                 android:id="@+id/back_edit"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_margin="5dp"
                 android:contentDescription="@string/card_template_editor_back"
-                android:inputType="textMultiLine"/>
+                android:inputType="textMultiLine" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

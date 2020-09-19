@@ -1,34 +1,34 @@
-/*  
+/*
  *  Copyright (c) 2020 Arthur Milchior <arthur@milchior.fr>
- *  
- *  This file is free software: you may copy, redistribute and/or modify it  
- *  under the terms of the GNU General Public License as published by the  
- *  Free Software Foundation, either version 3 of the License, or (at your  
- *  option) any later version.  
- *  
- *  This file is distributed in the hope that it will be useful, but  
- *  WITHOUT ANY WARRANTY; without even the implied warranty of  
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
- *  General Public License for more details.  
- *  
- *  You should have received a copy of the GNU General Public License  
+ *
+ *  This file is free software: you may copy, redistribute and/or modify it
+ *  under the terms of the GNU General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or (at your
+ *  option) any later version.
+ *
+ *  This file is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
- *  This file incorporates work covered by the following copyright and  
- *  permission notice:  
- *  
+ *
+ *  This file incorporates work covered by the following copyright and
+ *  permission notice:
+ *
  *    Copyright (c) 2002 JSON.org
- *    
+ *
  *    Permission is hereby granted, free of charge, to any person obtaining a copy
  *    of this software and associated documentation files (the "Software"), to deal
  *    in the Software without restriction, including without limitation the rights
  *    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *    copies of the Software, and to permit persons to whom the Software is
  *    furnished to do so, subject to the following conditions:
- *   
+ *
  *    The above copyright notice and this permission notice shall be included in all
  *    copies or substantial portions of the Software.
- *   
+ *
  *    The Software shall be used for Good, not Evil.
  *
  *    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -37,7 +37,7 @@
  *    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  *    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- *    SOFTWARE. 
+ *    SOFTWARE.
  */
 
 package com.ichi2.utils;
@@ -64,13 +64,13 @@ public class JSONArray extends org.json.JSONArray {
 
     /**
      * This method simply change the type.
-     *
+     * <p>
      * See the comment of objectToObject to read about the problems met here.
      *
      * @param ar Actually a JSONArray
      * @return the same element as input. But considered as a JSONArray.
      */
-    public static JSONArray arrayToArray(org.json.JSONArray ar){
+    public static JSONArray arrayToArray(org.json.JSONArray ar) {
         Assert.that(ar == null || ar instanceof JSONArray, "Object %s should have been an instance of our JSONArray.", ar);
         return (JSONArray) ar;
     }
@@ -256,7 +256,7 @@ public class JSONArray extends org.json.JSONArray {
         try {
             return arrayToArray(super.getJSONArray(pos));
         } catch (org.json.JSONException e) {
-            throw new RuntimeException (e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -264,7 +264,7 @@ public class JSONArray extends org.json.JSONArray {
         try {
             return JSONObject.objectToObject(super.getJSONObject(pos));
         } catch (org.json.JSONException e) {
-            throw new RuntimeException (e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -290,8 +290,7 @@ public class JSONArray extends org.json.JSONArray {
         for (int i = 0; i < length(); i++) {
             if (get(i) instanceof JSONObject) {
                 clone.put(getJSONObject(i).deepClone());
-            }
-            else if (get(i) instanceof JSONArray) {
+            } else if (get(i) instanceof JSONArray) {
                 clone.put(getJSONArray(i).deepClone());
             } else {
                 clone.put(get(i));

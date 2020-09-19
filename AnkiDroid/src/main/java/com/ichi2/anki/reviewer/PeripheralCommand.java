@@ -38,7 +38,8 @@ public class PeripheralCommand {
     @NonNull
     private final CardSide mCardSide;
 
-    private final @ViewerCommandDef int mCommand;
+    private final @ViewerCommandDef
+    int mCommand;
 
     private PeripheralCommand(int keyCode, @ViewerCommandDef int command, @NonNull CardSide side) {
         this.mKeyCode = keyCode;

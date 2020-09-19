@@ -44,7 +44,9 @@ public final class WidgetStatus {
     private static AsyncTask<Context, Void, Context> sUpdateDeckStatusAsyncTask;
 
 
-    /** This class should not be instantiated. */
+    /**
+     * This class should not be instantiated.
+     */
     private WidgetStatus() {
     }
 
@@ -52,8 +54,8 @@ public final class WidgetStatus {
     /**
      * Request the widget to update its status.
      * TODO Mike - we can reduce battery usage by widget users by removing updatePeriodMillis from metadata
-     *             and replacing it with an alarm we set so device doesn't wake to update the widget, see:
-     *             https://developer.android.com/guide/topics/appwidgets/#MetaData
+     * and replacing it with an alarm we set so device doesn't wake to update the widget, see:
+     * https://developer.android.com/guide/topics/appwidgets/#MetaData
      */
     public static void update(Context context) {
         SharedPreferences preferences = AnkiDroidApp.getSharedPrefs(context);
@@ -70,7 +72,9 @@ public final class WidgetStatus {
     }
 
 
-    /** Returns the status of each of the decks. */
+    /**
+     * Returns the status of each of the decks.
+     */
     public static int[] fetchSmall(Context context) {
         return MetaDB.getWidgetSmallStatus(context);
     }

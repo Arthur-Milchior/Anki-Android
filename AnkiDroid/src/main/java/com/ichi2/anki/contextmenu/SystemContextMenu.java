@@ -25,6 +25,7 @@ import com.ichi2.anki.AnkiDroidApp;
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import timber.log.Timber;
 
 import static android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
@@ -34,9 +35,13 @@ import static android.content.pm.PackageManager.DONT_KILL_APP;
 public abstract class SystemContextMenu {
 
     protected abstract boolean getDefaultEnabledStatus();
+
     @NonNull
     protected abstract String getPreferenceKey();
-    /** We use an activity alias as the name so we can disable the context menu without disabling the activity */
+
+    /**
+     * We use an activity alias as the name so we can disable the context menu without disabling the activity
+     */
     @NonNull
     protected abstract String getActivityName();
 

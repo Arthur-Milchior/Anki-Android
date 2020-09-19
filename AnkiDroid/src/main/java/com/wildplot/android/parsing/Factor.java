@@ -20,9 +20,7 @@ public class Factor implements TreeElement {
     private TopLevelParser parser;
 
 
-
     public enum FactorType {PLUS_FACTOR, MINUS_FACTOR, POW, INVALID}
-
 
 
     private FactorType factorType = FactorType.INVALID;

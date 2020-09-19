@@ -19,12 +19,14 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -252,12 +254,12 @@ public class Statistics extends NavigationDrawerActivity implements DeckDropDown
     }
 
 
-    public AnkiStatsTaskHandler getTaskHandler(){
+    public AnkiStatsTaskHandler getTaskHandler() {
         return mTaskHandler;
     }
 
 
-    public ViewPager getViewPager(){
+    public ViewPager getViewPager() {
         return mViewPager;
     }
 
@@ -266,7 +268,9 @@ public class Statistics extends NavigationDrawerActivity implements DeckDropDown
         return mSectionsPagerAdapter;
     }
 
-    private long getDeckId() { return mDeckId; }
+    private long getDeckId() {
+        return mDeckId;
+    }
 
 
     /**
@@ -384,6 +388,7 @@ public class Statistics extends NavigationDrawerActivity implements DeckDropDown
         }
 
         public abstract void invalidateView();
+
         public abstract void checkAndUpdate();
     }
 
@@ -398,7 +403,7 @@ public class Statistics extends NavigationDrawerActivity implements DeckDropDown
         private int mHeight = 0;
         private int mWidth = 0;
         private int mSectionNumber;
-        private Stats.AxisType mType  = Stats.AxisType.TYPE_MONTH;
+        private Stats.AxisType mType = Stats.AxisType.TYPE_MONTH;
         private boolean mIsCreated = false;
         private AsyncTask mCreateChartTask;
 
@@ -560,7 +565,7 @@ public class Statistics extends NavigationDrawerActivity implements DeckDropDown
 
         private WebView mWebView;
         private ProgressBar mProgressBar;
-        private Stats.AxisType mType  = Stats.AxisType.TYPE_MONTH;
+        private Stats.AxisType mType = Stats.AxisType.TYPE_MONTH;
         private boolean mIsCreated = false;
         private AsyncTask mCreateStatisticsOverviewTask;
 
@@ -621,8 +626,8 @@ public class Statistics extends NavigationDrawerActivity implements DeckDropDown
             return rootView;
         }
 
-        private void createStatisticOverview(){
-            AnkiStatsTaskHandler handler = (((Statistics)getActivity()).getTaskHandler());
+        private void createStatisticOverview() {
+            AnkiStatsTaskHandler handler = (((Statistics) getActivity()).getTaskHandler());
             mCreateStatisticsOverviewTask = handler.createStatisticsOverview(mWebView, mProgressBar);
         }
 

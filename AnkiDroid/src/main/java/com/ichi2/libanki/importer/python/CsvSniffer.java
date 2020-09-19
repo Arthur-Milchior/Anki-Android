@@ -46,9 +46,8 @@ public class CsvSniffer {
 
     public CsvSniffer() {
         // in case there is more than one possible delimiter
-        preferred = new char[] {',', '\t', ';', ' ', ':'};
+        preferred = new char[]{',', '\t', ';', ' ', ':'};
     }
-
 
 
     public CsvDialect sniff(String sample, char[] delimiters) {
@@ -95,14 +94,14 @@ public class CsvSniffer {
 
 
     /**
-     *  Looks for text enclosed between two identical quotes
-     *  (the probable quotechar) which are preceded and followed
-     *  by the same character (the probable delimiter).
-     *  For example:
-     *                   ,'some text',
-     *  The quote with the most wins, same with the delimiter.
-     *  If there is no quotechar the delimiter can't be determined
-     *  this way.
+     * Looks for text enclosed between two identical quotes
+     * (the probable quotechar) which are preceded and followed
+     * by the same character (the probable delimiter).
+     * For example:
+     * ,'some text',
+     * The quote with the most wins, same with the delimiter.
+     * If there is no quotechar the delimiter can't be determined
+     * this way.
      */
     private GuessQuoteAndDelimiter _guess_quote_and_delimiter(String data, List<Character> delimiters) {
         ArrayList<String> regexes = new ArrayList<>();
@@ -114,7 +113,7 @@ public class CsvSniffer {
 
         List<Group> matches = new ArrayList<>();
 
-        for(String regex : regexes) {
+        for (String regex : regexes) {
             Pattern p = Pattern.compile(regex, Pattern.MULTILINE | Pattern.DOTALL);
             Matcher m = p.matcher(data);
             while (m.find()) {
@@ -196,14 +195,14 @@ public class CsvSniffer {
      * each row. However, due to malformed data, it may not. We don't want
      * an all or nothing approach, so we allow for small variations in this
      * number.
-     *   1) build a table of the frequency of each character on every line.
-     *   2) build a table of frequencies of this frequency (meta-frequency?),
-     *      e.g.  'x occurred 5 times in 10 rows, 6 times in 1000 rows,
-     *      7 times in 2 rows'
-     *   3) use the mode of the meta-frequency to determine the /expected/
-     *      frequency for that character
-     *   4) find out how often the character actually meets that goal
-     *   5) the character that best meets its goal is the delimiter
+     * 1) build a table of the frequency of each character on every line.
+     * 2) build a table of frequencies of this frequency (meta-frequency?),
+     * e.g.  'x occurred 5 times in 10 rows, 6 times in 1000 rows,
+     * 7 times in 2 rows'
+     * 3) use the mode of the meta-frequency to determine the /expected/
+     * frequency for that character
+     * 4) find out how often the character actually meets that goal
+     * 5) the character that best meets its goal is the delimiter
      * For performance reasons, the data is evaluated in chunks, so it can
      * try and evaluate the smallest portion of the data possible, evaluating
      * additional chunks as necessary.
@@ -221,7 +220,7 @@ public class CsvSniffer {
         }
 
         char[] ascii = new char[128]; // 7-bit ASCII
-        for(char i = 0; i < 128; i++) {
+        for (char i = 0; i < 128; i++) {
             ascii[i] = i;
         }
 
@@ -317,7 +316,7 @@ public class CsvSniffer {
         // nothing else indicates a preference, pick the character that
         // dominates(?)
         ArrayList<Map.Entry<Tuple, Character>> items = new ArrayList<>();
-        for(Map.Entry<Character, Tuple> i : delims.entrySet()) {
+        for (Map.Entry<Character, Tuple> i : delims.entrySet()) {
             items.add(new AbstractMap.SimpleEntry<>(i.getValue(), i.getKey()));
         }
         items.sort((o1, o2) -> {
@@ -357,7 +356,9 @@ public class CsvSniffer {
     }
 
 
-    /** max(items, key = lambda x:x[1]) */
+    /**
+     * max(items, key = lambda x:x[1])
+     */
     private Tuple maxSecond(List<Tuple> items) {
         // items = [(1,1), (2,1)]
         // pp(max(items, key = lambda x:x[1]))

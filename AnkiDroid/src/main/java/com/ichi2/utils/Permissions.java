@@ -8,7 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 public class Permissions {
-    private Permissions() { }
+    private Permissions() {
+    }
 
     public static boolean canUseCamera(@NonNull Context context) {
         return hasPermission(context, Manifest.permission.CAMERA);
@@ -25,6 +26,7 @@ public class Permissions {
 
     /**
      * Check if we have permission to access the external storage
+     *
      * @param context
      * @return
      */

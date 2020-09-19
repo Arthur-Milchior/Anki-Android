@@ -61,6 +61,7 @@ class UnifiedTrustManager implements X509TrustManager {
             defaultTrustManager.checkServerTrusted(chain, authType);
         }
     }
+
     @Override
     public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
         try {
@@ -69,6 +70,7 @@ class UnifiedTrustManager implements X509TrustManager {
             defaultTrustManager.checkClientTrusted(chain, authType);
         }
     }
+
     @Override
     public X509Certificate[] getAcceptedIssuers() {
         return mAcceptedIssuers;

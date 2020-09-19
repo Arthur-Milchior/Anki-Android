@@ -22,6 +22,7 @@ import com.ichi2.libanki.sync.HostNum;
 
 import androidx.annotation.CheckResult;
 import androidx.annotation.Nullable;
+
 import timber.log.Timber;
 
 public class PreferenceBackedHostNum extends HostNum {
@@ -38,7 +39,9 @@ public class PreferenceBackedHostNum extends HostNum {
         return new PreferenceBackedHostNum(hostNum, preferences);
     }
 
-    /** Clearing hostNum whenever on log out/changes the server URL should avoid any problems with malicious servers*/
+    /**
+     * Clearing hostNum whenever on log out/changes the server URL should avoid any problems with malicious servers
+     */
     @Override
     public void reset() {
         setHostNum(getDefaultHostNum());

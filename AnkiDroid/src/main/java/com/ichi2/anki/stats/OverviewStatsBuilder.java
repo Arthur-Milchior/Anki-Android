@@ -171,8 +171,8 @@ public class OverviewStatsBuilder {
             stringBuilder.append("<br>");
             stringBuilder.append(res.getString(R.string.stats_overview_time_per_day_all, oStats.timePerDayOnAll));
         }
-        double cardsPerMinute = oStats.totalTime == 0 ? 0 : ((double)oStats.totalReviews) / oStats.totalTime;
-        double averageAnswerTime = oStats.totalReviews == 0 ? 0 : (oStats.totalTime * 60) / ((double)oStats.totalReviews);
+        double cardsPerMinute = oStats.totalTime == 0 ? 0 : ((double) oStats.totalReviews) / oStats.totalTime;
+        double averageAnswerTime = oStats.totalReviews == 0 ? 0 : (oStats.totalTime * 60) / ((double) oStats.totalReviews);
         stringBuilder.append("<br>");
         stringBuilder.append(res.getString(R.string.stats_overview_average_answer_time, averageAnswerTime, cardsPerMinute));
 
@@ -200,7 +200,7 @@ public class OverviewStatsBuilder {
         stringBuilder.append("<br>");
         stringBuilder.append(res.getString(R.string.stats_overview_answer_buttons_young, oStats.youngCardsOverview.getPercentage(), oStats.youngCardsOverview.correct, oStats.youngCardsOverview.total));
         stringBuilder.append("<br>");
-        stringBuilder.append(res.getString(R.string.stats_overview_answer_buttons_mature,  oStats.matureCardsOverview.getPercentage(), oStats.matureCardsOverview.correct, oStats.matureCardsOverview.total));
+        stringBuilder.append(res.getString(R.string.stats_overview_answer_buttons_mature, oStats.matureCardsOverview.getPercentage(), oStats.matureCardsOverview.correct, oStats.matureCardsOverview.total));
 
         //CARD TYPES
         stringBuilder.append(_subtitle(res.getString(R.string.stats_cards_types).toUpperCase()));
@@ -260,13 +260,19 @@ public class OverviewStatsBuilder {
         int chunk = 0;
         switch (type) {
             case TYPE_MONTH:
-                start = 0; end = 31; chunk = 1;
+                start = 0;
+                end = 31;
+                chunk = 1;
                 break;
             case TYPE_YEAR:
-                start = 0; end = 52; chunk = 7;
+                start = 0;
+                end = 52;
+                chunk = 7;
                 break;
             case TYPE_LIFE:
-                start = 0; end = null; chunk = 30;
+                start = 0;
+                end = null;
+                chunk = 30;
                 break;
         }
         List<int[]> d = _due(start, end, chunk);
@@ -275,10 +281,10 @@ public class OverviewStatsBuilder {
         int tot = 0;
         List<int[]> totd = new ArrayList<>();
         for (int[] day : d) {
-            yng.add(new int[] {day[0], day[1]});
-            mtr.add(new int[] {day[0], day[2]});
-            tot += day[1]+day[2];
-            totd.add(new int[] {day[0], tot});
+            yng.add(new int[]{day[0], day[1]});
+            mtr.add(new int[]{day[0], day[2]});
+            tot += day[1] + day[2];
+            totd.add(new int[]{day[0], tot});
         }
 
         // Fill in the overview stats
@@ -304,12 +310,12 @@ public class OverviewStatsBuilder {
             String query;
             query = String.format(Locale.US,
                     "select (due-%d)/%d as day,\n" +
-                    "sum(case when ivl < 21 then 1 else 0 end), -- yng\n" +
-                    "sum(case when ivl >= 21 then 1 else 0 end) -- mtr\n" +
-                    "from cards\n" +
-                    "where did in %s and queue in (" + Consts.QUEUE_TYPE_REV + "," + Consts.QUEUE_TYPE_DAY_LEARN_RELEARN + ")\n" +
-                    "%s\n" +
-                    "group by day order by day",
+                            "sum(case when ivl < 21 then 1 else 0 end), -- yng\n" +
+                            "sum(case when ivl >= 21 then 1 else 0 end) -- mtr\n" +
+                            "from cards\n" +
+                            "where did in %s and queue in (" + Consts.QUEUE_TYPE_REV + "," + Consts.QUEUE_TYPE_DAY_LEARN_RELEARN + ")\n" +
+                            "%s\n" +
+                            "group by day order by day",
                     mCol.getSched().getToday(), chunk, _limit(), lim);
             cur = mCol.getDb().getDatabase().query(query, null);
             while (cur.moveToNext()) {

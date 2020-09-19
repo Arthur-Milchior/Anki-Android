@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?> 
- <!-- 
+<?xml version="1.0" encoding="utf-8"?><!--
  ~ Copyright (c) 2009 Andrew <andrewdubya@gmail> 
  ~ Copyright (c) 2009 Edu Zamora <edu.zasu@gmail.com> 
  ~ Copyright (c) 2009 Daniel Svaerd <daniel.svard@gmail.com> 
@@ -16,8 +15,8 @@
  ~ 
  ~ You should have received a copy of the GNU General Public License along with 
  ~ this program.  If not, see <http://www.gnu.org/licenses/>. 
- --> 
- 
+ -->
+
 <resources>
     <!--Menu Labels-->
     <string name="model_browser_label">Upraviť typy poznámok</string>

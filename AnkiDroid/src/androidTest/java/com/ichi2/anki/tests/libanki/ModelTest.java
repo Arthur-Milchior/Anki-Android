@@ -44,7 +44,7 @@ public class ModelTest {
         final int size = testString.length() * 1024 * 1024;
         StringBuilder buf = new StringBuilder((int) (size * 1.01));
         // * 1.01 for padding
-        for (int i = 0; i < 1024 * 1024 ; ++i ) {
+        for (int i = 0; i < 1024 * 1024; ++i) {
             buf.append(testString);
         }
         model.put(testString, buf.toString());

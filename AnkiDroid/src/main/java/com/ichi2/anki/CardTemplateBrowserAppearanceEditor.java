@@ -32,9 +32,11 @@ import org.jetbrains.annotations.Contract;
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import timber.log.Timber;
 
-/** Allows specification of the Question and Answer format of a card template in the Card Browser
+/**
+ * Allows specification of the Question and Answer format of a card template in the Card Browser
  * This is known as "Browser Appearance" in Anki
  * We do not allow the user to change fonts as Android only has a handful
  * We do not allow the user to change the font size as this can be done in the Appearance settings.
@@ -44,7 +46,9 @@ public class CardTemplateBrowserAppearanceEditor extends AnkiActivity {
     public static final String INTENT_QUESTION_FORMAT = "bqfmt";
     public static final String INTENT_ANSWER_FORMAT = "bafmt";
 
-    /** Specified the card browser should use the default template formatter */
+    /**
+     * Specified the card browser should use the default template formatter
+     */
     public static final String VALUE_USE_DEFAULT = "";
 
     private EditText mQuestionEditText;
@@ -196,14 +200,16 @@ public class CardTemplateBrowserAppearanceEditor extends AnkiActivity {
         }
     }
 
-    @NonNull @CheckResult
+    @NonNull
+    @CheckResult
     public static Intent getIntentFromTemplate(@NonNull Context context, @NonNull JSONObject template) {
         String browserQuestionTemplate = template.getString("bqfmt");
         String browserAnswerTemplate = template.getString("bafmt");
         return CardTemplateBrowserAppearanceEditor.getIntent(context, browserQuestionTemplate, browserAnswerTemplate);
     }
 
-    @NonNull @CheckResult
+    @NonNull
+    @CheckResult
     public static Intent getIntent(@NonNull Context context, @NonNull String questionFormat, @NonNull String answerFormat) {
         Intent intent = new Intent(context, CardTemplateBrowserAppearanceEditor.class);
         intent.putExtra(INTENT_QUESTION_FORMAT, questionFormat);

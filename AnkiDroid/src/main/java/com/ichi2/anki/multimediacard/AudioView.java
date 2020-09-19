@@ -38,8 +38,10 @@ import com.ichi2.anki.R;
 import com.ichi2.anki.Reviewer;
 import com.ichi2.libanki.Collection;
 import com.ichi2.anki.UIUtils;
+
 import java.io.File;
 import java.io.IOException;
+
 import com.ichi2.utils.Permissions;
 
 import timber.log.Timber;
@@ -72,16 +74,16 @@ public class AudioView extends LinearLayout {
         IDLE, // Default initial state
         INITIALIZED, // When datasource has been set
         PLAYING, PAUSED, STOPPED, // The different possible states once playing
-                                  // has started
+        // has started
         RECORDING // The recorder being played status
     }
 
 
     public static AudioView createRecorderInstance(Context context, int resPlay, int resPause, int resStop,
-            int resRecord, int resRecordStop, String audioPath) {
+                                                   int resRecord, int resRecordStop, String audioPath) {
         try {
-        return new AudioView(context, resPlay, resPause, resStop, resRecord, resRecordStop, audioPath);
-        } catch(Exception e) {
+            return new AudioView(context, resPlay, resPause, resStop, resRecord, resRecordStop, audioPath);
+        } catch (Exception e) {
             Timber.e(e);
             AnkiDroidApp.sendExceptionReport(e, "Unable to create recorder tool bar");
             UIUtils.showThemedToast(context,
@@ -130,7 +132,7 @@ public class AudioView extends LinearLayout {
 
 
     private AudioView(Context context, int resPlay, int resPause, int resStop, int resRecord, int resRecordStop,
-            String audioPath) {
+                      String audioPath) {
         this(context, resPlay, resPause, resStop, audioPath);
         mResRecordImage = resRecord;
         mResRecordStopImage = resRecordStop;
@@ -406,7 +408,7 @@ public class AudioView extends LinearLayout {
 
                             } catch (Exception e) {
                                 // either output file failed or codec didn't work, in any case fail out
-                                Timber.e("RecordButton.onClick() :: error recording to " + mAudioPath + "\n" +e.getMessage());
+                                Timber.e("RecordButton.onClick() :: error recording to " + mAudioPath + "\n" + e.getMessage());
                                 UIUtils.showThemedToast(mContext, gtxt(R.string.multimedia_editor_audio_view_recording_failed), true);
                                 mStatus = Status.STOPPED;
                                 break;
@@ -436,8 +438,8 @@ public class AudioView extends LinearLayout {
                 mr.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
                 mStatus = Status.INITIALIZED;
                 mr.setOutputFile(mAudioPath); // audioPath
-                                              // could
-                                              // change
+                // could
+                // change
                 return mr;
             }
         };

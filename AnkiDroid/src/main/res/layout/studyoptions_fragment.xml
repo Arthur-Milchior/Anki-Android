@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/studyoptions_main"
     android:layout_width="fill_parent"
@@ -8,11 +7,13 @@
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:gravity="center">
+
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="vertical">
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/studyOptionsToolbar"
             android:layout_width="fill_parent"
@@ -21,23 +22,27 @@
             android:theme="@style/ActionBarStyle"
             android:layout_alignParentTop="true"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/ActionBar.Popup"/>
+            app:popupTheme="@style/ActionBar.Popup" />
+
         <LinearLayout
             android:layout_below="@id/studyOptionsToolbar"
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
+
             <View
                 android:id="@+id/studyoptions_gradient"
                 android:layout_width="15dp"
                 android:layout_height="fill_parent"
                 android:background="@drawable/shadow_left"
-                android:visibility="gone"/>
+                android:visibility="gone" />
+
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:id="@+id/studyoptions_mainframe"
                 android:paddingBottom="32dp">
+
                 <ScrollView
                     android:id="@+id/studyoptions_scrollview"
                     android:layout_above="@id/bottom_area_layout"
@@ -49,6 +54,7 @@
                     android:paddingBottom="16dp"
                     android:fadeScrollbars="false"
                     android:fillViewport="true">
+
                     <LinearLayout
                         android:id="@+id/studyoptions_scrollcontainer"
                         android:layout_width="match_parent"
@@ -95,7 +101,7 @@
                                         android:layout_height="wrap_content"
                                         android:paddingLeft="0dip"
                                         android:paddingRight="5dip"
-                                        android:text="@string/studyoptions_due_today"/>
+                                        android:text="@string/studyoptions_due_today" />
 
                                     <LinearLayout
                                         android:layout_width="wrap_content"
@@ -174,14 +180,16 @@
                                 </TableRow>
                             </TableLayout>
                         </LinearLayout>
+
                         <TextView
                             android:id="@+id/studyoptions_deck_description"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:gravity="center"/>
+                            android:gravity="center" />
 
                     </LinearLayout>
                 </ScrollView>
+
                 <LinearLayout
                     android:id="@+id/bottom_area_layout"
                     android:layout_width="wrap_content"
@@ -189,6 +197,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:orientation="vertical">
+
                     <TextView
                         android:id="@+id/studyoptions_congrats_message"
                         android:layout_width="wrap_content"
@@ -198,7 +207,8 @@
                         android:gravity="center"
                         android:paddingLeft="2dp"
                         android:paddingRight="2dp"
-                        android:paddingBottom="8dp"/>
+                        android:paddingBottom="8dp" />
+
                     <Button
                         android:id="@+id/studyoptions_start"
                         android:theme="@style/LargeButtonStyle"
@@ -208,10 +218,11 @@
                         android:text="@string/studyoptions_start"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:layout_gravity="center_horizontal"/>
+                        android:layout_gravity="center_horizontal" />
                 </LinearLayout>
             </RelativeLayout>
         </LinearLayout>
     </RelativeLayout>
-    <include layout="@layout/anki_progress"/>
+
+    <include layout="@layout/anki_progress" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

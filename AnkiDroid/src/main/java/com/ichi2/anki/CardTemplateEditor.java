@@ -31,6 +31,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.widget.ViewPager2;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -70,7 +71,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+
 import timber.log.Timber;
+
 import com.ichi2.async.TaskData;
 
 
@@ -93,7 +96,6 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
     // ----------------------------------------------------------------------------
     // Listeners
     // ----------------------------------------------------------------------------
-
 
 
     // ----------------------------------------------------------------------------
@@ -163,6 +165,7 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
 
     /**
      * Callback used to finish initializing the activity after the collection has been correctly loaded
+     *
      * @param col Collection which has been loaded
      */
     @Override
@@ -218,7 +221,9 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
         return discardDialog;
     }
 
-    /** When a deck is selected via Deck Override */
+    /**
+     * When a deck is selected via Deck Override
+     */
     @Override
     public void onDeckSelected(@Nullable SelectableDeck deck) {
         if (Models.isCloze(getTempModel().getModel())) {
@@ -301,7 +306,9 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
             return (id - baseId < getItemCount() && id - baseId >= 0);
         }
 
-        /** Force fragments to reinitialize contents by invalidating previous set of ordinal-based ids */
+        /**
+         * Force fragments to reinitialize contents by invalidating previous set of ordinal-based ids
+         */
         public void ordinalShift() {
             baseId += getItemCount() + 1;
         }
@@ -319,7 +326,7 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
             CardTemplateFragment f = new CardTemplateFragment();
             Bundle args = new Bundle();
             args.putInt("position", position);
-            args.putLong("noteId",noteId);
+            args.putLong("noteId", noteId);
             f.setArguments(args);
             return f;
         }
@@ -327,7 +334,7 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             // Storing a reference to the templateEditor allows us to use member variables
-            mTemplateEditor = (CardTemplateEditor)getActivity();
+            mTemplateEditor = (CardTemplateEditor) getActivity();
             View mainView = inflater.inflate(R.layout.card_template_editor_item, container, false);
             final int position = getArguments().getInt("position");
             TemporaryModel tempModel = mTemplateEditor.getTempModel();
@@ -386,7 +393,7 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
             mTabLayoutMediator = new TabLayoutMediator(mTemplateEditor.mSlidingTabLayout, mTemplateEditor.mViewPager,
                     (tab, position) -> tab.setText(mTemplateEditor.getTempModel().getTemplate(position).getString("name"))
             );
-             mTabLayoutMediator.attach();
+            mTabLayoutMediator.attach();
         }
 
 
@@ -475,7 +482,7 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
                     if (noteId != -1L) {
                         List<Long> cids = col.getNote(noteId).cids();
                         if (ordinal < cids.size()) {
-                            i.putExtra("cardList", new long[] { cids.get(ordinal) });
+                            i.putExtra("cardList", new long[]{cids.get(ordinal)});
                         }
                     }
                     // Save the model and pass the filename if updated
@@ -553,7 +560,8 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
         }
 
 
-        @CheckResult @NonNull
+        @CheckResult
+        @NonNull
         private JSONObject getCurrentTemplate() {
             int currentCardTemplateIndex = getCurrentCardTemplateIndex();
             return mTemplateEditor.getTempModel().getModel().getJSONArray("tmpls").getJSONObject(currentCardTemplateIndex);
@@ -604,7 +612,7 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
             if (requestCode == REQUEST_PREVIEWER) {
                 TemporaryModel.clearTempModelFiles();
                 // Make sure the fragments reinitialize, otherwise there is staleness on return
-                ((TemplatePagerAdapter)mTemplateEditor.mViewPager.getAdapter()).ordinalShift();
+                ((TemplatePagerAdapter) mTemplateEditor.mViewPager.getAdapter()).ordinalShift();
                 mTemplateEditor.mViewPager.getAdapter().notifyDataSetChanged();
             }
         }
@@ -632,12 +640,14 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
         private SaveModelAndExitHandler saveModelAndExitHandler() {
             return new SaveModelAndExitHandler(this);
         }
+
         private static class SaveModelAndExitHandler extends TaskListenerWithContext<CardTemplateFragment> {
             public SaveModelAndExitHandler(CardTemplateFragment templateFragment) {
                 super(templateFragment);
             }
 
             private MaterialDialog mProgressDialog = null;
+
             @Override
             public void actualOnPreExecute(@NonNull CardTemplateFragment templateFragment) {
                 Timber.d("saveModelAndExitHandler::preExecute called");
@@ -673,15 +683,15 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
         /**
          * Confirm if the user wants to delete all the cards associated with current template
          *
-         * @param tmpl template to remove
-         * @param model model to remove template from, modified in place by reference
+         * @param tmpl             template to remove
+         * @param model            model to remove template from, modified in place by reference
          * @param numAffectedCards number of cards which will be affected
          */
-        private void confirmDeleteCards(final JSONObject tmpl, final Model model,  int numAffectedCards) {
+        private void confirmDeleteCards(final JSONObject tmpl, final Model model, int numAffectedCards) {
             ConfirmationDialog d = new ConfirmationDialog();
             Resources res = getResources();
             String msg = String.format(res.getQuantityString(R.plurals.card_template_editor_confirm_delete,
-                            numAffectedCards), numAffectedCards, tmpl.optString("name"));
+                    numAffectedCards), numAffectedCards, tmpl.optString("name"));
             d.setArgs(msg);
             Runnable confirm = new Runnable() {
                 @Override
@@ -696,7 +706,7 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
         /**
          * Delete tmpl from model, asking user to confirm again if it's going to require a full sync
          *
-         * @param tmpl template to remove
+         * @param tmpl  template to remove
          * @param model model to remove template from, modified in place by reference
          */
         private void deleteTemplateWithCheck(final JSONObject tmpl, final Model model) {
@@ -718,7 +728,7 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
         }
 
         /**
-         * @param tmpl template to remove
+         * @param tmpl  template to remove
          * @param model model to remove from, updated in place by reference
          */
         private void deleteTemplate(JSONObject tmpl, Model model) {
@@ -736,7 +746,7 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
             model.put("tmpls", newTemplates);
             Models._updateTemplOrds(model);
             // Make sure the fragments reinitialize, otherwise the reused ordinal causes staleness
-            ((TemplatePagerAdapter)mTemplateEditor.mViewPager.getAdapter()).ordinalShift();
+            ((TemplatePagerAdapter) mTemplateEditor.mViewPager.getAdapter()).ordinalShift();
             mTemplateEditor.mViewPager.getAdapter().notifyDataSetChanged();
             mTemplateEditor.mViewPager.setCurrentItem(newTemplates.length() - 1, mTemplateEditor.animationDisabled());
 
@@ -770,6 +780,7 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
 
         /**
          * Add new template to a given model
+         *
          * @param model model to add new template to
          */
         private void addNewTemplate(JSONObject model) {
@@ -798,22 +809,24 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
 
         /**
          * Flip the question and answer side of the template
+         *
          * @param template template to flip
          */
-        private void flipQA (JSONObject template) {
+        private void flipQA(JSONObject template) {
             String qfmt = template.getString("qfmt");
             String afmt = template.getString("afmt");
             Matcher m = Pattern.compile("(?s)(.+)<hr id=answer>(.+)").matcher(afmt);
             if (!m.find()) {
-                template.put("qfmt", afmt.replace("{{FrontSide}}",""));
+                template.put("qfmt", afmt.replace("{{FrontSide}}", ""));
             } else {
-                template.put("qfmt",m.group(2).trim());
+                template.put("qfmt", m.group(2).trim());
             }
-            template.put("afmt","{{FrontSide}}\n\n<hr id=answer>\n\n" + qfmt);
+            template.put("afmt", "{{FrontSide}}\n\n<hr id=answer>\n\n" + qfmt);
         }
 
         /**
          * Get name for new template
+         *
          * @param templates array of templates which is being added to
          * @return name for new template
          */
@@ -833,7 +846,7 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
                 if (!exists) {
                     break;
                 }
-                n+=1;
+                n += 1;
             }
             return name;
         }

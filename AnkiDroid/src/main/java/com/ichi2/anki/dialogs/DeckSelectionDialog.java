@@ -109,7 +109,8 @@ public class DeckSelectionDialog extends AnalyticsDialogFragment {
                 .negativeText(R.string.restore_default)
                 .customView(dialogView, false)
                 .onNegative((dialog, which) -> onDeckSelected(null))
-                .onNeutral((dialog, which) -> { });
+                .onNeutral((dialog, which) -> {
+                });
 
         mDialog = builder.build();
         return mDialog;
@@ -178,6 +179,7 @@ public class DeckSelectionDialog extends AnalyticsDialogFragment {
     public class DecksArrayAdapter extends RecyclerView.Adapter<DecksArrayAdapter.ViewHolder> implements Filterable {
         public class ViewHolder extends RecyclerView.ViewHolder {
             private TextView mDeckTextView;
+
             public ViewHolder(@NonNull TextView ctv) {
                 super(ctv);
                 mDeckTextView = ctv;
@@ -242,6 +244,7 @@ public class DeckSelectionDialog extends AnalyticsDialogFragment {
         /* Custom Filter class - as seen in http://stackoverflow.com/a/29792313/1332026 */
         private class DecksFilter extends Filter {
             private ArrayList<SelectableDeck> mFilteredDecks;
+
             protected DecksFilter() {
                 super();
                 mFilteredDecks = new ArrayList<>();
@@ -292,7 +295,7 @@ public class DeckSelectionDialog extends AnalyticsDialogFragment {
                 if (!filter.shouldInclude(d)) {
                     continue;
                 }
-                ret.add( new SelectableDeck(d));
+                ret.add(new SelectableDeck(d));
             }
             return ret;
         }
@@ -349,7 +352,6 @@ public class DeckSelectionDialog extends AnalyticsDialogFragment {
             dest.writeLong(mDeckId);
             dest.writeString(mName);
         }
-
 
 
         @SuppressWarnings("unused")

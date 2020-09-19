@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import timber.log.Timber;
 
 public class CustomSyncServer {
@@ -35,7 +36,7 @@ public class CustomSyncServer {
 
     @Nullable
     public static String getSyncBaseUrl(@NonNull SharedPreferences preferences) {
-        return getSyncBaseUrlOrDefault( preferences, null);
+        return getSyncBaseUrlOrDefault(preferences, null);
     }
 
     public static String getSyncBaseUrlOrDefault(@NonNull SharedPreferences userPreferences, String defaultValue) {

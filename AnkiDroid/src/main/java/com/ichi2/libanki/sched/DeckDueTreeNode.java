@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
  * Holds the data for a single node (row) in the deck due tree (the user-visible list
  * of decks and their counts). A node also contains a list of nodes that refer to the
  * next level of sub-decks for that particular deck (which can be an empty list).
- *
+ * <p>
  * The names field is an array of names that build a deck name from a hierarchy (i.e., a nested
  * deck will have an entry for every level of nesting). While the python version interchanges
  * between a string and a list of strings throughout processing, we always use an array for
@@ -35,7 +35,7 @@ public class DeckDueTreeNode extends AbstractDeckTreeNode<DeckDueTreeNode> {
     @Override
     public String toString() {
         return String.format(Locale.US, "%s, %d, %d, %d, %d, %s",
-                             getFullDeckName(), getDid(), mRevCount, mLrnCount, mNewCount, getChildren());
+                getFullDeckName(), getDid(), mRevCount, mLrnCount, mNewCount, getChildren());
     }
 
 
@@ -89,6 +89,7 @@ public class DeckDueTreeNode extends AbstractDeckTreeNode<DeckDueTreeNode> {
 
     /**
      * Whether both elements have the same structure and numbers.
+     *
      * @param object
      * @return
      */
@@ -99,18 +100,20 @@ public class DeckDueTreeNode extends AbstractDeckTreeNode<DeckDueTreeNode> {
         }
         DeckDueTreeNode tree = (DeckDueTreeNode) object;
         return Decks.equalName(getFullDeckName(), tree.getFullDeckName()) &&
-            mRevCount == tree.mRevCount &&
-            mLrnCount == tree.mLrnCount &&
-            mNewCount == tree.mNewCount &&
-            (getChildren() == tree.getChildren() || // Would be the case if both are null, or the same pointer
-             getChildren().equals(tree.getChildren()))
-            ;
+                mRevCount == tree.mRevCount &&
+                mLrnCount == tree.mLrnCount &&
+                mNewCount == tree.mNewCount &&
+                (getChildren() == tree.getChildren() || // Would be the case if both are null, or the same pointer
+                        getChildren().equals(tree.getChildren()))
+                ;
     }
 
-    /** Line representing this string without its children. Used in timbers only. */
+    /**
+     * Line representing this string without its children. Used in timbers only.
+     */
     protected String toStringLine() {
         return String.format(Locale.US, "%s, %d, %d, %d, %d\n",
-                             getFullDeckName(), getDid(), mRevCount, mLrnCount, mNewCount);
+                getFullDeckName(), getDid(), mRevCount, mLrnCount, mNewCount);
     }
 
     public boolean shouldDisplayCounts() {

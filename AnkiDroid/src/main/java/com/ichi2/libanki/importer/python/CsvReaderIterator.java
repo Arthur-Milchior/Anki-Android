@@ -29,6 +29,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import timber.log.Timber;
 
 import static com.ichi2.libanki.importer.python.CsvDialect.Quoting.*;
@@ -107,7 +108,7 @@ public class CsvReaderIterator implements Iterator<List<String>> {
 
     }
 
-     void parse_reset() {
+    void parse_reset() {
         this.fields = new ArrayList<>();
         this.field_len = 0;
         this.state = START_RECORD;
@@ -137,25 +138,21 @@ public class CsvReaderIterator implements Iterator<List<String>> {
                     if (parse_save_field() < 0)
                         return -1;
                     this.state = (c == '\0' ? START_RECORD : EAT_CRNL);
-                }
-                else if (c == dialect.mQuotechar &&
+                } else if (c == dialect.mQuotechar &&
                         dialect.mQuoting != QUOTE_NONE) {
                     /* start quoted field */
                     this.state = IN_QUOTED_FIELD;
-                }
-                else if (c == dialect.mEscapechar) {
+                } else if (c == dialect.mEscapechar) {
                     /* possible escaped character */
                     this.state = ESCAPED_CHAR;
-                }
-                else if (c == ' ' && dialect.mSkipInitialSpace)
+                } else if (c == ' ' && dialect.mSkipInitialSpace)
                     /* ignore space at start of field */
                     ;
                 else if (c == dialect.mDelimiter) {
                     /* save empty field */
                     if (parse_save_field() < 0)
                         return -1;
-                }
-                else {
+                } else {
                     /* begin new unquoted field */
                     if (dialect.mQuoting == QUOTE_NONNUMERIC)
                         this.numeric_field = 1;
@@ -166,7 +163,7 @@ public class CsvReaderIterator implements Iterator<List<String>> {
                 break;
 
             case ESCAPED_CHAR:
-                if (c == '\n' || c=='\r') {
+                if (c == '\n' || c == '\r') {
                     if (parse_add_char(c) < 0)
                         return -1;
                     this.state = AFTER_ESCAPED_CRNL;
@@ -191,18 +188,15 @@ public class CsvReaderIterator implements Iterator<List<String>> {
                     if (parse_save_field() < 0)
                         return -1;
                     this.state = (c == '\0' ? START_RECORD : EAT_CRNL);
-                }
-                else if (c == dialect.mEscapechar) {
+                } else if (c == dialect.mEscapechar) {
                     /* possible escaped character */
                     this.state = ESCAPED_CHAR;
-                }
-                else if (c == dialect.mDelimiter) {
+                } else if (c == dialect.mDelimiter) {
                     /* save field - wait for new field */
                     if (parse_save_field() < 0)
                         return -1;
                     this.state = START_FIELD;
-                }
-                else {
+                } else {
                     /* normal character - save in field */
                     if (parse_add_char(c) < 0)
                         return -1;
@@ -216,19 +210,16 @@ public class CsvReaderIterator implements Iterator<List<String>> {
                 else if (c == dialect.mEscapechar) {
                     /* Possible escape character */
                     this.state = ESCAPE_IN_QUOTED_FIELD;
-                }
-                else if (c == dialect.mQuotechar &&
+                } else if (c == dialect.mQuotechar &&
                         dialect.mQuoting != QUOTE_NONE) {
                     if (dialect.mDoublequote) {
                         /* doublequote; " represented by "" */
                         this.state = QUOTE_IN_QUOTED_FIELD;
-                    }
-                    else {
+                    } else {
                         /* end of quote part of field */
                         this.state = IN_FIELD;
                     }
-                }
-                else {
+                } else {
                     /* normal character - save in field */
                     if (parse_add_char(c) < 0)
                         return -1;
@@ -251,25 +242,21 @@ public class CsvReaderIterator implements Iterator<List<String>> {
                     if (parse_add_char(c) < 0)
                         return -1;
                     this.state = IN_QUOTED_FIELD;
-                }
-                else if (c == dialect.mDelimiter) {
+                } else if (c == dialect.mDelimiter) {
                     /* save field - wait for new field */
                     if (parse_save_field() < 0)
                         return -1;
                     this.state = START_FIELD;
-                }
-                else if (c == '\n' || c == '\r' || c == '\0') {
+                } else if (c == '\n' || c == '\r' || c == '\0') {
                     /* end of line - return [fields] */
                     if (parse_save_field() < 0)
                         return -1;
                     this.state = (c == '\0' ? START_RECORD : EAT_CRNL);
-                }
-                else if (!dialect.mStrict) {
+                } else if (!dialect.mStrict) {
                     if (parse_add_char(c) < 0)
                         return -1;
                     this.state = IN_FIELD;
-                }
-                else {
+                } else {
                     /* illegal */
                     Timber.w("'%c' expected after '%c'", dialect.mDelimiter, dialect.mQuotechar);
                     return -1;

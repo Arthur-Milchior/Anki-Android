@@ -120,7 +120,8 @@ public class LoadPronounciationActivity extends Activity implements OnCancelList
         buttonLoadPronunciation.setOnClickListener(v -> onLoadPronunciation(v));
         Button mSaveButton = new Button(this);
         mSaveButton.setText("Save");
-        mSaveButton.setOnClickListener(v -> { });
+        mSaveButton.setOnClickListener(v -> {
+        });
         mActivity = this;
         mStopped = false;
     }
@@ -138,7 +139,7 @@ public class LoadPronounciationActivity extends Activity implements OnCancelList
      * @param v Start of the story.
      */
     protected void onLoadPronunciation(View v) {
-        if(!Connection.isOnline()) {
+        if (!Connection.isOnline()) {
             showToast(gtxt(R.string.network_no_connection));
             return;
         }
@@ -174,7 +175,7 @@ public class LoadPronounciationActivity extends Activity implements OnCancelList
 
     /**
      * @author zaur This class is used two times. First time from Beolingus it requests a page with the word
-     *         translation. Second time it loads a page with the link to mp3 pronunciation file.
+     * translation. Second time it loads a page with the link to mp3 pronunciation file.
      */
     private class BackgroundPost extends AsyncTask<Void, Void, String> {
 
@@ -424,7 +425,7 @@ public class LoadPronounciationActivity extends Activity implements OnCancelList
     private void dismissCarefullyProgressDialog() {
         try {
             if ((progressDialog != null) && progressDialog.isShowing()) {
-                    progressDialog.dismiss();
+                progressDialog.dismiss();
             }
         } catch (Exception e) {
             // nothing is done intentionally

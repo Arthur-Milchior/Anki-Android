@@ -13,12 +13,12 @@ import androidx.annotation.Nullable;
  * Holds the data for a single node (row) in the deck due tree (the user-visible list
  * of decks and their counts). A node also contains a list of nodes that refer to the
  * next level of sub-decks for that particular deck (which can be an empty list).
- *
+ * <p>
  * The names field is an array of names that build a deck name from a hierarchy (i.e., a nested
  * deck will have an entry for every level of nesting). While the python version interchanges
  * between a string and a list of strings throughout processing, we always use an array for
  * this field and use getNamePart(0) for those cases.
- *
+ * <p>
  * T represents the type of children. Required for typing purpose only.
  */
 public abstract class AbstractDeckTreeNode<T extends AbstractDeckTreeNode<T>> implements Comparable<AbstractDeckTreeNode<T>> {
@@ -56,10 +56,12 @@ public abstract class AbstractDeckTreeNode<T extends AbstractDeckTreeNode<T>> im
         return Integer.compare(getDepth(), rhs.getDepth());
     }
 
-    /** Line representing this string without its children. Used in timbers only. */
+    /**
+     * Line representing this string without its children. Used in timbers only.
+     */
     protected String toStringLine() {
         return String.format(Locale.US, "%s, %d, %s",
-                             mName, mDid, mChildren);
+                mName, mDid, mChildren);
     }
 
     @Override
@@ -70,7 +72,7 @@ public abstract class AbstractDeckTreeNode<T extends AbstractDeckTreeNode<T>> im
     }
 
     protected void toString(StringBuffer buf) {
-        for (int i = 0; i < getDepth(); i++ ) {
+        for (int i = 0; i < getDepth(); i++) {
             buf.append("  ");
         }
         buf.append(toStringLine());
@@ -84,7 +86,7 @@ public abstract class AbstractDeckTreeNode<T extends AbstractDeckTreeNode<T>> im
 
     /**
      * @return The full deck name, e.g. "A::B::C"
-     * */
+     */
     public String getFullDeckName() {
         return mName;
     }
@@ -123,13 +125,15 @@ public abstract class AbstractDeckTreeNode<T extends AbstractDeckTreeNode<T>> im
      * @return The children of this deck. Note that they are set
      * in the data structure returned by DeckDueTree but are
      * always empty when the data structure is returned by
-     * deckDueList.*/
+     * deckDueList.
+     */
     public List<T> getChildren() {
         return mChildren;
     }
 
     /**
-     * @return whether this node as any children. */
+     * @return whether this node as any children.
+     */
     public boolean hasChildren() {
         return mChildren != null && !mChildren.isEmpty();
     }
@@ -148,6 +152,7 @@ public abstract class AbstractDeckTreeNode<T extends AbstractDeckTreeNode<T>> im
 
     /**
      * Whether both elements have the same structure and numbers.
+     *
      * @param object
      * @return
      */
@@ -158,9 +163,9 @@ public abstract class AbstractDeckTreeNode<T extends AbstractDeckTreeNode<T>> im
         }
         AbstractDeckTreeNode tree = (AbstractDeckTreeNode) object;
         return Decks.equalName(getFullDeckName(), tree.getFullDeckName()) &&
-            (mChildren == null && tree.mChildren == null) || // Would be the case if both are null, or the same pointer
-            (mChildren != null && mChildren.equals(tree.mChildren))
-            ;
+                (mChildren == null && tree.mChildren == null) || // Would be the case if both are null, or the same pointer
+                (mChildren != null && mChildren.equals(tree.mChildren))
+                ;
     }
 
     public Collection getCol() {

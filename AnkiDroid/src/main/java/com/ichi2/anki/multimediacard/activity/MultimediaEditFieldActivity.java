@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -79,7 +80,7 @@ public class MultimediaEditFieldActivity extends AnkiActivity
     /**
      * Cached copy of the current request to change a field
      * Used to access past state from OnRequestPermissionsResultCallback
-     * */
+     */
     private ChangeUIRequest mCurrentChangeRequest;
 
     @Override
@@ -135,7 +136,7 @@ public class MultimediaEditFieldActivity extends AnkiActivity
         // Request permission to record if audio field
         if (field instanceof AudioRecordingField && !Permissions.canRecordAudio(this)) {
             Timber.d("Requesting Audio Permissions");
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.RECORD_AUDIO},
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
                     REQUEST_AUDIO_PERMISSION);
             return true;
         }
@@ -143,7 +144,7 @@ public class MultimediaEditFieldActivity extends AnkiActivity
         // Request permission to use the camera if image field
         if (field instanceof ImageField && !Permissions.canUseCamera(this)) {
             Timber.d("Requesting Camera Permissions");
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA},
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
                     REQUEST_CAMERA_PERMISSION);
             return true;
         }
@@ -151,7 +152,9 @@ public class MultimediaEditFieldActivity extends AnkiActivity
         return false;
     }
 
-    /** Sets various properties required for IFieldController to be in a valid state */
+    /**
+     * Sets various properties required for IFieldController to be in a valid state
+     */
     private void setupUIController(IFieldController fieldController, @Nullable Bundle savedInstanceState) {
         fieldController.setField(mField);
         fieldController.setFieldIndex(mFieldIndex);
@@ -346,7 +349,7 @@ public class MultimediaEditFieldActivity extends AnkiActivity
         recreateEditingUi(mCurrentChangeRequest);
     }
 
-    public void onRequestPermissionsResult (int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (mCurrentChangeRequest == null) {
             cancelActivityWithAssertionFailure("mCurrentChangeRequest should be set before requesting permissions");
             return;
@@ -436,17 +439,25 @@ public class MultimediaEditFieldActivity extends AnkiActivity
         super.onSaveInstanceState(outState);
     }
 
-    /** Intermediate class to hold state for the onRequestPermissionsResult callback */
+    /**
+     * Intermediate class to hold state for the onRequestPermissionsResult callback
+     */
     private final static class ChangeUIRequest {
         private final IField newField;
         private final int state;
         private boolean mRequiresPermissionCheck = true;
 
-        /** Initial request when activity is created */
+        /**
+         * Initial request when activity is created
+         */
         public static final int ACTIVITY_LOAD = 0;
-        /** A change in UI via the menu options. Cancellable */
+        /**
+         * A change in UI via the menu options. Cancellable
+         */
         public static final int UI_CHANGE = 1;
-        /** A change in UI via access to the activity. Not (yet) cancellable */
+        /**
+         * A change in UI via access to the activity. Not (yet) cancellable
+         */
         public static final int EXTERNAL_FIELD_CHANGE = 2;
 
         private ChangeUIRequest(IField field, int state) {
@@ -486,10 +497,12 @@ public class MultimediaEditFieldActivity extends AnkiActivity
     /**
      * Class to contain logic relating to decisions made when recreating a UI.
      * Can later be converted to a non-static class to allow testing of the logic.
-     * */
+     */
     private static final class UIRecreationHandler {
 
-        /** Raised just before the field controller is replaced */
+        /**
+         * Raised just before the field controller is replaced
+         */
         private static void onPreFieldControllerReplacement(IFieldController previousFieldController) {
             Timber.d("onPreFieldControllerReplacement");
             //on init, we don't need to do anything
@@ -504,7 +517,7 @@ public class MultimediaEditFieldActivity extends AnkiActivity
         /**
          * Raised when we were supplied with a field that could not generate a UI controller
          * Currently: We used a field for which we didn't know how to generate the UI
-         * */
+         */
         private static void onControllerCreationFailed(ChangeUIRequest request, MultimediaEditFieldActivity activity) {
             Timber.d("onControllerCreationFailed. State: %d", request.getState());
             switch (request.getState()) {

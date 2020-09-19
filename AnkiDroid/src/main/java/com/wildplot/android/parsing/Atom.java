@@ -21,9 +21,7 @@ public class Atom implements TreeElement {
     private TopLevelParser parser;
 
 
-
     public enum AtomType {VARIABLE, NUMBER, EXP_IN_BRACKETS, FUNCTION_MATH, FUNCTION_X, FUNCTION_X_Y, INVALID}
-
 
 
     private AtomType atomType = AtomType.INVALID;

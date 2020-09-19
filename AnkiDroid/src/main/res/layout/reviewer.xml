@@ -1,5 +1,4 @@
-<androidx.drawerlayout.widget.ClosableDrawerLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.ClosableDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/drawer_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -11,13 +10,14 @@
         android:id="@+id/root_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:focusableInTouchMode="true" >
+        android:focusableInTouchMode="true">
         <!-- Bring in each component from separate files as we have fullscreen versions of reviewer -->
         <RelativeLayout
             android:id="@+id/front_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <include layout="@layout/toolbar"/>
+
+            <include layout="@layout/toolbar" />
 
             <include
                 layout="@layout/reviewer_topbar"
@@ -42,7 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_above="@+id/bottom_area_layout"/>
+                android:layout_above="@+id/bottom_area_layout" />
 
             <include layout="@layout/reviewer_answer_buttons" />
         </RelativeLayout>

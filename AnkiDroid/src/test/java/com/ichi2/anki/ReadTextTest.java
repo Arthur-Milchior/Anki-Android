@@ -32,7 +32,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 
 @RunWith(AndroidJUnit4.class)
-public class ReadTextTest extends RobolectricTest{
+public class ReadTextTest extends RobolectricTest {
 
     @Before
     public void init() {
@@ -70,7 +70,6 @@ public class ReadTextTest extends RobolectricTest{
 
         assertThat(actual, is("A few lizards are venomous, eg blank. They have grooved teeth and sublingual venom glands."));
     }
-
 
 
     @CheckResult

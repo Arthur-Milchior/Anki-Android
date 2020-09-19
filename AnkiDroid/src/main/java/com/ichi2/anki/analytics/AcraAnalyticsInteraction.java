@@ -11,6 +11,7 @@ import org.acra.util.Installation;
 import java.io.File;
 
 import androidx.annotation.NonNull;
+
 import timber.log.Timber;
 
 @AutoService(ReportInteraction.class)

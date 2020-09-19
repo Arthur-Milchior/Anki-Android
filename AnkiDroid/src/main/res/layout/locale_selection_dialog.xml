@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright (c) 2020 David Allison <davidallisongithub@gmail.com>
 
   This program is free software; you can redistribute it and/or modify it under
@@ -15,8 +14,7 @@
   this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -30,8 +28,7 @@
         android:background="?attr/colorPrimary"
         android:layout_alignParentTop="true"
         app:title="@string/locale_selection_dialog_title"
-        app:popupTheme="@style/ActionBar.Popup"
-        />
+        app:popupTheme="@style/ActionBar.Popup" />
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -41,8 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/locale_dialog_selection_toolbar"
         android:layout_above="@+id/locale_dialog_summary"
-        android:fadeScrollbars="false"
-        />
+        android:fadeScrollbars="false" />
 
     <TextView
         android:id="@+id/locale_dialog_summary"
@@ -51,7 +47,6 @@
         android:gravity="center_horizontal"
         android:text="@string/locale_selection_dialog_summary"
         android:padding="@dimen/content_vertical_padding"
-        android:layout_alignParentBottom="true"
-        />
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

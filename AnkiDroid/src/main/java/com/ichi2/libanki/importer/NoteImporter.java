@@ -46,22 +46,30 @@ public class NoteImporter extends Importer {
     private boolean mNeedDelimiter = false;
     private boolean mAllowHTML = false;
     private ImportMode mImportMode = UPDATE_MODE;
-    /** Note: elements can be null */
+    /**
+     * Note: elements can be null
+     */
     @Nullable
     private List<String> mMapping;
     @Nullable
-    private String mTagModified ;
+    private String mTagModified;
 
 
     private final Model mModel;
 
-    /** _tagsMapped in python */
+    /**
+     * _tagsMapped in python
+     */
     private boolean mTagsMapped;
 
-    /** _fmap in Python */
+    /**
+     * _fmap in Python
+     */
     private Map<String, Pair<Integer, JSONObject>> mFMap;
 
-    /** _nextID in python */
+    /**
+     * _nextID in python
+     */
     private long mNextId;
     private ArrayList<Long> _ids;
     private List<Triple> _cards;
@@ -87,8 +95,9 @@ public class NoteImporter extends Importer {
     }
 
 
-
-    /** The number of fields.*/
+    /**
+     * The number of fields.
+     */
     protected int fields() {
         return 0;
     }
@@ -125,19 +134,25 @@ public class NoteImporter extends Importer {
         return new ArrayList<>();
     }
 
-    /** Open file and ensure it's in the right format. */
+    /**
+     * Open file and ensure it's in the right format.
+     */
     protected void open() {
         // intentionally empty
     }
 
 
-    /** Closes the open file. */
+    /**
+     * Closes the open file.
+     */
     protected void close() {
         // intentionally empty
     }
 
 
-    /** Convert each card into a note, apply attributes and add to col. */
+    /**
+     * Convert each card into a note, apply attributes and add to col.
+     */
     public void importNotes(List<ForeignNote> notes) {
         Assert.that(mappingOk());
         // note whether tags are mapped
@@ -293,7 +308,7 @@ public class NoteImporter extends Importer {
         for (Map.Entry<Integer, ForeignCard> a : n.cards.entrySet()) {
             _cards.add(new Triple(id, a.getKey(), a.getValue()));
         }
-        return new Object[] {
+        return new Object[]{
                 id,
                 guid64(),
                 mModel.getLong("id"),
@@ -321,16 +336,16 @@ public class NoteImporter extends Importer {
         String tags;
         if (mTagsMapped) {
             tags = mCol.getTags().join(n.mTags);
-            return new Object[] {mCol.getTime().intTime(), mCol.usn(), n.fieldsStr, tags, id, n.fieldsStr, tags };
+            return new Object[]{mCol.getTime().intTime(), mCol.usn(), n.fieldsStr, tags, id, n.fieldsStr, tags};
         } else if (mTagModified != null) {
             tags = mCol.getDb().queryString("select tags from notes where id = ?", id);
             List<String> tagList = mCol.getTags().split(tags);
             tagList.addAll(StringUtils.splitOnWhitespace(mTagModified));
             tags = mCol.getTags().join(tagList);
-            return new Object[] {mCol.getTime().intTime(), mCol.usn(), n.fieldsStr, tags, id, n.fieldsStr };
+            return new Object[]{mCol.getTime().intTime(), mCol.usn(), n.fieldsStr, tags, id, n.fieldsStr};
         } else {
             // This looks inconsistent but is fine, see: addUpdates
-            return new Object[] {mCol.getTime().intTime(), mCol.usn(), n.fieldsStr, id, n.fieldsStr };
+            return new Object[]{mCol.getTime().intTime(), mCol.usn(), n.fieldsStr, id, n.fieldsStr};
         }
     }
 
@@ -340,20 +355,20 @@ public class NoteImporter extends Importer {
         if (mTagsMapped) {
             mCol.getDb().executeMany(
                     "update notes set mod = ?, usn = ?, flds = ?, tags = ? " +
-                    "where id = ? and (flds != ? or tags != ?)",
+                            "where id = ? and (flds != ? or tags != ?)",
                     rows
-                    );
+            );
         } else if (mTagModified != null) {
             mCol.getDb().executeMany(
                     "update notes set mod = ?, usn = ?, flds = ?, tags = ? " +
-                    "where id = ? and flds != ?",
+                            "where id = ? and flds != ?",
                     rows
             );
 
         } else {
             mCol.getDb().executeMany(
                     "update notes set mod = ?, usn = ?, flds = ? " +
-                    "where id = ? and flds != ?",
+                            "where id = ? and flds != ?",
                     rows
             );
         }
@@ -400,7 +415,7 @@ public class NoteImporter extends Importer {
         ArrayList<Object[]> data = new ArrayList<>();
         for (Triple t : _cards) {
             ForeignCard c = t.mCard;
-            data.add(new Object[] { c.mIvl, c.mDue, c.mFactor, c.mReps, c.mLapses, t.mNid, t.mOrd});
+            data.add(new Object[]{c.mIvl, c.mDue, c.mFactor, c.mReps, c.mLapses, t.mNid, t.mOrd});
         }
 
         // we assume any updated cards are reviews
@@ -408,7 +423,9 @@ public class NoteImporter extends Importer {
                 "factor = ?, reps = ?, lapses = ? where nid = ? and ord = ?", data);
     }
 
-    /** Not in libAnki */
+    /**
+     * Not in libAnki
+     */
 
     private <T> List<Map.Entry<Integer, T>> enumerate(List<T> list) {
         List<Map.Entry<Integer, T>> ret = new ArrayList<>();
@@ -453,15 +470,23 @@ public class NoteImporter extends Importer {
 
 
     public enum ImportMode {
-        /** update if first field matches existing note */
+        /**
+         * update if first field matches existing note
+         */
         UPDATE_MODE, //0
-        /** ignore if first field matches existing note */
+        /**
+         * ignore if first field matches existing note
+         */
         IGNORE_MODE, //1
-        /** ADD_MODE: import even if first field matches existing note */
+        /**
+         * ADD_MODE: import even if first field matches existing note
+         */
         ADD_MODE, //2
     }
 
-    /** A temporary object storing fields and attributes. */
+    /**
+     * A temporary object storing fields and attributes.
+     */
     public static class ForeignNote {
         public List<String> mFields = new ArrayList<>();
         public List<String> mTags = new ArrayList<>();

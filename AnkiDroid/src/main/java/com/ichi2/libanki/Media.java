@@ -57,6 +57,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import androidx.annotation.NonNull;
+
 import timber.log.Timber;
 
 import static java.lang.Math.min;
@@ -74,13 +75,13 @@ import static java.lang.Math.min;
  * creating a new File() object), we must include the full path. Use the dir() method to make this step easier.<br>
  * E.g: new File(dir(), "filename.jpg")
  */
-@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes","PMD.AvoidReassigningParameters",
-        "PMD.NPathComplexity","PMD.MethodNamingConventions","PMD.ExcessiveMethodLength","PMD.OneDeclarationPerLine",
-        "PMD.SwitchStmtsShouldHaveDefault","PMD.EmptyIfStmt","PMD.SimplifyBooleanReturns","PMD.CollapsibleIfStatements"})
+@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "PMD.AvoidReassigningParameters",
+        "PMD.NPathComplexity", "PMD.MethodNamingConventions", "PMD.ExcessiveMethodLength", "PMD.OneDeclarationPerLine",
+        "PMD.SwitchStmtsShouldHaveDefault", "PMD.EmptyIfStmt", "PMD.SimplifyBooleanReturns", "PMD.CollapsibleIfStatements"})
 public class Media {
 
     private static final Pattern fIllegalCharReg = Pattern.compile("[><:\"/?*^\\\\|\\x00\\r\\n]");
-    private static final Pattern fRemotePattern  = Pattern.compile("(https?|ftp)://");
+    private static final Pattern fRemotePattern = Pattern.compile("(https?|ftp)://");
 
     /*
      * A note about the regular expressions below: the python code uses named groups for the image and sound patterns.
@@ -111,7 +112,7 @@ public class Media {
      */
     private static final Pattern fImgRegExpU = Pattern.compile("(?i)(<img[^>]* src=(?!['\\\"])([^ >]+)[^>]*?>)");
 
-    public static List<Pattern> mRegexps =  Arrays.asList(fSoundRegexps, fImgRegExpQ, fImgRegExpU);
+    public static List<Pattern> mRegexps = Arrays.asList(fSoundRegexps, fImgRegExpQ, fImgRegExpU);
 
     private Collection mCol;
     private String mDir;
@@ -162,13 +163,13 @@ public class Media {
 
     public void _initDB() {
         String sql = "create table media (\n" +
-                     " fname text not null primary key,\n" +
-                     " csum text,           -- null indicates deleted file\n" +
-                     " mtime int not null,  -- zero if deleted\n" +
-                     " dirty int not null\n" +
-                     ");\n" +
-                     "create index idx_media_dirty on media (dirty);\n" +
-                     "create table meta (dirMod int, lastUsn int); insert into meta values (0, 0);";
+                " fname text not null primary key,\n" +
+                " csum text,           -- null indicates deleted file\n" +
+                " mtime int not null,  -- zero if deleted\n" +
+                " dirty int not null\n" +
+                ");\n" +
+                "create index idx_media_dirty on media (dirty);\n" +
+                "create table meta (dirMod int, lastUsn int); insert into meta values (0, 0);";
         mDb.executeScript(sql);
     }
 
@@ -180,11 +181,11 @@ public class Media {
             mDb.execute(String.format(Locale.US, "attach \"%s\" as old", oldpath));
             try {
                 String sql = "insert into media\n" +
-                             " select m.fname, csum, mod, ifnull((select 1 from log l2 where l2.fname=m.fname), 0) as dirty\n" +
-                             " from old.media m\n" +
-                             " left outer join old.log l using (fname)\n" +
-                             " union\n" +
-                             " select fname, null, 0, 1 from old.log where type=" + Consts.CARD_TYPE_LRN + ";";
+                        " select m.fname, csum, mod, ifnull((select 1 from log l2 where l2.fname=m.fname), 0) as dirty\n" +
+                        " from old.media m\n" +
+                        " left outer join old.log l using (fname)\n" +
+                        " union\n" +
+                        " select fname, null, 0, 1 from old.log where type=" + Consts.CARD_TYPE_LRN + ";";
                 mDb.execute(sql);
                 mDb.execute("delete from meta");
                 mDb.execute("insert into meta select dirMod, usn from old.meta");
@@ -297,7 +298,7 @@ public class Media {
     /**
      * Extract media filenames from an HTML string.
      *
-     * @param string The string to scan for media filenames ([sound:...] or <img...>).
+     * @param string        The string to scan for media filenames ([sound:...] or <img...>).
      * @param includeRemote If true will also include external http/https/ftp urls.
      * @return A list containing all the sound and image filenames found in the input string.
      */
@@ -315,7 +316,7 @@ public class Media {
 
         for (String s : strings) {
             // handle latex
-            s =  LaTeX.mungeQA(s, mCol, model);
+            s = LaTeX.mungeQA(s, mCol, model);
             // extract filenames
             Matcher m;
             for (Pattern p : mRegexps) {
@@ -344,7 +345,7 @@ public class Media {
         }
         ArrayList<String> strings = new ArrayList<>();
         String clozeReg = Template.clozeReg;
-        
+
         for (String ord : ords) {
             StringBuffer buf = new StringBuffer();
             m = Pattern.compile(String.format(Locale.US, clozeReg, ord)).matcher(string);
@@ -385,6 +386,7 @@ public class Media {
 
     /**
      * Percent-escape UTF-8 characters in local image filenames.
+     *
      * @param string The string to search for image references and escape the filenames.
      * @return The string with the filenames of any local images percent-escaped as UTF-8.
      */
@@ -401,9 +403,9 @@ public class Media {
                     //dont't do any escaping if remote image
                 } else {
                     if (unescape) {
-                        string = string.replace(tag,tag.replace(fname, Uri.decode(fname)));
+                        string = string.replace(tag, tag.replace(fname, Uri.decode(fname)));
                     } else {
-                        string = string.replace(tag,tag.replace(fname, Uri.encode(fname, "/")));
+                        string = string.replace(tag, tag.replace(fname, Uri.encode(fname, "/")));
                     }
                 }
             }
@@ -567,8 +569,10 @@ public class Media {
         return fname;
     }
 
-    /** This method only change things on windows. So it's the
-     * identity here. */
+    /**
+     * This method only change things on windows. So it's the
+     * identity here.
+     */
     private String _cleanWin32Filename(String fname) {
         return fname;
     }
@@ -584,7 +588,7 @@ public class Media {
         int dirlen = fname.length();// ideally, name should be normalized. Without access to nio.Paths library, it's hard to do it really correctly. This is still a better approximation than nothing.
         int remaining = pathmax - dirlen;
         namemax = min(remaining, namemax);
-        Assert.that(namemax>0, "The media directory is maximally long. There is no more length available for file name.");
+        Assert.that(namemax > 0, "The media directory is maximally long. There is no more length available for file name.");
 
         if (fname.length() > namemax) {
             int lastSlash = fname.indexOf("/");
@@ -593,12 +597,12 @@ public class Media {
                 // no dot, or before last slash
                 fname = fname.substring(0, namemax);
             } else {
-                String ext = fname.substring(lastDot+1);
+                String ext = fname.substring(lastDot + 1);
                 String head = fname.substring(0, lastDot);
                 int headmax = namemax - ext.length();
                 head = head.substring(0, headmax);
                 fname = head + ext;
-                Assert.that (fname.length() <= namemax, "The length of the file is greater than the maximal name value.");
+                Assert.that(fname.length() <= namemax, "The length of the file is greater than the maximal name value.");
             }
         }
 
@@ -620,7 +624,7 @@ public class Media {
 
     /**
      * @param force Unconditionally scan the media folder for changes (i.e., ignore differences in recorded and current
-     *            directory mod times). Use this when rebuilding the media database.
+     *              directory mod times). Use this when rebuilding the media database.
      */
     public void findChanges(boolean force) {
         if (force || _changed() != null) {
@@ -655,9 +659,9 @@ public class Media {
     /**
      * Return dir mtime if it has changed since the last findChanges()
      * Doesn't track edits, but user can add or remove a file to update
-     * 
+     *
      * @return The modification time of the media directory if it has changed since the last call of findChanges(). If
-     *         it hasn't, it returns null.
+     * it hasn't, it returns null.
      */
     public Long _changed() {
         long mod = mDb.queryLongScalar("select dirMod from meta");
@@ -669,7 +673,7 @@ public class Media {
     }
 
 
-    private void _logChanges()  {
+    private void _logChanges() {
         Pair<List<String>, List<String>> result = _changes();
         List<String> added = result.first;
         List<String> removed = result.second;
@@ -677,10 +681,10 @@ public class Media {
         for (String f : added) {
             String path = new File(dir(), f).getAbsolutePath();
             long mt = _mtime(path);
-            media.add(new Object[] { f, _checksum(path), mt, 1 });
+            media.add(new Object[]{f, _checksum(path), mt, 1});
         }
         for (String f : removed) {
-            media.add(new Object[] { f, null, 0, 1});
+            media.add(new Object[]{f, null, 0, 1});
         }
         // update media db
         mDb.executeMany("insert or replace into media values (?,?,?,?)", media);
@@ -696,7 +700,7 @@ public class Media {
                 String name = cur.getString(0);
                 String csum = cur.getString(1);
                 Long mod = cur.getLong(2);
-                cache.put(name, new Object[] { csum, mod, false });
+                cache.put(name, new Object[]{csum, mod, false});
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -723,7 +727,7 @@ public class Media {
                 f.delete();
                 continue;
             }
-            if (sz > 100*1024*1024) {
+            if (sz > 100 * 1024 * 1024) {
                 mCol.log("ignoring file over 100MB", f);
                 continue;
             }
@@ -755,7 +759,7 @@ public class Media {
         }
         // look for any entries in the cache that no longer exist on disk
         for (String fname : cache.keySet()) {
-            if (!((Boolean)cache.get(fname)[2])) {
+            if (!((Boolean) cache.get(fname)[2])) {
                 removed.add(fname);
             }
         }
@@ -780,7 +784,7 @@ public class Media {
 
 
     public Pair<String, Integer> syncInfo(String fname) {
-        try (Cursor cur = mDb.getDatabase().query("select csum, dirty from media where fname=?", new String[] {fname})) {
+        try (Cursor cur = mDb.getDatabase().query("select csum, dirty from media where fname=?", new String[]{fname})) {
             if (cur.moveToNext()) {
                 String csum = cur.getString(0);
                 int dirty = cur.getInt(1);
@@ -921,11 +925,11 @@ public class Media {
      * Extract zip data; return the number of files extracted. Unlike the python version, this method consumes a
      * ZipFile stored on disk instead of a String buffer. Holding the entire downloaded data in memory is not feasible
      * since some devices can have very limited heap space.
-     *
+     * <p>
      * This method closes the file before it returns.
      */
     public int addFilesFromZip(ZipFile z) throws IOException {
-    try {
+        try {
             List<Object[]> media = new ArrayList<>();
             // get meta info first
             JSONObject meta = new JSONObject(Utils.convertStreamToString(z.getInputStream(z.getEntry("_meta"))));
@@ -946,7 +950,7 @@ public class Media {
                     }
                     String csum = Utils.fileChecksum(destPath);
                     // update db
-                    media.add(new Object[] {name, csum, _mtime(destPath), 0});
+                    media.add(new Object[]{name, csum, _mtime(destPath), 0});
                     cnt += 1;
                 }
             }
@@ -1007,7 +1011,7 @@ public class Media {
         }
         Timber.d("Marking media file removal in media db: %s", fname);
         mDb.execute("insert or replace into media values (?,?,?,?)",
-               fname, null, 0, 1);
+                fname, null, 0, 1);
     }
 
 

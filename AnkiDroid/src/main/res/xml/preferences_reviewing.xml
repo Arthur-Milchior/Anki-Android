@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 ~ Copyright (c) 2009 Nicolas Raoul <nicolas.raoul@gmail.com>
 ~ Copyright (c) 2009 Edu Zamora <edu.zasu@gmail.com>
 ~ Copyright (c) 2009 Jordi Chacon <jordi.chacon@gmail.com>
@@ -24,8 +23,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://arbitrary.app.namespace/com.ichi2.anki"
     android:title="@string/pref_cat_reviewing"
-    android:summary="@string/pref_cat_reviewing_summ" >
-    <PreferenceCategory android:title="@string/pref_cat_reviewer_behaviour" >
+    android:summary="@string/pref_cat_reviewing_summ">
+    <PreferenceCategory android:title="@string/pref_cat_reviewer_behaviour">
         <ListPreference
             android:entries="@array/new_spread_labels"
             android:entryValues="@array/new_spread_values"
@@ -51,11 +50,11 @@
             app:max="9999"
             app:min="0" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_cat_flashcard" >
+    <PreferenceCategory android:title="@string/pref_cat_flashcard">
         <Preference
             android:summary="@string/custom_buttons_summary"
             android:title="@string/custom_buttons"
-            android:key="custom_buttons_link"/>
+            android:key="custom_buttons_link" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="keepScreenOn"
@@ -124,7 +123,7 @@
             android:summary="@string/show_eta_summ"
             android:title="@string/show_eta" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_cat_whiteboard" >
+    <PreferenceCategory android:title="@string/pref_cat_whiteboard">
         <com.ichi2.ui.SeekBarPreference
             android:defaultValue="6"
             android:key="whiteBoardStrokeWidth"
@@ -138,7 +137,7 @@
             android:summary="@string/whiteboard_black_summ"
             android:title="@string/whiteboard_black" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_cat_automatic_display" >
+    <PreferenceCategory android:title="@string/pref_cat_automatic_display">
         <CheckBoxPreference
             android:defaultValue="false"
             android:disableDependentsState="false"

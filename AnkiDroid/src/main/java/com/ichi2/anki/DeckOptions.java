@@ -1,4 +1,3 @@
-
 package com.ichi2.anki;
 
 /****************************************************************************************
@@ -73,7 +72,9 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import androidx.annotation.NonNull;
+
 import timber.log.Timber;
+
 import static com.ichi2.async.CollectionTask.TASK_TYPE.*;
 
 import com.ichi2.async.TaskData;
@@ -215,7 +216,7 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
                                 if (oldValue != newValue) {
                                     mOptions.getJSONObject("new").put("order", newValue);
                                     CollectionTask.launchCollectionTask(REORDER, confChangeHandler(),
-                                            new TaskData(new Object[] {mOptions}));
+                                            new TaskData(new Object[]{mOptions}));
                                 }
                                 mOptions.getJSONObject("new").put("order", Integer.parseInt((String) value));
                                 break;
@@ -305,7 +306,7 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
                                 long newConfId = Long.parseLong((String) value);
                                 mOptions = mCol.getDecks().getConf(newConfId);
                                 CollectionTask.launchCollectionTask(CONF_CHANGE, confChangeHandler(),
-                                        new TaskData(new Object[] {mDeck, mOptions}));
+                                        new TaskData(new Object[]{mDeck, mOptions}));
                                 break;
                             }
                             case "confRename": {
@@ -318,7 +319,7 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
                             case "confReset":
                                 if ((Boolean) value) {
                                     CollectionTask.launchCollectionTask(CONF_RESET, confChangeHandler(),
-                                            new TaskData(new Object[] {mOptions}));
+                                            new TaskData(new Object[]{mOptions}));
                                 }
                                 break;
                             case "confAdd": {
@@ -364,7 +365,7 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
                             case "confSetSubdecks":
                                 if ((Boolean) value) {
                                     CollectionTask.launchCollectionTask(CONF_SET_SUBDECKS, confChangeHandler(),
-                                            new TaskData(new Object[] {mDeck, mOptions}));
+                                            new TaskData(new Object[]{mDeck, mOptions}));
                                 }
                                 break;
                             case "reminderEnabled": {
@@ -536,7 +537,7 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
                 mCol.getDecks().remConf(mOptions.getLong("id"));
                 // Run the CPU intensive re-sort operation in a background thread
                 CollectionTask.launchCollectionTask(CONF_REMOVE, confChangeHandler(),
-                                        new TaskData(new Object[] { mOptions }));
+                        new TaskData(new Object[]{mOptions}));
                 mDeck.put("conf", 1);
             }
         }
@@ -714,13 +715,12 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
     // Workaround for bug 4611: http://code.google.com/p/android/issues/detail?id=4611
     @SuppressWarnings("deprecation")
     @Override
-    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference)
-    {
+    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
         super.onPreferenceTreeClick(preferenceScreen, preference);
         if (preference instanceof PreferenceScreen &&
                 ((PreferenceScreen) preference).getDialog() != null) {
-                    ((PreferenceScreen) preference).getDialog().getWindow().getDecorView().setBackgroundDrawable(
-                            this.getWindow().getDecorView().getBackground().getConstantState().newDrawable());
+            ((PreferenceScreen) preference).getDialog().getWindow().getDecorView().setBackgroundDrawable(
+                    this.getWindow().getDecorView().getBackground().getConstantState().newDrawable());
         }
 
         return false;

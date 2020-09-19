@@ -7,15 +7,15 @@
         android:key="useCustomSyncServer"
         android:title="@string/custom_sync_server_enable_title"
         android:summary="@string/custom_sync_server_enable_summary"
-        android:defaultValue="false"/>
+        android:defaultValue="false" />
     <EditTextPreference
         android:key="syncBaseUrl"
         android:dependency="useCustomSyncServer"
         android:title="@string/custom_sync_server_base_url_title"
-        android:defaultValue="https://ankiweb.net/"/>
+        android:defaultValue="https://ankiweb.net/" />
     <EditTextPreference
         android:key="syncMediaUrl"
         android:dependency="useCustomSyncServer"
         android:title="@string/custom_sync_server_media_url_title"
-        android:defaultValue="https://msync.ankiweb.net/"/>
+        android:defaultValue="https://msync.ankiweb.net/" />
 </PreferenceScreen>

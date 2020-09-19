@@ -45,22 +45,23 @@ public class DecksTest extends RobolectricTest {
         JSONObject deckAPlus = decks.byName("A+");
         Asserts.notNull(deckAPlus, "A deck with name \"A+\" should still exists");
     }
+
     @Test
     public void ensureDeckList() {
         Decks decks = getCol().getDecks();
-        for (String deckName: TEST_DECKS) {
+        for (String deckName : TEST_DECKS) {
             addDeck(deckName);
         }
         JSONObject brokenDeck = decks.byName("cmxieunwoogyxsctnjmv::INSBGDS");
-        Asserts.notNull(brokenDeck,"We should get deck with given name");
+        Asserts.notNull(brokenDeck, "We should get deck with given name");
         // Changing the case. That could exists in an old collection or during sync.
         brokenDeck.put("name", "CMXIEUNWOOGYXSCTNJMV::INSBGDS");
         decks.save(brokenDeck);
 
         decks.childMap();
-        for (JSONObject deck: decks.all()) {
+        for (JSONObject deck : decks.all()) {
             long did = deck.getLong("id");
-            for (JSONObject parent: decks.parents(did)) {
+            for (JSONObject parent : decks.parents(did)) {
                 Asserts.notNull(parent, "Parent should not be null");
             }
         }
@@ -93,21 +94,21 @@ public class DecksTest extends RobolectricTest {
         assertEquals(parentId, (long) col.getDecks().id("new deck"));
         // we start with the default col selected
         assertEquals(1, col.getDecks().selected());
-        assertEqualsArrayList(new Long[] {1L}, col.getDecks().active());
+        assertEqualsArrayList(new Long[]{1L}, col.getDecks().active());
         // we can select a different col
         col.getDecks().select(parentId);
         assertEquals(parentId, col.getDecks().selected());
-        assertEqualsArrayList(new Long[] {parentId}, col.getDecks().active());
+        assertEqualsArrayList(new Long[]{parentId}, col.getDecks().active());
         // let's create a child
         long childId = col.getDecks().id("new deck::child");
         col.reset();
         // it should have been added to the active list
         assertEquals(parentId, col.getDecks().selected());
-        assertEqualsArrayList(new Long[] {parentId, childId}, col.getDecks().active());
+        assertEqualsArrayList(new Long[]{parentId, childId}, col.getDecks().active());
         // we can select the child individually too
         col.getDecks().select(childId);
         assertEquals(childId, col.getDecks().selected());
-        assertEqualsArrayList(new Long[] {childId}, col.getDecks().active());
+        assertEqualsArrayList(new Long[]{childId}, col.getDecks().active());
         // parents with a different case should be handled correctly
         col.getDecks().id("ONE");
         Model m = col.getModels().current();
@@ -163,7 +164,7 @@ public class DecksTest extends RobolectricTest {
         id = col.getDecks().id("one");
         col.getDecks().rename(col.getDecks().get(id), "yo");
         names = col.getDecks().allSortedNames();
-        for (String n : new String[] {"yo", "yo::two", "yo::two::three"}) {
+        for (String n : new String[]{"yo", "yo::two", "yo::two::three"}) {
             assertTrue(names.contains(n));
         }
         // over filtered

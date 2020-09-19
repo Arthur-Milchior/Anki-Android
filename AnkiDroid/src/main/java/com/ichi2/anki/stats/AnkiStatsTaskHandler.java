@@ -49,7 +49,7 @@ public class AnkiStatsTaskHandler {
     private static Lock sLock = new ReentrantLock();
 
 
-    public AnkiStatsTaskHandler(Collection collection){
+    public AnkiStatsTaskHandler(Collection collection) {
         sInstance = this;
         mCollectionData = collection;
     }
@@ -62,30 +62,32 @@ public class AnkiStatsTaskHandler {
         return sInstance;
     }
 
-    public CreateChartTask createChart(Stats.ChartType chartType, View... views){
+    public CreateChartTask createChart(Stats.ChartType chartType, View... views) {
         CreateChartTask createChartTask = new CreateChartTask(chartType);
         createChartTask.execute(views);
         return createChartTask;
     }
-    public CreateStatisticsOverview createStatisticsOverview(View... views){
+
+    public CreateStatisticsOverview createStatisticsOverview(View... views) {
         CreateStatisticsOverview createChartTask = new CreateStatisticsOverview();
         createChartTask.execute(views);
         return createChartTask;
     }
-    public static DeckPreviewStatistics createReviewSummaryStatistics(Collection col, TextView view){
+
+    public static DeckPreviewStatistics createReviewSummaryStatistics(Collection col, TextView view) {
         DeckPreviewStatistics deckPreviewStatistics = new DeckPreviewStatistics();
         deckPreviewStatistics.execute(col, view);
         return deckPreviewStatistics;
     }
 
-    private class CreateChartTask extends AsyncTask<View, Void, PlotSheet>{
+    private class CreateChartTask extends AsyncTask<View, Void, PlotSheet> {
         private ChartView mImageView;
         private ProgressBar mProgressBar;
 
         private boolean mIsRunning = false;
         private Stats.ChartType mChartType;
 
-        public CreateChartTask(Stats.ChartType chartType){
+        public CreateChartTask(Stats.ChartType chartType) {
             super();
             mIsRunning = true;
             mChartType = chartType;
@@ -129,13 +131,13 @@ public class AnkiStatsTaskHandler {
         }
     }
 
-    private class CreateStatisticsOverview extends AsyncTask<View, Void, String>{
+    private class CreateStatisticsOverview extends AsyncTask<View, Void, String> {
         private WebView mWebView;
         private ProgressBar mProgressBar;
 
         private boolean mIsRunning = false;
 
-        public CreateStatisticsOverview(){
+        public CreateStatisticsOverview() {
             super();
             mIsRunning = true;
         }
@@ -250,7 +252,6 @@ public class AnkiStatsTaskHandler {
             }
         }
     }
-
 
 
     public float getmStandardTextSize() {

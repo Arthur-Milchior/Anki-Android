@@ -32,6 +32,7 @@ import com.ichi2.libanki.Utils;
 import com.ichi2.utils.VersionUtils;
 
 import org.apache.http.entity.AbstractHttpEntity;
+
 import com.ichi2.utils.JSONObject;
 
 import java.io.BufferedInputStream;
@@ -58,6 +59,7 @@ import java.util.zip.GZIPOutputStream;
 import javax.net.ssl.SSLException;
 
 import androidx.annotation.Nullable;
+
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -72,7 +74,7 @@ import timber.log.Timber;
  * - 502: ankiweb down
  * - 503/504: server too busy
  */
-@SuppressWarnings( {"PMD.AvoidThrowingRawExceptionTypes", "PMD.NPathComplexity"})
+@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "PMD.NPathComplexity"})
 public class HttpSyncer {
 
     private static final String BOUNDARY = "Anki-sync-boundary";
@@ -152,27 +154,37 @@ public class HttpSyncer {
         }
     }
 
-    /** Note: Return value must be closed */
+    /**
+     * Note: Return value must be closed
+     */
     public Response req(String method) throws UnknownHttpResponseException {
         return req(method, null);
     }
 
-    /** Note: Return value must be closed */
+    /**
+     * Note: Return value must be closed
+     */
     public Response req(String method, InputStream fobj) throws UnknownHttpResponseException {
         return req(method, fobj, 6);
     }
 
-    /** Note: Return value must be closed */
+    /**
+     * Note: Return value must be closed
+     */
     public Response req(String method, int comp, InputStream fobj) throws UnknownHttpResponseException {
         return req(method, fobj, comp);
     }
 
-    /** Note: Return value must be closed */
+    /**
+     * Note: Return value must be closed
+     */
     public Response req(String method, InputStream fobj, int comp) throws UnknownHttpResponseException {
         return req(method, fobj, comp, null);
     }
 
-    /** Note: Return value must be closed */
+    /**
+     * Note: Return value must be closed
+     */
     private Response req(String method, InputStream fobj, int comp, JSONObject registerData) throws UnknownHttpResponseException {
         File tmpFileBuffer = null;
         try {

@@ -89,7 +89,7 @@ public class CardTemplatePreviewerTest extends RobolectricTest {
         Card testCard2 = getSavedCard(collectionBasicModelOriginal, 1);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.putExtra("cardList", new long[] { testCard1.getId(), testCard2.getId() } );
+        intent.putExtra("cardList", new long[]{testCard1.getId(), testCard2.getId()});
         intent.putExtra("index", 0);
 
         ActivityController<TestCardTemplatePreviewer> previewerController = Robolectric.buildActivity(TestCardTemplatePreviewer.class, intent).create().start().resume().visible();

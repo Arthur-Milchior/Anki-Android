@@ -56,10 +56,10 @@ public class NotificationChannelTest {
     @UiThreadTest
     public void setUp() {
         Context targetContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        ((AnkiDroidApp)targetContext.getApplicationContext()).onCreate();
+        ((AnkiDroidApp) targetContext.getApplicationContext()).onCreate();
         mCurrentAPI = CompatHelper.getSdkVersion();
         mTargetAPI = targetContext.getApplicationInfo().targetSdkVersion;
-        mManager = (NotificationManager)targetContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        mManager = (NotificationManager) targetContext.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     private boolean channelsInAPI() {

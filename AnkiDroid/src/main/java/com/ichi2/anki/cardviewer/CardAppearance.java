@@ -12,20 +12,30 @@ import java.util.regex.Pattern;
 
 import androidx.annotation.CheckResult;
 
-/** Responsible for calculating CSS and element styles and modifying content on a flashcard */
+/**
+ * Responsible for calculating CSS and element styles and modifying content on a flashcard
+ */
 public class CardAppearance {
 
-    /** Max size of the font for dynamic calculation of font size */
+    /**
+     * Max size of the font for dynamic calculation of font size
+     */
     private static final int DYNAMIC_FONT_MAX_SIZE = 14;
 
-    /** Min size of the font for dynamic calculation of font size */
+    /**
+     * Min size of the font for dynamic calculation of font size
+     */
     private static final int DYNAMIC_FONT_MIN_SIZE = 3;
     private static final int DYNAMIC_FONT_FACTOR = 5;
 
-    /** Constant for class attribute signaling answer */
+    /**
+     * Constant for class attribute signaling answer
+     */
     public static final String ANSWER_CLASS = "\"answer\"";
 
-    /** Constant for class attribute signaling question */
+    /**
+     * Constant for class attribute signaling question
+     */
     public static final String QUESTION_CLASS = "\"question\"";
 
     private final int mCardZoom;
@@ -94,7 +104,9 @@ public class CardAppearance {
         return sb.toString();
     }
 
-    /** Below could be in a better abstraction. **/
+    /**
+     * Below could be in a better abstraction.
+     **/
     public void appendCssStyle(StringBuilder style) {
         // Zoom cards
         if (mCardZoom != 100) {
@@ -173,7 +185,7 @@ public class CardAppearance {
     /**
      * Adds a div html tag around the contents to have an indication, where answer/question is displayed
      *
-     * @param content The content to surround with tags.
+     * @param content  The content to surround with tags.
      * @param isAnswer if true then the class attribute is set to "answer", "question" otherwise.
      * @return The enriched content
      */

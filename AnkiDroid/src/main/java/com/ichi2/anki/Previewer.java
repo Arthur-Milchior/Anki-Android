@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+
 import timber.log.Timber;
 
 /**
@@ -45,7 +46,9 @@ public class Previewer extends AbstractFlashcardViewer {
     private int mIndex;
     private boolean mShowingAnswer;
 
-    /** Communication with Browser */
+    /**
+     * Communication with Browser
+     */
     private boolean mReloadRequired;
     private boolean mNoteChanged;
 
@@ -58,7 +61,7 @@ public class Previewer extends AbstractFlashcardViewer {
         mCardList = getIntent().getLongArrayExtra("cardList");
         mIndex = getIntent().getIntExtra("index", -1);
 
-        if (savedInstanceState != null){
+        if (savedInstanceState != null) {
             mIndex = savedInstanceState.getInt("index", mIndex);
             mShowingAnswer = savedInstanceState.getBoolean("showingAnswer", mShowingAnswer);
             mReloadRequired = savedInstanceState.getBoolean("reloadRequired");
@@ -89,9 +92,11 @@ public class Previewer extends AbstractFlashcardViewer {
         showBackIcon();
     }
 
-    /** Given a new collection of card Ids, find the 'best' valid card given the current collection
+    /**
+     * Given a new collection of card Ids, find the 'best' valid card given the current collection
      * We define the best as searching to the left, then searching to the right of the current element
-     * This occurs as many cards can be deleted when editing a note (from the Card Template Editor) */
+     * This occurs as many cards can be deleted when editing a note (from the Card Template Editor)
+     */
     private int getNextIndex(List<Long> newCardList) {
         HashSet<Long> validIndices = new HashSet<>(newCardList);
 

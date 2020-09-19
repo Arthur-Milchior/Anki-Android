@@ -23,12 +23,17 @@ import android.webkit.WebResourceRequest;
 import com.ichi2.utils.FunctionalInterfaces.Consumer;
 
 import androidx.annotation.NonNull;
+
 import timber.log.Timber;
 
-/** Handles logic for displaying help for missing media files */
+/**
+ * Handles logic for displaying help for missing media files
+ */
 public class MissingImageHandler {
 
-    /** Specify a maximum number of times to display, as it's somewhat annoying */
+    /**
+     * Specify a maximum number of times to display, as it's somewhat annoying
+     */
     public static final int MAX_DISPLAY_TIMES = 2;
 
     private int mNumberOfMissingImages = 0;

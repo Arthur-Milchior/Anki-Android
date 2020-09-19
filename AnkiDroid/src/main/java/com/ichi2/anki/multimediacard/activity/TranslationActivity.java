@@ -25,7 +25,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+
 import androidx.fragment.app.FragmentActivity;
+
 import android.view.Menu;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -197,7 +199,7 @@ public class TranslationActivity extends FragmentActivity implements DialogInter
 
     @SuppressWarnings("deprecation") // ProgressDialog change tracked in github as #5020
     protected void translate() {
-        if(!Connection.isOnline()) {
+        if (!Connection.isOnline()) {
             showToast(gtxt(R.string.network_no_connection));
             return;
         }
@@ -420,19 +422,19 @@ public class TranslationActivity extends FragmentActivity implements DialogInter
     private void dismissCarefullyProgressDialog() {
         try {
             if ((progressDialog != null) && progressDialog.isShowing()) {
-                    progressDialog.dismiss();
+                progressDialog.dismiss();
             }
         } catch (Exception e) {
             // nothing is done intentionally
         }
     }
 
-    private int getSpinnerIndex(Spinner spinner, String myString){
+    private int getSpinnerIndex(Spinner spinner, String myString) {
 
         int index = 0;
 
-        for (int i=0;i<spinner.getCount();i++){
-            if (spinner.getItemAtPosition(i).equals(myString)){
+        for (int i = 0; i < spinner.getCount(); i++) {
+            if (spinner.getItemAtPosition(i).equals(myString)) {
                 index = i;
             }
         }

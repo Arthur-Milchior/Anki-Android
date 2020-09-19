@@ -42,7 +42,7 @@ public class DeckPickerCheckDatabaseListenerTest extends RobolectricTest {
         //.visible() crashes: Layout state should be one of 100 but it is 10
         ActivityController<DeckPickerTestImpl> controller =
                 Robolectric.buildActivity(DeckPickerTestImpl.class, new Intent())
-                .create().start().resume();
+                        .create().start().resume();
         saveControllerForCleanup((controller));
         impl = controller.get();
         impl.resetVariables();
@@ -165,7 +165,9 @@ public class DeckPickerCheckDatabaseListenerTest extends RobolectricTest {
         return test.new CheckDatabaseListener();
     }
 
-    /**COULD_BE_BETTER: Listener is too coupled to this */
+    /**
+     * COULD_BE_BETTER: Listener is too coupled to this
+     */
     protected static class DeckPickerTestImpl extends DeckPicker {
 
         private boolean mDidDisplayDialogLoadFailed;

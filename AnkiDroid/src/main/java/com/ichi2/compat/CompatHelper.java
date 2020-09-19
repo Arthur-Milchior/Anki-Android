@@ -48,16 +48,23 @@ public class CompatHelper {
         }
     }
 
-    /** Get the current Android API level. */
+    /**
+     * Get the current Android API level.
+     */
     public static int getSdkVersion() {
         return Build.VERSION.SDK_INT;
     }
 
-    /** Determine if the device is running API level 21 or higher. */
+    /**
+     * Determine if the device is running API level 21 or higher.
+     */
     public static boolean isLollipop() {
         return getSdkVersion() >= Build.VERSION_CODES.LOLLIPOP;
     }
-    /** Determine if the device is running API level 23 or higher. */
+
+    /**
+     * Determine if the device is running API level 23 or higher.
+     */
     public static boolean isMarshmallow() {
         return getSdkVersion() >= Build.VERSION_CODES.M;
     }

@@ -39,6 +39,7 @@ import java.util.Locale;
 import androidx.annotation.Nullable;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.sqlite.db.SupportSQLiteOpenHelper;
+
 import io.requery.android.database.sqlite.RequerySQLiteOpenHelperFactory;
 import timber.log.Timber;
 
@@ -48,9 +49,11 @@ import timber.log.Timber;
 @SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes"})
 public class DB {
 
-    private static final String[] MOD_SQLS = new String[] { "insert", "update", "delete" };
+    private static final String[] MOD_SQLS = new String[]{"insert", "update", "delete"};
 
-    /** may be injected to use a different sqlite implementation - null means use default */
+    /**
+     * may be injected to use a different sqlite implementation - null means use default
+     */
     private static SupportSQLiteOpenHelper.Factory sqliteOpenHelperFactory = null;
 
     /**
@@ -80,6 +83,7 @@ public class DB {
      * You may swap in your own SQLite implementation by altering the factory here. An
      * example might be to use the framework implementation. If you set to null, we default
      * to requery
+     *
      * @param factory connection factory for the desired sqlite implementation, null for requery
      */
     public static void setSqliteOpenHelperFactory(@Nullable SupportSQLiteOpenHelper.Factory factory) {
@@ -95,7 +99,9 @@ public class DB {
     }
 
 
-    /** Get the SQLite callback object to use when creating connections - overridable for testability */
+    /**
+     * Get the SQLite callback object to use when creating connections - overridable for testability
+     */
     protected SupportSQLiteOpenHelperCallback getDBCallback() {
         return new SupportSQLiteOpenHelperCallback(1);
     }
@@ -109,12 +115,18 @@ public class DB {
      */
     public static class SupportSQLiteOpenHelperCallback extends SupportSQLiteOpenHelper.Callback {
 
-        protected SupportSQLiteOpenHelperCallback(int version) { super(version); }
+        protected SupportSQLiteOpenHelperCallback(int version) {
+            super(version);
+        }
+
         public void onCreate(SupportSQLiteDatabase db) {/* do nothing */ }
+
         public void onUpgrade(SupportSQLiteDatabase db, int oldVersion, int newVersion) { /* do nothing */ }
 
 
-        /** Send error message, but do not call super() which would delete the database */
+        /**
+         * Send error message, but do not call super() which would delete the database
+         */
         public void onCorruption(SupportSQLiteDatabase db) {
             Timber.e("The database has been corrupted: %s", db.getPath());
             AnkiDroidApp.sendExceptionReport(new RuntimeException("Database corrupted"), "DB.MyDbErrorHandler.onCorruption", "Db has been corrupted: " + db.getPath());
@@ -219,7 +231,7 @@ public class DB {
      * Convenience method for querying the database for an entire column. The column will be returned as an ArrayList of
      * the specified class.
      *
-     * @param type The class of the column's data type. Example: int.class, String.class.
+     * @param type  The class of the column's data type. Example: int.class, String.class.
      * @param query The SQL query statement.
      * @return An ArrayList with the contents of the specified column.
      */
@@ -273,7 +285,7 @@ public class DB {
     }
 
     /**
-     * Convenience method for querying the database for an entire column of long. 
+     * Convenience method for querying the database for an entire column of long.
      *
      * @param query The SQL query statement.
      * @return An ArrayList with the contents of the specified column.
@@ -283,7 +295,7 @@ public class DB {
     }
 
     /**
-     * Convenience method for querying the database for an entire column of String. 
+     * Convenience method for querying the database for an entire column of String.
      *
      * @param query The SQL query statement.
      * @return An ArrayList with the contents of the specified column.
@@ -333,33 +345,39 @@ public class DB {
 
 
     /**
-     * WARNING: This is a convenience method that splits SQL scripts into separate queries with semicolons (;) 
+     * WARNING: This is a convenience method that splits SQL scripts into separate queries with semicolons (;)
      * as the delimiter. Only use this method on internal functions where we can guarantee that the script does
      * not contain any non-statement-terminating semicolons.
      */
     public void executeScript(String sql) {
         mMod = true;
         String[] queries = sql.split(";");
-        for(String query : queries) {
+        for (String query : queries) {
             mDatabase.execSQL(query);
         }
     }
 
 
-    /** update must always be called via DB in order to mark the db as changed */
+    /**
+     * update must always be called via DB in order to mark the db as changed
+     */
     public int update(String table, ContentValues values) {
         return update(table, values, null, null);
     }
 
 
-    /** update must always be called via DB in order to mark the db as changed */
+    /**
+     * update must always be called via DB in order to mark the db as changed
+     */
     public int update(String table, ContentValues values, String whereClause, String[] whereArgs) {
         mMod = true;
         return getDatabase().update(table, SQLiteDatabase.CONFLICT_NONE, values, whereClause, whereArgs);
     }
 
 
-    /** insert must always be called via DB in order to mark the db as changed */
+    /**
+     * insert must always be called via DB in order to mark the db as changed
+     */
     public long insert(String table, ContentValues values) {
         mMod = true;
         return getDatabase().insert(table, SQLiteDatabase.CONFLICT_NONE, values);
@@ -376,7 +394,9 @@ public class DB {
         }
     }
 
-    /** Use this executeMany version with external transaction management */
+    /**
+     * Use this executeMany version with external transaction management
+     */
     public void executeManyNoTransaction(String sql, List<Object[]> list) {
         mMod = true;
         for (Object[] o : list) {

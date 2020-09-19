@@ -39,15 +39,15 @@ public class MediaTest extends RobolectricTest {
         Collection col = getCol();
         long mid = col.getModels().current().getLong("id");
         assertEquals(0, col.getMedia().filesInStr(mid, "aoeu").size());
-        assertEqualsArrayList(new String[] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg'>ao"));
-        assertEqualsArrayList(new String[] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg' style='test'>ao"));
-        assertEqualsArrayList(new String[] {"foo.jpg", "bar.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg'><img src=\"bar.jpg\">ao"));
-        assertEqualsArrayList(new String[] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src=foo.jpg style=bar>ao"));
-        assertEqualsArrayList(new String[] {"one", "two"}, col.getMedia().filesInStr(mid, "<img src=one><img src=two>"));
-        assertEqualsArrayList(new String[] {"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src=\"foo.jpg\">ao"));
-        assertEqualsArrayList(new String[] {"foo.jpg", "fo"},
+        assertEqualsArrayList(new String[]{"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg'>ao"));
+        assertEqualsArrayList(new String[]{"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg' style='test'>ao"));
+        assertEqualsArrayList(new String[]{"foo.jpg", "bar.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src='foo.jpg'><img src=\"bar.jpg\">ao"));
+        assertEqualsArrayList(new String[]{"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src=foo.jpg style=bar>ao"));
+        assertEqualsArrayList(new String[]{"one", "two"}, col.getMedia().filesInStr(mid, "<img src=one><img src=two>"));
+        assertEqualsArrayList(new String[]{"foo.jpg"}, col.getMedia().filesInStr(mid, "aoeu<img src=\"foo.jpg\">ao"));
+        assertEqualsArrayList(new String[]{"foo.jpg", "fo"},
                 col.getMedia().filesInStr(mid, "aoeu<img src=\"foo.jpg\"><img class=yo src=fo>ao"));
-        assertEqualsArrayList(new String[] {"foo.mp3"}, col.getMedia().filesInStr(mid, "aou[sound:foo.mp3]aou"));
+        assertEqualsArrayList(new String[]{"foo.mp3"}, col.getMedia().filesInStr(mid, "aou[sound:foo.mp3]aou"));
         assertEquals("aoeu", col.getMedia().strip("aoeu"));
         assertEquals("aoeuaoeu", col.getMedia().strip("aoeu[sound:foo.mp3]aoeu"));
         assertEquals("aoeu", col.getMedia().strip("a<img src=yo>oeu"));

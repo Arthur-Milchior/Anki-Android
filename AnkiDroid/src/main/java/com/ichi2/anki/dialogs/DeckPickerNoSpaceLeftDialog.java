@@ -13,7 +13,7 @@ public class DeckPickerNoSpaceLeftDialog extends AnalyticsDialogFragment {
         DeckPickerNoSpaceLeftDialog f = new DeckPickerNoSpaceLeftDialog();
         return f;
     }
-    
+
     @Override
     public MaterialDialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

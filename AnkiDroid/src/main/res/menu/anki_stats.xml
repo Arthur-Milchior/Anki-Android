@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
-      xmlns:tools="http://schemas.android.com/tools"
-      tools:context=".AnkiStatsActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".AnkiStatsActivity">
 
     <item
         android:id="@+id/action_time_chooser"
@@ -9,16 +9,18 @@
         android:icon="@drawable/ic_schedule_white_24dp"
         app:showAsAction="always">
         <menu>
-            <group android:id="@+id/group2" android:checkableBehavior="single">
+            <group
+                android:id="@+id/group2"
+                android:checkableBehavior="single">
                 <item
                     android:id="@+id/item_time_month"
-                    android:title="@string/stats_period_month"/>
+                    android:title="@string/stats_period_month" />
                 <item
                     android:id="@+id/item_time_year"
-                    android:title="@string/stats_period_year"/>
+                    android:title="@string/stats_period_year" />
                 <item
                     android:id="@+id/item_time_all"
-                    android:title="@string/stats_period_lifetime"/>
+                    android:title="@string/stats_period_lifetime" />
             </group>
         </menu>
 

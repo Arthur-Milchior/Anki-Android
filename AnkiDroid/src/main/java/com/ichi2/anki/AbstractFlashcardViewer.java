@@ -150,12 +150,14 @@ import static com.ichi2.anki.cardviewer.CardAppearance.calculateDynamicFontSize;
 import static com.ichi2.anki.cardviewer.ViewerCommand.*;
 import static com.ichi2.anki.reviewer.CardMarker.*;
 import static com.ichi2.async.CollectionTask.TASK_TYPE.*;
+
 import com.ichi2.async.TaskData;
+
 import static com.ichi2.libanki.Sound.SoundSide;
 
 import com.github.zafarkhaja.semver.Version;
 
-@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes","PMD.FieldDeclarationsShouldBeAtStartOfClass"})
+@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "PMD.FieldDeclarationsShouldBeAtStartOfClass"})
 public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity implements ReviewerUi, CommandProcessor {
 
     /**
@@ -175,17 +177,23 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     public static final int EASE_3 = 3;
     public static final int EASE_4 = 4;
 
-    /** Maximum time in milliseconds to wait before accepting answer button presses. */
+    /**
+     * Maximum time in milliseconds to wait before accepting answer button presses.
+     */
     @VisibleForTesting
     protected static final int DOUBLE_TAP_IGNORE_THRESHOLD = 200;
 
-    /** Time to wait in milliseconds before resuming fullscreen mode **/
+    /**
+     * Time to wait in milliseconds before resuming fullscreen mode
+     **/
     protected static final int INITIAL_HIDE_DELAY = 200;
 
     // Type answer patterns
     private static final Pattern sTypeAnsPat = Pattern.compile("\\[\\[type:(.+?)\\]\\]");
 
-    /** to be sent to and from the card editor */
+    /**
+     * to be sent to and from the card editor
+     */
     private static Card sEditorCard;
 
     protected static boolean sDisplayAnswer = false;
@@ -196,7 +204,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     protected static final int MENU_DISABLED = 3;
 
     // js api developer contact
-    private String mCardSuppliedDeveloperContact  = "";
+    private String mCardSuppliedDeveloperContact = "";
     private String mCardSuppliedApiVersion = "";
 
     private static final String sCurrentJsApiVersion = "0.0.1";
@@ -351,10 +359,14 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
 
     private Sound mSoundPlayer = new Sound();
 
-    /** Time taken o play all medias in mSoundPlayer */
+    /**
+     * Time taken o play all medias in mSoundPlayer
+     */
     private long mUseTimerDynamicMS;
 
-    /** File of the temporary mic record **/
+    /**
+     * File of the temporary mic record
+     **/
     protected AudioView mMicToolBar;
     protected String mTempAudioPath;
 
@@ -365,19 +377,29 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     @Nullable
     private Long lastCrashingCardId = null;
 
-    /** Reference to the parent of the cardFrame to allow regeneration of the cardFrame in case of crash */
+    /**
+     * Reference to the parent of the cardFrame to allow regeneration of the cardFrame in case of crash
+     */
     private ViewGroup mCardFrameParent;
 
-    /** Lock to allow thread-safe regeneration of mCard */
+    /**
+     * Lock to allow thread-safe regeneration of mCard
+     */
     private ReadWriteLock mCardLock = new ReentrantReadWriteLock();
 
-    /** whether controls are currently blocked, and how long we expect them to be */
+    /**
+     * whether controls are currently blocked, and how long we expect them to be
+     */
     private ReviewerUi.ControlBlock mControlBlocked = ControlBlock.SLOW;
 
-    /** Handle Mark/Flag state of cards */
+    /**
+     * Handle Mark/Flag state of cards
+     */
     private CardMarker mCardMarker;
 
-    /** Handle providing help for "Image Not Found" */
+    /**
+     * Handle providing help for "Image Not Found"
+     */
     private MissingImageHandler mMissingImageHandler = new MissingImageHandler(this::displayCouldNotFindImageSnackbar);
 
     // ----------------------------------------------------------------------------
@@ -502,7 +524,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     };
 
     @SuppressLint("CheckResult")
-    //This is intentionally package-private as it removes the need for synthetic accessors
+        //This is intentionally package-private as it removes the need for synthetic accessors
     void processCardAction(Consumer<WebView> cardConsumer) {
         processCardFunction(cardWebView -> {
             cardConsumer.consume(cardWebView);
@@ -522,7 +544,8 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     }
 
 
-    protected final TaskListener mDismissCardHandler = new NextCardHandler() { /* superclass is sufficient */ };
+    protected final TaskListener mDismissCardHandler = new NextCardHandler() { /* superclass is sufficient */
+    };
 
 
     private final TaskListener mUpdateCardHandler = new TaskListener() {
@@ -548,7 +571,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
             }
             mCurrentCard = value.getCard();
             CollectionTask.launchCollectionTask(PRELOAD_NEXT_CARD); // Tasks should always be launched from GUI. So in
-                                                                    // listener and not in background
+            // listener and not in background
             if (mCurrentCard == null) {
                 // If the card is null means that there are no more cards scheduled for review.
                 mNoMoreCards = true;
@@ -665,7 +688,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     }
 
 
-    protected TaskListener mAnswerCardHandler (boolean quick) {
+    protected TaskListener mAnswerCardHandler(boolean quick) {
         return new NextCardHandler() {
             @Override
             public void onPreExecute() {
@@ -763,8 +786,8 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     /**
      * Fill the placeholder for the type comparison. Show the correct answer, and the comparison if appropriate.
      *
-     * @param buf The answer text
-     * @param userAnswer Text typed by the user, or empty.
+     * @param buf           The answer text
+     * @param userAnswer    Text typed by the user, or empty.
      * @param correctAnswer The correct answer, taken from the note.
      * @return The formatted answer text
      */
@@ -888,7 +911,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
         return isInFullscreen;
     }
 
-    @ Override
+    @Override
     public void onConfigurationChanged(Configuration config) {
         // called when screen rotated, etc, since recreating the Webview is too expensive
         super.onConfigurationChanged(config);
@@ -1127,7 +1150,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
                 CollectionTask.launchCollectionTask(UPDATE_NOTE, mUpdateCardHandler,
                         new TaskData(sEditorCard, true));
                 onEditedNoteChanged();
-            } else if (resultCode == RESULT_CANCELED && !(data!=null && data.hasExtra("reloadRequired"))) {
+            } else if (resultCode == RESULT_CANCELED && !(data != null && data.hasExtra("reloadRequired"))) {
                 // nothing was changed by the note editor so just redraw the card
                 redrawCard();
             }
@@ -1145,7 +1168,9 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     }
 
 
-    /** An action which may invalidate the current list of cards has been performed */
+    /**
+     * An action which may invalidate the current list of cards has been performed
+     */
     protected abstract void performReload();
 
 
@@ -1169,7 +1194,9 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
         }
     }
 
-    /** Whether the callback to onCollectionLoaded has loaded card content */
+    /**
+     * Whether the callback to onCollectionLoaded has loaded card content
+     */
     private boolean hasLoadedCardContent() {
         return mCardContent != null;
     }
@@ -1359,7 +1386,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
             case EASE_2:
                 mChosenAnswer.setText("\u2022\u2022");
                 mChosenAnswer.setTextColor(ContextCompat.getColor(this, buttonNumber == Consts.BUTTON_FOUR ?
-                        R.color.material_blue_grey_600:
+                        R.color.material_blue_grey_600 :
                         R.color.material_green_500));
                 break;
             case EASE_3:
@@ -1546,7 +1573,8 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     }
 
 
-    @SuppressLint("SetJavaScriptEnabled") // they request we review carefully because of XSS security, we have
+    @SuppressLint("SetJavaScriptEnabled")
+    // they request we review carefully because of XSS security, we have
     private WebView createWebView() {
         WebView webView = new MyWebView(this);
         webView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
@@ -1571,7 +1599,9 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
         return webView;
     }
 
-    /** If a card is displaying the question, flip it, otherwise answer it */
+    /**
+     * If a card is displaying the question, flip it, otherwise answer it
+     */
     private void flipOrAnswerCard(int cardOrdinal) {
         if (!sDisplayAnswer) {
             displayCardAnswer();
@@ -1605,7 +1635,9 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     }
 
 
-    /** Used to set the "javascript:" URIs for IPC */
+    /**
+     * Used to set the "javascript:" URIs for IPC
+     */
     private void loadUrlInViewer(final String url) {
         processCardAction(cardWebView -> cardWebView.loadUrl(url));
     }
@@ -1680,7 +1712,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     /**
      * Focuses the appropriate field for an answer
      * And allows keyboard shortcuts to go to the default handlers.
-     * */
+     */
     private void focusAnswerCompletionField() {
         // This does not handle mUseInputTag (the WebView contains an input field with a typable answer).
         // In this case, the user can use touch to focus the field if necessary.
@@ -1882,7 +1914,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
 
     class ReadTextListener implements ReadText.ReadTextListener {
         public void onDone() {
-            if(!mUseTimer) {
+            if (!mUseTimer) {
                 return;
             }
             if (ReadText.getmQuestionAnswer() == SoundSide.QUESTION) {
@@ -2075,7 +2107,8 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     }
 
 
-    /** Scroll the currently shown flashcard vertically
+    /**
+     * Scroll the currently shown flashcard vertically
      *
      * @param dy amount to be scrolled
      */
@@ -2088,7 +2121,8 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     }
 
 
-    /** Tap onto the currently shown flashcard at position x and y
+    /**
+     * Tap onto the currently shown flashcard at position x and y
      *
      * @param x horizontal position of the event
      * @param y vertical position of the event
@@ -2209,7 +2243,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
      * Plays sounds (or TTS, if configured) for currently shown side of card.
      *
      * @param doAudioReplay indicates an anki desktop-like replay call is desired, whose behavior is identical to
-     *            pressing the keyboard shortcut R on the desktop
+     *                      pressing the keyboard shortcut R on the desktop
      */
     protected void playSounds(boolean doAudioReplay) {
         boolean replayQuestion = getConfigForCurrentCard().optBoolean("replayq", true);
@@ -2351,7 +2385,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
 
     /**
      * @return true if the AnkiDroid preference for writing answer is true and if the Anki Deck CardLayout specifies a
-     *         field to query
+     * field to query
      */
     private boolean typeAnswer() {
         return !mUseInputTag && null != mTypeCorrect;
@@ -2599,7 +2633,9 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
         }
     }
 
-    /** Displays a snackbar which does not obscure the answer buttons */
+    /**
+     * Displays a snackbar which does not obscure the answer buttons
+     */
     protected void showSnackbar(String mainText, @StringRes int buttonText, OnClickListener onClickListener) {
         // BUG: Moving from full screen to non-full screen obscures the buttons
 
@@ -2740,7 +2776,9 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
         supportInvalidateOptionsMenu();
     }
 
-    /** Fixing bug 720: <input> focus, thanks to pablomouzo on android issue 7189 */
+    /**
+     * Fixing bug 720: <input> focus, thanks to pablomouzo on android issue 7189
+     */
     class MyWebView extends WebView {
 
         public MyWebView(Context context) {
@@ -2854,7 +2892,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
         }
 
 
-
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             if (mGesturesEnabled) {
@@ -2933,12 +2970,18 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     }
 
 
-    /** #6141 - blocks clicking links from executing "touch" gestures.
-     * COULD_BE_BETTER: Make base class static and move this out of the CardViewer */
+    /**
+     * #6141 - blocks clicking links from executing "touch" gestures.
+     * COULD_BE_BETTER: Make base class static and move this out of the CardViewer
+     */
     class LinkDetectingGestureDetector extends AbstractFlashcardViewer.MyGestureDetector {
-        /** A list of events to process when listening to WebView touches  */
+        /**
+         * A list of events to process when listening to WebView touches
+         */
         private HashSet<MotionEvent> mDesiredTouchEvents = new HashSet<>();
-        /** A list of events we sent to the WebView (to block double-processing) */
+        /**
+         * A list of events we sent to the WebView (to block double-processing)
+         */
         private HashSet<MotionEvent> mDispatchedTouchEvents = new HashSet<>();
 
         @Override
@@ -3021,8 +3064,9 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     /**
      * Removes first occurrence in answerContent of any audio that is present due to use of
      * {{FrontSide}} on the answer.
-     * @param answerContent     The content from which to remove front side audio.
-     * @return                  The content stripped of audio due to {{FrontSide}} inclusion.
+     *
+     * @param answerContent The content from which to remove front side audio.
+     * @return The content stripped of audio due to {{FrontSide}} inclusion.
      */
     private String removeFrontSideAudio(String answerContent) {
         String answerFormat = getAnswerFormat();
@@ -3048,7 +3092,9 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
         startActivityWithoutAnimation(videoPlayer);
     }
 
-    /** Callback for when TTS has been initialized. */
+    /**
+     * Callback for when TTS has been initialized.
+     */
     public void ttsInitialized() {
         mTtsInitialized = true;
         if (mReplayOnTtsInit) {
@@ -3093,7 +3139,8 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     }
 
 
-    protected @FlagDef int getFlagToDisplay() {
+    protected @FlagDef
+    int getFlagToDisplay() {
         return mCurrentCard.userFlag();
     }
 
@@ -3126,17 +3173,25 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
                 new TaskData(new Object[]{mCurrentCard, type}));
     }
 
-    /** Signals from a WebView represent actions with no parameters */
+    /**
+     * Signals from a WebView represent actions with no parameters
+     */
     @VisibleForTesting
     static class WebViewSignalParserUtils {
-        /** A signal which we did not know how to handle */
+        /**
+         * A signal which we did not know how to handle
+         */
         public static final int SIGNAL_UNHANDLED = 0;
-        /** A known signal which should perform a noop */
+        /**
+         * A known signal which should perform a noop
+         */
         public static final int SIGNAL_NOOP = 1;
 
         public static final int TYPE_FOCUS = 2;
-        /** Tell the app that we no longer want to focus the WebView and should instead return keyboard focus to a
-         * native answer input method. */
+        /**
+         * Tell the app that we no longer want to focus the WebView and should instead return keyboard focus to a
+         * native answer input method.
+         */
         public static final int RELINQUISH_FOCUS = 3;
 
         public static final int SHOW_ANSWER = 4;
@@ -3147,14 +3202,22 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
 
         public static int getSignalFromUrl(String url) {
             switch (url) {
-                case "signal:typefocus": return TYPE_FOCUS;
-                case "signal:relinquishFocus": return RELINQUISH_FOCUS;
-                case "signal:show_answer": return SHOW_ANSWER;
-                case "signal:answer_ease1": return ANSWER_ORDINAL_1;
-                case "signal:answer_ease2": return ANSWER_ORDINAL_2;
-                case "signal:answer_ease3": return ANSWER_ORDINAL_3;
-                case "signal:answer_ease4": return ANSWER_ORDINAL_4;
-                default: break;
+                case "signal:typefocus":
+                    return TYPE_FOCUS;
+                case "signal:relinquishFocus":
+                    return RELINQUISH_FOCUS;
+                case "signal:show_answer":
+                    return SHOW_ANSWER;
+                case "signal:answer_ease1":
+                    return ANSWER_ORDINAL_1;
+                case "signal:answer_ease2":
+                    return ANSWER_ORDINAL_2;
+                case "signal:answer_ease3":
+                    return ANSWER_ORDINAL_3;
+                case "signal:answer_ease4":
+                    return ANSWER_ORDINAL_4;
+                default:
+                    break;
             }
 
             if (url.startsWith("signal:answer_ease")) {
@@ -3289,17 +3352,22 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
                     return true;
                 }
 
-                String mFlag = url.replaceFirst("signal:flag_","");
+                String mFlag = url.replaceFirst("signal:flag_", "");
                 switch (mFlag) {
-                    case "none": executeCommand(COMMAND_UNSET_FLAG);
+                    case "none":
+                        executeCommand(COMMAND_UNSET_FLAG);
                         return true;
-                    case "red": executeCommand(COMMAND_TOGGLE_FLAG_RED);
+                    case "red":
+                        executeCommand(COMMAND_TOGGLE_FLAG_RED);
                         return true;
-                    case "orange": executeCommand(COMMAND_TOGGLE_FLAG_ORANGE);
+                    case "orange":
+                        executeCommand(COMMAND_TOGGLE_FLAG_ORANGE);
                         return true;
-                    case "green": executeCommand(COMMAND_TOGGLE_FLAG_GREEN);
+                    case "green":
+                        executeCommand(COMMAND_TOGGLE_FLAG_GREEN);
                         return true;
-                    case "blue": executeCommand(COMMAND_TOGGLE_FLAG_BLUE);
+                    case "blue":
+                        executeCommand(COMMAND_TOGGLE_FLAG_BLUE);
                         return true;
                     default:
                         Timber.d("No such Flag found.");
@@ -3431,7 +3499,9 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
         }
 
 
-        /** Fix: #5780 - WebView Renderer OOM crashes reviewer */
+        /**
+         * Fix: #5780 - WebView Renderer OOM crashes reviewer
+         */
         @Override
         @TargetApi(Build.VERSION_CODES.O)
         public boolean onRenderProcessGone(WebView view, RenderProcessGoneDetail detail) {
@@ -3443,11 +3513,11 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
                 if (mCardWebView == null || !mCardWebView.equals(view)) {
                     //A view crashed that wasn't ours.
                     //We have nothing to handle. Returning false is a desire to crash, so return true.
-                    Timber.i("Unrelated WebView Renderer terminated. Crashed: %b",  detail.didCrash());
+                    Timber.i("Unrelated WebView Renderer terminated. Crashed: %b", detail.didCrash());
                     return true;
                 }
 
-                Timber.e("WebView Renderer process terminated. Crashed: %b",  detail.didCrash());
+                Timber.e("WebView Renderer process terminated. Crashed: %b", detail.didCrash());
 
                 //Destroy the current WebView (to ensure WebView is GCed).
                 //Otherwise, we get the following error:
@@ -3600,10 +3670,10 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
             Version mVersionSupplied = Version.valueOf(apiVer);
 
             /*
-            * if api major version equals to supplied major version then return true and also check for minor version and patch version
-            * show toast for update and contact developer if need updates
-            * otherwise return false
-            */
+             * if api major version equals to supplied major version then return true and also check for minor version and patch version
+             * show toast for update and contact developer if need updates
+             * otherwise return false
+             */
             if (mVersionSupplied.equals(mVersionCurrent)) {
                 return true;
             } else if (mVersionSupplied.lessThan(mVersionCurrent)) {
@@ -3619,7 +3689,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
                 return false;
             }
         } catch (Exception e) {
-          Timber.w(e, "requireApiVersion::exception");
+            Timber.w(e, "requireApiVersion::exception");
         }
         return false;
     }
@@ -3676,12 +3746,13 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
         }
     }
 
- /*
- Javascript Interface class for calling Java function from AnkiDroid WebView
-see card.js for available functions
- */
+    /*
+    Javascript Interface class for calling Java function from AnkiDroid WebView
+   see card.js for available functions
+    */
     // list of api that can be accessed
     private final String[] mApiList = {"toggleFlag", "markCard"};
+
     public JavaScriptFunction javaScriptFunction() {
         return new JavaScriptFunction();
     }
@@ -3706,7 +3777,7 @@ see card.js for available functions
                 data = new JSONObject(jsonData);
                 if (!(data == JSONObject.NULL)) {
                     mCardSuppliedApiVersion = data.optString("version", "");
-                    mCardSuppliedDeveloperContact  = data.optString("developer", "");
+                    mCardSuppliedDeveloperContact = data.optString("developer", "");
 
                     if (requireApiVersion(mCardSuppliedApiVersion, mCardSuppliedDeveloperContact)) {
                         enableJsApi();
@@ -3753,24 +3824,32 @@ see card.js for available functions
             return shouldDisplayMark();
         }
 
-        
+
         @JavascriptInterface
         public int ankiGetCardFlag() {
             return mCurrentCard.userFlag();
         }
 
         @JavascriptInterface
-        public String ankiGetNextTime1() { return (String) mNext1.getText(); }
+        public String ankiGetNextTime1() {
+            return (String) mNext1.getText();
+        }
 
         @JavascriptInterface
-        public String ankiGetNextTime2() { return (String) mNext2.getText(); }
+        public String ankiGetNextTime2() {
+            return (String) mNext2.getText();
+        }
 
         @JavascriptInterface
-        public String ankiGetNextTime3() { return (String) mNext3.getText(); }
+        public String ankiGetNextTime3() {
+            return (String) mNext3.getText();
+        }
 
         @JavascriptInterface
-        public String ankiGetNextTime4() { return (String) mNext4.getText(); }
-        
+        public String ankiGetNextTime4() {
+            return (String) mNext4.getText();
+        }
+
         @JavascriptInterface
         public int ankiGetCardReps() {
             return mCurrentCard.getReps();
@@ -3781,25 +3860,33 @@ see card.js for available functions
             return mCurrentCard.getIvl();
         }
 
-        /** Returns the ease as an int (percentage * 10). Default: 2500 (250%). Minimum: 1300 (130%) */
+        /**
+         * Returns the ease as an int (percentage * 10). Default: 2500 (250%). Minimum: 1300 (130%)
+         */
         @JavascriptInterface
         public int ankiGetCardFactor() {
             return mCurrentCard.getFactor();
         }
 
-        /** Returns the last modified time as a Unix timestamp in seconds. Example: 1477384099 */
+        /**
+         * Returns the last modified time as a Unix timestamp in seconds. Example: 1477384099
+         */
         @JavascriptInterface
         public long ankiGetCardMod() {
             return mCurrentCard.getMod();
         }
 
-        /** Returns the ID of the card. Example: 1477380543053 */
+        /**
+         * Returns the ID of the card. Example: 1477380543053
+         */
         @JavascriptInterface
         public long ankiGetCardId() {
-             return mCurrentCard.getId();
-         }
+            return mCurrentCard.getId();
+        }
 
-        /** Returns the ID of the note which generated the card. Example: 1590418157630 */
+        /**
+         * Returns the ID of the note which generated the card. Example: 1590418157630
+         */
         @JavascriptInterface
         public long ankiGetCardNid() {
             return mCurrentCard.getNid();
@@ -3811,7 +3898,9 @@ see card.js for available functions
             return mCurrentCard.getType();
         }
 
-        /** Returns the ID of the deck which contains the card. Example: 1595967594978 */
+        /**
+         * Returns the ID of the deck which contains the card. Example: 1595967594978
+         */
         @JavascriptInterface
         public long ankiGetCardDid() {
             return mCurrentCard.getDid();
@@ -3822,7 +3911,9 @@ see card.js for available functions
             return mCurrentCard.getLeft();
         }
 
-        /** Returns the ID of the home deck for the card if it is filtered, or 0 if not filtered. Example: 1595967594978 */
+        /**
+         * Returns the ID of the home deck for the card if it is filtered, or 0 if not filtered. Example: 1595967594978
+         */
         @JavascriptInterface
         public long ankiGetCardODid() {
             return mCurrentCard.getODid();
@@ -3841,13 +3932,13 @@ see card.js for available functions
 
         @JavascriptInterface
         public int ankiGetCardLapses() {
-             return mCurrentCard.getLapses();
-         }
+            return mCurrentCard.getLapses();
+        }
 
         @JavascriptInterface
         public long ankiGetCardDue() {
             return mCurrentCard.getDue();
-         }
+        }
 
         @JavascriptInterface
         public boolean ankiIsInFullscreen() {

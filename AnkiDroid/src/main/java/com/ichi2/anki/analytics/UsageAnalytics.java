@@ -39,6 +39,7 @@ import org.acra.ACRA;
 import org.acra.util.Installation;
 
 import androidx.annotation.NonNull;
+
 import timber.log.Timber;
 
 public class UsageAnalytics {

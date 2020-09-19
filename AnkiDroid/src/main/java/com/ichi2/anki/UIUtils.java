@@ -1,13 +1,14 @@
-
 package com.ichi2.anki;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,7 +18,9 @@ import com.ichi2.async.CollectionTask;
 import java.util.Calendar;
 
 import timber.log.Timber;
+
 import static com.ichi2.async.CollectionTask.TASK_TYPE.*;
+
 import com.ichi2.async.TaskData;
 import com.ichi2.async.TaskListener;
 import com.ichi2.libanki.utils.Time;
@@ -37,6 +40,7 @@ public class UIUtils {
         View root = activity.findViewById(R.id.root_layout);
         return showSnackbar(activity, mainTextResource, shortLength, -1, null, root);
     }
+
     public static Snackbar showSimpleSnackbar(Activity activity, String mainText, boolean shortLength) {
         View root = activity.findViewById(R.id.root_layout);
         return showSnackbar(activity, mainText, shortLength, -1, null, root, null);
@@ -44,22 +48,23 @@ public class UIUtils {
 
     /**
      * Show a snackbar with an action
-     * @param mainTextResource resource for the main text string
-     * @param shortLength whether or not to use long length
+     *
+     * @param mainTextResource   resource for the main text string
+     * @param shortLength        whether or not to use long length
      * @param actionTextResource resource for the text string shown as the action
-     * @param listener listener for the action (if null no action shown)
-     * @param root View Snackbar will attach to. Should be CoordinatorLayout for swipe-to-dismiss to work.
+     * @param listener           listener for the action (if null no action shown)
+     * @param root               View Snackbar will attach to. Should be CoordinatorLayout for swipe-to-dismiss to work.
      * @return Snackbar object
      */
     public static Snackbar showSnackbar(Activity activity, int mainTextResource, boolean shortLength,
-                                int actionTextResource, View.OnClickListener listener, View root) {
-        return showSnackbar(activity, mainTextResource,shortLength,actionTextResource,listener,root, null);
+                                        int actionTextResource, View.OnClickListener listener, View root) {
+        return showSnackbar(activity, mainTextResource, shortLength, actionTextResource, listener, root, null);
     }
 
 
     public static Snackbar showSnackbar(Activity activity, int mainTextResource, boolean shortLength,
-                                int actionTextResource, View.OnClickListener listener, View root,
-                                Snackbar.Callback callback) {
+                                        int actionTextResource, View.OnClickListener listener, View root,
+                                        Snackbar.Callback callback) {
         String mainText = activity.getResources().getString(mainTextResource);
         return showSnackbar(activity, mainText, shortLength, actionTextResource, listener, root, callback);
     }
@@ -71,8 +76,8 @@ public class UIUtils {
     }
 
     public static Snackbar showSnackbar(Activity activity, String mainText, int length,
-                                int actionTextResource, View.OnClickListener listener, View root,
-                                Snackbar.Callback callback) {
+                                        int actionTextResource, View.OnClickListener listener, View root,
+                                        Snackbar.Callback callback) {
         if (root == null) {
             root = activity.findViewById(android.R.id.content);
             if (root == null) {

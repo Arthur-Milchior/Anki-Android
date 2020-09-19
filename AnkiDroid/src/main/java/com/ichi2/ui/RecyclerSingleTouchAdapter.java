@@ -24,7 +24,9 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-/** Adapts a RecyclerView.OnItemTouchListener to provide a click listener */
+/**
+ * Adapts a RecyclerView.OnItemTouchListener to provide a click listener
+ */
 public class RecyclerSingleTouchAdapter implements RecyclerView.OnItemTouchListener {
     private OnItemClickListener mListener;
     private GestureDetector mGestureDetector;
@@ -38,7 +40,7 @@ public class RecyclerSingleTouchAdapter implements RecyclerView.OnItemTouchListe
         mListener = listener;
         mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
-                public boolean onSingleTapUp(MotionEvent e) {
+            public boolean onSingleTapUp(MotionEvent e) {
                 //onDown was too fast
                 return true;
             }
@@ -56,12 +58,13 @@ public class RecyclerSingleTouchAdapter implements RecyclerView.OnItemTouchListe
         return false;
     }
 
-    @Override public void onTouchEvent(@NonNull RecyclerView view, @NonNull MotionEvent motionEvent) {
+    @Override
+    public void onTouchEvent(@NonNull RecyclerView view, @NonNull MotionEvent motionEvent) {
         //intentionally empty
     }
 
     @Override
-    public void onRequestDisallowInterceptTouchEvent (boolean disallowIntercept) {
+    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
         //intentionally empty
     }
 }

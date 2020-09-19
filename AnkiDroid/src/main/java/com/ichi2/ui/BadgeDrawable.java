@@ -118,7 +118,7 @@ public class BadgeDrawable extends DrawableWrapper {
 
 
     public void setText(char c) {
-        this.mText = new String(new char[] {c});
+        this.mText = new String(new char[]{c});
         invalidateSize();
     }
 

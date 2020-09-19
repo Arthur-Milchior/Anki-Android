@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 
 public class CompatV16Test {
     @Test
-    @SuppressWarnings( {"deprecation", "RedundantSuppression"})
+    @SuppressWarnings({"deprecation", "RedundantSuppression"})
     public void getAvailableBytesDoesNotOverflowOnMultiplication() {
 
         StatFs statFs = mock(StatFs.class);

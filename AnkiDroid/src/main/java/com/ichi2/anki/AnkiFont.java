@@ -1,4 +1,3 @@
-
 package com.ichi2.anki;
 
 import android.content.Context;
@@ -43,8 +42,8 @@ public class AnkiFont {
     /**
      * Factory for AnkiFont creation. Creates a typeface wrapper from a font file representing.
      *
-     * @param ctx Activity context, needed to access assets
-     * @param path Path to typeface file, needed when this is a custom font.
+     * @param ctx        Activity context, needed to access assets
+     * @param path       Path to typeface file, needed when this is a custom font.
      * @param fromAssets True if the font is to be found in assets of application
      * @return A new AnkiFont object or null if the file can't be interpreted as typeface.
      */
@@ -100,7 +99,7 @@ public class AnkiFont {
         if (defaultFont.equalsIgnoreCase(name)) {
             if (overrideFont) {
                 createdFont.setAsOverride();
-            } else{
+            } else {
                 createdFont.setAsDefault();
             }
         }

@@ -1,4 +1,3 @@
-
 package com.ichi2.anki;
 
 import android.app.Activity;
@@ -26,6 +25,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -53,7 +53,9 @@ public class AnkiActivity extends AppCompatActivity implements SimpleMessageDial
 
     public final int SIMPLE_NOTIFICATION_ID = 0;
     public static final int REQUEST_REVIEW = 901;
-    /** The name of the parent class (Reviewer) */
+    /**
+     * The name of the parent class (Reviewer)
+     */
     private final String mActivityName;
 
     private DialogHandler mHandler = new DialogHandler(this);
@@ -110,7 +112,6 @@ public class AnkiActivity extends AppCompatActivity implements SimpleMessageDial
     }
 
 
-
     @Override
     protected void onResume() {
         Timber.i("AnkiActivity::onResume - %s", mActivityName);
@@ -127,7 +128,6 @@ public class AnkiActivity extends AppCompatActivity implements SimpleMessageDial
         Timber.i("AnkiActivity::onDestroy - %s", mActivityName);
         super.onDestroy();
     }
-
 
 
     @Override
@@ -223,7 +223,7 @@ public class AnkiActivity extends AppCompatActivity implements SimpleMessageDial
         try {
             super.startActivityForResult(intent, requestCode);
         } catch (ActivityNotFoundException e) {
-            UIUtils.showSimpleSnackbar(this, R.string.activity_start_failed,true);
+            UIUtils.showSimpleSnackbar(this, R.string.activity_start_failed, true);
         }
     }
 
@@ -267,7 +267,9 @@ public class AnkiActivity extends AppCompatActivity implements SimpleMessageDial
         view.clearAnimation();
     }
 
-    /** Compat shim for API 16 */
+    /**
+     * Compat shim for API 16
+     */
     public boolean wasDestroyed() {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
             return super.isDestroyed();
@@ -284,7 +286,9 @@ public class AnkiActivity extends AppCompatActivity implements SimpleMessageDial
         }
     }
 
-    /** Finish Activity using FADE animation **/
+    /**
+     * Finish Activity using FADE animation
+     **/
     public static void finishActivityWithFade(Activity activity) {
         activity.finish();
         ActivityTransitionAnimation.slide(activity, ActivityTransitionAnimation.UP);
@@ -391,7 +395,7 @@ public class AnkiActivity extends AppCompatActivity implements SimpleMessageDial
      * Global method to show dialog fragment including adding it to back stack Note: DO NOT call this from an async
      * task! If you need to show a dialog from an async task, use showAsyncDialogFragment()
      *
-     * @param newFragment  the DialogFragment you want to show
+     * @param newFragment the DialogFragment you want to show
      */
     public void showDialogFragment(DialogFragment newFragment) {
         showDialogFragment(this, newFragment);
@@ -418,7 +422,7 @@ public class AnkiActivity extends AppCompatActivity implements SimpleMessageDial
      * Calls {@link #showAsyncDialogFragment(AsyncDialogFragment, NotificationChannels.Channel)} internally, using the channel
      * {@link NotificationChannels.Channel#GENERAL}
      *
-     * @param newFragment  the AsyncDialogFragment you want to show
+     * @param newFragment the AsyncDialogFragment you want to show
      */
     public void showAsyncDialogFragment(AsyncDialogFragment newFragment) {
         showAsyncDialogFragment(newFragment, NotificationChannels.Channel.GENERAL);
@@ -430,8 +434,8 @@ public class AnkiActivity extends AppCompatActivity implements SimpleMessageDial
      * is shown from an async task, by showing the message in the notification bar if the activity was stopped before the
      * AsyncTask completed
      *
-     * @param newFragment  the AsyncDialogFragment you want to show
-     * @param channel the NotificationChannels.Channel to use for the notification
+     * @param newFragment the AsyncDialogFragment you want to show
+     * @param channel     the NotificationChannels.Channel to use for the notification
      */
     public void showAsyncDialogFragment(AsyncDialogFragment newFragment, NotificationChannels.Channel channel) {
         try {
@@ -458,10 +462,9 @@ public class AnkiActivity extends AppCompatActivity implements SimpleMessageDial
         showSimpleMessageDialog(message, false);
     }
 
-    protected void showSimpleMessageDialog(String title, String message){
+    protected void showSimpleMessageDialog(String title, String message) {
         showSimpleMessageDialog(title, message, false);
     }
-
 
 
     /**
@@ -470,7 +473,7 @@ public class AnkiActivity extends AppCompatActivity implements SimpleMessageDial
      * notification bar instead.
      *
      * @param message
-     * @param reload flag which forces app to be restarted when true
+     * @param reload  flag which forces app to be restarted when true
      */
     protected void showSimpleMessageDialog(String message, boolean reload) {
         AsyncDialogFragment newFragment = SimpleMessageDialog.newInstance(message, reload);
@@ -504,7 +507,7 @@ public class AnkiActivity extends AppCompatActivity implements SimpleMessageDial
                     .setTicker(ticker);
             // Enable vibrate and blink if set in preferences
             if (prefs.getBoolean("widgetVibrate", false)) {
-                builder.setVibrate(new long[] { 1000, 1000, 1000});
+                builder.setVibrate(new long[]{1000, 1000, 1000});
             }
             if (prefs.getBoolean("widgetBlink", false)) {
                 builder.setLights(Color.BLUE, 1000, 1000);

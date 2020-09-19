@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 ~ Copyright (c) 2009 Nicolas Raoul <nicolas.raoul@gmail.com>
 ~ Copyright (c) 2009 Edu Zamora <edu.zasu@gmail.com>
 ~ Copyright (c) 2009 Jordi Chacon <jordi.chacon@gmail.com>
@@ -23,13 +22,13 @@
 <!--  General Preferences -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="@string/pref_cat_general"
-    android:summary="@string/pref_cat_general_summ" >
-    <PreferenceCategory android:title="@string/button_sync" >
+    android:summary="@string/pref_cat_general_summ">
+    <PreferenceCategory android:title="@string/button_sync">
         <Preference
             android:dialogTitle="@string/sync_account"
             android:key="syncAccount"
             android:summary="@string/sync_account_summ_logged_out"
-            android:title="@string/sync_account" >
+            android:title="@string/sync_account">
             <intent
                 android:targetClass="com.ichi2.anki.MyAccount"
                 android:targetPackage="com.ichi2.anki" />
@@ -72,7 +71,8 @@
             android:key="reportErrorMode"
             android:title="@string/error_reporting_choice" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/notification_pref"
+    <PreferenceCategory
+        android:title="@string/notification_pref"
         android:key="category_general_notification_pref">
         <ListPreference
             android:defaultValue="1000000"

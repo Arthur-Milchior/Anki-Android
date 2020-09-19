@@ -42,6 +42,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import androidx.annotation.NonNull;
+
 import timber.log.Timber;
 
 public class BackupManager {
@@ -53,7 +54,9 @@ public class BackupManager {
     public final static String BROKEN_DECKS_SUFFIX = "broken";
 
 
-    /** Number of hours after which a backup new backup is created */
+    /**
+     * Number of hours after which a backup new backup is created
+     */
     private static final int BACKUP_INTERVAL = 5;
 
 
@@ -230,7 +233,7 @@ public class BackupManager {
         String execString = "sqlite3 " + deckPath + " .dump | sqlite3 " + deckPath + ".tmp";
         Timber.i("repairCollection - Execute: %s", execString);
         try {
-            String[] cmd = { "/system/bin/sh", "-c", execString };
+            String[] cmd = {"/system/bin/sh", "-c", execString};
             Process process = Runtime.getRuntime().exec(cmd);
             process.waitFor();
 
@@ -295,7 +298,7 @@ public class BackupManager {
         ArrayList<File> deckBackups = new ArrayList<>();
         for (File aktFile : files) {
             if (aktFile.getName().replaceAll("^(.*)-\\d{4}-\\d{2}-\\d{2}-\\d{2}-\\d{2}.(apkg|colpkg)$", "$1")
-                    .equals(colFile.getName().replace(".anki2",""))) {
+                    .equals(colFile.getName().replace(".anki2", ""))) {
                 deckBackups.add(aktFile);
             }
         }

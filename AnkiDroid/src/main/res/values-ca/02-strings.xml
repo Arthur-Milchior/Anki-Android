@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?> 
- <!-- 
+<?xml version="1.0" encoding="utf-8"?><!--
  ~ Copyright (c) 2009 Andrew <andrewdubya@gmail> 
  ~ Copyright (c) 2009 Edu Zamora <edu.zasu@gmail.com> 
  ~ Copyright (c) 2009 Daniel Svaerd <daniel.svard@gmail.com> 
@@ -16,8 +15,8 @@
  ~ 
  ~ You should have received a copy of the GNU General Public License along with 
  ~ this program.  If not, see <http://www.gnu.org/licenses/>. 
- --> 
- 
+ -->
+
 <!--
 ~ Copyright (c) 2009 Andrew <andrewdubya@gmail>
 ~ Copyright (c) 2009 Edu Zamora <edu.zasu@gmail.com>
@@ -198,7 +197,7 @@
     <string name="export_successful">L\'arxiu \"%s\" ha estat importat. Vols enviar-lo amb una altra applicació?</string>
     <string name="export_email_subject">Notes exportades a AnkiDroid: %s</string>
     <string name="export_email_text">        Hola!
-        <br/><br/>
+        <br /><br />
 		És un mall d\'Anki enviat des de <a href="https://ankidroid.org/docs/manual.html">AnkiDroid</a>.
         Intenta obrir-lo utilitzant una de les <a href="http://ankisrs.net/#download">distribucions d\'Anki</a> disponibles i gaudeix d\'un aprenentatge fàcil i eficient!
         </string>

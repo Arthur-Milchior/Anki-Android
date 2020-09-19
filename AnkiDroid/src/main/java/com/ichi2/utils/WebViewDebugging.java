@@ -28,7 +28,9 @@ public class WebViewDebugging {
         }
     }
 
-    /** Throws IllegalStateException if a WebView has been initialized */
+    /**
+     * Throws IllegalStateException if a WebView has been initialized
+     */
     @RequiresApi(api = Build.VERSION_CODES.P)
     public static void setDataDirectorySuffix(@NonNull String suffix) {
         WebView.setDataDirectorySuffix(suffix);

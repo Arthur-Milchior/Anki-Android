@@ -47,11 +47,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import androidx.annotation.CheckResult;
+
 import timber.log.Timber;
 
 import static com.ichi2.libanki.stats.Stats.SECONDS_PER_DAY;
 
-@SuppressWarnings({"PMD.ExcessiveClassLength", "PMD.AvoidThrowingRawExceptionTypes","PMD.AvoidReassigningParameters","PMD.NPathComplexity","PMD.MethodNamingConventions"})
+@SuppressWarnings({"PMD.ExcessiveClassLength", "PMD.AvoidThrowingRawExceptionTypes", "PMD.AvoidReassigningParameters", "PMD.NPathComplexity", "PMD.MethodNamingConventions"})
 public class Finder {
 
     private static final Pattern fPropPattern = Pattern.compile("(^.+?)(<=|>=|!=|=|<|>)(.+?$)");
@@ -72,7 +73,9 @@ public class Finder {
      * options here and safely type-cast accordingly at run-time.
      */
 
-    /** Return a list of card ids for QUERY */
+    /**
+     * Return a list of card ids for QUERY
+     */
     @CheckResult
     public List<Long> findCards(String query, String _order) {
         return _findCards(query, _order);
@@ -237,7 +240,7 @@ public class Finder {
         public boolean join;
         public String q = "";
         public boolean bad;
-        
+
         public void add(String txt) {
             add(txt, true);
         }
@@ -301,7 +304,7 @@ public class Finder {
                 String[] spl = token.split(":", 2);
                 String cmd = spl[0].toLowerCase(Locale.US);
                 String val = spl[1];
-                
+
                 if ("added".equals(cmd)) {
                     s.add(_findAdded(val));
                 } else if ("card".equals(cmd)) {
@@ -331,7 +334,7 @@ public class Finder {
                 } else {
                     s.add(_findField(cmd, val));
                 }
-            // normal text search
+                // normal text search
             } else {
                 s.add(_findText(token, args));
             }
@@ -379,7 +382,6 @@ public class Finder {
      * The python code combines all code paths in one function. In Java, we must overload the method
      * in order to consume either a String (no order, custom order) or a Boolean (no order, built-in order).
      */
-    
     private Pair<String, Boolean> _order(String order) {
         if (TextUtils.isEmpty(order)) {
             return _order(false);
@@ -388,7 +390,7 @@ public class Finder {
             return new Pair<>(" order by " + order, false);
         }
     }
-    
+
     private Pair<String, Boolean> _order(Boolean order) {
         if (!order) {
             return new Pair<>("", false);
@@ -475,26 +477,26 @@ public class Finder {
     private String _findFlag(String val) {
         int flag;
         switch (val) {
-        case "0":
-            flag = 0;
-            break;
-        case "1":
-            flag = 1;
-            break;
-        case "2":
-            flag = 2;
-            break;
-        case "3":
-            flag = 3;
-            break;
-        case "4":
-            flag = 4;
-            break;
-        default:
-            return null;
+            case "0":
+                flag = 0;
+                break;
+            case "1":
+                flag = 1;
+                break;
+            case "2":
+                flag = 2;
+                break;
+            case "3":
+                flag = 3;
+                break;
+            case "4":
+                flag = 4;
+                break;
+            default:
+                return null;
         }
         int mask = 0b111; // 2**3 -1 in Anki
-        return "(c.flags & "+mask+") == " + flag;
+        return "(c.flags & " + mask + ") == " + flag;
     }
 
     private String _findRated(String val) {
@@ -546,7 +548,7 @@ public class Finder {
         try {
             if ("ease".equals(prop)) {
                 // LibAnki does this below, but we do it here to avoid keeping a separate float value.
-                val = (int)(Double.parseDouble(sval) * 1000);
+                val = (int) (Double.parseDouble(sval) * 1000);
             } else {
                 val = Integer.parseInt(sval);
             }
@@ -711,8 +713,8 @@ public class Finder {
          * that should use SQLITE LIKE clause syntax.
          */
         String sqlVal = val
-                .replace("%","\\%") // For SQLITE, we escape all % signs
-                .replace("*","%"); // And then convert the * into non-escaped % signs
+                .replace("%", "\\%") // For SQLITE, we escape all % signs
+                .replace("*", "%"); // And then convert the * into non-escaped % signs
 
         /*
          * The following three lines make sure that only _ and * are valid wildcards.
@@ -720,8 +722,8 @@ public class Finder {
          * all meta-characters in between them to lose their special meaning
          */
         String javaVal = val
-                    .replace("_","\\E.\\Q")
-                    .replace("*","\\E.*\\Q");
+                .replace("_", "\\E.\\Q")
+                .replace("*", "\\E.*\\Q");
         /*
          * For the pattern, we use the javaVal expression that uses JAVA REGEX syntax
          */
@@ -736,7 +738,7 @@ public class Finder {
                 String fieldName = f.getString("name");
                 fieldName = Normalizer.normalize(fieldName, Normalizer.Form.NFC);
                 if (fieldName.equalsIgnoreCase(field)) {
-                    mods.put(m.getLong("id"), new Object[] { m, f.getInt("ord") });
+                    mods.put(m.getLong("id"), new Object[]{m, f.getInt("ord")});
                 }
             }
         }
@@ -748,7 +750,7 @@ public class Finder {
         try (Cursor cur = mCol.getDb().getDatabase().query(
                 "select id, mid, flds from notes where mid in " +
                         Utils.ids2str(new LinkedList<>(mods.keySet())) +
-                        " and flds like ? escape '\\'", new String[] {"%" + sqlVal + "%"})) {
+                        " and flds like ? escape '\\'", new String[]{"%" + sqlVal + "%"})) {
             /*
              * Here we use the sqlVal expression, that is required for LIKE syntax in sqllite.
              * There is no problem with special characters, because only % and _ are special
@@ -757,7 +759,7 @@ public class Finder {
 
             while (cur.moveToNext()) {
                 String[] flds = Utils.splitFields(cur.getString(2));
-                int ord = (Integer)mods.get(cur.getLong(1))[1];
+                int ord = (Integer) mods.get(cur.getLong(1))[1];
                 String strg = flds[ord];
                 if (pattern.matcher(strg).matches()) {
                     nids.add(cur.getLong(0));
@@ -783,14 +785,14 @@ public class Finder {
         List<Long> nids = new ArrayList<>();
         try (Cursor cur = mCol.getDb().getDatabase().query(
                 "select id, flds from notes where mid=? and csum=?",
-                new String[] {mid, csum})) {
+                new String[]{mid, csum})) {
             long nid = cur.getLong(0);
             String flds = cur.getString(1);
             if (Utils.stripHTMLMedia(Utils.splitFields(flds)[0]).equals(val)) {
                 nids.add(nid);
             }
         }
-        return "n.id in " +  Utils.ids2str(nids);
+        return "n.id in " + Utils.ids2str(nids);
     }
 
 
@@ -802,10 +804,10 @@ public class Finder {
     /**
      * Find and replace fields in a note
      *
-     * @param col The collection to search into.
+     * @param col  The collection to search into.
      * @param nids The cards to be searched for.
-     * @param src The original text to find.
-     * @param dst The text to change to.
+     * @param src  The original text to find.
+     * @param dst  The text to change to.
      * @return Number of notes with fields that were updated.
      */
     public static int findReplace(Collection col, List<Long> nids, String src, String dst) {
@@ -815,10 +817,10 @@ public class Finder {
     /**
      * Find and replace fields in a note
      *
-     * @param col The collection to search into.
-     * @param nids The cards to be searched for.
-     * @param src The original text to find.
-     * @param dst The text to change to.
+     * @param col   The collection to search into.
+     * @param nids  The cards to be searched for.
+     * @param src   The original text to find.
+     * @param dst   The text to change to.
      * @param regex If true, the src is treated as a regex. Default = false.
      * @return Number of notes with fields that were updated.
      */
@@ -829,10 +831,10 @@ public class Finder {
     /**
      * Find and replace fields in a note
      *
-     * @param col The collection to search into.
-     * @param nids The cards to be searched for.
-     * @param src The original text to find.
-     * @param dst The text to change to.
+     * @param col   The collection to search into.
+     * @param nids  The cards to be searched for.
+     * @param src   The original text to find.
+     * @param dst   The text to change to.
      * @param field Limit the search to specific field. If null, it searches all fields.
      * @return Number of notes with fields that were updated.
      */
@@ -843,16 +845,17 @@ public class Finder {
     /**
      * Find and replace fields in a note
      *
-     * @param col The collection to search into.
-     * @param nids The cards to be searched for.
-     * @param src The original text to find.
-     * @param dst The text to change to.
+     * @param col     The collection to search into.
+     * @param nids    The cards to be searched for.
+     * @param src     The original text to find.
+     * @param dst     The text to change to.
      * @param isRegex If true, the src is treated as a regex. Default = false.
-     * @param field Limit the search to specific field. If null, it searches all fields.
-     * @param fold If true the search is case-insensitive. Default = true.
-     * @return Number of notes with fields that were updated. */
+     * @param field   Limit the search to specific field. If null, it searches all fields.
+     * @param fold    If true the search is case-insensitive. Default = true.
+     * @return Number of notes with fields that were updated.
+     */
     public static int findReplace(Collection col, List<Long> nids, String src, String dst, boolean isRegex,
-            String field, boolean fold) {
+                                  String field, boolean fold) {
         Map<Long, Integer> mmap = new HashMap<>();
         if (field != null) {
             for (JSONObject m : col.getModels().all()) {
@@ -905,7 +908,7 @@ public class Finder {
                 if (!flds.equals(origFlds)) {
                     long nid = cur.getLong(0);
                     nids.add(nid);
-                    d.add(new Object[] { flds, col.getTime().intTime(), col.usn(), nid }); // order based on query below
+                    d.add(new Object[]{flds, col.getTime().intTime(), col.usn(), nid}); // order based on query below
                 }
             }
         }
@@ -976,9 +979,9 @@ public class Finder {
      */
     public static List<Pair<String, List<Long>>> findDupes(Collection col, String fieldName, String search) {
         // limit search to notes with applicable field name
-    	if (!TextUtils.isEmpty(search)) {
+        if (!TextUtils.isEmpty(search)) {
             search = "(" + search + ") ";
-    	}
+        }
         search += "'" + fieldName + ":*'";
         // go through notes
         Map<String, List<Long>> vals = new HashMap<>();

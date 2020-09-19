@@ -1,4 +1,3 @@
-
 package com.ichi2.anki;
 
 import android.content.Context;
@@ -18,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import androidx.appcompat.widget.AppCompatEditText;
+
 import timber.log.Timber;
 
 import com.ichi2.themes.Themes;
@@ -131,7 +131,6 @@ public class FieldEditText extends AppCompatEditText {
         }
         super.onSelectionChanged(selStart, selEnd);
     }
-
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)

@@ -20,7 +20,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.SharedPreferences;
+
 import androidx.appcompat.widget.Toolbar;
+
 import timber.log.Timber;
 
 import android.view.View;
@@ -33,7 +35,9 @@ import com.ichi2.anki.AnkiDroidApp;
 import com.ichi2.anki.R;
 import com.ichi2.themes.Themes;
 
-/** Implementation of {@link Compat} for SDK level 19 */
+/**
+ * Implementation of {@link Compat} for SDK level 19
+ */
 @TargetApi(19)
 public class CompatV19 extends CompatV18 implements Compat {
     private static final int ANIMATION_DURATION = 200;
@@ -43,7 +47,7 @@ public class CompatV19 extends CompatV18 implements Compat {
     public void setFullScreen(final AbstractFlashcardViewer a) {
         // Set appropriate flags to enable Sticky Immersive mode.
         a.getWindow().getDecorView().setSystemUiVisibility(
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         //| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION // temporarily disabled due to #5245
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION

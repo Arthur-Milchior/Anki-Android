@@ -15,6 +15,7 @@ package com.ichi2.compat.customtabs;
 
 
 import android.content.ComponentName;
+
 import androidx.browser.customtabs.CustomTabsClient;
 import androidx.browser.customtabs.CustomTabsServiceConnection;
 

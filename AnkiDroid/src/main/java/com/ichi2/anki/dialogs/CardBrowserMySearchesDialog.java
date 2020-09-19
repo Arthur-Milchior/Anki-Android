@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.res.Resources;
 import android.os.Bundle;
+
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -31,7 +32,9 @@ public class CardBrowserMySearchesDialog extends AnalyticsDialogFragment {
 
     public interface MySearchesDialogListener {
         void onSelection(String searchName);
+
         void onRemoveSearch(String searchName);
+
         void onSaveSearch(String searchName, String searchTerms);
     }
 
@@ -79,20 +82,20 @@ public class CardBrowserMySearchesDialog extends AnalyticsDialogFragment {
         } else if (type == CARD_BROWSER_MY_SEARCHES_TYPE_SAVE) {
             mCurrentSearchTerms = getArguments().getString("currentSearchTerms");
             builder.title(getString(R.string.card_browser_list_my_searches_save))
-                   .positiveText(getString(android.R.string.ok))
-                   .negativeText(getString(R.string.cancel))
-                   .input(R.string.card_browser_list_my_searches_new_name, R.string.empty_string, (dialog, text) -> {
-                       Timber.d("Saving search with title/terms: %s/%s", text, mCurrentSearchTerms);
-                       mMySearchesDialogListener.onSaveSearch(text.toString(), mCurrentSearchTerms);
-                   });
+                    .positiveText(getString(android.R.string.ok))
+                    .negativeText(getString(R.string.cancel))
+                    .input(R.string.card_browser_list_my_searches_new_name, R.string.empty_string, (dialog, text) -> {
+                        Timber.d("Saving search with title/terms: %s/%s", text, mCurrentSearchTerms);
+                        mMySearchesDialogListener.onSaveSearch(text.toString(), mCurrentSearchTerms);
+                    });
         }
         MaterialDialog dialog = builder.build();
         if (dialog.getRecyclerView() != null) {
-            LinearLayoutManager mLayoutManager = (LinearLayoutManager)dialog.getRecyclerView().getLayoutManager();
+            LinearLayoutManager mLayoutManager = (LinearLayoutManager) dialog.getRecyclerView().getLayoutManager();
             DividerItemDecoration dividerItemDecoration =
                     new DividerItemDecoration(dialog.getRecyclerView().getContext(), mLayoutManager.getOrientation());
             float scale = res.getDisplayMetrics().density;
-            int dpAsPixels = (int) (5*scale + 0.5f);
+            int dpAsPixels = (int) (5 * scale + 0.5f);
             dialog.getView().setPadding(dpAsPixels, 0, dpAsPixels, dpAsPixels);
             dialog.getRecyclerView().addItemDecoration(dividerItemDecoration);
         }

@@ -1,4 +1,3 @@
-
 package com.ichi2.anki;
 
 /****************************************************************************************
@@ -68,14 +67,14 @@ public class FilteredDeckOptions extends AppCompatPreferenceActivity implements 
     private BroadcastReceiver mUnmountReceiver = null;
 
     // TODO: not anymore used in libanki?
-    private String[] dynExamples = new String[] { null,
+    private String[] dynExamples = new String[]{null,
             "{'search'=\"is:new\", 'resched'=False, 'steps'=\"1\", 'order'=5}",
             "{'search'=\"added:1\", 'resched'=False, 'steps'=\"1\", 'order'=5}",
             "{'search'=\"rated:1:1\", 'order'=4}",
             "{'search'=\"prop:due<=2\", 'order'=6}",
             "{'search'=\"is:due tag:TAG\", 'order'=6}",
             "{'search'=\"is:due\", 'order'=3}",
-            "{'search'=\"\", 'steps'=\"1 10 20\", 'order'=0}" };
+            "{'search'=\"\", 'steps'=\"1 10 20\", 'order'=0}"};
 
     public class DeckPreferenceHack implements SharedPreferences {
 
@@ -139,7 +138,7 @@ public class FilteredDeckOptions extends AppCompatPreferenceActivity implements 
                     } else if ("stepsOn".equals(entry.getKey())) {
                         boolean on = (Boolean) entry.getValue();
                         if (on) {
-                            JSONArray steps =  StepsPreference.convertToJSON(mValues.get("steps"));
+                            JSONArray steps = StepsPreference.convertToJSON(mValues.get("steps"));
                             if (steps.length() > 0) {
                                 mDeck.put("delays", steps);
                             }
@@ -371,7 +370,7 @@ public class FilteredDeckOptions extends AppCompatPreferenceActivity implements 
             this.buildLists();
             this.updateSummaries();
         }
-        
+
         // Set the activity title to include the name of the deck
         String title = getResources().getString(R.string.deckpreferences_title);
         if (title.contains("XXX")) {

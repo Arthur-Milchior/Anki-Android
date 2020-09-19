@@ -76,7 +76,7 @@ public class ModelTest extends RobolectricTest {
         // add a field
         JSONObject field = col.getModels().newField("foo");
         col.getModels().addField(m, field);
-        assertArrayEquals(new String[] {"1", "2", ""}, col.getNote(col.getModels().nids(m).get(0)).getFields());
+        assertArrayEquals(new String[]{"1", "2", ""}, col.getNote(col.getModels().nids(m).get(0)).getFields());
         assertNotEquals(h, col.getModels().scmhash(m));
         // rename it
         field = m.getJSONArray("flds").getJSONObject(2);
@@ -84,29 +84,29 @@ public class ModelTest extends RobolectricTest {
         assertEquals("", col.getNote(col.getModels().nids(m).get(0)).getItem("bar"));
         // delete back
         col.getModels().remField(m, m.getJSONArray("flds").getJSONObject(1));
-        assertArrayEquals(new String[] {"1", ""}, col.getNote(col.getModels().nids(m).get(0)).getFields());
+        assertArrayEquals(new String[]{"1", ""}, col.getNote(col.getModels().nids(m).get(0)).getFields());
         // move 0 -> 1
         col.getModels().moveField(m, m.getJSONArray("flds").getJSONObject(0), 1);
-        assertArrayEquals(new String[] {"", "1"}, col.getNote(col.getModels().nids(m).get(0)).getFields());
+        assertArrayEquals(new String[]{"", "1"}, col.getNote(col.getModels().nids(m).get(0)).getFields());
         // move 1 -> 0
         col.getModels().moveField(m, m.getJSONArray("flds").getJSONObject(1), 0);
-        assertArrayEquals(new String[] {"1", ""}, col.getNote(col.getModels().nids(m).get(0)).getFields());
+        assertArrayEquals(new String[]{"1", ""}, col.getNote(col.getModels().nids(m).get(0)).getFields());
         // add another and put in middle
         field = col.getModels().newField("baz");
         col.getModels().addField(m, field);
         note = col.getNote(col.getModels().nids(m).get(0));
         note.setItem("baz", "2");
         note.flush();
-        assertArrayEquals(new String[] {"1", "", "2"}, col.getNote(col.getModels().nids(m).get(0)).getFields());
+        assertArrayEquals(new String[]{"1", "", "2"}, col.getNote(col.getModels().nids(m).get(0)).getFields());
         // move 2 -> 1
         col.getModels().moveField(m, m.getJSONArray("flds").getJSONObject(2), 1);
-        assertArrayEquals(new String[] {"1", "2", ""}, col.getNote(col.getModels().nids(m).get(0)).getFields());
+        assertArrayEquals(new String[]{"1", "2", ""}, col.getNote(col.getModels().nids(m).get(0)).getFields());
         // move 0 -> 2
         col.getModels().moveField(m, m.getJSONArray("flds").getJSONObject(0), 2);
-        assertArrayEquals(new String[] {"2", "", "1"}, col.getNote(col.getModels().nids(m).get(0)).getFields());
+        assertArrayEquals(new String[]{"2", "", "1"}, col.getNote(col.getModels().nids(m).get(0)).getFields());
         // move 0 -> 1
         col.getModels().moveField(m, m.getJSONArray("flds").getJSONObject(0), 1);
-        assertArrayEquals(new String[] {"", "2", "1"}, col.getNote(col.getModels().nids(m).get(0)).getFields());
+        assertArrayEquals(new String[]{"", "2", "1"}, col.getNote(col.getModels().nids(m).get(0)).getFields());
     }
 
 
@@ -339,7 +339,7 @@ public class ModelTest extends RobolectricTest {
         Map<Integer, Integer> map = new HashMap<>();
         map.put(0, 1);
         map.put(1, 0);
-        col.getModels().change(basic, new long[] {note.getId()}, basic, map, null);
+        col.getModels().change(basic, new long[]{note.getId()}, basic, map, null);
         note.load();
         assertEquals("b123", note.getItem("Front"));
         assertEquals("note", note.getItem("Back"));
@@ -350,7 +350,7 @@ public class ModelTest extends RobolectricTest {
         assertThat(c1.q(), containsString("note"));
         assertEquals(0, c0.getOrd());
         assertEquals(1, c1.getOrd());
-        col.getModels().change(basic, new long[] {note.getId()}, basic, null, map);
+        col.getModels().change(basic, new long[]{note.getId()}, basic, null, map);
         note.load();
         c0.load();
         c1.load();
@@ -368,7 +368,7 @@ public class ModelTest extends RobolectricTest {
         //     // The low precision timer on Windows reveals a race condition
         //     time.sleep(0.05);
         // }
-        col.getModels().change(basic, new long[] {note.getId()}, basic, null, map);
+        col.getModels().change(basic, new long[]{note.getId()}, basic, null, map);
         note.load();
         c0.load();
         // the card was deleted
@@ -377,7 +377,7 @@ public class ModelTest extends RobolectricTest {
         // an unmapped field becomes blank
         assertEquals("b123", note.getItem("Front"));
         assertEquals("note", note.getItem("Back"));
-        col.getModels().change(basic, new long[] {note.getId()}, basic, map, null);
+        col.getModels().change(basic, new long[]{note.getId()}, basic, map, null);
         note.load();
         assertEquals("", note.getItem("Front"));
         assertEquals("note", note.getItem("Back"));
@@ -394,7 +394,7 @@ public class ModelTest extends RobolectricTest {
         map = new HashMap<>();
         map.put(0, 0);
         map.put(1, 1);
-        col.getModels().change(basic, new long[] {note.getId()}, cloze, map, map);
+        col.getModels().change(basic, new long[]{note.getId()}, cloze, map, map);
         note.load();
         assertEquals("f2", note.getItem("Text"));
         assertEquals(2, note.numberOfCards());
@@ -403,7 +403,7 @@ public class ModelTest extends RobolectricTest {
         assertEquals(2, col.getDb().queryScalar("select count() from cards where nid = ?", note.getId()));
         map = new HashMap<>();
         map.put(0, 0);
-        col.getModels().change(cloze, new long[] {note.getId()}, basic, map, map);
+        col.getModels().change(cloze, new long[]{note.getId()}, basic, map, map);
         assertEquals(1, col.getDb().queryScalar("select count() from cards where nid = ?", note.getId()));
     }
 
@@ -426,7 +426,7 @@ public class ModelTest extends RobolectricTest {
         reqSize(basic);
         JSONArray r = basic.getJSONArray("req").getJSONArray(0);
         assertEquals(0, r.getInt(0));
-        assertTrue(Arrays.asList(new String[] {"any", "all"}).contains(r.getString(1)));
+        assertTrue(Arrays.asList(new String[]{"any", "all"}).contains(r.getString(1)));
         assertEquals(1, r.getJSONArray(2).length());
         assertEquals(0, r.getJSONArray(2).getInt(0));
 
@@ -434,7 +434,7 @@ public class ModelTest extends RobolectricTest {
         reqSize(opt);
 
         r = opt.getJSONArray("req").getJSONArray(0);
-        assertTrue(Arrays.asList(new String[] {"any", "all"}).contains(r.getString(1)));
+        assertTrue(Arrays.asList(new String[]{"any", "all"}).contains(r.getString(1)));
         assertEquals(1, r.getJSONArray(2).length());
         assertEquals(0, r.getJSONArray(2).getInt(0));
 
@@ -453,7 +453,7 @@ public class ModelTest extends RobolectricTest {
         opt = mm.byName("Basic (type in the answer)");
         reqSize(opt);
         r = opt.getJSONArray("req").getJSONArray(0);
-        assertTrue(Arrays.asList(new String[] {"any", "all"}).contains(r.getString(1)));
+        assertTrue(Arrays.asList(new String[]{"any", "all"}).contains(r.getString(1)));
         // TODO: Port anki@4e33775ed4346ef136ece6ef5efec5ba46057c6b
         assertEquals(new JSONArray("[0]"), r.getJSONArray(2));
     }

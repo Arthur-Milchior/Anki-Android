@@ -82,7 +82,6 @@ public class FunctionXYAtom implements TreeElement {
     }
 
 
-
     public Atom.AtomType getAtomType() {
         return atomType;
     }

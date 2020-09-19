@@ -6,6 +6,7 @@ import com.ichi2.anki.RobolectricTest;
 import com.ichi2.libanki.template.Template;
 
 import com.ichi2.utils.JSONException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -74,7 +75,7 @@ public class ClozeTest extends RobolectricTest {
         int cnt = d.cardCount();
         f.setItem("Text", "{{c2::hello}} {{c1::foo}}");
         f.flush();
-        assertEquals(cnt+1, d.cardCount());
+        assertEquals(cnt + 1, d.cardCount());
         // 0 or negative indices are not supported
         f.setItem("Text", "{{c0::zero}} {{c-1:foo}}");
         f.flush();

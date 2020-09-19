@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+
 import timber.log.Timber;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
@@ -105,7 +106,9 @@ public class TextImporter extends NoteImporter {
         return notes;
     }
 
-    /** Number of fields. */
+    /**
+     * Number of fields.
+     */
     @Override
     protected int fields() {
         open();
@@ -121,14 +124,18 @@ public class TextImporter extends NoteImporter {
     }
 
 
-    /** Parse the top line and determine the pattern and number of fields. */
+    /**
+     * Parse the top line and determine the pattern and number of fields.
+     */
     @Override
     protected void open() {
         // load & look for the right pattern
         cacheFile();
     }
 
-    /** Read file into self.lines if not already there. */
+    /**
+     * Read file into self.lines if not already there.
+     */
     private void cacheFile() {
         if (fileobj == null) {
             openFile();
@@ -191,9 +198,9 @@ public class TextImporter extends NoteImporter {
             if (delimiter == '\0') {
                 if (firstLine.contains("\t")) {
                     delimiter = '\t';
-                } else if(firstLine.contains(";")) {
+                } else if (firstLine.contains(";")) {
                     delimiter = ';';
-                } else if(firstLine.contains(",")) {
+                } else if (firstLine.contains(",")) {
                     delimiter = ',';
                 } else {
                     delimiter = ' ';

@@ -32,12 +32,14 @@ import android.os.SystemClock;
 
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.SearchView;
+
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.TypedValue;
@@ -103,7 +105,9 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import timber.log.Timber;
+
 import static com.ichi2.async.CollectionTask.TASK_TYPE.*;
+
 import com.ichi2.async.TaskData;
 
 import static com.ichi2.anki.CardBrowser.Column.*;
@@ -134,8 +138,10 @@ public class CardBrowser extends NavigationDrawerActivity implements
         REVIEWS
     }
 
-    /** List of cards in the browser.
-    * When the list is changed, the position member of its elements should get changed.*/
+    /**
+     * List of cards in the browser.
+     * When the list is changed, the position member of its elements should get changed.
+     */
     private List<CardCache> mCards;
     private ArrayList<Deck> mDropDownDecks;
     private ListView mCardsListView;
@@ -171,35 +177,35 @@ public class CardBrowser extends NavigationDrawerActivity implements
     private static final int DEFAULT_FONT_SIZE_RATIO = 100;
     // Should match order of R.array.card_browser_order_labels
     public static final int CARD_ORDER_NONE = 0;
-    private static final String[] fSortTypes = new String[] {
-        "",
-        "noteFld",
-        "noteCrt",
-        "noteMod",
-        "cardMod",
-        "cardDue",
-        "cardIvl",
-        "cardEase",
-        "cardReps",
-        "cardLapses"};
+    private static final String[] fSortTypes = new String[]{
+            "",
+            "noteFld",
+            "noteCrt",
+            "noteMod",
+            "cardMod",
+            "cardDue",
+            "cardIvl",
+            "cardEase",
+            "cardReps",
+            "cardLapses"};
     private static final Column[] COLUMN1_KEYS = {QUESTION, SFLD};
 
     // list of available keys in mCards corresponding to the column names in R.array.browser_column2_headings.
     // Note: the last 6 are currently hidden
     private static final Column[] COLUMN2_KEYS = {ANSWER,
-        CARD,
-        DECK,
-        NOTE_TYPE,
-        QUESTION,
-        TAGS,
-        LAPSES,
-        REVIEWS,
-        INTERVAL,
-        EASE,
-        DUE,
-        CHANGED,
-        CREATED,
-        EDITED,
+            CARD,
+            DECK,
+            NOTE_TYPE,
+            QUESTION,
+            TAGS,
+            LAPSES,
+            REVIEWS,
+            INTERVAL,
+            EASE,
+            DUE,
+            CHANGED,
+            CREATED,
+            EDITED,
     };
     private long mLastRenderStart = 0;
     private DeckDropDownAdapter mDropDownAdapter;
@@ -228,34 +234,34 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
     private MaterialDialog.ListCallbackSingleChoice mOrderDialogListener =
             new MaterialDialog.ListCallbackSingleChoice() {
-        @Override
-        public boolean onSelection(MaterialDialog materialDialog, View view, int which,
-                CharSequence charSequence) {
-            if (which != mOrder) {
-                mOrder = which;
-                mOrderAsc = false;
-                if (mOrder == 0) {
-                    getCol().getConf().put("sortType", fSortTypes[1]);
-                    AnkiDroidApp.getSharedPrefs(getBaseContext()).edit()
-                            .putBoolean("cardBrowserNoSorting", true)
-                            .commit();
-                } else {
-                    getCol().getConf().put("sortType", fSortTypes[mOrder]);
-                    AnkiDroidApp.getSharedPrefs(getBaseContext()).edit()
-                            .putBoolean("cardBrowserNoSorting", false)
-                            .commit();
+                @Override
+                public boolean onSelection(MaterialDialog materialDialog, View view, int which,
+                                           CharSequence charSequence) {
+                    if (which != mOrder) {
+                        mOrder = which;
+                        mOrderAsc = false;
+                        if (mOrder == 0) {
+                            getCol().getConf().put("sortType", fSortTypes[1]);
+                            AnkiDroidApp.getSharedPrefs(getBaseContext()).edit()
+                                    .putBoolean("cardBrowserNoSorting", true)
+                                    .commit();
+                        } else {
+                            getCol().getConf().put("sortType", fSortTypes[mOrder]);
+                            AnkiDroidApp.getSharedPrefs(getBaseContext()).edit()
+                                    .putBoolean("cardBrowserNoSorting", false)
+                                    .commit();
+                        }
+                        getCol().getConf().put("sortBackwards", mOrderAsc);
+                        searchCards();
+                    } else if (which != CARD_ORDER_NONE) {
+                        mOrderAsc = !mOrderAsc;
+                        getCol().getConf().put("sortBackwards", mOrderAsc);
+                        Collections.reverse(mCards);
+                        updateList();
+                    }
+                    return true;
                 }
-                getCol().getConf().put("sortBackwards", mOrderAsc);
-                searchCards();
-            } else if (which != CARD_ORDER_NONE) {
-                mOrderAsc = !mOrderAsc;
-                getCol().getConf().put("sortBackwards", mOrderAsc);
-                Collections.reverse(mCards);
-                updateList();
-            }
-            return true;
-        }
-    };
+            };
 
 
     private RepositionCardHandler repositionCardHandler() {
@@ -286,7 +292,8 @@ public class CardBrowser extends NavigationDrawerActivity implements
     private ResetProgressCardHandler resetProgressCardHandler() {
         return new ResetProgressCardHandler(this);
     }
-    private static class ResetProgressCardHandler extends TaskListenerWithContext<CardBrowser>{
+
+    private static class ResetProgressCardHandler extends TaskListenerWithContext<CardBrowser> {
         public ResetProgressCardHandler(CardBrowser browser) {
             super(browser);
         }
@@ -310,8 +317,9 @@ public class CardBrowser extends NavigationDrawerActivity implements
     private RescheduleCardHandler rescheduleCardHandler() {
         return new RescheduleCardHandler(this);
     }
-    private static class RescheduleCardHandler extends TaskListenerWithContext<CardBrowser>{
-        public RescheduleCardHandler (CardBrowser browser) {
+
+    private static class RescheduleCardHandler extends TaskListenerWithContext<CardBrowser> {
+        public RescheduleCardHandler(CardBrowser browser) {
             super(browser);
         }
 
@@ -333,63 +341,63 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
     private CardBrowserMySearchesDialog.MySearchesDialogListener mMySearchesDialogListener =
             new CardBrowserMySearchesDialog.MySearchesDialogListener() {
-        @Override
-        public void onSelection(String searchName) {
-            Timber.d("OnSelection using search named: %s", searchName);
-            JSONObject savedFiltersObj = getCol().getConf().optJSONObject("savedFilters");
-            Timber.d("SavedFilters are %s", savedFiltersObj.toString());
-            if (savedFiltersObj != null) {
-                mSearchTerms = savedFiltersObj.optString(searchName);
-                Timber.d("OnSelection using search terms: %s", mSearchTerms);
-                mSearchView.setQuery(mSearchTerms, false);
-                mSearchItem.expandActionView();
-                searchCards();
-            }
-        }
-
-        @Override
-        public void onRemoveSearch(String searchName) {
-            Timber.d("OnRemoveSelection using search named: %s", searchName);
-            JSONObject savedFiltersObj = getCol().getConf().optJSONObject("savedFilters");
-            if (savedFiltersObj != null && savedFiltersObj.has(searchName)) {
-                savedFiltersObj.remove(searchName);
-                getCol().getConf().put("savedFilters", savedFiltersObj);
-                getCol().flush();
-                if (savedFiltersObj.length() == 0) {
-                    mMySearchesItem.setVisible(false);
+                @Override
+                public void onSelection(String searchName) {
+                    Timber.d("OnSelection using search named: %s", searchName);
+                    JSONObject savedFiltersObj = getCol().getConf().optJSONObject("savedFilters");
+                    Timber.d("SavedFilters are %s", savedFiltersObj.toString());
+                    if (savedFiltersObj != null) {
+                        mSearchTerms = savedFiltersObj.optString(searchName);
+                        Timber.d("OnSelection using search terms: %s", mSearchTerms);
+                        mSearchView.setQuery(mSearchTerms, false);
+                        mSearchItem.expandActionView();
+                        searchCards();
+                    }
                 }
-            }
 
-        }
+                @Override
+                public void onRemoveSearch(String searchName) {
+                    Timber.d("OnRemoveSelection using search named: %s", searchName);
+                    JSONObject savedFiltersObj = getCol().getConf().optJSONObject("savedFilters");
+                    if (savedFiltersObj != null && savedFiltersObj.has(searchName)) {
+                        savedFiltersObj.remove(searchName);
+                        getCol().getConf().put("savedFilters", savedFiltersObj);
+                        getCol().flush();
+                        if (savedFiltersObj.length() == 0) {
+                            mMySearchesItem.setVisible(false);
+                        }
+                    }
 
-        @Override
-        public void onSaveSearch(String searchName, String searchTerms) {
-            if (TextUtils.isEmpty(searchName)) {
-                UIUtils.showThemedToast(CardBrowser.this,
-                        getString(R.string.card_browser_list_my_searches_new_search_error_empty_name), true);
-                return;
-            }
-            JSONObject savedFiltersObj = getCol().getConf().optJSONObject("savedFilters");
-            boolean should_save = false;
-            if (savedFiltersObj == null) {
-                savedFiltersObj = new JSONObject();
-                savedFiltersObj.put(searchName, searchTerms);
-                should_save = true;
-            } else if (!savedFiltersObj.has(searchName)) {
-                savedFiltersObj.put(searchName, searchTerms);
-                should_save = true;
-            } else {
-                UIUtils.showThemedToast(CardBrowser.this,
-                                        getString(R.string.card_browser_list_my_searches_new_search_error_dup), true);
-            }
-            if (should_save) {
-                getCol().getConf().put("savedFilters", savedFiltersObj);
-                getCol().flush();
-                mSearchView.setQuery("", false);
-                mMySearchesItem.setVisible(true);
-            }
-        }
-    };
+                }
+
+                @Override
+                public void onSaveSearch(String searchName, String searchTerms) {
+                    if (TextUtils.isEmpty(searchName)) {
+                        UIUtils.showThemedToast(CardBrowser.this,
+                                getString(R.string.card_browser_list_my_searches_new_search_error_empty_name), true);
+                        return;
+                    }
+                    JSONObject savedFiltersObj = getCol().getConf().optJSONObject("savedFilters");
+                    boolean should_save = false;
+                    if (savedFiltersObj == null) {
+                        savedFiltersObj = new JSONObject();
+                        savedFiltersObj.put(searchName, searchTerms);
+                        should_save = true;
+                    } else if (!savedFiltersObj.has(searchName)) {
+                        savedFiltersObj.put(searchName, searchTerms);
+                        should_save = true;
+                    } else {
+                        UIUtils.showThemedToast(CardBrowser.this,
+                                getString(R.string.card_browser_list_my_searches_new_search_error_dup), true);
+                    }
+                    if (should_save) {
+                        getCol().getConf().put("savedFilters", savedFiltersObj);
+                        getCol().flush();
+                        mSearchView.setQuery("", false);
+                        mMySearchesItem.setVisible(true);
+                    }
+                }
+            };
 
 
     private void onSearch() {
@@ -457,7 +465,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
 
     private Long getLastDeckId() {
-        SharedPreferences state = getSharedPreferences(PERSISTENT_STATE_FILE,0);
+        SharedPreferences state = getSharedPreferences(PERSISTENT_STATE_FILE, 0);
         if (!state.contains(LAST_DECK_ID_KEY)) {
             return null;
         }
@@ -466,7 +474,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
     public static void clearLastDeckId() {
         Context context = AnkiDroidApp.getInstance();
-        context.getSharedPreferences(PERSISTENT_STATE_FILE,0).edit().remove(LAST_DECK_ID_KEY).apply();
+        context.getSharedPreferences(PERSISTENT_STATE_FILE, 0).edit().remove(LAST_DECK_ID_KEY).apply();
     }
 
     private void saveLastDeckId(Long id) {
@@ -609,7 +617,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
                 this,
                 R.layout.card_item_browser,
                 columnsContent,
-                new int[] {R.id.card_sfld, R.id.card_column2},
+                new int[]{R.id.card_sfld, R.id.card_column2},
                 sflRelativeFontSize,
                 sflCustomFont);
         // link the adapter to the main mCardsListView
@@ -657,7 +665,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
         // If a valid value for last deck exists then use it, otherwise use libanki selected deck
         if (getLastDeckId() != null && getLastDeckId() == ALL_DECKS_ID) {
             selectAllDecks();
-        } else  if (getLastDeckId() != null && getCol().getDecks().get(getLastDeckId(), false) != null) {
+        } else if (getLastDeckId() != null && getCol().getDecks().get(getLastDeckId(), false) != null) {
             selectDeckById(getLastDeckId());
         } else {
             selectDeckById(getCol().getDecks().selected());
@@ -670,8 +678,10 @@ public class CardBrowser extends NavigationDrawerActivity implements
     }
 
 
-    /** Opens the note editor for a card.
-     * We use the Card ID to specify the preview target */
+    /**
+     * Opens the note editor for a card.
+     * We use the Card ID to specify the preview target
+     */
     public void openNoteEditorForCard(long cardId) {
         mCurrentCardId = cardId;
         sCardBrowserCard = getCol().getCard(mCurrentCardId);
@@ -808,7 +818,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
         }
 
         if (mActionBarMenu != null && mActionBarMenu.findItem(R.id.action_undo) != null) {
-            MenuItem undo =  mActionBarMenu.findItem(R.id.action_undo);
+            MenuItem undo = mActionBarMenu.findItem(R.id.action_undo);
             undo.setVisible(getCol().undoAvailable());
             undo.setTitle(getResources().getString(R.string.studyoptions_congrats_undo, getCol().undoName(getResources())));
         }
@@ -871,7 +881,9 @@ public class CardBrowser extends NavigationDrawerActivity implements
         mPreviewItem.setVisible(getCardCount() > 0);
     }
 
-    /** Returns the number of cards that are visible on the screen */
+    /**
+     * Returns the number of cards that are visible on the screen
+     */
     public int getCardCount() {
         return getCards().size();
     }
@@ -906,10 +918,10 @@ public class CardBrowser extends NavigationDrawerActivity implements
     }
 
 
-    private void flagTask (int flag) {
+    private void flagTask(int flag) {
         CollectionTask.launchCollectionTask(DISMISS_MULTI,
-                                flagCardHandler(),
-                                new TaskData(new Object[]{getSelectedCardIds(), Collection.DismissType.FLAG, new Integer (flag)}));
+                flagCardHandler(),
+                new TaskData(new Object[]{getSelectedCardIds(), Collection.DismissType.FLAG, new Integer(flag)}));
     }
 
     @Override
@@ -1107,9 +1119,9 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
                 long[] selectedCardIds = getSelectedCardIds();
                 FunctionalInterfaces.Consumer<Integer> consumer = newDays ->
-                    CollectionTask.launchCollectionTask(DISMISS_MULTI,
-                        rescheduleCardHandler(),
-                        new TaskData(new Object[]{selectedCardIds, Collection.DismissType.RESCHEDULE_CARDS, newDays}));
+                        CollectionTask.launchCollectionTask(DISMISS_MULTI,
+                                rescheduleCardHandler(),
+                                new TaskData(new Object[]{selectedCardIds, Collection.DismissType.RESCHEDULE_CARDS, newDays}));
 
                 RescheduleDialog rescheduleDialog;
                 if (selectedCardIds.length == 1) {
@@ -1146,8 +1158,8 @@ public class CardBrowser extends NavigationDrawerActivity implements
                         getString(R.string.reposition_card_dialog_message),
                         5);
                 repositionDialog.setCallbackRunnable(days ->
-                    CollectionTask.launchCollectionTask(DISMISS_MULTI, repositionCardHandler(),
-                        new TaskData(new Object[] {cardIds, Collection.DismissType.REPOSITION_CARDS, days}))
+                        CollectionTask.launchCollectionTask(DISMISS_MULTI, repositionCardHandler(),
+                                new TaskData(new Object[]{cardIds, Collection.DismissType.REPOSITION_CARDS, days}))
                 );
                 showDialogFragment(repositionDialog);
                 return true;
@@ -1195,7 +1207,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             }
         }
 
-        if (requestCode == EDIT_CARD &&  data != null &&
+        if (requestCode == EDIT_CARD && data != null &&
                 (data.getBooleanExtra("reloadRequired", false) ||
                         data.getBooleanExtra("noteChanged", false))) {
             // if reloadRequired or noteChanged flag was sent from note editor then reload card list
@@ -1232,7 +1244,9 @@ public class CardBrowser extends NavigationDrawerActivity implements
         showDialogFragment(dialog);
     }
 
-    /** Selects the given position in the deck list */
+    /**
+     * Selects the given position in the deck list
+     */
     public void selectDropDownItem(int position) {
         mActionBarSpinner.setSelection(position);
         deckDropDownItemChanged(position);
@@ -1292,24 +1306,24 @@ public class CardBrowser extends NavigationDrawerActivity implements
         } else {
             searchText = mRestrictOnDeck + mSearchTerms;
         }
-        if (colIsOpen() && mCardsAdapter!= null) {
+        if (colIsOpen() && mCardsAdapter != null) {
             // clear the existing card list
             mCards = new ArrayList<>();
             mCardsAdapter.notifyDataSetChanged();
             //  estimate maximum number of cards that could be visible (assuming worst-case minimum row height of 20dp)
-            int numCardsToRender = (int) Math.ceil(mCardsListView.getHeight()/
+            int numCardsToRender = (int) Math.ceil(mCardsListView.getHeight() /
                     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, getResources().getDisplayMetrics())) + 5;
             // Perform database query to get all card ids
             CollectionTask.launchCollectionTask(SEARCH_CARDS,
-                                                mSearchCardsHandler,
-                                                new TaskData(new Object[] {
-                                                        searchText,
-                                                        ((mOrder != CARD_ORDER_NONE)),
-                                                        numCardsToRender,
-                                                        mColumn1Index,
-                                                        mColumn2Index
-                                                    })
-                                                );
+                    mSearchCardsHandler,
+                    new TaskData(new Object[]{
+                            searchText,
+                            ((mOrder != CARD_ORDER_NONE)),
+                            numCardsToRender,
+                            mColumn1Index,
+                            mColumn2Index
+                    })
+            );
         }
     }
 
@@ -1350,7 +1364,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
     }
 
     // convenience method for updateCardsInList(...)
-    private void updateCardInList(Card card, String updatedCardTags){
+    private void updateCardInList(Card card, String updatedCardTags) {
         List<Card> cards = new ArrayList<>();
         cards.add(card);
         if (updatedCardTags != null) {
@@ -1362,7 +1376,9 @@ public class CardBrowser extends NavigationDrawerActivity implements
         }
     }
 
-    /** Returns the decks which are valid targets for "Change Deck" */
+    /**
+     * Returns the decks which are valid targets for "Change Deck"
+     */
     @VisibleForTesting
     List<Deck> getValidDecksForChangeDeck() {
         List<Deck> nonDynamicDecks = new ArrayList<>();
@@ -1413,7 +1429,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
     }
 
 
-    private static abstract class ListenerWithProgressBar extends TaskListenerWithContext<CardBrowser>{
+    private static abstract class ListenerWithProgressBar extends TaskListenerWithContext<CardBrowser> {
         public ListenerWithProgressBar(CardBrowser browser) {
             super(browser);
         }
@@ -1424,9 +1440,12 @@ public class CardBrowser extends NavigationDrawerActivity implements
         }
     }
 
-    /** Does not leak Card Browser. */
+    /**
+     * Does not leak Card Browser.
+     */
     private static abstract class ListenerWithProgressBarCloseOnFalse extends ListenerWithProgressBar {
         private final String mTimber;
+
         public ListenerWithProgressBarCloseOnFalse(String timber, CardBrowser browser) {
             super(browser);
             mTimber = timber;
@@ -1434,7 +1453,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
         public ListenerWithProgressBarCloseOnFalse(CardBrowser browser) {
             this(null, browser);
-		}
+        }
 
         public void actualOnPostExecute(@NonNull CardBrowser browser, TaskData result) {
             if (mTimber != null) {
@@ -1451,7 +1470,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
     }
 
     /**
-     * @param cards Cards that were changed
+     * @param cards           Cards that were changed
      * @param updatedCardTags Mapping note id -> updated tags
      */
     private void updateCardsInList(List<Card> cards, Map<Long, String> updatedCardTags) {
@@ -1488,11 +1507,14 @@ public class CardBrowser extends NavigationDrawerActivity implements
         protected void actualOnValidPostExecute(CardBrowser browser, TaskData result) {
             browser.hideProgressBar();
         }
-    };
+    }
+
+    ;
 
     private ChangeDeckHandler changeDeckHandler() {
         return new ChangeDeckHandler(this);
     }
+
     private static class ChangeDeckHandler extends ListenerWithProgressBarCloseOnFalse {
         public ChangeDeckHandler(CardBrowser browser) {
             super("Card Browser - changeDeckHandler.actualOnPostExecute(CardBrowser browser)", browser);
@@ -1521,7 +1543,9 @@ public class CardBrowser extends NavigationDrawerActivity implements
                 }
             }, browser.mCardsListView, null);
         }
-    };
+    }
+
+    ;
 
     @CheckResult
     private static String formatQA(String text, Context context) {
@@ -1531,7 +1555,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
 
     /**
-     * @param txt The text to strip HTML, comments, tags and media from
+     * @param txt           The text to strip HTML, comments, tags and media from
      * @param showFileNames Whether [sound:foo.mp3] should be rendered as " foo.mp3 " or  " "
      * @return The formatted string
      */
@@ -1565,6 +1589,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
     /**
      * Removes cards from view. Doesn't delete them in model (database).
+     *
      * @param reorderCards Whether to rearrange the positions of checked items (DEFECT: Currently deselects all)
      */
     private void removeNotesView(java.util.Collection<Long> cardsIds, boolean reorderCards) {
@@ -1583,7 +1608,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
         List<CardCache> newMCards = new ArrayList<>();
         int pos = 0;
-        for (CardCache card: oldMCards) {
+        for (CardCache card : oldMCards) {
             if (!idToRemove.contains(card.getId())) {
                 newMCards.add(new CardCache(card, pos++));
             }
@@ -1604,6 +1629,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
     private SuspendCardHandler suspendCardHandler() {
         return new SuspendCardHandler(this);
     }
+
     private static class SuspendCardHandler extends ListenerWithProgressBarCloseOnFalse {
         public SuspendCardHandler(CardBrowser browser) {
             super(browser);
@@ -1616,16 +1642,26 @@ public class CardBrowser extends NavigationDrawerActivity implements
             browser.hideProgressBar();
             browser.invalidateOptionsMenu();    // maybe the availability of undo changed
         }
-    };
+    }
 
-    private FlagCardHandler flagCardHandler(){
+    ;
+
+    private FlagCardHandler flagCardHandler() {
         return new FlagCardHandler(this);
     }
-    private static class FlagCardHandler extends SuspendCardHandler{public FlagCardHandler(CardBrowser browser) {super(browser);}};
+
+    private static class FlagCardHandler extends SuspendCardHandler {
+        public FlagCardHandler(CardBrowser browser) {
+            super(browser);
+        }
+    }
+
+    ;
 
     private MarkCardHandler markCardHandler() {
         return new MarkCardHandler(this);
     }
+
     private static class MarkCardHandler extends ListenerWithProgressBarCloseOnFalse {
         public MarkCardHandler(CardBrowser browser) {
             super(browser);
@@ -1638,9 +1674,12 @@ public class CardBrowser extends NavigationDrawerActivity implements
             browser.hideProgressBar();
             browser.invalidateOptionsMenu();    // maybe the availability of undo changed
         }
-    };
+    }
+
+    ;
 
     private DeleteNoteHandler mDeleteNoteHandler = new DeleteNoteHandler(this);
+
     private static class DeleteNoteHandler extends ListenerWithProgressBarCloseOnFalse {
         public DeleteNoteHandler(CardBrowser browser) {
             super(browser);
@@ -1674,9 +1713,12 @@ public class CardBrowser extends NavigationDrawerActivity implements
             }, browser.mCardsListView, null);
             browser.searchCards();
         }
-    };
+    }
+
+    ;
 
     private final UndoHandler mUndoHandler = new UndoHandler(this);
+
     private static class UndoHandler extends ListenerWithProgressBarCloseOnFalse {
         public UndoHandler(CardBrowser browser) {
             super(browser);
@@ -1693,9 +1735,12 @@ public class CardBrowser extends NavigationDrawerActivity implements
             browser.updatePreviewMenuItem();
             browser.invalidateOptionsMenu();    // maybe the availability of undo changed
         }
-    };
+    }
+
+    ;
 
     private final SearchCardsHandler mSearchCardsHandler = new SearchCardsHandler(this);
+
     private class SearchCardsHandler extends ListenerWithProgressBar {
         public SearchCardsHandler(CardBrowser browser) {
             super(browser);
@@ -1716,7 +1761,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
         private void handleSearchResult() {
             Timber.i("CardBrowser:: Completed doInBackgroundSearchCards Successfully");
             updateList();
-            
+
             if ((mSearchView == null) || mSearchView.isIconified()) {
                 return;
             }
@@ -1749,7 +1794,9 @@ public class CardBrowser extends NavigationDrawerActivity implements
             super.actualOnCancelled(browser);
             hideProgressBar();
         }
-    };
+    }
+
+    ;
 
     public boolean hasSelectedAllDecks() {
         Long lastDeckId = getLastDeckId();
@@ -1784,7 +1831,8 @@ public class CardBrowser extends NavigationDrawerActivity implements
     }
 
     private final RenderQAHandler mRenderQAHandler = new RenderQAHandler(this);
-    private static class RenderQAHandler extends TaskListenerWithContext<CardBrowser>{
+
+    private static class RenderQAHandler extends TaskListenerWithContext<CardBrowser> {
         public RenderQAHandler(CardBrowser browser) {
             super(browser);
         }
@@ -1832,9 +1880,12 @@ public class CardBrowser extends NavigationDrawerActivity implements
         public void actualOnCancelled(@NonNull CardBrowser browser) {
             browser.hideProgressBar();
         }
-    };
+    }
+
+    ;
 
     private final CheckSelectedCardsHandler mCheckSelectedCardsHandler = new CheckSelectedCardsHandler(this);
+
     private static class CheckSelectedCardsHandler extends ListenerWithProgressBar {
         public CheckSelectedCardsHandler(CardBrowser browser) {
             super(browser);
@@ -1913,7 +1964,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
                 if (!firstLoaded || !lastLoaded) {
                     showProgressBar();
                     // Also start rendering the items on the screen every 300ms while scrolling
-                    long currentTime = SystemClock.elapsedRealtime ();
+                    long currentTime = SystemClock.elapsedRealtime();
                     if ((currentTime - mLastRenderStart > 300 || lastVisibleItem >= totalItemCount)) {
                         mLastRenderStart = currentTime;
                         CollectionTask.cancelAllTasks(RENDER_BROWSER_QA);
@@ -1995,7 +2046,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             // setup checkbox to change color in multi-select mode
             final CheckBox checkBox = (CheckBox) v.findViewById(R.id.card_checkbox);
             // if in multi-select mode, be sure to show the checkboxes
-            if(mInMultiSelectMode) {
+            if (mInMultiSelectMode) {
                 checkBox.setVisibility(View.VISIBLE);
                 if (mCheckedCards.contains(card)) {
                     checkBox.setChecked(true);
@@ -2076,7 +2127,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             mCheckedCards.remove(card);
         }
 
-       onSelectionChanged();
+        onSelectionChanged();
     }
 
     private void onSelectAll() {
@@ -2153,7 +2204,9 @@ public class CardBrowser extends NavigationDrawerActivity implements
             return mPosition;
         }
 
-        /** clear all values except ID.*/
+        /**
+         * clear all values except ID.
+         */
         public void reload() {
             super.reload();
             mLoaded = false;
@@ -2162,6 +2215,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
         /**
          * Get the background color of items in the card list based on the Card
+         *
          * @return index into TypedArray specifying the background color
          */
         private int getColor() {
@@ -2190,74 +2244,76 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
         public String getColumnHeaderText(Column key) {
             switch (key) {
-            case FLAGS:
-                return (new Integer(getCard().userFlag())).toString();
-            case SUSPENDED:
-                return getCard().getQueue() == Consts.QUEUE_TYPE_SUSPENDED ? "True": "False";
-            case MARKED:
-                return getCard().note().hasTag("marked") ? "marked" : null;
-            case SFLD:
-                return getCard().note().getSFld();
-            case DECK:
-                return getCol().getDecks().name(getCard().getDid());
-            case TAGS:
-                return getCard().note().stringTags();
-            case CARD:
-                return getCard().template().optString("name");
-            case DUE:
-                return getCard().getDueString();
-            case EASE:
-                if (getCard().getType() == Consts.CARD_TYPE_NEW) {
-                    return AnkiDroidApp.getInstance().getString(R.string.card_browser_ease_new_card);
-                } else {
-                    return (getCard().getFactor()/10)+"%";
-                }
-            case CHANGED:
-                return LanguageUtil.getShortDateFormatFromS(getCard().getMod());
-            case CREATED:
-                return LanguageUtil.getShortDateFormatFromMs(getCard().note().getId());
-            case EDITED:
-                return LanguageUtil.getShortDateFormatFromS(getCard().note().getMod());
-            case INTERVAL:
-                switch (getCard().getType()) {
-                case Consts.CARD_TYPE_NEW:
-                    return AnkiDroidApp.getInstance().getString(R.string.card_browser_interval_new_card);
-                case Consts.CARD_TYPE_LRN :
-                    return AnkiDroidApp.getInstance().getString(R.string.card_browser_interval_learning_card);
+                case FLAGS:
+                    return (new Integer(getCard().userFlag())).toString();
+                case SUSPENDED:
+                    return getCard().getQueue() == Consts.QUEUE_TYPE_SUSPENDED ? "True" : "False";
+                case MARKED:
+                    return getCard().note().hasTag("marked") ? "marked" : null;
+                case SFLD:
+                    return getCard().note().getSFld();
+                case DECK:
+                    return getCol().getDecks().name(getCard().getDid());
+                case TAGS:
+                    return getCard().note().stringTags();
+                case CARD:
+                    return getCard().template().optString("name");
+                case DUE:
+                    return getCard().getDueString();
+                case EASE:
+                    if (getCard().getType() == Consts.CARD_TYPE_NEW) {
+                        return AnkiDroidApp.getInstance().getString(R.string.card_browser_ease_new_card);
+                    } else {
+                        return (getCard().getFactor() / 10) + "%";
+                    }
+                case CHANGED:
+                    return LanguageUtil.getShortDateFormatFromS(getCard().getMod());
+                case CREATED:
+                    return LanguageUtil.getShortDateFormatFromMs(getCard().note().getId());
+                case EDITED:
+                    return LanguageUtil.getShortDateFormatFromS(getCard().note().getMod());
+                case INTERVAL:
+                    switch (getCard().getType()) {
+                        case Consts.CARD_TYPE_NEW:
+                            return AnkiDroidApp.getInstance().getString(R.string.card_browser_interval_new_card);
+                        case Consts.CARD_TYPE_LRN:
+                            return AnkiDroidApp.getInstance().getString(R.string.card_browser_interval_learning_card);
+                        default:
+                            return Utils.roundedTimeSpanUnformatted(AnkiDroidApp.getInstance(), getCard().getIvl() * SECONDS_PER_DAY);
+                    }
+                case LAPSES:
+                    return Integer.toString(getCard().getLapses());
+                case NOTE_TYPE:
+                    return getCard().model().optString("name");
+                case REVIEWS:
+                    return Integer.toString(getCard().getReps());
+                case QUESTION:
+                    updateSearchItemQA();
+                    return mQa.first;
+                case ANSWER:
+                    updateSearchItemQA();
+                    return mQa.second;
                 default:
-                    return Utils.roundedTimeSpanUnformatted(AnkiDroidApp.getInstance(), getCard().getIvl()*SECONDS_PER_DAY);
-                }
-            case LAPSES:
-                return Integer.toString(getCard().getLapses());
-            case NOTE_TYPE:
-                return getCard().model().optString("name");
-            case REVIEWS:
-                return Integer.toString(getCard().getReps());
-            case QUESTION:
-                updateSearchItemQA();
-                return mQa.first;
-            case ANSWER:
-                updateSearchItemQA();
-                return mQa.second;
-            default:
-                return null;
+                    return null;
             }
         }
 
-        /** pre compute the note and question/answer.  It can safely
-            be called twice without doing extra work. */
+        /**
+         * pre compute the note and question/answer.  It can safely
+         * be called twice without doing extra work.
+         */
         public void load(boolean reload, int column1Index, int column2Index) {
             if (reload) {
                 reload();
             }
             getCard().note();
             if (
-                COLUMN1_KEYS[column1Index] == QUESTION ||
-                COLUMN2_KEYS[column2Index] == QUESTION ||
-                COLUMN2_KEYS[column2Index] == ANSWER
+                    COLUMN1_KEYS[column1Index] == QUESTION ||
+                            COLUMN2_KEYS[column2Index] == QUESTION ||
+                            COLUMN2_KEYS[column2Index] == ANSWER
                 // First column can not be the answer. If it were to
                 // change, this code should also be changed.
-                ) {
+            ) {
                 updateSearchItemQA();
             }
             mLoaded = true;
@@ -2268,10 +2324,10 @@ public class CardBrowser extends NavigationDrawerActivity implements
         }
 
         /**
-           Reload question and answer. Use browser format. If it's empty
-           uses non-browser format. If answer starts by question, remove
-           question.
-        */
+         * Reload question and answer. Use browser format. If it's empty
+         * uses non-browser format. If answer starts by question, remove
+         * question.
+         */
         public void updateSearchItemQA() {
             if (mQa != null) {
                 return;
@@ -2412,7 +2468,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-     boolean isShowingSelectAll() {
+    boolean isShowingSelectAll() {
         return mActionBarMenu != null && mActionBarMenu.findItem(R.id.action_select_all).isVisible();
     }
 
@@ -2431,7 +2487,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     void rerenderAllCards() {
         CollectionTask.launchCollectionTask(RENDER_BROWSER_QA, mRenderQAHandler,
-                new TaskData(new Object[]{getCards(), 0, mCards.size()-1, mColumn1Index, mColumn2Index}));
+                new TaskData(new Object[]{getCards(), 0, mCards.size() - 1, mColumn1Index, mColumn2Index}));
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
@@ -2486,7 +2542,8 @@ public class CardBrowser extends NavigationDrawerActivity implements
         return cardIds;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE) //should only be called from changeDeck()
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+        //should only be called from changeDeck()
     void executeChangeCollectionTask(long[] ids, long newDid) {
         mNewDid = newDid; //line required for unit tests, not necessary, but a noop in regular call.
         CollectionTask.launchCollectionTask(DISMISS_MULTI, new ChangeDeckHandler(this),

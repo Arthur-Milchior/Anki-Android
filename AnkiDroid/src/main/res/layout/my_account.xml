@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:fitsSystemWindows="true">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <include layout="@layout/toolbar"/>
+
+        <include layout="@layout/toolbar" />
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -24,8 +26,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="15dp"
-                android:gravity="center"
-                >
+                android:gravity="center">
                 <!-- TODO JS choose a standardized padding to use here -->
 
 
@@ -51,7 +52,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textNoSuggestions|textEmailAddress"
-                        android:layout_margin="@dimen/content_vertical_padding"/>
+                        android:layout_margin="@dimen/content_vertical_padding" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -66,7 +67,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPassword"
-                        android:layout_margin="@dimen/content_vertical_padding"/>
+                        android:layout_margin="@dimen/content_vertical_padding" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Button
@@ -80,7 +81,7 @@
                     android:padding="10dp"
                     android:text="@string/log_in"
                     android:paddingTop="30dp"
-                    android:layout_margin="@dimen/content_vertical_padding"/>
+                    android:layout_margin="@dimen/content_vertical_padding" />
                 <!-- TODO better text size ^^ -->
 
 
@@ -95,8 +96,7 @@
                     android:padding="10dp"
                     android:layout_gravity="center"
                     android:text="@string/reset_password"
-                    android:layout_margin="@dimen/content_vertical_padding"
-                    />
+                    android:layout_margin="@dimen/content_vertical_padding" />
 
             </LinearLayout>
 
@@ -106,8 +106,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:padding="3dp"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
             <!-- TODO move padding to dimen, when finalized -->
 
             <TextView
@@ -117,7 +116,8 @@
                 android:text="@string/sign_up_description"
                 android:layout_gravity="center"
                 android:textSize="@dimen/abc_text_size_button_material"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
+
             <TextView
                 android:id="@+id/no_account_not_affiliated"
                 android:layout_width="wrap_content"
@@ -125,7 +125,7 @@
                 android:text="@string/sign_up_not_affiliated"
                 android:layout_gravity="center"
                 android:textSize="@dimen/abc_text_size_button_material"
-                android:textStyle="italic"/>
+                android:textStyle="italic" />
 
             <Button
                 android:id="@+id/sign_up_button"

@@ -3,7 +3,9 @@ package com.ichi2.utils;
 
 import androidx.annotation.NonNull;
 
-/** TODO: Move this to standard library in API 24 */
+/**
+ * TODO: Move this to standard library in API 24
+ */
 public final class FunctionalInterfaces {
 
     @FunctionalInterface

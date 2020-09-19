@@ -43,12 +43,13 @@ import static org.junit.Assert.assertTrue;
 @RunWith(androidx.test.ext.junit.runners.AndroidJUnit4.class)
 public class ACRATest {
 
-    @Rule public GrantPermissionRule mRuntimePermissionRule =
+    @Rule
+    public GrantPermissionRule mRuntimePermissionRule =
             GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
     private AnkiDroidApp mApp = null;
 
-    private String[] debugLogcatArguments = { "-t", "300", "-v", "long", "ACRA:S"};
+    private String[] debugLogcatArguments = {"-t", "300", "-v", "long", "ACRA:S"};
     //private String[] prodLogcatArguments = { "-t", "100", "-v", "time", "ActivityManager:I", "SQLiteLog:W", AnkiDroidApp.TAG + ":D", "*:S" };
 
 
@@ -65,9 +66,9 @@ public class ACRATest {
     /**
      * helper method to invoke private method to set acra config builder
      *
-     * @param mode either Debug or Production, used to construct method name to invoke
+     * @param mode  either Debug or Production, used to construct method name to invoke
      * @param prefs the preferences to use during method invocation
-     * @exception NoSuchFieldException if the method isn't found, possibly IllegalAccess or InvocationAccess as well
+     * @throws NoSuchFieldException if the method isn't found, possibly IllegalAccess or InvocationAccess as well
      */
     private void setAcraConfig(String mode, SharedPreferences prefs) throws Exception {
         Method method = mApp.getClass().getDeclaredMethod("set" + mode + "ACRAConfig", SharedPreferences.class);
@@ -136,8 +137,8 @@ public class ACRATest {
 
         // The same class/method combo is only sent once, so we face a new method each time (should test that system later)
         Exception crash = new Exception("testCrashReportSend at " + System.currentTimeMillis());
-        StackTraceElement[] trace = new StackTraceElement[] {
-                new StackTraceElement("Class", "Method" + (int)System.currentTimeMillis(), "File", (int)System.currentTimeMillis())
+        StackTraceElement[] trace = new StackTraceElement[]{
+                new StackTraceElement("Class", "Method" + (int) System.currentTimeMillis(), "File", (int) System.currentTimeMillis())
         };
         crash.setStackTrace(trace);
 
@@ -252,7 +253,7 @@ public class ACRATest {
 
             if (configuration.getClass().toString().contains("Toast")) {
                 assertEquals(mApp.getResources().getString(res),
-                        ((ToastConfiguration)configuration).text());
+                        ((ToastConfiguration) configuration).text());
                 assertTrue("Toast should be enabled", configuration.enabled());
             }
         }

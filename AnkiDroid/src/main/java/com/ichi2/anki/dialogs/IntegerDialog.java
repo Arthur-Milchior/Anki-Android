@@ -1,4 +1,3 @@
-
 package com.ichi2.anki.dialogs;
 
 import android.os.Bundle;
@@ -34,7 +33,8 @@ public class IntegerDialog extends AnalyticsDialogFragment {
     }
 
     @Override
-    public @NonNull MaterialDialog onCreateDialog(Bundle savedInstanceState) {
+    public @NonNull
+    MaterialDialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity())
                 .title(getArguments().getString("title"))
@@ -52,4 +52,4 @@ public class IntegerDialog extends AnalyticsDialogFragment {
         }
         return builder.show();
     }
-    }
+}

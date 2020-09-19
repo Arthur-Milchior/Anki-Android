@@ -93,10 +93,12 @@ import java.util.TreeMap;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+
 import timber.log.Timber;
 
 interface PreferenceContext {
     void addPreferencesFromResource(int preferencesResId);
+
     PreferenceScreen getPreferenceScreen();
 }
 
@@ -105,7 +107,9 @@ interface PreferenceContext {
  */
 public class Preferences extends AppCompatPreferenceActivity implements PreferenceContext, OnSharedPreferenceChangeListener {
 
-    /** Key of the language preference */
+    /**
+     * Key of the language preference
+     */
     public static final String LANGUAGE = "language";
 
     /* Only enable AnkiDroid notifications unrelated to due reminders */
@@ -113,12 +117,13 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
 
     // Other variables
     private final HashMap<String, String> mOriginalSumarries = new HashMap<>();
-    private static final String [] sCollectionPreferences = {"showEstimates", "showProgress",
+    private static final String[] sCollectionPreferences = {"showEstimates", "showProgress",
             "learnCutoff", "timeLimit", "useCurrent", "newSpread", "dayOffset", "schedVer"};
 
     private static final int RESULT_LOAD_IMG = 111;
     private CheckBoxPreference backgroundImage;
     private static long fileLength;
+
     // ----------------------------------------------------------------------------
     // Overridden methods
     // ----------------------------------------------------------------------------
@@ -143,8 +148,8 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
         loadHeadersFromResource(R.xml.preference_headers, target);
         Iterator iterator = target.iterator();
         while (iterator.hasNext()) {
-            Header header = (Header)iterator.next();
-            if ((header.titleRes == R.string.pref_cat_advanced) && AdaptionUtil.isRestrictedLearningDevice()){
+            Header header = (Header) iterator.next();
+            if ((header.titleRes == R.string.pref_cat_advanced) && AdaptionUtil.isRestrictedLearningDevice()) {
                 iterator.remove();
             }
         }
@@ -186,6 +191,7 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
         i.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true);
         return i;
     }
+
     private void initSubscreen(String action, PreferenceContext listener) {
         PreferenceScreen screen;
         switch (action) {
@@ -235,16 +241,16 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
                 backgroundImage.setOnPreferenceClickListener(preference -> {
                     if (backgroundImage.isChecked()) {
                         try {
-                            Intent galleryIntent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                             startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
                             backgroundImage.setChecked(true);
                         } catch (Exception ex) {
-                            Timber.e("%s",ex.getLocalizedMessage());
+                            Timber.e("%s", ex.getLocalizedMessage());
                         }
                     } else {
                         backgroundImage.setChecked(false);
                         String currentAnkiDroidDirectory = CollectionHelper.getCurrentAnkiDroidDirectory(this);
-                        File imgFile = new File(currentAnkiDroidDirectory, "DeckPickerBackground.png" );
+                        File imgFile = new File(currentAnkiDroidDirectory, "DeckPickerBackground.png");
                         if (imgFile.exists()) {
                             if (imgFile.delete()) {
                                 UIUtils.showThemedToast(this, getString(R.string.background_image_removed), false);
@@ -364,7 +370,7 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
                     screen.addPreference(lockDbPreference);
                 }
                 // Force full sync option
-                ConfirmationPreference fullSyncPreference = (ConfirmationPreference)screen.findPreference("force_full_sync");
+                ConfirmationPreference fullSyncPreference = (ConfirmationPreference) screen.findPreference("force_full_sync");
                 fullSyncPreference.setDialogMessage(R.string.force_full_sync_summary);
                 fullSyncPreference.setDialogTitle(R.string.force_full_sync_title);
                 fullSyncPreference.setOkHandler(() -> {
@@ -389,7 +395,7 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
                 syncUrlPreference.setOnPreferenceChangeListener((Preference preference, Object newValue) -> {
                     String newUrl = newValue.toString();
                     if (!URLUtil.isValidUrl(newUrl)) {
-                         new AlertDialog.Builder(this)
+                        new AlertDialog.Builder(this)
                                 .setTitle(R.string.custom_sync_server_base_url_invalid)
                                 .setPositiveButton(R.string.dialog_ok, null)
                                 .show();
@@ -440,7 +446,7 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
             if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK && null != data) {
                 Cursor cursor = null;
                 Uri selectedImage = data.getData();
-                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
                 try {
                     cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
                     cursor.moveToFirst();
@@ -524,7 +530,6 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
     }
 
 
-
     private void initPreference(Preference pref) {
         // Load stored values from Preferences which are stored in the Collection
         if (Arrays.asList(sCollectionPreferences).contains(pref.getKey())) {
@@ -534,29 +539,29 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
                     JSONObject conf = col.getConf();
                     switch (pref.getKey()) {
                         case "showEstimates":
-                            ((CheckBoxPreference)pref).setChecked(conf.getBoolean("estTimes"));
+                            ((CheckBoxPreference) pref).setChecked(conf.getBoolean("estTimes"));
                             break;
                         case "showProgress":
-                            ((CheckBoxPreference)pref).setChecked(conf.getBoolean("dueCounts"));
+                            ((CheckBoxPreference) pref).setChecked(conf.getBoolean("dueCounts"));
                             break;
                         case "learnCutoff":
-                            ((NumberRangePreference)pref).setValue(conf.getInt("collapseTime") / 60);
+                            ((NumberRangePreference) pref).setValue(conf.getInt("collapseTime") / 60);
                             break;
                         case "timeLimit":
-                            ((NumberRangePreference)pref).setValue(conf.getInt("timeLim") / 60);
+                            ((NumberRangePreference) pref).setValue(conf.getInt("timeLim") / 60);
                             break;
                         case "useCurrent":
-                            ((ListPreference)pref).setValueIndex(conf.optBoolean("addToCur", true) ? 0 : 1);
+                            ((ListPreference) pref).setValueIndex(conf.optBoolean("addToCur", true) ? 0 : 1);
                             break;
                         case "newSpread":
-                            ((ListPreference)pref).setValueIndex(conf.getInt("newSpread"));
+                            ((ListPreference) pref).setValueIndex(conf.getInt("newSpread"));
                             break;
                         case "dayOffset":
                             Calendar calendar = col.crtGregorianCalendar();
-                            ((SeekBarPreference)pref).setValue(calendar.get(Calendar.HOUR_OF_DAY));
+                            ((SeekBarPreference) pref).setValue(calendar.get(Calendar.HOUR_OF_DAY));
                             break;
                         case "schedVer":
-                            ((CheckBoxPreference)pref).setChecked(conf.optInt("schedVer", 1) == 2);
+                            ((CheckBoxPreference) pref).setChecked(conf.optInt("schedVer", 1) == 2);
                     }
                 } catch (NumberFormatException e) {
                     throw new RuntimeException(e);
@@ -578,8 +583,9 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
 
     /**
      * Code which is run when a SharedPreference change has been detected
-     * @param prefs instance of SharedPreferences
-     * @param key key in prefs which is being updated
+     *
+     * @param prefs    instance of SharedPreferences
+     * @param key      key in prefs which is being updated
      * @param listener PreferenceActivity of PreferenceFragment which is hosting the preference
      */
     @SuppressWarnings("deprecation") // Tracked as #5019 on github - convert to fragments
@@ -682,7 +688,7 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
                     PackageManager pm = getPackageManager();
                     int state;
                     if (((CheckBoxPreference) pref).isChecked()) {
-                         state = PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+                        state = PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
                         Timber.i("AnkiDroid ContentProvider enabled by user");
                     } else {
                         state = PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
@@ -799,7 +805,7 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
         // Get value text
         String value;
         try {
-            if (pref instanceof  NumberRangePreference) {
+            if (pref instanceof NumberRangePreference) {
                 value = Integer.toString(((NumberRangePreference) pref).getValue());
             } else if (pref instanceof SeekBarPreference) {
                 value = Integer.toString(((SeekBarPreference) pref).getValue());
@@ -841,7 +847,7 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
         try {
             Double.parseDouble(value);
             return replaceString(str, value);
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             return value;
         }
     }
@@ -897,7 +903,9 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
     }
 
 
-    /** Initializes the list of custom fonts shown in the preferences. */
+    /**
+     * Initializes the list of custom fonts shown in the preferences.
+     */
     private void initializeCustomFontsDialog(PreferenceScreen screen) {
         ListPreference defaultFontPreference = (ListPreference) screen.findPreference("defaultFont");
         if (defaultFontPreference != null) {
@@ -910,7 +918,9 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
     }
 
 
-    /** Returns a list of the names of the installed custom fonts. */
+    /**
+     * Returns a list of the names of the installed custom fonts.
+     */
     private String[] getCustomFonts(String defaultValue) {
         return getCustomFonts(defaultValue, false);
     }
@@ -940,13 +950,15 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
     private void closePreferences() {
         finish();
         ActivityTransitionAnimation.slide(this, ActivityTransitionAnimation.FADE);
-        if (getCol() != null && getCol().getDb()!= null) {
+        if (getCol() != null && getCol().getDb() != null) {
             getCol().save();
         }
     }
 
 
-    /** This is not fit for purpose (other than testing a single screen) */
+    /**
+     * This is not fit for purpose (other than testing a single screen)
+     */
     @NonNull
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public Set<String> getLoadedPreferenceKeys() {

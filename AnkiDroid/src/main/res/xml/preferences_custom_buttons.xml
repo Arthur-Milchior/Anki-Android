@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 ~ Copyright (c) 2016 Aron Freidle <aron.freidle@gmail.com>
 ~
 ~ This program is free software; you can redistribute it and/or modify it under
@@ -26,7 +25,7 @@ MENU_DISABLED = 3
     <Preference
         android:key="reset_custom_buttons"
         android:title="@string/reset_custom_buttons" />
-    <PreferenceCategory android:title="@string/deck_conf_general" >
+    <PreferenceCategory android:title="@string/deck_conf_general">
         <ListPreference
             android:defaultValue="2"
             android:entries="@array/custom_button_labels"
@@ -94,7 +93,7 @@ MENU_DISABLED = 3
             android:key="customButtonToggleMicToolBar"
             android:title="@string/menu_toggle_mic_tool_bar" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/menu_dismiss_note" >
+    <PreferenceCategory android:title="@string/menu_dismiss_note">
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/custom_button_labels"
@@ -114,7 +113,7 @@ MENU_DISABLED = 3
             android:key="customButtonDelete"
             android:title="@string/menu_delete_note" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_cat_whiteboard" >
+    <PreferenceCategory android:title="@string/pref_cat_whiteboard">
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/custom_button_labels"

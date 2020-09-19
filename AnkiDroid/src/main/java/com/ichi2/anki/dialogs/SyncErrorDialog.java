@@ -1,4 +1,3 @@
-
 package com.ichi2.anki.dialogs;
 
 import android.os.Bundle;
@@ -21,20 +20,27 @@ public class SyncErrorDialog extends AsyncDialogFragment {
 
     public interface SyncErrorDialogListener {
         void showSyncErrorDialog(int dialogType);
+
         void showSyncErrorDialog(int dialogType, String message);
+
         void loginToSyncServer();
+
         void sync();
+
         void sync(String conflict);
+
         Collection getCol();
+
         void mediaCheck();
+
         void dismissAllDialogFragments();
     }
 
 
     /**
      * A set of dialogs belonging to AnkiActivity which deal with sync problems
-     * 
-     * @param dialogType An integer which specifies which of the sub-dialogs to show
+     *
+     * @param dialogType    An integer which specifies which of the sub-dialogs to show
      * @param dialogMessage A string which can be optionally used to set the dialog message
      */
     public static SyncErrorDialog newInstance(int dialogType, String dialogMessage) {
@@ -173,7 +179,7 @@ public class SyncErrorDialog extends AsyncDialogFragment {
 
     /**
      * Get the title which is shown in notification bar when dialog fragment can't be shown
-     * 
+     *
      * @return tile to be shown in notification in bar
      */
     @Override
@@ -211,7 +217,7 @@ public class SyncErrorDialog extends AsyncDialogFragment {
 
     /**
      * Get the message which is shown in notification bar when dialog fragment can't be shown
-     * 
+     *
      * @return message to be shown in notification in bar
      */
     @Override

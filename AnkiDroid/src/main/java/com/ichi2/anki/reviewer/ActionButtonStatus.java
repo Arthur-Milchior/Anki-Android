@@ -14,6 +14,7 @@ import java.util.Map;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import timber.log.Timber;
 
 @SuppressWarnings("ConstantConditions") //loads of unboxing issues, which are safe
@@ -30,7 +31,8 @@ public class ActionButtonStatus {
     public static final int SHOW_AS_ACTION_ALWAYS = MenuItem.SHOW_AS_ACTION_ALWAYS;
     public static final int MENU_DISABLED = 3;
 
-    public @Nullable Integer getByMenuResourceId(int resourceId) {
+    public @Nullable
+    Integer getByMenuResourceId(int resourceId) {
         if (!mCustomButtons.containsKey(resourceId)) {
             Timber.w("Invalid resource lookup: %d", resourceId);
             return SHOW_AS_ACTION_NEVER;
@@ -73,7 +75,7 @@ public class ActionButtonStatus {
 
 
     public void setCustomButtons(Menu menu) {
-        for(int itemId : mCustomButtons.keySet()) {
+        for (int itemId : mCustomButtons.keySet()) {
             if (mCustomButtons.get(itemId) != MENU_DISABLED) {
                 MenuItem item = menu.findItem(itemId);
                 item.setShowAsAction(mCustomButtons.get(itemId));

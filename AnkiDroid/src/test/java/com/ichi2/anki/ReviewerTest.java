@@ -1,4 +1,3 @@
-
 package com.ichi2.anki;
 
 import android.content.Intent;
@@ -36,10 +35,12 @@ import java.util.List;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
+
 import java.util.List;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import timber.log.Timber;
 
 import static com.ichi2.anki.AbstractFlashcardViewer.EASE_2;
@@ -65,7 +66,7 @@ public class ReviewerTest extends RobolectricTest {
     @ParameterizedRobolectricTestRunner.Parameters(name = "SchedV{0}")
     public static java.util.Collection<Object[]> initParameters() {
         // This does one run with schedVersion injected as 1, and one run as 2
-        return Arrays.asList(new Object[][] { { 1 }, { 2 } });
+        return Arrays.asList(new Object[][]{{1}, {2}});
     }
 
     @Before
@@ -178,7 +179,7 @@ public class ReviewerTest extends RobolectricTest {
 
         SharedPreferences preferences = AnkiDroidApp.getSharedPrefs(getTargetContext());
 
-        SharedPreferences.Editor e =  preferences.edit();
+        SharedPreferences.Editor e = preferences.edit();
         for (String k : keys) {
             e.putString(k, Integer.toString(ActionButtonStatus.MENU_DISABLED));
         }
@@ -191,7 +192,7 @@ public class ReviewerTest extends RobolectricTest {
         Collection col = getCol();
         JSONObject nw = col.getDecks().confForDid(1).getJSONObject("new");
         MockTime time = getCollectionTime();
-        nw.put("delays", new JSONArray(new int[] {1, 10, 60, 120}));
+        nw.put("delays", new JSONArray(new int[]{1, 10, 60, 120}));
 
         waitForAsyncTasksToComplete();
 
@@ -199,7 +200,7 @@ public class ReviewerTest extends RobolectricTest {
 
         waitForAsyncTasksToComplete();
 
-        assertCounts(reviewer,3, 0, 0);
+        assertCounts(reviewer, 3, 0, 0);
 
         answerCardOrdinalAsGood(reviewer, 1); // card 1 is shown
         time.addM(3); // card get scheduler in [10, 12.5] minutes
@@ -347,8 +348,8 @@ public class ReviewerTest extends RobolectricTest {
             HashSet<Integer> toSkip = new HashSet<>(Arrays.asList(doNotReturn));
 
             Menu menu = getMenu();
-            for(int i = 0; i < menu.size(); i++ ){
-                MenuItem item =  menu.getItem(i);
+            for (int i = 0; i < menu.size(); i++) {
+                MenuItem item = menu.getItem(i);
                 if (toSkip.contains(item.getItemId())) {
                     continue;
                 }

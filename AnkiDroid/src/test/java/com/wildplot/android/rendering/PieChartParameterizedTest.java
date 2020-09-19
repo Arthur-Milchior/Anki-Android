@@ -138,7 +138,7 @@ public class PieChartParameterizedTest {
 
     private static Object[] createParameters(double[] values) {
         PieChartTestParametersBuilder builder = new PieChartTestParametersBuilder(values, -90);
-        return new Object[] {
+        return new Object[]{
                 values,
                 builder.getStartAngles(),
                 builder.getArcLengths(),

@@ -20,9 +20,7 @@ public class Expression implements TreeElement {
     private TopLevelParser parser;
 
 
-
     public enum ExpressionType {EXP_PLUS_TERM, EXP_MINUS_TERM, TERM, INVALID}
-
 
 
     private ExpressionType expressionType = ExpressionType.INVALID;

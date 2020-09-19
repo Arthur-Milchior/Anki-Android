@@ -108,7 +108,7 @@
                 <TextView
                     android:id="@+id/ease1"
                     android:text="@string/ease_button_again"
-                    style="@style/AgainButtonEaseStyle"/>
+                    style="@style/AgainButtonEaseStyle" />
             </LinearLayout>
 
             <LinearLayout
@@ -148,7 +148,7 @@
                 <TextView
                     android:id="@+id/ease3"
                     android:text="@string/ease_button_good"
-                    style="@style/GoodButtonEaseStyle"/>
+                    style="@style/GoodButtonEaseStyle" />
             </LinearLayout>
 
             <LinearLayout

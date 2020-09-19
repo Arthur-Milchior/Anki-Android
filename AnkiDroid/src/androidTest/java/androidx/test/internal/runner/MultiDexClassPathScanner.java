@@ -39,6 +39,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import androidx.annotation.NonNull;
+
 import timber.log.Timber;
 
 /**
@@ -64,9 +65,9 @@ class MultiDexClassPathScanner extends ClassPathScanner {
         String absolutePath = targetContext.getCacheDir().getAbsolutePath();
 
         for (String classPath : classPathEntries) {
-            for (String dexPath: extractDexFilesFromApk(classPath, absolutePath)) {
+            for (String dexPath : extractDexFilesFromApk(classPath, absolutePath)) {
                 List<String> classes = extractClassesFromDexPath(dexPath);
-                for (String name: classes) {
+                for (String name : classes) {
                     if (filter.accept(name)) {
                         ret.add(name);
                     }
@@ -81,7 +82,7 @@ class MultiDexClassPathScanner extends ClassPathScanner {
         List<String> ret = new ArrayList<>();
         try {
             DexBackedDexFile dex = DexFileFactory.loadDexFile(new File(dexPath), Opcodes.forApi(Build.VERSION.SDK_INT));
-            for (ClassDef classDef: dex.getClasses()) {
+            for (ClassDef classDef : dex.getClasses()) {
                 String typeName = extractTypeNameFromDef(classDef);
                 ret.add(typeName);
             }

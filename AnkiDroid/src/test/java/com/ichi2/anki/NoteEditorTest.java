@@ -298,17 +298,20 @@ public class NoteEditorTest extends RobolectricTest {
 
     private Model makeNoteForType(NoteType noteType) {
         switch (noteType) {
-            case BASIC: return getCol().getModels().byName("Basic");
-            case CLOZE: return getCol().getModels().byName("Cloze");
+            case BASIC:
+                return getCol().getModels().byName("Basic");
+            case CLOZE:
+                return getCol().getModels().byName("Cloze");
             case BACKTOFRONT: {
-                String name = super.addNonClozeModel("Reversed", new String[] {"Front", "Back"}, "{{Back}}", "{{Front}}");
+                String name = super.addNonClozeModel("Reversed", new String[]{"Front", "Back"}, "{{Back}}", "{{Front}}");
                 return getCol().getModels().byName(name);
             }
             case THREE_FIELD_INVALID_TEMPLATE: {
-                String name = super.addNonClozeModel("Invalid", new String[] {"Front", "Back", "Side"}, "", "");
+                String name = super.addNonClozeModel("Invalid", new String[]{"Front", "Back", "Side"}, "", "");
                 return getCol().getModels().byName(name);
             }
-            default: throw new IllegalStateException(String.format("unexpected value: %s", noteType));
+            default:
+                throw new IllegalStateException(String.format("unexpected value: %s", noteType));
         }
     }
 
@@ -366,11 +369,15 @@ public class NoteEditorTest extends RobolectricTest {
         REVIEWER
     }
 
-    /** We don't use constants here to allow for additional note types to be defined */
+    /**
+     * We don't use constants here to allow for additional note types to be defined
+     */
     private enum NoteType {
         BASIC,
         CLOZE,
-        /**Basic, but Back is on the front */
+        /**
+         * Basic, but Back is on the front
+         */
         BACKTOFRONT,
         THREE_FIELD_INVALID_TEMPLATE
     }
