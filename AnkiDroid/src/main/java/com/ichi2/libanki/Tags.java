@@ -148,9 +148,7 @@ public class Tags {
             }
         }
         HashSet<String> tagSet = new HashSet<>();
-        for (String s : split(TextUtils.join(" ", tags))) {
-            tagSet.add(s);
-        }
+        tagSet.addAll(split(TextUtils.join(" ", tags)));
         register(tagSet);
     }
 
@@ -176,9 +174,7 @@ public class Tags {
         if (children) {
             ArrayList<Long> dids = new ArrayList<>();
             dids.add(did);
-            for (long id : mCol.getDecks().children(did).values()) {
-                dids.add(id);
-            }
+            dids.addAll(mCol.getDecks().children(did).values());
             tags = mCol.getDb().queryStringList("SELECT DISTINCT n.tags FROM cards c, notes n WHERE c.nid = n.id AND c.did IN " + Utils.ids2str(Utils.collection2Array(dids)));
         } else {
             tags = mCol.getDb().queryStringList("SELECT DISTINCT n.tags FROM cards c, notes n WHERE c.nid = n.id AND c.did = ?", did);

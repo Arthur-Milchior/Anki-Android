@@ -282,9 +282,7 @@ public class Models {
     /** get all models */
     public ArrayList<Model> all() {
         ArrayList<Model> models = new ArrayList<>();
-        for (Model jsonObject : mModels.values()) {
-            models.add(jsonObject);
-        }
+        models.addAll(mModels.values());
         return models;
     }
 
