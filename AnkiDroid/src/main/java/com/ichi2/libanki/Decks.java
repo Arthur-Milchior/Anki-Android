@@ -1016,25 +1016,26 @@ public class Decks {
     }
 
 
+    public static class Node extends HashMap<Long, Node> {}
 
-    private void gather(HashMap<Long, HashMap> node, List<Long> arr) {
+    private void gather(Node node, List<Long> arr) {
         for (Long did : node.keySet()) {
-            HashMap child = node.get(did);
+            Node child = node.get(did);
             arr.add(did);
             gather(child, arr);
         }
     }
 
-    public List<Long> childDids(Long did, HashMap<Long, HashMap> childMap) {
+    public List<Long> childDids(Long did, Node childMap) {
         List<Long> arr = new ArrayList<>();
         gather(childMap.get(did), arr);
         return arr;
     }
 
 
-    public HashMap<Long, HashMap> childMap() {
+    public Node childMap() {
 
-        HashMap<Long, HashMap> childMap = new HashMap<>();
+        Node childMap = new Node();
 
         // Go through all decks, sorted by name
         ArrayList<Deck> decks = all();
@@ -1042,7 +1043,7 @@ public class Decks {
         Collections.sort(decks, DeckComparator.instance);
 
         for (Deck deck : decks) {
-            HashMap node = new HashMap();
+            Node node = new Node();
             childMap.put(deck.getLong("id"), node);
 
             List<String> parts = Arrays.asList(path(deck.getString("name")));
