@@ -210,8 +210,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     // JS api list enable/disable status
     private HashMap<String, Boolean> mJsApiListMap = new HashMap<String, Boolean>();
 
-    private boolean isInFullscreen;
-
     /**
      * Broadcast that informs us when the sd card is about to be unmounted
      */
@@ -305,9 +303,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     private int mCurrentEase;
 
     private boolean mButtonHeightSet = false;
-
-    private boolean mConfigurationChanged = false;
-    private int mShowChosenAnswerLength = 2000;
 
     /**
      * A record of the last time the "show answer" or ease buttons were pressed. We keep track
@@ -884,8 +879,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     }
 
     protected boolean isFullscreen() {
-        isInFullscreen = !getSupportActionBar().isShowing();
-        return isInFullscreen;
+        return !getSupportActionBar().isShowing();
     }
 
     @ Override
@@ -1379,7 +1373,8 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
 
         // remove chosen answer hint after a while
         mTimerHandler.removeCallbacks(removeChosenAnswerText);
-        mTimerHandler.postDelayed(removeChosenAnswerText, mShowChosenAnswerLength);
+        int showChosenAnswerLength = 2000;
+        mTimerHandler.postDelayed(removeChosenAnswerText, showChosenAnswerLength);
         mSoundPlayer.stopSounds();
         mCurrentEase = ease;
 
@@ -2203,9 +2198,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
         }
         fillFlashcard();
 
-        if (!mConfigurationChanged) {
-            playSounds(false); // Play sounds if appropriate
-        }
+        playSounds(false); // Play sounds if appropriate
     }
 
     /**

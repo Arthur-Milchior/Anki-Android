@@ -103,7 +103,6 @@ public class Models {
 
     // BEGIN SQL table entries
     private int mId;
-    private String mName = "";
     //private long mCrt = mCol.getTime().intTime();
     //private long mMod = mCol.getTime().intTime();
     //private JSONObject mConf;
@@ -1205,7 +1204,7 @@ public class Models {
      * @return the name
      */
     public String getName() {
-        return mName;
+        return "";
     }
 
 
