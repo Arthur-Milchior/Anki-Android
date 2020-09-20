@@ -141,7 +141,7 @@ public class JSONArray extends org.json.JSONArray {
         }
     }
 
-    public JSONArray(Collection copyFrom) {
+    public JSONArray(Collection<Object> copyFrom) {
         this();
         if (copyFrom != null) {
             for (Object o : copyFrom) {
