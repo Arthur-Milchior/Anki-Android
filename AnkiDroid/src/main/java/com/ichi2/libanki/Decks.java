@@ -1133,7 +1133,7 @@ public class Decks {
      * utils methods
      * **************************************
      */
-    private static HashMap<String, String> normalized = new HashMap<String, String>();
+    private static HashMap<String, String> normalized = new HashMap<>();
     public static String normalizeName(String name) {
         if (!normalized.containsKey(name)) {
             normalized.put(name, Normalizer.normalize(name, Normalizer.Form.NFC).toLowerCase());

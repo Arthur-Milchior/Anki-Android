@@ -831,7 +831,7 @@ public class AdvancedStatistics {
 
     public static class TodayStats {
 
-        private Map<Long, Integer> nLearnedPerDeckId = new HashMap<Long, Integer>();
+        private Map<Long, Integer> nLearnedPerDeckId = new HashMap<>();
 
         public TodayStats(SupportSQLiteDatabase db, long dayStartCutoff) {
 

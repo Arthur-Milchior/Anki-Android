@@ -208,7 +208,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     private static final int ankiJsErrorCodeFlagCard = 2;
 
     // JS api list enable/disable status
-    private HashMap<String, Boolean> mJsApiListMap = new HashMap<String, Boolean>();
+    private HashMap<String, Boolean> mJsApiListMap = new HashMap<>();
 
     /**
      * Broadcast that informs us when the sd card is about to be unmounted
@@ -955,7 +955,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
         super.onResume();
         resumeTimer();
         // Set the context for the Sound manager
-        mSoundPlayer.setContext(new WeakReference<Activity>(this));
+        mSoundPlayer.setContext(new WeakReference<>(this));
         // Reset the activity title
         setTitle();
         updateActionBar();
