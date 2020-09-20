@@ -2482,7 +2482,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
         List<Long> cardIds = new ArrayList<>();
         for (CardCache card : mCheckedCards) {
             long id = card.getId();
-            cardIds.add(Objects.requireNonNull(id));
+            cardIds.add(id);
         }
         return cardIds;
     }
