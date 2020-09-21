@@ -199,9 +199,8 @@ public class Collection {
 
 
     public String name() {
-        String n = (new File(mPath)).getName().replace(".anki2", "");
         // TODO:
-        return n;
+        return (new File(mPath)).getName().replace(".anki2", "");
     }
 
 
