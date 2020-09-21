@@ -1955,7 +1955,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
         }
     };
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting()
     @Nullable
     public String rewriteError(int code) {
         String msg;
