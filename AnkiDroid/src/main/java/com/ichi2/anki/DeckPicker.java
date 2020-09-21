@@ -333,7 +333,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
         }
     }
 
-    private final ImportReplaceListener importReplaceListener() {
+    private ImportReplaceListener importReplaceListener() {
         return new ImportReplaceListener(this);
     }
     private static class ImportReplaceListener extends TaskListenerWithContext<DeckPicker>{
@@ -1536,7 +1536,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
     }
 
 
-    private final MediaCheckListener mediaCheckListener() {
+    private MediaCheckListener mediaCheckListener() {
         return new MediaCheckListener(this);
     }
     private static class MediaCheckListener extends TaskListenerWithContext<DeckPicker>{
@@ -2292,7 +2292,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
     }
 
 
-    private final UpdateDeckListListener updateDeckListListener() {
+    private UpdateDeckListListener updateDeckListListener() {
         return new UpdateDeckListListener(this);
     }
     private static class UpdateDeckListListener extends TaskListenerWithContext<DeckPicker>{
@@ -2638,7 +2638,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
     /**
      * Show progress bars and rebuild deck list on completion
      */
-    private final SimpleProgressListener simpleProgressListener() {
+    private SimpleProgressListener simpleProgressListener() {
         return new SimpleProgressListener(this);
     }
     private static class SimpleProgressListener extends TaskListenerWithContext<DeckPicker>{
@@ -2710,7 +2710,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
     public void handleEmptyCards() {
         CollectionTask.launchCollectionTask(FIND_EMPTY_CARDS, handlerEmptyCardListener());
     }
-    private final HandleEmptyCardListener handlerEmptyCardListener() {
+    private HandleEmptyCardListener handlerEmptyCardListener() {
         return new HandleEmptyCardListener(this);
     }
     private static class HandleEmptyCardListener extends TaskListenerWithContext<DeckPicker> {
