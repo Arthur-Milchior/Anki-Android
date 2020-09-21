@@ -602,7 +602,7 @@ public class Sched extends SchedV2 {
      */
 
     protected int _deckRevLimit(long did) {
-        return _deckNewLimit(did, d -> _deckRevLimitSingle(d));
+        return _deckNewLimit(did, this::_deckRevLimitSingle);
     }
 
     /**
@@ -639,8 +639,8 @@ public class Sched extends SchedV2 {
 
     @Override
     protected void _resetRevCount() {
-        mRevCount = _walkingCount(d -> _deckRevLimitSingle(d),
-                                  (did, lim) -> _cntFnRev(did, lim));
+        mRevCount = _walkingCount(this::_deckRevLimitSingle,
+                this::_cntFnRev);
     }
 
 

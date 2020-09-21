@@ -71,7 +71,7 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
     private ModelEditorContextMenu mContextMenu;
     private EditText mFieldNameInput;
 
-    private Runnable mConfirmDialogCancel = () -> dismissContextMenu();
+    private Runnable mConfirmDialogCancel = this::dismissContextMenu;
 
     // ----------------------------------------------------------------------------
     // ANDROID METHODS
