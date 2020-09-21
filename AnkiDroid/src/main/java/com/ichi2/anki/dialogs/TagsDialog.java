@@ -30,7 +30,6 @@ import com.ichi2.anki.analytics.AnalyticsDialogFragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.TreeSet;
 
 public class TagsDialog extends AnalyticsDialogFragment {
