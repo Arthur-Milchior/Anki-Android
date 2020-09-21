@@ -1396,6 +1396,7 @@ public class CardContentProvider extends ContentProvider {
         return String.format(format, getClass().getSimpleName(), methodName, path, getCallingPackageSafe());
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean hasReadWritePermission() {
         if (BuildConfig.DEBUG) {    // Allow self-calling of the provider only in debug builds (e.g. for unit tests)
             return mContext.checkCallingOrSelfPermission(READ_WRITE_PERMISSION) == PackageManager.PERMISSION_GRANTED;
