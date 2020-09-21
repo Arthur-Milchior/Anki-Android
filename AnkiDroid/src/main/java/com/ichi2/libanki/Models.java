@@ -651,7 +651,7 @@ public class Models {
     }
 
     interface TransformFieldVisitor {
-        public String[] transform(String[] fields);
+        String[] transform(String[] fields);
     }
 
 

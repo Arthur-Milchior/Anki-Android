@@ -361,7 +361,7 @@ public class ReadText {
     }
 
     interface ReadTextListener{
-        public void onDone();
+        void onDone();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
