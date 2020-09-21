@@ -89,9 +89,9 @@ public class HttpSyncer {
      * Synchronization.
      */
 
-    protected String mHKey;
+    protected final String mHKey;
     protected String mSKey;
-    protected Connection mCon;
+    protected final Connection mCon;
     protected Map<String, Object> mPostVars;
     private volatile OkHttpClient mHttpClient;
     private final HostNum mHostNum;
@@ -398,7 +398,7 @@ public class HttpSyncer {
     public class ProgressByteEntity extends AbstractHttpEntity {
 
         private InputStream mInputStream;
-        private long mLength;
+        private final long mLength;
 
 
         public ProgressByteEntity(File file) {

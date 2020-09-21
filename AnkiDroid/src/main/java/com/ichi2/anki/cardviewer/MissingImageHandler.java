@@ -34,7 +34,7 @@ public class MissingImageHandler {
     private int mNumberOfMissingImages = 0;
     private boolean mHasExecuted = false;
     @NonNull
-    private Consumer<String> mOnFailure;
+    private final Consumer<String> mOnFailure;
 
 
     public MissingImageHandler(@NonNull Consumer<String> onFailure) {

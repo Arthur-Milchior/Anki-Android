@@ -291,7 +291,7 @@ public class Connection extends BaseAsyncTask<Connection.Payload, Object, Connec
         FULL_UPLOAD("upload");
 
         // Useful for path /download and /upload
-        @Nullable private String mString;
+        @Nullable private final String mString;
         ConflictResolution(String string) {
             mString = string;
         }

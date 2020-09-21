@@ -208,7 +208,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     private static final int ankiJsErrorCodeFlagCard = 2;
 
     // JS api list enable/disable status
-    private HashMap<String, Boolean> mJsApiListMap = new HashMap<>();
+    private final HashMap<String, Boolean> mJsApiListMap = new HashMap<>();
 
     /**
      * Broadcast that informs us when the sd card is about to be unmounted
@@ -340,11 +340,11 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     private String mCardContent;
     private String mBaseUrl;
 
-    private int mFadeDuration = 300;
+    private final int mFadeDuration = 300;
 
     protected AbstractSched mSched;
 
-    private Sound mSoundPlayer = new Sound();
+    private final Sound mSoundPlayer = new Sound();
 
     /** Time taken o play all medias in mSoundPlayer */
     private long mUseTimerDynamicMS;
@@ -364,7 +364,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     private ViewGroup mCardFrameParent;
 
     /** Lock to allow thread-safe regeneration of mCard */
-    private ReadWriteLock mCardLock = new ReentrantReadWriteLock();
+    private final ReadWriteLock mCardLock = new ReentrantReadWriteLock();
 
     /** whether controls are currently blocked, and how long we expect them to be */
     private ReviewerUi.ControlBlock mControlBlocked = ControlBlock.SLOW;
@@ -373,13 +373,13 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     private CardMarker mCardMarker;
 
     /** Handle providing help for "Image Not Found" */
-    private MissingImageHandler mMissingImageHandler = new MissingImageHandler(this::displayCouldNotFindImageSnackbar);
+    private final MissingImageHandler mMissingImageHandler = new MissingImageHandler(this::displayCouldNotFindImageSnackbar);
 
     // ----------------------------------------------------------------------------
     // LISTENERS
     // ----------------------------------------------------------------------------
 
-    private Handler mHandler = new Handler() {
+    private final Handler mHandler = new Handler() {
 
         @Override
         public void handleMessage(Message msg) {
@@ -411,7 +411,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
 
 
     // Handler for the "show answer" button
-    private View.OnClickListener mFlipCardListener = new View.OnClickListener() {
+    private final View.OnClickListener mFlipCardListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             Timber.i("AbstractFlashcardViewer:: Show answer button pressed");
@@ -425,7 +425,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
         }
     };
 
-    private View.OnClickListener mSelectEaseHandler = new View.OnClickListener() {
+    private final View.OnClickListener mSelectEaseHandler = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             // Ignore what is most likely an accidental double-tap.
@@ -458,7 +458,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
         }
     };
 
-    private View.OnTouchListener mGestureListener = new View.OnTouchListener() {
+    private final View.OnTouchListener mGestureListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             if (gestureDetector.onTouchEvent(event)) {
@@ -835,9 +835,9 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
         return resultBuilder.toString();
     }
 
-    private Handler mTimerHandler = new Handler();
+    private final Handler mTimerHandler = new Handler();
 
-    private Runnable removeChosenAnswerText = new Runnable() {
+    private final Runnable removeChosenAnswerText = new Runnable() {
         @Override
         public void run() {
             mChosenAnswer.setText("");
@@ -1842,9 +1842,9 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
      * Handler for the delay in auto showing question and/or answer One toggle for both question and answer, could set
      * longer delay for auto next question
      */
-    protected Handler mTimeoutHandler = new Handler();
+    protected final Handler mTimeoutHandler = new Handler();
 
-    protected Runnable mShowQuestionTask = new Runnable() {
+    protected final Runnable mShowQuestionTask = new Runnable() {
         @Override
         public void run() {
             // Assume hitting the "Again" button when auto next question
@@ -1854,7 +1854,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
         }
     };
 
-    protected Runnable mShowAnswerTask = new Runnable() {
+    protected final Runnable mShowAnswerTask = new Runnable() {
         @Override
         public void run() {
             if (mFlipCardLayout.isEnabled() && mFlipCardLayout.getVisibility() == View.VISIBLE) {
@@ -2908,9 +2908,9 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
      * COULD_BE_BETTER: Make base class static and move this out of the CardViewer */
     class LinkDetectingGestureDetector extends AbstractFlashcardViewer.MyGestureDetector {
         /** A list of events to process when listening to WebView touches  */
-        private HashSet<MotionEvent> mDesiredTouchEvents = new HashSet<>();
+        private final HashSet<MotionEvent> mDesiredTouchEvents = new HashSet<>();
         /** A list of events we sent to the WebView (to block double-processing) */
-        private HashSet<MotionEvent> mDispatchedTouchEvents = new HashSet<>();
+        private final HashSet<MotionEvent> mDispatchedTouchEvents = new HashSet<>();
 
         @Override
         public void onFillFlashcard() {
