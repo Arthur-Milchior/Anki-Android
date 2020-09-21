@@ -1740,12 +1740,7 @@ public class CollectionTask extends BaseAsyncTask<TaskData, TaskData, TaskData> 
 
         ArrayList<Model> models = col.getModels().all();
         ArrayList<Integer> cardCount = new ArrayList<>();
-        Collections.sort(models, new Comparator<JSONObject>() {
-            @Override
-            public int compare(JSONObject a, JSONObject b) {
-                return a.getString("name").compareTo(b.getString("name"));
-            }
-        });
+        Collections.sort(models, (Comparator<JSONObject>) (a, b) -> a.getString("name").compareTo(b.getString("name")));
 
         for (Model n : models) {
             if (isCancelled()) {

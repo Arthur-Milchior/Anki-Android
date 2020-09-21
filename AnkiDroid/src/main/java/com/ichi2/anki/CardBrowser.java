@@ -622,35 +622,29 @@ public class CardBrowser extends NavigationDrawerActivity implements
         cardsColumn2Spinner.setSelection(mColumn2Index);
 
 
-        mCardsListView.setOnItemClickListener(new ListView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (mInMultiSelectMode) {
-                    // click on whole cell triggers select
-                    CheckBox cb = (CheckBox) view.findViewById(R.id.card_checkbox);
-                    cb.toggle();
-                    onCheck(position, view);
-                } else {
-                    // load up the card selected on the list
-                    long clickedCardId = getCards().get(position).getId();
-                    openNoteEditorForCard(clickedCardId);
-                }
-            }
-        });
-        mCardsListView.setOnItemLongClickListener(new ListView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int position, long id) {
-                mLastSelectedPosition = position;
-                loadMultiSelectMode();
-
+        mCardsListView.setOnItemClickListener((ListView.OnItemClickListener) (parent, view, position, id) -> {
+            if (mInMultiSelectMode) {
                 // click on whole cell triggers select
                 CheckBox cb = (CheckBox) view.findViewById(R.id.card_checkbox);
                 cb.toggle();
                 onCheck(position, view);
-                recenterListView(view);
-                mCardsAdapter.notifyDataSetChanged();
-                return true;
+            } else {
+                // load up the card selected on the list
+                long clickedCardId = getCards().get(position).getId();
+                openNoteEditorForCard(clickedCardId);
             }
+        });
+        mCardsListView.setOnItemLongClickListener((ListView.OnItemLongClickListener) (adapterView, view, position, id) -> {
+            mLastSelectedPosition = position;
+            loadMultiSelectMode();
+
+            // click on whole cell triggers select
+            CheckBox cb = (CheckBox) view.findViewById(R.id.card_checkbox);
+            cb.toggle();
+            onCheck(position, view);
+            recenterListView(view);
+            mCardsAdapter.notifyDataSetChanged();
+            return true;
         });
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -790,12 +784,9 @@ public class CardBrowser extends NavigationDrawerActivity implements
                     return true;
                 }
             });
-            mSearchView.setOnSearchClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Provide SearchView with the previous search terms
-                    mSearchView.setQuery(mSearchTerms, false);
-                }
+            mSearchView.setOnSearchClickListener(v -> {
+                // Provide SearchView with the previous search terms
+                mSearchView.setQuery(mSearchTerms, false);
             });
             // Fixes #6500 - keep the search consistent
             if (!TextUtils.isEmpty(mSearchTerms)) {
@@ -1041,19 +1032,9 @@ public class CardBrowser extends NavigationDrawerActivity implements
                     }
                 }
 
-                builderSingle.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                builderSingle.setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss());
 
-                builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        changeDeck(which);
-                    }
-                });
+                builderSingle.setAdapter(arrayAdapter, (dialog, which) -> changeDeck(which));
                 builderSingle.show();
 
                 return true;
@@ -1516,12 +1497,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             }
             // snackbar to offer undo
             String deckName = browser.getCol().getDecks().name(browser.mNewDid);
-            browser.mUndoSnackbar = UIUtils.showSnackbar(browser, String.format(browser.getString(R.string.changed_deck_message), deckName), SNACKBAR_DURATION, R.string.undo, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    CollectionTask.launchCollectionTask(UNDO, browser.mUndoHandler);
-                }
-            }, browser.mCardsListView, null);
+            browser.mUndoSnackbar = UIUtils.showSnackbar(browser, String.format(browser.getString(R.string.changed_deck_message), deckName), SNACKBAR_DURATION, R.string.undo, v -> CollectionTask.launchCollectionTask(UNDO, browser.mUndoHandler), browser.mCardsListView, null);
         }
     }
 
@@ -1673,12 +1649,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             browser.mActionBarTitle.setText(Integer.toString(browser.checkedCardCount()));
             browser.invalidateOptionsMenu();    // maybe the availability of undo changed
             // snackbar to offer undo
-            browser.mUndoSnackbar = UIUtils.showSnackbar(browser, browser.getString(R.string.deleted_message), SNACKBAR_DURATION, R.string.undo, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    CollectionTask.launchCollectionTask(UNDO, browser.mUndoHandler);
-                }
-            }, browser.mCardsListView, null);
+            browser.mUndoSnackbar = UIUtils.showSnackbar(browser, browser.getString(R.string.deleted_message), SNACKBAR_DURATION, R.string.undo, v -> CollectionTask.launchCollectionTask(UNDO, browser.mUndoHandler), browser.mCardsListView, null);
             browser.searchCards();
         }
     }
@@ -2024,12 +1995,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
                 checkBox.setVisibility(View.GONE);
             }
             // change bg color on check changed
-            checkBox.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    onCheck(position, v);
-                }
-            });
+            checkBox.setOnClickListener(view -> onCheck(position, v));
         }
 
         private void setFont(TextView v) {
@@ -2363,12 +2329,9 @@ public class CardBrowser extends NavigationDrawerActivity implements
         final int top = view.getTop();
         final Handler handler = new Handler();
         // Post to event queue with some delay to give time for the UI to update the layout
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Scroll to the same vertical position before the layout was changed
-                mCardsListView.setSelectionFromTop(position, top);
-            }
+        handler.postDelayed(() -> {
+            // Scroll to the same vertical position before the layout was changed
+            mCardsListView.setSelectionFromTop(position, top);
         }, 10);
     }
 
