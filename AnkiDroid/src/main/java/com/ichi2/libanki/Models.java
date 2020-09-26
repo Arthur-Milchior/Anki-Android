@@ -1062,6 +1062,42 @@ public class Models {
 
 
     /**
+     * @param type Whether the rules to generate this card is is any, all, none
+     * @param req The fields that must be fill (all), or that suffices (any) to generate the card
+     * @param strippedFields the field of a note. Fields are assumed to be stripped
+     * @return Whether the card is empty
+     */
+    public static boolean standardEmptyCard(String type, JSONArray req, String[] strippedFields) {
+        if ("none".equals(type)) {
+            // unsatisfiable template
+            return true;
+        }
+        if ("all".equals(type)) {
+            // AND requirement?
+            for (int j = 0; j < req.length(); j++) {
+                int idx = req.getInt(j);
+                if (strippedFields[idx] == null || strippedFields[idx].length() == 0) {
+                    // missing and was required
+                    return true;
+                }
+            }
+            return false;
+        }
+        if ("any".equals(type)) {
+            // OR requirement?
+            for (int j = 0; j < req.length(); j++) {
+                int idx = req.getInt(j);
+                if (strippedFields[idx] != null && strippedFields[idx].length() != 0) {
+                    // missing and was required
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * @param m A model
      * @param sfld Fields of a note
      * @return The index of the cards that are generated. For cloze cards, if no card is generated, then {0} */
@@ -1078,40 +1114,9 @@ public class Models {
             int ord = sr.getInt(0);
             String type = sr.getString(1);
             JSONArray req = sr.getJSONArray(2);
-
-            if ("none".equals(type)) {
-                // unsatisfiable template
-                continue;
-            } else if ("all".equals(type)) {
-                // AND requirement?
-                boolean ok = true;
-                for (int j = 0; j < req.length(); j++) {
-                    int idx = req.getInt(j);
-                    if (fields[idx] == null || fields[idx].length() == 0) {
-                        // missing and was required
-                        ok = false;
-                        break;
-                    }
-                }
-                if (!ok) {
-                    continue;
-                }
-            } else if ("any".equals(type)) {
-                // OR requirement?
-                boolean ok = false;
-                for (int j = 0; j < req.length(); j++) {
-                    int idx = req.getInt(j);
-                    if (fields[idx] != null && fields[idx].length() != 0) {
-                        // missing and was required
-                        ok = true;
-                        break;
-                    }
-                }
-                if (!ok) {
-                    continue;
-                }
+            if (!standardEmptyCard(type, req, fields)) {
+                avail.add(ord);
             }
-            avail.add(ord);
         }
         return avail;
     }
