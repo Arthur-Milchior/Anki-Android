@@ -1062,12 +1062,43 @@ public class Models {
 
 
     /**
+     * @param m A model
+     * @param ord a card type number of this model
+     * @param sfld Fields of a note of this model. (Not trimmed)
+     * @return Whether this card is empty
+     */
+    public static boolean emptyCard(Model m, int ord, String[] sfld) {
+        if (m.getInt("type") == Consts.MODEL_CLOZE) {
+            // For cloze, getting the list of cloze numbes is linear in the size of the template
+            // So computing the full list is almost as efficient as checking for a particular number
+            return !_availClozeOrds(m, sfld, false).contains(ord);
+        }
+        return standardEmptyCard(m.getJSONArray("req").getJSONArray(ord), sfld);
+    }
+
+    /**
+     * @param sr The requirement telling whether a card should be generated.
+     * @param sfld The vector of fields of a note. (Not trimmed)
+     * @return Whether the standard card is empty
+     */
+    public static boolean standardEmptyCard(JSONArray sr, String[] sfld) {
+        int nbField = sfld.length;
+        String[] fields = new String[nbField];
+        for (int i = 0; i < nbField; i++) {
+            fields[i] = sfld[i].trim();
+        }
+        String type = sr.getString(1);
+        JSONArray req = sr.getJSONArray(2);
+        return standardEmptyCard(type, req, fields);
+    }
+
+    /**
      * @param type Whether the rules to generate this card is is any, all, none
      * @param req The fields that must be fill (all), or that suffices (any) to generate the card
      * @param strippedFields the field of a note. Fields are assumed to be stripped
      * @return Whether the card is empty
      */
-    public static boolean standardEmptyCard(String type, JSONArray req, String[] strippedFields) {
+    public static boolean standardEmptyCard(String type, JSONArray req, String[] trimmedFields) {
         if ("none".equals(type)) {
             // unsatisfiable template
             return true;
@@ -1076,7 +1107,7 @@ public class Models {
             // AND requirement?
             for (int j = 0; j < req.length(); j++) {
                 int idx = req.getInt(j);
-                if (strippedFields[idx] == null || strippedFields[idx].length() == 0) {
+                if (trimmedFields[idx] == null || trimmedFields[idx].length() == 0) {
                     // missing and was required
                     return true;
                 }
@@ -1087,7 +1118,7 @@ public class Models {
             // OR requirement?
             for (int j = 0; j < req.length(); j++) {
                 int idx = req.getInt(j);
-                if (strippedFields[idx] != null && strippedFields[idx].length() != 0) {
+                if (trimmedFields[idx] != null && trimmedFields[idx].length() != 0) {
                     // missing and was required
                     return false;
                 }
