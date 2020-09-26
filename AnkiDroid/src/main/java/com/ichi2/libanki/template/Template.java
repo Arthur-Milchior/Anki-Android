@@ -64,6 +64,9 @@ public class Template {
     // The regular expression used to find a #section
     private static final Pattern sSection_re = Pattern.compile(sOtag + "[#^]([^}]*)" + sCtag + "(.+?)" + sOtag + "/\\1" + sCtag, Pattern.MULTILINE | Pattern.DOTALL);
 
+    /** The regular expression used to find a #section or #tag */
+    public static final Pattern sSectionOrTag_re = Pattern.compile(sOtag + "([#^/]?)([^}]*)" + sCtag , Pattern.MULTILINE | Pattern.DOTALL);
+
     // The regular expression used to find a tag.
     private static final Pattern sTag_re = Pattern.compile(sOtag + "([#=&!>{])?(.+?)\\1?" + sCtag + "+");
 

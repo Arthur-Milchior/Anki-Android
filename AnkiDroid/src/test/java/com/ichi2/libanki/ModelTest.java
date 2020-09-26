@@ -5,7 +5,6 @@ import com.ichi2.anki.exception.ConfirmModSchemaException;
 import com.ichi2.utils.JSONArray;
 import com.ichi2.utils.JSONObject;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -464,10 +463,10 @@ public class ModelTest extends RobolectricTest {
         Collection col = getCol();
         Models mm = col.getModels();
         Model basic = mm.byName("Basic");
+        Note note = addNoteUsingBasicModel("foo", "bar");
         JSONObject template = basic.getJSONArray("tmpls").getJSONObject(0);
         template.put("qfmt", "{{|Front}}{{Front}}{{/Front}}{{Front}}");
         mm.save(basic, true);
-        Note note = addNoteUsingBasicModel("foo", "bar");
         Card c = note.cards().get(0);
         assertThat(c.q(), containsString("unknown field"));
     }

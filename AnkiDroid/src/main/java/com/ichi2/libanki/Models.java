@@ -36,9 +36,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,6 +48,7 @@ import java.util.regex.Pattern;
 import androidx.annotation.NonNull;
 
 import static com.ichi2.libanki.Utils.trimArray;
+import static com.ichi2.libanki.template.Template.sSectionOrTag_re;
 
 @SuppressWarnings({"PMD.ExcessiveClassLength", "PMD.AvoidThrowingRawExceptionTypes","PMD.AvoidReassigningParameters",
         "PMD.NPathComplexity","PMD.MethodNamingConventions",
@@ -1065,40 +1068,107 @@ public class Models {
      * @param m A model
      * @param ord a card type number of this model
      * @param sfld Fields of a note of this model. (Not trimmed)
-     * @return Whether this card is empty
+     * @param quick Whether we want to use the quicker, but inaccurate, rules to generate cards
+     * @param errorIsEmpty What result to return for exact result of standard note type with error
+     * @return Whether this card is empty (or whether the template is broken, in non-quick standard version)
      */
-    public static boolean emptyCard(Model m, int ord, String[] sfld) {
+    public static boolean emptyCard(Model m, int ord, String[] sfld, boolean quick, boolean errorIsEmpty) {
         if (m.getInt("type") == Consts.MODEL_CLOZE) {
             // For cloze, getting the list of cloze numbes is linear in the size of the template
             // So computing the full list is almost as efficient as checking for a particular number
             return !_availClozeOrds(m, sfld, false).contains(ord);
+        } else {
+            return standardEmptyCard(m, ord, sfld, quick, errorIsEmpty);
         }
-        return standardEmptyCard(m.getJSONArray("req").getJSONArray(ord), sfld);
     }
 
     /**
-     * @param sr The requirement telling whether a card should be generated.
+     * @param m a standard model (non cloze)
+     * @param ord The index of a card type
      * @param sfld The vector of fields of a note. (Not trimmed)
-     * @return Whether the standard card is empty
+     * @param quick Whether we want to use the quicker, but inaccurate, rules to generate cards
+     * @param errorIsEmpty What result to return on faulty exact standard template
+     * @return Whether the standard card is empty (or whether the template is broken, in non-quick version)
      */
-    public static boolean standardEmptyCard(JSONArray sr, String[] sfld) {
-        int nbField = sfld.length;
-        String[] fields = new String[nbField];
-        for (int i = 0; i < nbField; i++) {
-            fields[i] = sfld[i].trim();
+    private static boolean standardEmptyCard(Model m, int ord, String[] sfld, boolean quick, boolean errorIsEmpty) {
+        String[] trimmedFields = trimArray(sfld);
+        if (quick) {
+            JSONArray sr = m.getJSONArray("req").getJSONArray(ord);
+            String type = sr.getString(1);
+            JSONArray req = sr.getJSONArray(2);
+            return standardQuickEmptyCard(type, req, trimmedFields);
+        } else {
+            return standardExactEmptyCard(m, ord, trimmedFields, errorIsEmpty);
         }
-        String type = sr.getString(1);
-        JSONArray req = sr.getJSONArray(2);
-        return standardEmptyCard(type, req, fields);
+    }
+
+    /**
+     * @param m  A standard model
+     * @param ord A card type of this model
+     * @param trimmedFields the field of a note. Fields are assumed to be trimmed
+     * @param errorIsEmpty What result to return on faulty exact standard template
+     * @return Whether the card is empty or resultOfResult in case of broken template
+     */
+    private static boolean standardExactEmptyCard(Model m, int ord, String[] trimmedFields, boolean errorIsEmpty) {
+        String questionTemplate = m.getJSONArray("tmpls").getJSONObject(ord).getString("qfmt");
+        Matcher matcher = sSectionOrTag_re.matcher(questionTemplate);
+        Boolean shown = true;
+        Queue<Pair<String, Boolean>> tags = new LinkedList<>();
+        Map<String, Boolean> filledFields = new HashMap<>();
+        JSONArray fields = m.getJSONArray("flds");
+        for (int i = 0; i < fields.length(); i++) {
+            JSONObject field = fields.getJSONObject(i);
+            String fieldName = field.getString("name");
+            filledFields.put(fieldName, trimmedFields[i].length() > 0);
+        }
+        // The queue contains the list of opened tags not yet closed. The boolean is the value of
+        // shown when this gets unstack.
+        while (matcher.find()) {
+            @NonNull String matched = matcher.group(0);
+            @Nullable String start = matcher.group(1);
+            @NonNull String fieldName = matcher.group(2);
+            switch (start) {
+                case "": // field
+                    if (!shown) {
+                        continue;
+                    }
+                    if (!filledFields.containsKey(fieldName) && fieldName.contains(":")) {
+                        String[] splitted = fieldName.split(":");
+                        fieldName = splitted[splitted.length - 1];
+                    }
+                    if (filledFields.containsKey(fieldName) && filledFields.get(fieldName)) {
+                        return false;
+                    }
+                    break;
+                case "^":
+                    tags.add(new Pair(fieldName, shown));
+                    shown = shown && ! filledFields.get(fieldName);
+                    break;
+                case "#":
+                    tags.add(new Pair(fieldName, shown));
+                    shown = shown && filledFields.get(fieldName);
+                    break;
+                case "/":
+                    Pair<String, Boolean> unqueue = tags.remove();
+                    if (unqueue.first != fieldName) {
+                        return errorIsEmpty; // broken template
+                    }
+                    shown = unqueue.second;
+                    break;
+                default:
+                    throw new RuntimeException("Wrong matching " + matched);
+            }
+        }
+        return true;
     }
 
     /**
      * @param type Whether the rules to generate this card is is any, all, none
      * @param req The fields that must be fill (all), or that suffices (any) to generate the card
-     * @param strippedFields the field of a note. Fields are assumed to be stripped
-     * @return Whether the card is empty
+     * @param trimmedFields the field of a note. Fields are assumed to be stripped
+     * @return Whether the card is empty using simplified rules
      */
-    public static boolean standardEmptyCard(String type, JSONArray req, String[] trimmedFields) {
+    private static boolean standardQuickEmptyCard(String type, JSONArray req, String[] trimmedFields) {
         if ("none".equals(type)) {
             // unsatisfiable template
             return true;
@@ -1131,8 +1201,10 @@ public class Models {
     /**
      * @param m A model
      * @param sfld Fields of a note
+     * @param quick Whether we want to use the quicker, but inaccurate, rules to generate cards
+     * @param errorIsEmpty What result to return in exact
      * @return The index of the cards that are generated. For cloze cards, if no card is generated, then {0} */
-    public static ArrayList<Integer> availOrds(Model m, String[] sfld) {
+    public static ArrayList<Integer> availOrds(Model m, String[] sfld, boolean quick, boolean errorIsEmpty) {
         if (m.getInt("type") == Consts.MODEL_CLOZE) {
             return _availClozeOrds(m, sfld);
         }
@@ -1145,7 +1217,7 @@ public class Models {
             int ord = sr.getInt(0);
             String type = sr.getString(1);
             JSONArray req = sr.getJSONArray(2);
-            if (!standardEmptyCard(type, req, fields)) {
+            if (!standardEmptyCard(m, ord, fields, quick, errorIsEmpty)) {
                 avail.add(ord);
             }
         }

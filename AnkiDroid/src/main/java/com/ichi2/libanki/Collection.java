@@ -684,7 +684,7 @@ public class Collection {
      */
     public ArrayList<JSONObject> findTemplates(Note note) {
         Model model = note.model();
-        ArrayList<Integer> avail = Models.availOrds(model, note.getFields());
+        ArrayList<Integer> avail = Models.availOrds(model, note.getFields(), false, true);
         return _tmplsFromOrds(model, avail);
     }
 
@@ -783,7 +783,7 @@ public class Collection {
                 long mid = cur.getLong(1);
                 String flds = cur.getString(2);
                 Model model = getModels().get(mid);
-                ArrayList<Integer> avail = Models.availOrds(model, Utils.splitFields(flds));
+                ArrayList<Integer> avail = Models.availOrds(model, Utils.splitFields(flds), false, true);
                 Long did = dids.get(nid);
                 // use sibling due if there is one, else use a new id
                 long due;
