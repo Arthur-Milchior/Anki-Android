@@ -352,7 +352,7 @@ public class Card implements Cloneable {
 
 
     public boolean isEmpty() {
-        ArrayList<Integer> ords = mCol.getModels().availOrds(model(), note().getFields());
+        ArrayList<Integer> ords = Models.availOrds(model(), note().getFields());
         return !ords.contains(mOrd);
     }
 

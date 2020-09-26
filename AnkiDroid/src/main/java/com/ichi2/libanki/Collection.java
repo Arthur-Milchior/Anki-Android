@@ -684,7 +684,7 @@ public class Collection {
      */
     public ArrayList<JSONObject> findTemplates(Note note) {
         Model model = note.model();
-        ArrayList<Integer> avail = getModels().availOrds(model, note.getFields());
+        ArrayList<Integer> avail = Models.availOrds(model, note.getFields());
         return _tmplsFromOrds(model, avail);
     }
 
@@ -783,7 +783,7 @@ public class Collection {
                 long mid = cur.getLong(1);
                 String flds = cur.getString(2);
                 Model model = getModels().get(mid);
-                ArrayList<Integer> avail = getModels().availOrds(model, Utils.splitFields(flds));
+                ArrayList<Integer> avail = Models.availOrds(model, Utils.splitFields(flds));
                 Long did = dids.get(nid);
                 // use sibling due if there is one, else use a new id
                 long due;
@@ -1135,7 +1135,7 @@ public class Collection {
             d.put(type, html);
             // empty cloze?
             if ("q".equals(type) && model.getInt("type") == Consts.MODEL_CLOZE) {
-                if (getModels()._availClozeOrds(model, flist, false).size() == 0) {
+                if (Models._availClozeOrds(model, flist, false).size() == 0) {
                     String link = String.format("<a href=%s#cloze>%s</a>", Consts.HELP_SITE, "help");
                     d.put("q", mContext.getString(R.string.empty_cloze_warning, link));
                 }

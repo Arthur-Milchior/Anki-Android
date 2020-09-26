@@ -1059,8 +1059,11 @@ public class Models {
     }
 
 
-    /** Given a joined field string, return available template ordinals */
-    public ArrayList<Integer> availOrds(Model m, String[] sfld) {
+    /**
+     * @param m A model
+     * @param sfld Fields of a note
+     * @return The index of the cards that are generated. For cloze cards, if no card is generated, then {0} */
+    public static ArrayList<Integer> availOrds(Model m, String[] sfld) {
         if (m.getInt("type") == Consts.MODEL_CLOZE) {
             return _availClozeOrds(m, sfld);
         }
@@ -1116,12 +1119,12 @@ public class Models {
     }
 
 
-    public ArrayList<Integer> _availClozeOrds(Model m, String[] sflds) {
+    public static ArrayList<Integer> _availClozeOrds(Model m, String[] sflds) {
         return _availClozeOrds(m, sflds, true);
     }
 
 
-    public ArrayList<Integer> _availClozeOrds(Model m, String[] sflds, boolean allowEmpty) {
+    public static ArrayList<Integer> _availClozeOrds(Model m, String[] sflds, boolean allowEmpty) {
         Map<String, Pair<Integer, JSONObject>> map = fieldMap(m);
         Set<Integer> ords = new HashSet<>();
         List<String> matches = new ArrayList<>();
