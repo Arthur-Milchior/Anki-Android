@@ -15,6 +15,7 @@ import java.util.List;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItemInArray;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -174,8 +175,7 @@ public class CardTest extends RobolectricTest {
 
         note = col.newNote();
         col.addNote(note);
-        assertNoteOrdinalAre(note, new Integer[]{0});
-        // First card is generated if no other card
+        assertNoteOrdinalAre(note, new Integer[]{});
     }
 
     @Test
@@ -230,10 +230,10 @@ public class CardTest extends RobolectricTest {
 
     private void  assertNoteOrdinalAre(Note note, Integer[] ords) {
         ArrayList<Card> cards = note.cards();
-        assumeThat(cards.size(), is(ords.length));
+        assertEquals(ords.length, cards.size());
         for (Card card: cards) {
             Integer ord = card.getOrd();
-            assumeThat(ords, hasItemInArray(ord));
+            assertThat(ords, hasItemInArray(ord));
         }
     }
     
