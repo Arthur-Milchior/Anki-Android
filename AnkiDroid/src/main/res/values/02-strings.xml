@@ -75,7 +75,7 @@
         <item>Question</item>
         <item>Tags</item>
         <item>Lapses</item>
-        <item>Reviews</item>
+        <item  comment="Number of review of a specific card">Reviews</item>
         <item>Interval</item>
         <item>Ease</item>
         <item>Due</item>
