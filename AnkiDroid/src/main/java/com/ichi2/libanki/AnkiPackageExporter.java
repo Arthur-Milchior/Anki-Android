@@ -82,7 +82,8 @@ class AnkiExporter extends Exporter {
     protected boolean mIncludeMedia;
     private Collection mSrc;
     String mMediaDir;
-    final ArrayList<String> mMediaFiles = new ArrayList<>();
+    // Actual capacity will be set when known, if media are imported.
+    final ArrayList<String> mMediaFiles = new ArrayList<>(0);
     boolean _v2sched;
 
 
@@ -170,10 +171,10 @@ class AnkiExporter extends Exporter {
         }
         // decks
         Timber.d("Copy decks");
-        ArrayList<Long> dids = new ArrayList<>();
+        java.util.Collection<Long> dids = null;
         if (mDid != null) {
+            dids = mSrc.getDecks().children(mDid).values();
             dids.add(mDid);
-            dids.addAll(mSrc.getDecks().children(mDid).values());
         }
         JSONObject dconfs = new JSONObject();
         for (Deck d : mSrc.getDecks().all()) {
@@ -240,6 +241,7 @@ class AnkiExporter extends Exporter {
         }
         JSONArray keys = media.names();
         if (keys != null) {
+            mMediaFiles.ensureCapacity(keys.length());
             for (String key: keys.stringIterable()) {
                 mMediaFiles.add(key);
             }

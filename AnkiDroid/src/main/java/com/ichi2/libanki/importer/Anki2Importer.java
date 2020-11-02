@@ -211,18 +211,19 @@ public class Anki2Importer extends Importer {
         // guids, so we avoid importing invalid cards
         mIgnoredGuids = new HashMap<>();
         // iterate over source collection
-        ArrayList<Object[]> add = new ArrayList<>();
+        int nbNoteToImport = mSrc.noteCount();
+        ArrayList<Object[]> add = new ArrayList<>(nbNoteToImport);
         int totalAddCount = 0;
         final int thresExecAdd = 1000;
-        ArrayList<Object[]> update = new ArrayList<>();
+        ArrayList<Object[]> update = new ArrayList<>(nbNoteToImport);
         int totalUpdateCount = 0;
         final int thresExecUpdate = 1000;
-        ArrayList<Long> dirty = new ArrayList<>();
+        ArrayList<Long> dirty = new ArrayList<>(nbNoteToImport);
         int totalDirtyCount = 0;
         final int thresExecDirty = 1000;
         int usn = mDst.usn();
         int dupes = 0;
-        ArrayList<String> dupesIgnored = new ArrayList<>();
+        ArrayList<String> dupesIgnored = new ArrayList<>(nbNoteToImport);
         mDst.getDb().getDatabase().beginTransaction();
         try (Cursor cur = mSrc.getDb().getDatabase().query("select * from notes", null)) {
             // Counters for progress updates
@@ -528,10 +529,11 @@ public class Anki2Importer extends Importer {
             }
         }
         // loop through src
-        List<Object[]> cards = new ArrayList<>();
+        int nbCardsToImport = mSrc.cardCount();
+        List<Object[]> cards = new ArrayList<>(nbCardsToImport);
         int totalCardCount = 0;
         final int thresExecCards = 1000;
-        List<Object[]> revlog = new ArrayList<>();
+        List<Object[]> revlog = new ArrayList<>(mSrc.getSched().logCount());
         int totalRevlogCount = 0;
         final int thresExecRevlog = 1000;
         int usn = mDst.usn();
