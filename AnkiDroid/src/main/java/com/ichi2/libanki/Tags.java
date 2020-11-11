@@ -308,15 +308,10 @@ public class Tags {
     public String remFromStr(String deltags, String tags) {
         List<String> currentTags = split(tags);
         for (String tag : split(deltags)) {
-            List<String> remove = new ArrayList<>();
             for (String tx: currentTags) {
                 if (tag.equalsIgnoreCase(tx) || wildcard(tag, tx)) {
-                    remove.add(tx);
+                    currentTags.remove(tx);
                 }
-            }
-            // remove them
-            for (String r : remove) {
-                currentTags.remove(r);
             }
         }
         return join(currentTags);
