@@ -435,8 +435,6 @@ public class Connection extends BaseAsyncTask<Connection.Payload, Object, Connec
                         data.resultType = CONNECTION_ERROR;
                     } else if (USER_ABORTED_SYNC.toString().equals(e.getMessage())) {
                         data.resultType = USER_ABORTED_SYNC;
-                    } else if (CUSTOM_SYNC_SERVER_URL.toString().equals(e.getMessage())) {
-                        data.resultType = CUSTOM_SYNC_SERVER_URL;
                     } else {
                         AnkiDroidApp.sendExceptionReport(e, "doInBackgroundSync-fullSync");
                         data.resultType = IO_EXCEPTION;
@@ -524,9 +522,6 @@ public class Connection extends BaseAsyncTask<Connection.Payload, Object, Connec
                 data.result = new Object[]{e};
             } else if (USER_ABORTED_SYNC.toString().equals(e.getMessage())) {
                 data.resultType = USER_ABORTED_SYNC;
-                data.result = new Object[]{e};
-            } else if (CUSTOM_SYNC_SERVER_URL.toString().equals(e.getMessage())) {
-                data.resultType = CUSTOM_SYNC_SERVER_URL;
                 data.result = new Object[]{e};
             } else {
                 AnkiDroidApp.sendExceptionReport(e, "doInBackgroundSync");
