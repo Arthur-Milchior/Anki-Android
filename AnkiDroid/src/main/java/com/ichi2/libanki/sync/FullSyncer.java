@@ -60,7 +60,6 @@ public class FullSyncer extends HttpSyncer {
         mCon = con;
     }
 
-    @Override
     public Pair<ConnectionResultType, Object[]> download() throws UnknownHttpResponseException {
         InputStream cont;
         ResponseBody body = null;
@@ -137,8 +136,6 @@ public class FullSyncer extends HttpSyncer {
         }
     }
 
-
-    @Override
     public Pair<ConnectionResultType, Object[]> upload() throws UnknownHttpResponseException {
         // make sure it's ok before we try to upload
         mCon.publishProgress(R.string.sync_check_upload_file);
