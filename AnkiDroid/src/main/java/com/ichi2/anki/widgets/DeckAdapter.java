@@ -31,6 +31,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
@@ -216,7 +217,11 @@ public class DeckAdapter<T extends AbstractDeckTreeNode<T>> extends RecyclerView
             holder.deckExpander.setTag(node.getDid());
             holder.deckExpander.setOnClickListener(mDeckExpanderClickListener);
         } else {
-            holder.deckExpander.setOnClickListener(null);
+            leftPadding += holder.deckExpander.getMinimumWidth();
+            ViewParent parent = holder.deckExpander.getParent();
+            if (parent != null) {
+                ((LinearLayout) parent).removeView(holder.deckExpander);
+            }
         }
         deckLayout.setPadding(leftPadding, 0, rightPadding, 0);
         holder.deckLayout.setBackgroundResource(mRowCurrentDrawable);
