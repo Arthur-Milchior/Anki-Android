@@ -201,16 +201,15 @@ public class DeckAdapter<T extends AbstractDeckTreeNode<T>> extends RecyclerView
         // Set the expander icon and padding according to whether or not there are any subdecks
         RelativeLayout deckLayout = holder.deckLayout;
         int rightPadding = (int) deckLayout.getResources().getDimension(R.dimen.deck_picker_right_padding);
+        int leftPadding;
         if (mHasSubdecks) {
-            int smallPadding = (int) deckLayout.getResources().getDimension(R.dimen.deck_picker_left_padding_small);
-            deckLayout.setPadding(smallPadding, 0, rightPadding, 0);
+            leftPadding = (int) deckLayout.getResources().getDimension(R.dimen.deck_picker_left_padding_small);
             holder.deckExpander.setVisibility(View.VISIBLE);
             // Create the correct expander for this deck
             setDeckExpander(holder.deckExpander, holder.indentView, node);
         } else {
             holder.deckExpander.setVisibility(View.GONE);
-            int normalPadding = (int) deckLayout.getResources().getDimension(R.dimen.deck_picker_left_padding);
-            deckLayout.setPadding(normalPadding, 0, rightPadding, 0);
+            leftPadding = (int) deckLayout.getResources().getDimension(R.dimen.deck_picker_left_padding);
         }
 
         if (node.hasChildren()) {
@@ -219,6 +218,7 @@ public class DeckAdapter<T extends AbstractDeckTreeNode<T>> extends RecyclerView
         } else {
             holder.deckExpander.setOnClickListener(null);
         }
+        deckLayout.setPadding(leftPadding, 0, rightPadding, 0);
         holder.deckLayout.setBackgroundResource(mRowCurrentDrawable);
         // Set background colour. The current deck has its own color
         if (isCurrentlySelectedDeck(node)) {
