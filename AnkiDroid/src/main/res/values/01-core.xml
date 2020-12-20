@@ -205,4 +205,5 @@
     <string name="deck_picker_new">Number of new cards to see today in this deck.</string>
     <string name="deck_picker_rev">Number of cards due today in this deck.</string>
     <string name="deck_picker_lrn">Number of cards in learning in this deck.</string> <!-- This is as simplification. It depends on sched v1 1 or 2, may count repetition but only cards due now are counted-->
+    <string name="deck_picker_counts">Open the deck overview page containing the number of cards to see today.</string>
 </resources>
