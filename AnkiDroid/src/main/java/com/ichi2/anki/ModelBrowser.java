@@ -415,20 +415,13 @@ public class ModelBrowser extends AnkiActivity {
             };
             Runnable cancel = this::dismissContextMenu;
 
-            try {
-                col.modSchema();
+            executeSchemaModified(() -> {
                 ConfirmationDialog d = new ConfirmationDialog();
                 d.setArgs(getResources().getString(R.string.model_delete_warning));
                 d.setConfirm(confirm);
                 d.setCancel(cancel);
                 ModelBrowser.this.showDialogFragment(d);
-            } catch (ConfirmModSchemaException e) {
-                ConfirmationDialog c = new ConfirmationDialog();
-                c.setArgs(getResources().getString(R.string.full_sync_confirmation));
-                c.setConfirm(confirm);
-                c.setCancel(cancel);
-                showDialogFragment(c);
-            }
+            }, cancel);
         }
 
         // Prevent users from deleting last model
