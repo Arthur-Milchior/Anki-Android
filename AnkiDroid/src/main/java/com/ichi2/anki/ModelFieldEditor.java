@@ -215,24 +215,11 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
                     }
                     //Name is valid, now field is added
                     changeHandler listener = changeFieldHandler();
-                    try {
-                        mCol.modSchema();
-                        TaskManager.launchCollectionTask(new CollectionTask.AddField(mMod, fieldName), listener);
-                    } catch (ConfirmModSchemaException e) {
-
-                        //Create dialogue to for schema change
-                        ConfirmationDialog c = new ConfirmationDialog();
-                        c.setArgs(getResources().getString(R.string.full_sync_confirmation));
-                        Runnable confirm = () -> {
-                            mCol.modSchemaNoCheck();
-                            TaskManager.launchCollectionTask(new CollectionTask.AddField(mMod, fieldName), listener);
-                            dismissContextMenu();
-                        };
-
-                        c.setConfirm(confirm);
-                        c.setCancel(mConfirmDialogCancel);
-                        ModelFieldEditor.this.showDialogFragment(c);
-                    }
+                    executeSchemaModified(() -> {
+                                TaskManager.launchCollectionTask(new CollectionTask.AddField(mMod, fieldName), listener);
+                                dismissContextMenu();
+                            },
+                            mConfirmDialogCancel);
                     mCol.getModels().update(mMod);
                     fullRefreshList();
                 })
@@ -255,20 +242,13 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
         if (mFieldLabels.size() < 2) {
             UIUtils.showThemedToast(this, getResources().getString(R.string.toast_last_field), true);
         } else {
-            try {
-                mCol.modSchema();
+            executeSchemaModified(() -> {
                 ConfirmationDialog d = new ConfirmationDialog();
                 d.setArgs(getResources().getString(R.string.field_delete_warning));
                 d.setConfirm(confirm);
                 d.setCancel(mConfirmDialogCancel);
                 showDialogFragment(d);
-            } catch (ConfirmModSchemaException e) {
-                ConfirmationDialog c = new ConfirmationDialog();
-                c.setConfirm(confirm);
-                c.setCancel(mConfirmDialogCancel);
-                c.setArgs(getResources().getString(R.string.full_sync_confirmation));
-                showDialogFragment(c);
-            }
+            });
         }
     }
 
@@ -296,26 +276,7 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
                         return;
                     }
                     //Field is valid, now rename
-                    try {
-                        renameField();
-                    } catch (ConfirmModSchemaException e) {
-
-                        // Handler mod schema confirmation
-                        ConfirmationDialog c = new ConfirmationDialog();
-                        c.setArgs(getResources().getString(R.string.full_sync_confirmation));
-                        Runnable confirm = () -> {
-                            mCol.modSchemaNoCheck();
-                            try {
-                                renameField();
-                            } catch (ConfirmModSchemaException e1) {
-                                //This should never be thrown
-                            }
-                            dismissContextMenu();
-                        };
-                        c.setConfirm(confirm);
-                        c.setCancel(mConfirmDialogCancel);
-                        ModelFieldEditor.this.showDialogFragment(c);
-                    }
+                    executeSchemaModified(this::renameField, mConfirmDialogCancel);
                 })
                 .negativeText(R.string.dialog_cancel)
                 .show();
@@ -349,29 +310,12 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
                         } else {
                             changeHandler listener = changeFieldHandler();
                             // Input is valid, now attempt to modify
-                            try {
-                                mCol.modSchema();
-                                TaskManager.launchCollectionTask(new CollectionTask.RepositionField(mMod,mNoteFields.getJSONObject(mCurrentPos), pos - 1));
-                            } catch (ConfirmModSchemaException e) {
-
-                                // Handle mod schema confirmation
-                                ConfirmationDialog c = new ConfirmationDialog();
-                                c.setArgs(getResources().getString(R.string.full_sync_confirmation));
-                                Runnable confirm = () -> {
-                                    try {
-                                        mCol.modSchemaNoCheck();
-                                        TaskManager.launchCollectionTask(new CollectionTask.RepositionField(mMod,
+                            executeSchemaModified(() -> {
+                                TaskManager.launchCollectionTask(new CollectionTask.RepositionField(mMod,
                                                 mNoteFields.getJSONObject(mCurrentPos), pos - 1),
-                                                listener);
-                                        dismissContextMenu();
-                                    } catch (JSONException e1) {
-                                        throw new RuntimeException(e1);
-                                    }
-                                };
-                                c.setConfirm(confirm);
-                                c.setCancel(mConfirmDialogCancel);
-                                ModelFieldEditor.this.showDialogFragment(c);
-                            }
+                                        listener);
+                                dismissContextMenu();
+                            });
                         }
                     })
                 .negativeText(R.string.dialog_cancel)
@@ -420,23 +364,9 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
      * Changes the sort field (that displays in card browser) to the current field
      */
     private void sortByField() {
-        changeHandler listener = changeFieldHandler();
-        try {
-            mCol.modSchema();
-            TaskManager.launchCollectionTask(new CollectionTask.ChangeSortField(mMod, mCurrentPos), listener);
-        } catch (ConfirmModSchemaException e) {
-            // Handler mMod schema confirmation
-            ConfirmationDialog c = new ConfirmationDialog();
-            c.setArgs(getResources().getString(R.string.full_sync_confirmation));
-            Runnable confirm = () -> {
-                mCol.modSchemaNoCheck();
-                TaskManager.launchCollectionTask(new CollectionTask.ChangeSortField(mMod, mCurrentPos), listener);
-                dismissContextMenu();
-            };
-            c.setConfirm(confirm);
-            c.setCancel(mConfirmDialogCancel);
-            ModelFieldEditor.this.showDialogFragment(c);
-        }
+        executeSchemaModified(() -> {
+                TaskManager.launchCollectionTask(new CollectionTask.ChangeSortField(mMod, mCurrentPos), changeFieldHandler());
+                dismissContextMenu();}, mConfirmDialogCancel);
     }
 
     /*

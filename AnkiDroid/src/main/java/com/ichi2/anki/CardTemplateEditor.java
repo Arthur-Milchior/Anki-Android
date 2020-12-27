@@ -729,21 +729,11 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
          * @param model model to remove template from, modified in place by reference
          */
         private void deleteTemplateWithCheck(final JSONObject tmpl, final Model model) {
-            try {
-                mTemplateEditor.getCol().modSchema();
-                deleteTemplate(tmpl, model);
-            } catch (ConfirmModSchemaException e) {
-                ConfirmationDialog d = new ConfirmationDialog();
-                d.setArgs(getResources().getString(R.string.full_sync_confirmation));
-                Runnable confirm = () -> {
+            mTemplateEditor.executeSchemaModified(() -> {
                     mTemplateEditor.getCol().modSchemaNoCheck();
                     deleteTemplate(tmpl, model);
-                };
-                Runnable cancel = () -> mTemplateEditor.dismissAllDialogFragments();
-                d.setConfirm(confirm);
-                d.setCancel(cancel);
-                mTemplateEditor.showDialogFragment(d);
-            }
+                },
+                mTemplateEditor::dismissAllDialogFragments);
         }
 
         /**
@@ -779,20 +769,11 @@ public class CardTemplateEditor extends AnkiActivity implements DeckSelectionDia
          * @param model model to add new template to
          */
         private void addNewTemplateWithCheck(final JSONObject model) {
-            try {
-                mTemplateEditor.getCol().modSchema();
+            SchemaModifier confirm = () -> {
                 Timber.d("addNewTemplateWithCheck() called and no CMSE?");
                 addNewTemplate(model);
-            } catch (ConfirmModSchemaException e) {
-                ConfirmationDialog d = new ConfirmationDialog();
-                d.setArgs(getResources().getString(R.string.full_sync_confirmation));
-                Runnable confirm = () -> {
-                    mTemplateEditor.getCol().modSchemaNoCheck();
-                    addNewTemplate(model);
-                };
-                d.setConfirm(confirm);
-                mTemplateEditor.showDialogFragment(d);
-            }
+            };
+            mTemplateEditor.executeSchemaModified(confirm);
         }
 
 
