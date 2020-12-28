@@ -1,5 +1,7 @@
 package com.ichi2.anki.lint.rules;
 
+import com.android.annotations.NonNull;
+import com.android.annotations.Nullable;
 import com.android.tools.lint.detector.api.Detector;
 import com.android.tools.lint.detector.api.Implementation;
 import com.android.tools.lint.detector.api.Issue;
@@ -12,8 +14,6 @@ import com.ichi2.anki.lint.utils.LintUtils;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiType;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.uast.UCallExpression;
 import org.jetbrains.uast.UClass;
 import org.jetbrains.uast.UExpression;
@@ -59,7 +59,7 @@ public class DirectDateInstantiation extends Detector implements SourceCodeScann
 
 
     @Override
-    public void visitConstructor(@NotNull JavaContext context, @NotNull UCallExpression node, @NotNull PsiMethod constructor) {
+    public void visitConstructor(@NonNull JavaContext context, @NonNull UCallExpression node, @NonNull PsiMethod constructor) {
         super.visitConstructor(context, node, constructor);
         List<UClass> foundClasses = context.getUastFile().getClasses();
         // this checks for usage of new Date(ms) which we allow

@@ -1,5 +1,6 @@
 package com.ichi2.anki.lint;
 
+import com.android.annotations.NonNull;
 import com.android.tools.lint.detector.api.ApiKt;
 import com.android.tools.lint.detector.api.Issue;
 import com.ichi2.anki.lint.rules.DirectCalendarInstanceUsage;
@@ -9,13 +10,12 @@ import com.ichi2.anki.lint.rules.DirectDateInstantiation;
 import com.ichi2.anki.lint.rules.DirectGregorianInstantiation;
 import com.ichi2.anki.lint.rules.InconsistentAnnotationUsage;
 
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class IssueRegistry extends com.android.tools.lint.client.api.IssueRegistry {
-    @NotNull
+    @NonNull
     @Override
     public List<Issue> getIssues() {
         List<Issue> issues = new ArrayList<>();
