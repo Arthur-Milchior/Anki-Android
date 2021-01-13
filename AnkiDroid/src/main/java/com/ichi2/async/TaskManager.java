@@ -74,6 +74,7 @@ public class TaskManager {
         @Nullable TaskListener<ProgressListener, ResultListener> listener) {
         // Start new task
         CollectionTask<ProgressListener, ProgressBackground, ResultListener, ResultBackground> newTask = new CollectionTask<>(task, listener, sLatestInstance);
+        addTasks(newTask);
         newTask.execute();
         return newTask;
     }
