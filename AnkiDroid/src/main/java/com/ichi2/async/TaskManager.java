@@ -16,9 +16,12 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import timber.log.Timber;
 
-public class TaskManager {
+/**
+ *
+ */
+public abstract class TaskManager {
 
-    private static TaskManager currentManager = new TaskManager();
+    private static TaskManager currentManager = new SingleTaskManager();
 
     public static TaskManager getManager() {
         return currentManager;
@@ -29,30 +32,19 @@ public class TaskManager {
         currentManager = manager;
     }
 
-    /**
-     * Tasks which are running or waiting to run.
-     * */
-    private final List<CollectionTask> sTasks = Collections.synchronizedList(new LinkedList<>());
-
-    protected void addTasks(CollectionTask task) {
-        sTasks.add(task);
-    }
-
-    protected boolean removeTask(CollectionTask task) {
-        return sTasks.remove(task);
-    }
-
 
     /**
-     * The most recently started {@link CollectionTask} instance.
+     * Indicates to the manager that a task is done; either ended or cancelled.
+     * @param task A task, assumed to be added before, that must not be executed anymore.
+     * @return Whether the task was correctly removed.
      */
-    private CollectionTask sLatestInstance;
+    protected abstract boolean removeTask(CollectionTask task);
 
-    protected void setLatestInstance(CollectionTask task) {
-        sLatestInstance = task;
-    }
-
-
+    /**
+     * Save the information that a task is being started right now.
+     * @param task A task that is being started right now
+     */
+    protected abstract void setLatestInstance(CollectionTask task);
 
     /**
      * Starts a new {@link CollectionTask}, with no listener
@@ -69,7 +61,6 @@ public class TaskManager {
     }
 
 
-
     /**
      * Starts a new {@link CollectionTask}, with a listener provided for callbacks during execution
      * <p>
@@ -81,79 +72,28 @@ public class TaskManager {
      * @param listener to the status and result of the task, may be null
      * @return the newly created task
      */
-    public <ProgressListener, ProgressBackground extends ProgressListener, ResultListener, ResultBackground extends ResultListener> CollectionTask<ProgressListener, ProgressBackground, ResultListener, ResultBackground>
-        launchCollectionTask(@NonNull CollectionTask.Task<ProgressBackground, ResultBackground> task,
-        @Nullable TaskListener<ProgressListener, ResultListener> listener) {
-        // Start new task
-        CollectionTask<ProgressListener, ProgressBackground, ResultListener, ResultBackground> newTask = new CollectionTask<>(task, listener, sLatestInstance);
-        addTasks(newTask);
-        newTask.execute();
-        return newTask;
-    }
+    public abstract <ProgressListener, ProgressBackground extends ProgressListener, ResultListener, ResultBackground extends ResultListener> CollectionTask<ProgressListener, ProgressBackground, ResultListener, ResultBackground>
+    launchCollectionTask(@NonNull CollectionTask.Task<ProgressBackground, ResultBackground> task,
+                         @Nullable TaskListener<ProgressListener, ResultListener> listener);
 
 
     /**
      * Block the current thread until the currently running CollectionTask instance (if any) has finished.
      */
-    public void waitToFinish() {
-        waitToFinish(null);
-    }
+    public abstract void waitToFinish();
 
     /**
      * Block the current thread until the currently running CollectionTask instance (if any) has finished.
      * @param timeoutSeconds timeout in seconds
      * @return whether or not the previous task was successful or not
      */
-    public boolean waitToFinish(Integer timeoutSeconds) {
-        try {
-            if ((sLatestInstance != null) && (sLatestInstance.getStatus() != AsyncTask.Status.FINISHED)) {
-                Timber.d("CollectionTask: waiting for task %s to finish...", sLatestInstance.getTask().getClass());
-                if (timeoutSeconds != null) {
-                    sLatestInstance.get(timeoutSeconds, TimeUnit.SECONDS);
-                } else {
-                    sLatestInstance.get();
-                }
-
-            }
-            return true;
-        } catch (Exception e) {
-            Timber.e(e, "Exception waiting for task to finish");
-            return false;
-        }
-    }
-
+    public abstract boolean waitToFinish(Integer timeoutSeconds);
 
     /** Cancel the current task only if it's of type taskType */
-    public void cancelCurrentlyExecutingTask() {
-        CollectionTask latestInstance = sLatestInstance;
-        if (latestInstance != null) {
-            if (latestInstance.safeCancel()) {
-                Timber.i("Cancelled task %s", latestInstance.getTask().getClass());
-            }
-        }
-    }
+    public abstract void cancelCurrentlyExecutingTask();
 
     /** Cancel all tasks of type taskType*/
-    public void cancelAllTasks(Class taskType) {
-        int count = 0;
-        // safeCancel modifies sTasks, so iterate over a concrete copy
-        for (CollectionTask task: new ArrayList<>(sTasks)) {
-            if (task.getTask().getClass() != taskType) {
-                continue;
-            }
-            if (task.safeCancel()) {
-                count++;
-            }
-        }
-        if (count > 0) {
-            Timber.i("Cancelled %d instances of task %s", count, taskType);
-        }
-    }
-
-
-    public ProgressCallback progressCallback(CollectionTask task, Resources res) {
-        return new ProgressCallback(task, res);
-    }
+    public abstract void cancelAllTasks(Class taskType);
 
 
     /**
@@ -162,26 +102,16 @@ public class TaskManager {
      * @return whether all tasks exited successfully
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean waitForAllToFinish(Integer timeoutSeconds) {
-        // HACK: This should be better - there is currently a race condition in sLatestInstance, and no means to obtain this information.
-        // This should work in all reasonable cases given how few tasks we have concurrently blocking.
-        boolean result;
-        result = waitToFinish(timeoutSeconds / 4);
-        ThreadUtil.sleep(10);
-        result &= waitToFinish(timeoutSeconds / 4);
-        ThreadUtil.sleep(10);
-        result &= waitToFinish(timeoutSeconds / 4);
-        ThreadUtil.sleep(10);
-        result &= waitToFinish(timeoutSeconds / 4);
-        ThreadUtil.sleep(10);
-        Timber.i("Waited for all tasks to finish");
-        return result;
+    public abstract boolean waitForAllToFinish(Integer timeoutSeconds);
+
+
+    public ProgressCallback progressCallback(CollectionTask task, Resources res) {
+        return new ProgressCallback(task, res);
     }
 
-
     /**
-     * Helper class for allowing inner function to publish progress of an AsyncTask.
-     */
+         * Helper class for allowing inner function to publish progress of an AsyncTask.
+         */
     public static class ProgressCallback<Progress> {
         private final Resources res;
         private final ProgressSender<Progress> task;
@@ -208,5 +138,4 @@ public class TaskManager {
             }
         }
     }
-
 }
