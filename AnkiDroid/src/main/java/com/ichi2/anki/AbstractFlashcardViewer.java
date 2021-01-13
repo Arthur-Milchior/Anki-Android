@@ -544,7 +544,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
             }
 
             mCurrentCard = card;
-            TaskManager.launchCollectionTask(new CollectionTask.PreloadNextCard()); // Tasks should always be launched from GUI. So in
+            TaskManager.getManager().launchCollectionTask(new CollectionTask.PreloadNextCard()); // Tasks should always be launched from GUI. So in
                                                                     // listener and not in background
             if (mCurrentCard == null) {
                 // If the card is null means that there are no more cards scheduled for review.
@@ -1186,7 +1186,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
             if (resultCode == RESULT_OK) {
                 // content of note was changed so update the note and current card
                 Timber.i("AbstractFlashcardViewer:: Saving card...");
-                TaskManager.launchCollectionTask(
+                TaskManager.getManager().launchCollectionTask(
                         new CollectionTask.UpdateNote(sEditorCard, true, canAccessScheduler()),
                         mUpdateCardHandler);
                 onEditedNoteChanged();
@@ -1305,7 +1305,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
 
     protected void undo() {
         if (isUndoAvailable()) {
-            TaskManager.launchCollectionTask(new CollectionTask.Undo(), mAnswerCardHandler(false));
+            TaskManager.getManager().launchCollectionTask(new CollectionTask.Undo(), mAnswerCardHandler(false));
         }
     }
 
@@ -1456,7 +1456,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
         mSoundPlayer.stopSounds();
         mCurrentEase = ease;
 
-        TaskManager.launchCollectionTask(new CollectionTask.AnswerAndGetCard(mCurrentCard, mCurrentEase), mAnswerCardHandler(true));
+        TaskManager.getManager().launchCollectionTask(new CollectionTask.AnswerAndGetCard(mCurrentCard, mCurrentEase), mAnswerCardHandler(true));
     }
 
 
@@ -3239,7 +3239,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
 
     protected void dismiss(Collection.DismissType type) {
         blockControls(false);
-        TaskManager.launchCollectionTask(new CollectionTask.DismissNote(mCurrentCard, type), mDismissCardHandler);
+        TaskManager.getManager().launchCollectionTask(new CollectionTask.DismissNote(mCurrentCard, type), mDismissCardHandler);
     }
 
     /** Signals from a WebView represent actions with no parameters */
@@ -3779,7 +3779,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
 
     @VisibleForTesting
     void loadInitialCard() {
-        TaskManager.launchCollectionTask(new CollectionTask.GetCard(), mAnswerCardHandler(false));
+        TaskManager.getManager().launchCollectionTask(new CollectionTask.GetCard(), mAnswerCardHandler(false));
     }
 
     public ReviewerUi.ControlBlock getControlBlocked() {

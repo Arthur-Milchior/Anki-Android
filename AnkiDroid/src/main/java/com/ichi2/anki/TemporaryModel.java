@@ -149,7 +149,7 @@ public class TemporaryModel {
         Timber.d("saveToDatabase() called");
         dumpChanges();
         TemporaryModel.clearTempModelFiles();
-        TaskManager.launchCollectionTask(new CollectionTask.SaveModel(mEditedModel, getAdjustedTemplateChanges()), listener);
+        TaskManager.getManager().launchCollectionTask(new CollectionTask.SaveModel(mEditedModel, getAdjustedTemplateChanges()), listener);
     }
 
 

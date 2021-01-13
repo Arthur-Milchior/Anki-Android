@@ -757,7 +757,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             return;
         }
 
-        TaskManager.launchCollectionTask(new CollectionTask.MarkNoteMulti(getSelectedCardIds()),
+        TaskManager.getManager().launchCollectionTask(new CollectionTask.MarkNoteMulti(getSelectedCardIds()),
                 markCardHandler());
     }
 
@@ -987,8 +987,8 @@ public class CardBrowser extends NavigationDrawerActivity implements
         }
 
         if (!mCheckedCards.isEmpty()) {
-            TaskManager.cancelAllTasks(CollectionTask.CheckCardSelection.class);
-            TaskManager.launchCollectionTask(new CollectionTask.CheckCardSelection(getCards()),
+            TaskManager.getManager().cancelAllTasks(CollectionTask.CheckCardSelection.class);
+            TaskManager.getManager().launchCollectionTask(new CollectionTask.CheckCardSelection(getCards()),
                     mCheckSelectedCardsHandler);
         }
 
@@ -1010,7 +1010,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
 
     private void flagTask (int flag) {
-        TaskManager.launchCollectionTask(
+        TaskManager.getManager().launchCollectionTask(
                 new CollectionTask.Flag(getSelectedCardIds(), flag),
                 flagCardHandler());
     }
@@ -1115,7 +1115,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
             return true;
         } else if (itemId == R.id.action_suspend_card) {
-            TaskManager.launchCollectionTask(new CollectionTask.SuspendCardMulti(getSelectedCardIds()),
+            TaskManager.getManager().launchCollectionTask(new CollectionTask.SuspendCardMulti(getSelectedCardIds()),
                     suspendCardHandler());
 
             return true;
@@ -1189,7 +1189,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
         if (!mInMultiSelectMode) {
             return;
         }
-        TaskManager.launchCollectionTask(new CollectionTask.DeleteNoteMulti(getSelectedCardIds()),
+        TaskManager.getManager().launchCollectionTask(new CollectionTask.DeleteNoteMulti(getSelectedCardIds()),
                                             mDeleteNoteHandler);
 
         mCheckedCards.clear();
@@ -1201,7 +1201,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
     @VisibleForTesting
     void onUndo() {
         if (getCol().undoAvailable()) {
-            TaskManager.launchCollectionTask(new CollectionTask.Undo(), mUndoHandler);
+            TaskManager.getManager().launchCollectionTask(new CollectionTask.Undo(), mUndoHandler);
         }
     }
 
@@ -1223,13 +1223,13 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
     @VisibleForTesting
     void resetProgressNoConfirm(List<Long> cardIds) {
-        TaskManager.launchCollectionTask(new CollectionTask.ResetCards(cardIds), resetProgressCardHandler());
+        TaskManager.getManager().launchCollectionTask(new CollectionTask.ResetCards(cardIds), resetProgressCardHandler());
     }
 
 
     @VisibleForTesting
     void repositionCardsNoValidation(List<Long> cardIds, Integer position) {
-        TaskManager.launchCollectionTask(new CollectionTask.RepositionCards(cardIds, position),
+        TaskManager.getManager().launchCollectionTask(new CollectionTask.RepositionCards(cardIds, position),
                                             repositionCardHandler());
     }
 
@@ -1285,7 +1285,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
     @VisibleForTesting
     void rescheduleWithoutValidation(List<Long> selectedCardIds, Integer newDays) {
-        TaskManager.launchCollectionTask(new CollectionTask.RescheduleCards(selectedCardIds, newDays),
+        TaskManager.getManager().launchCollectionTask(new CollectionTask.RescheduleCards(selectedCardIds, newDays),
             rescheduleCardHandler());
     }
 
@@ -1343,7 +1343,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
         if (requestCode == EDIT_CARD && resultCode != RESULT_CANCELED) {
             Timber.i("CardBrowser:: CardBrowser: Saving card...");
-            TaskManager.launchCollectionTask(new CollectionTask.UpdateNote(sCardBrowserCard, false, false),
+            TaskManager.getManager().launchCollectionTask(new CollectionTask.UpdateNote(sCardBrowserCard, false, false),
                     updateCardHandler());
         } else if (requestCode == ADD_NOTE && resultCode == RESULT_OK) {
             if (mSearchView != null) {
@@ -1383,7 +1383,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
     @Override
     public void onTrimMemory(int pressureLevel) {
         super.onTrimMemory(pressureLevel);
-        TaskManager.cancelCurrentlyExecutingTask();
+        TaskManager.getManager().cancelCurrentlyExecutingTask();
     }
 
     private long getReviewerCardId() {
@@ -1459,9 +1459,9 @@ public class CardBrowser extends NavigationDrawerActivity implements
     }
 
     private void invalidate() {
-        TaskManager.cancelAllTasks(CollectionTask.SearchCards.class);
-        TaskManager.cancelAllTasks(CollectionTask.RenderBrowserQA.class);
-        TaskManager.cancelAllTasks(CollectionTask.CheckCardSelection.class);
+        TaskManager.getManager().cancelAllTasks(CollectionTask.SearchCards.class);
+        TaskManager.getManager().cancelAllTasks(CollectionTask.RenderBrowserQA.class);
+        TaskManager.getManager().cancelAllTasks(CollectionTask.CheckCardSelection.class);
         mCards.clear();
         mCheckedCards.clear();
     }
@@ -1496,7 +1496,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             int numCardsToRender = (int) Math.ceil(mCardsListView.getHeight() /
                     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, getResources().getDisplayMetrics())) + 5;
             // Perform database query to get all card ids
-            TaskManager.launchCollectionTask(new CollectionTask.SearchCards(searchText,
+            TaskManager.getManager().launchCollectionTask(new CollectionTask.SearchCards(searchText,
                             (mOrder != CARD_ORDER_NONE),
                             numCardsToRender,
                             mColumn1Index,
@@ -1719,7 +1719,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             // snackbar to offer undo
             String deckName = browser.getCol().getDecks().name(browser.mNewDid);
             browser.mUndoSnackbar = UIUtils.showSnackbar(browser, String.format(browser.getString(R.string.changed_deck_message), deckName), SNACKBAR_DURATION,
-                                                         R.string.undo, v -> TaskManager.launchCollectionTask(new CollectionTask.Undo(), browser.mUndoHandler), browser.mCardsListView, null);
+                                                         R.string.undo, v -> TaskManager.getManager().launchCollectionTask(new CollectionTask.Undo(), browser.mUndoHandler), browser.mCardsListView, null);
         }
     }
 
@@ -1878,7 +1878,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             // snackbar to offer undo
             String deletedMessage = browser.getResources().getQuantityString(R.plurals.card_browser_cards_deleted, mCardsDeleted, mCardsDeleted);
             browser.mUndoSnackbar = UIUtils.showSnackbar(browser, deletedMessage, SNACKBAR_DURATION,
-                    R.string.undo, v -> TaskManager.launchCollectionTask(new CollectionTask.Undo(), browser.mUndoHandler),
+                    R.string.undo, v -> TaskManager.getManager().launchCollectionTask(new CollectionTask.Undo(), browser.mUndoHandler),
                     browser.mCardsListView, null);
             browser.searchCards();
         }
@@ -2182,8 +2182,8 @@ public class CardBrowser extends NavigationDrawerActivity implements
                     long currentTime = SystemClock.elapsedRealtime ();
                     if ((currentTime - mLastRenderStart > 300 || lastVisibleItem >= totalItemCount)) {
                         mLastRenderStart = currentTime;
-                        TaskManager.cancelAllTasks(CollectionTask.RenderBrowserQA.class);
-                        TaskManager.launchCollectionTask(renderBrowserQAParams(firstVisibleItem, visibleItemCount, cards), mRenderQAHandler);
+                        TaskManager.getManager().cancelAllTasks(CollectionTask.RenderBrowserQA.class);
+                        TaskManager.getManager().launchCollectionTask(renderBrowserQAParams(firstVisibleItem, visibleItemCount, cards), mRenderQAHandler);
                     }
                 }
             }
@@ -2199,7 +2199,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
             if (scrollState == SCROLL_STATE_IDLE) {
                 int startIdx = listView.getFirstVisiblePosition();
                 int numVisible = listView.getLastVisiblePosition() - startIdx;
-                TaskManager.launchCollectionTask(renderBrowserQAParams(startIdx - 5, 2 * numVisible + 5, getCards()), mRenderQAHandler);
+                TaskManager.getManager().launchCollectionTask(renderBrowserQAParams(startIdx - 5, 2 * numVisible + 5, getCards()), mRenderQAHandler);
             }
         }
     }
@@ -2781,7 +2781,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     void rerenderAllCards() {
-        TaskManager.launchCollectionTask(renderBrowserQAParams(0, mCards.size()-1, getCards()), mRenderQAHandler);
+        TaskManager.getManager().launchCollectionTask(renderBrowserQAParams(0, mCards.size()-1, getCards()), mRenderQAHandler);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
@@ -2838,7 +2838,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
     @VisibleForTesting(otherwise = VisibleForTesting.NONE) //should only be called from changeDeck()
     void executeChangeCollectionTask(List<Long> ids, long newDid) {
         mNewDid = newDid; //line required for unit tests, not necessary, but a noop in regular call.
-        TaskManager.launchCollectionTask(
+        TaskManager.getManager().launchCollectionTask(
                 new CollectionTask.ChangeDeckMulti(ids, newDid),
                 new ChangeDeckHandler(this));
     }

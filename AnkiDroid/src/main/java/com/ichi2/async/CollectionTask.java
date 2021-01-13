@@ -88,7 +88,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import timber.log.Timber;
 
-import static com.ichi2.async.TaskManager.setLatestInstance;
 import static com.ichi2.libanki.Card.deepCopyCardArray;
 import static com.ichi2.libanki.Collection.DismissType.BURY_CARD;
 import static com.ichi2.libanki.Collection.DismissType.BURY_NOTE;
@@ -130,7 +129,7 @@ public class CollectionTask<ProgressListener, ProgressBackground extends Progres
             // AsyncTask.cancel
             Timber.w(e, "Exception cancelling task");
         } finally {
-            TaskManager.removeTask(this);
+            TaskManager.getManager().removeTask(this);
         }
         return false;
     }
@@ -162,7 +161,7 @@ public class CollectionTask<ProgressListener, ProgressBackground extends Progres
         try {
             return actualDoInBackground();
         } finally {
-            TaskManager.removeTask(this);
+            TaskManager.getManager().removeTask(this);
         }
     }
 
@@ -188,7 +187,7 @@ public class CollectionTask<ProgressListener, ProgressBackground extends Progres
                 Timber.d(e, "previously running task was cancelled: %s", mPreviousTask.mTask.getClass());
             }
         }
-        setLatestInstance(this);
+        TaskManager.getManager().setLatestInstance(this);
         mContext = AnkiDroidApp.getInstance().getApplicationContext();
 
         // Skip the task if the collection cannot be opened
@@ -234,7 +233,7 @@ public class CollectionTask<ProgressListener, ProgressBackground extends Progres
 
     @Override
     protected void onCancelled(){
-        TaskManager.removeTask(this);
+        TaskManager.getManager().removeTask(this);
         if (mListener != null) {
             mListener.onCancelled();
         }

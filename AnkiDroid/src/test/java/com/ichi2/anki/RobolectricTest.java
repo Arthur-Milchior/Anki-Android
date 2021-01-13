@@ -385,7 +385,7 @@ public class RobolectricTest {
                 }
             }
         };
-        TaskManager.launchCollectionTask(task, listener);
+        TaskManager.getManager().launchCollectionTask(task, listener);
         advanceRobolectricLooper();
 
         wait(timeoutMs);

@@ -13,20 +13,32 @@ import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import timber.log.Timber;
 
 public class TaskManager {
 
+    private static TaskManager currentManager = new TaskManager();
+
+    public static TaskManager getManager() {
+        return currentManager;
+    }
+
+    @VisibleForTesting
+    public static void setManager(TaskManager manager) {
+        currentManager = manager;
+    }
+
     /**
      * Tasks which are running or waiting to run.
      * */
-    private static final List<CollectionTask> sTasks = Collections.synchronizedList(new LinkedList<>());
+    private final List<CollectionTask> sTasks = Collections.synchronizedList(new LinkedList<>());
 
-    protected static void addTasks(CollectionTask task) {
+    protected void addTasks(CollectionTask task) {
         sTasks.add(task);
     }
 
-    protected static boolean removeTask(CollectionTask task) {
+    protected boolean removeTask(CollectionTask task) {
         return sTasks.remove(task);
     }
 
@@ -34,9 +46,9 @@ public class TaskManager {
     /**
      * The most recently started {@link CollectionTask} instance.
      */
-    private static CollectionTask sLatestInstance;
+    private CollectionTask sLatestInstance;
 
-    protected static void setLatestInstance(CollectionTask task) {
+    protected void setLatestInstance(CollectionTask task) {
         sLatestInstance = task;
     }
 
@@ -52,7 +64,7 @@ public class TaskManager {
      * @param task the task to execute
      * @return the newly created task
      */
-    public static <ProgressBackground, ResultBackground> CollectionTask<ProgressBackground, ProgressBackground, ResultBackground, ResultBackground> launchCollectionTask(CollectionTask.Task<ProgressBackground, ResultBackground> task) {
+    public <ProgressBackground, ResultBackground> CollectionTask<ProgressBackground, ProgressBackground, ResultBackground, ResultBackground> launchCollectionTask(CollectionTask.Task<ProgressBackground, ResultBackground> task) {
         return launchCollectionTask(task, null);
     }
 
@@ -69,7 +81,7 @@ public class TaskManager {
      * @param listener to the status and result of the task, may be null
      * @return the newly created task
      */
-    public static <ProgressListener, ProgressBackground extends ProgressListener, ResultListener, ResultBackground extends ResultListener> CollectionTask<ProgressListener, ProgressBackground, ResultListener, ResultBackground>
+    public <ProgressListener, ProgressBackground extends ProgressListener, ResultListener, ResultBackground extends ResultListener> CollectionTask<ProgressListener, ProgressBackground, ResultListener, ResultBackground>
         launchCollectionTask(@NonNull CollectionTask.Task<ProgressBackground, ResultBackground> task,
         @Nullable TaskListener<ProgressListener, ResultListener> listener) {
         // Start new task
@@ -83,7 +95,7 @@ public class TaskManager {
     /**
      * Block the current thread until the currently running CollectionTask instance (if any) has finished.
      */
-    public static void waitToFinish() {
+    public void waitToFinish() {
         waitToFinish(null);
     }
 
@@ -92,7 +104,7 @@ public class TaskManager {
      * @param timeoutSeconds timeout in seconds
      * @return whether or not the previous task was successful or not
      */
-    public static boolean waitToFinish(Integer timeoutSeconds) {
+    public boolean waitToFinish(Integer timeoutSeconds) {
         try {
             if ((sLatestInstance != null) && (sLatestInstance.getStatus() != AsyncTask.Status.FINISHED)) {
                 Timber.d("CollectionTask: waiting for task %s to finish...", sLatestInstance.getTask().getClass());
@@ -112,7 +124,7 @@ public class TaskManager {
 
 
     /** Cancel the current task only if it's of type taskType */
-    public static void cancelCurrentlyExecutingTask() {
+    public void cancelCurrentlyExecutingTask() {
         CollectionTask latestInstance = sLatestInstance;
         if (latestInstance != null) {
             if (latestInstance.safeCancel()) {
@@ -122,7 +134,7 @@ public class TaskManager {
     }
 
     /** Cancel all tasks of type taskType*/
-    public static void cancelAllTasks(Class taskType) {
+    public void cancelAllTasks(Class taskType) {
         int count = 0;
         // safeCancel modifies sTasks, so iterate over a concrete copy
         for (CollectionTask task: new ArrayList<>(sTasks)) {
@@ -139,7 +151,7 @@ public class TaskManager {
     }
 
 
-    public static ProgressCallback progressCallback(CollectionTask task, Resources res) {
+    public ProgressCallback progressCallback(CollectionTask task, Resources res) {
         return new ProgressCallback(task, res);
     }
 
@@ -150,7 +162,7 @@ public class TaskManager {
      * @return whether all tasks exited successfully
      */
     @SuppressWarnings("UnusedReturnValue")
-    public static boolean waitForAllToFinish(Integer timeoutSeconds) {
+    public boolean waitForAllToFinish(Integer timeoutSeconds) {
         // HACK: This should be better - there is currently a race condition in sLatestInstance, and no means to obtain this information.
         // This should work in all reasonable cases given how few tasks we have concurrently blocking.
         boolean result;
