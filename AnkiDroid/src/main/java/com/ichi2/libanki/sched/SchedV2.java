@@ -198,7 +198,7 @@ public class SchedV2 extends AbstractSched {
         }
         if (!mHaveCounts) {
             // Need to reset queues once counts are reset
-            TaskManager.launchCollectionTask(new CollectionTask.Reset());
+            TaskManager.getManager().launchCollectionTask(new CollectionTask.Reset());
         }
         return card;
     }

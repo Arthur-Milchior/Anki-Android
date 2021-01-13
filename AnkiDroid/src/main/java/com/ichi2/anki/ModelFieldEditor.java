@@ -217,7 +217,7 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
                     changeHandler listener = changeFieldHandler();
                     try {
                         mCol.modSchema();
-                        TaskManager.launchCollectionTask(new CollectionTask.AddField(mMod, fieldName), listener);
+                        TaskManager.getManager().launchCollectionTask(new CollectionTask.AddField(mMod, fieldName), listener);
                     } catch (ConfirmModSchemaException e) {
 
                         //Create dialogue to for schema change
@@ -227,7 +227,7 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
                             mCol.modSchemaNoCheck();
                             String fieldName1 = mFieldNameInput.getText().toString()
                                     .replaceAll("[\\n\\r]", "");
-                            TaskManager.launchCollectionTask(new CollectionTask.AddField(mMod, fieldName1), listener);
+                            TaskManager.getManager().launchCollectionTask(new CollectionTask.AddField(mMod, fieldName1), listener);
                             dismissContextMenu();
                         };
 
@@ -275,7 +275,7 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
     }
 
     private void deleteField() {
-        TaskManager.launchCollectionTask(new CollectionTask.DeleteField(mMod, mNoteFields.getJSONObject(mCurrentPos)), changeFieldHandler());
+        TaskManager.getManager().launchCollectionTask(new CollectionTask.DeleteField(mMod, mNoteFields.getJSONObject(mCurrentPos)), changeFieldHandler());
     }
 
 
@@ -353,7 +353,7 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
                             // Input is valid, now attempt to modify
                             try {
                                 mCol.modSchema();
-                                TaskManager.launchCollectionTask(new CollectionTask.RepositionField(mMod,mNoteFields.getJSONObject(mCurrentPos), pos - 1));
+                                TaskManager.getManager().launchCollectionTask(new CollectionTask.RepositionField(mMod,mNoteFields.getJSONObject(mCurrentPos), pos - 1));
                             } catch (ConfirmModSchemaException e) {
 
                                 // Handle mod schema confirmation
@@ -364,7 +364,7 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
                                         mCol.modSchemaNoCheck();
                                         String newPosition1 = mFieldNameInput.getText().toString();
                                         int pos1 = Integer.parseInt(newPosition1);
-                                        TaskManager.launchCollectionTask(new CollectionTask.RepositionField(mMod,
+                                        TaskManager.getManager().launchCollectionTask(new CollectionTask.RepositionField(mMod,
                                                 mNoteFields.getJSONObject(mCurrentPos), pos1 - 1),
                                                 listener);
                                         dismissContextMenu();
@@ -427,14 +427,14 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
         changeHandler listener = changeFieldHandler();
         try {
             mCol.modSchema();
-            TaskManager.launchCollectionTask(new CollectionTask.ChangeSortField(mMod, mCurrentPos), listener);
+            TaskManager.getManager().launchCollectionTask(new CollectionTask.ChangeSortField(mMod, mCurrentPos), listener);
         } catch (ConfirmModSchemaException e) {
             // Handler mMod schema confirmation
             ConfirmationDialog c = new ConfirmationDialog();
             c.setArgs(getResources().getString(R.string.full_sync_confirmation));
             Runnable confirm = () -> {
                 mCol.modSchemaNoCheck();
-                TaskManager.launchCollectionTask(new CollectionTask.ChangeSortField(mMod, mCurrentPos), listener);
+                TaskManager.getManager().launchCollectionTask(new CollectionTask.ChangeSortField(mMod, mCurrentPos), listener);
                 dismissContextMenu();
             };
             c.setConfirm(confirm);
