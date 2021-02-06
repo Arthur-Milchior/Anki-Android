@@ -234,6 +234,7 @@ public class AnkiActivity extends AppCompatActivity implements SimpleMessageDial
         try {
             super.startActivityForResult(intent, requestCode);
         } catch (ActivityNotFoundException e) {
+            Timber.w(e);
             UIUtils.showSimpleSnackbar(this, R.string.activity_start_failed,true);
         }
     }
@@ -443,6 +444,7 @@ public class AnkiActivity extends AppCompatActivity implements SimpleMessageDial
         try {
             showDialogFragment(newFragment);
         } catch (IllegalStateException e) {
+            Timber.w(e);
             // Store a persistent message to SharedPreferences instructing AnkiDroid to show dialog
             DialogHandler.storeMessage(newFragment.getDialogHandlerMessage());
             // Show a basic notification to the user in the notification bar in the meantime
