@@ -1014,6 +1014,7 @@ public class NoteEditor extends AnkiActivity {
         try {
             changeNoteType(oldModel, newModel);
         } catch (ConfirmModSchemaException e) {
+            e.log();
             // Libanki has determined we should ask the user to confirm first
             ConfirmationDialog dialog = new ConfirmationDialog();
             dialog.setArgs(res.getString(R.string.full_sync_confirmation));
