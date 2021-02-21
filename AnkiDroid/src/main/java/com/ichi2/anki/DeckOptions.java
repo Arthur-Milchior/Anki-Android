@@ -212,7 +212,7 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
                                 int oldValue = mOptions.getJSONObject("new").getInt("order");
                                 if (oldValue != newValue) {
                                     mOptions.getJSONObject("new").put("order", newValue);
-                                    TaskManager.launchCollectionTask(new CollectionTask.Reorder(mOptions), confChangeHandler());
+                                    TaskManager.getManager().launchCollectionTask(new CollectionTask.Reorder(mOptions), confChangeHandler());
                                 }
                                 mOptions.getJSONObject("new").put("order", Integer.parseInt((String) value));
                                 break;
@@ -304,7 +304,7 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
                             case "deckConf": {
                                 long newConfId = Long.parseLong((String) value);
                                 mOptions = mCol.getDecks().getConf(newConfId);
-                                TaskManager.launchCollectionTask(new CollectionTask.ConfChange(mDeck, mOptions), confChangeHandler());
+                                TaskManager.getManager().launchCollectionTask(new CollectionTask.ConfChange(mDeck, mOptions), confChangeHandler());
                                 break;
                             }
                             case "confRename": {
@@ -316,7 +316,7 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
                             }
                             case "confReset":
                                 if ((Boolean) value) {
-                                    TaskManager.launchCollectionTask(new CollectionTask.ConfReset(mOptions), confChangeHandler());
+                                    TaskManager.getManager().launchCollectionTask(new CollectionTask.ConfReset(mOptions), confChangeHandler());
                                 }
                                 break;
                             case "confAdd": {
@@ -362,7 +362,7 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
                                 break;
                             case "confSetSubdecks":
                                 if ((Boolean) value) {
-                                    TaskManager.launchCollectionTask(new CollectionTask.ConfSetSubdecks(mDeck, mOptions), confChangeHandler());
+                                    TaskManager.getManager().launchCollectionTask(new CollectionTask.ConfSetSubdecks(mDeck, mOptions), confChangeHandler());
                                 }
                                 break;
                             case "reminderEnabled": {
@@ -533,7 +533,7 @@ public class DeckOptions extends AppCompatPreferenceActivity implements OnShared
                 // Remove options group, asking user to confirm full sync if necessary
                 mCol.getDecks().remConf(mOptions.getLong("id"));
                 // Run the CPU intensive re-sort operation in a background thread
-                TaskManager.launchCollectionTask(new CollectionTask.ConfRemove(mOptions), confChangeHandler());
+                TaskManager.getManager().launchCollectionTask(new CollectionTask.ConfRemove(mOptions), confChangeHandler());
                 mDeck.put("conf", 1);
             }
         }

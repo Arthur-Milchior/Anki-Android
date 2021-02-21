@@ -216,7 +216,7 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
                     //Name is valid, now field is added
                     changeHandler listener = changeFieldHandler();
                     executeSchemaModified(() -> {
-                                TaskManager.launchCollectionTask(new CollectionTask.AddField(mMod, fieldName), listener);
+                                TaskManager.getManager().launchCollectionTask(new CollectionTask.AddField(mMod, fieldName), listener);
                                 dismissContextMenu();
                             },
                             mConfirmDialogCancel);
@@ -253,7 +253,7 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
     }
 
     private void deleteField() {
-        TaskManager.launchCollectionTask(new CollectionTask.DeleteField(mMod, mNoteFields.getJSONObject(mCurrentPos)), changeFieldHandler());
+        TaskManager.getManager().launchCollectionTask(new CollectionTask.DeleteField(mMod, mNoteFields.getJSONObject(mCurrentPos)), changeFieldHandler());
     }
 
 
@@ -312,7 +312,7 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
                             changeHandler listener = changeFieldHandler();
                             // Input is valid, now attempt to modify
                             executeSchemaModified(() -> {
-                                TaskManager.launchCollectionTask(new CollectionTask.RepositionField(mMod,
+                                TaskManager.getManager().launchCollectionTask(new CollectionTask.RepositionField(mMod,
                                                 mNoteFields.getJSONObject(mCurrentPos), pos - 1),
                                         listener);
                                 dismissContextMenu();
@@ -366,7 +366,7 @@ public class ModelFieldEditor extends AnkiActivity implements LocaleSelectionDia
      */
     private void sortByField() {
         executeSchemaModified(() -> {
-                TaskManager.launchCollectionTask(new CollectionTask.ChangeSortField(mMod, mCurrentPos), changeFieldHandler());
+                TaskManager.getManager().launchCollectionTask(new CollectionTask.ChangeSortField(mMod, mCurrentPos), changeFieldHandler());
                 dismissContextMenu();}, mConfirmDialogCancel);
     }
 

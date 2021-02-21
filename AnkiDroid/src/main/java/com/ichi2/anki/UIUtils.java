@@ -144,7 +144,7 @@ public class UIUtils {
                     Timber.d("saveCollectionInBackground: finished");
                 }
             };
-            TaskManager.launchCollectionTask(new CollectionTask.SaveCollection(syncIgnoresDatabaseModification), listener);
+            TaskManager.getManager().launchCollectionTask(new CollectionTask.SaveCollection(syncIgnoresDatabaseModification), listener);
         }
     }
 }

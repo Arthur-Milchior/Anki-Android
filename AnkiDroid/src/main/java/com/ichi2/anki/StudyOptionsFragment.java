@@ -317,7 +317,7 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
         int itemId = item.getItemId();
         if (itemId == R.id.action_undo) {
             Timber.i("StudyOptionsFragment:: Undo button pressed");
-            TaskManager.launchCollectionTask(new CollectionTask.Undo(), undoListener);
+            TaskManager.getManager().launchCollectionTask(new CollectionTask.Undo(), undoListener);
             return true;
         } else if (itemId == R.id.action_deck_or_study_options) {
             Timber.i("StudyOptionsFragment:: Deck or study options button pressed");
@@ -343,13 +343,13 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
             Timber.i("StudyOptionsFragment:: rebuild cram deck button pressed");
             mProgressDialog = StyledProgressDialog.show(getActivity(), "",
                     getResources().getString(R.string.rebuild_filtered_deck), true);
-            TaskManager.launchCollectionTask(new CollectionTask.RebuildCram(), getCollectionTaskListener(true));
+            TaskManager.getManager().launchCollectionTask(new CollectionTask.RebuildCram(), getCollectionTaskListener(true));
             return true;
         } else if (itemId == R.id.action_empty) {
             Timber.i("StudyOptionsFragment:: empty cram deck button pressed");
             mProgressDialog = StyledProgressDialog.show(getActivity(), "",
                     getResources().getString(R.string.empty_filtered_deck), false);
-            TaskManager.launchCollectionTask(new CollectionTask.EmptyCram(), getCollectionTaskListener(true));
+            TaskManager.getManager().launchCollectionTask(new CollectionTask.EmptyCram(), getCollectionTaskListener(true));
             return true;
         } else if (itemId == R.id.action_rename) {
             ((DeckPicker) getActivity()).renameDeckDialog(getCol().getDecks().selected());
@@ -465,9 +465,9 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
                 }
                     mProgressDialog = StyledProgressDialog.show(getActivity(), "",
                             getResources().getString(R.string.rebuild_filtered_deck), true);
-                    TaskManager.launchCollectionTask(new CollectionTask.RebuildCram(), getCollectionTaskListener(true));
+                    TaskManager.getManager().launchCollectionTask(new CollectionTask.RebuildCram(), getCollectionTaskListener(true));
             } else {
-                TaskManager.waitToFinish();
+                TaskManager.getManager().waitToFinish();
                 refreshInterface(true);
             }
         } else if (requestCode == AnkiActivity.REQUEST_REVIEW) {
@@ -520,9 +520,9 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
      */
     protected void refreshInterface(boolean resetSched, boolean resetDecklist) {
         Timber.d("Refreshing StudyOptionsFragment");
-        TaskManager.cancelAllTasks(CollectionTask.UpdateValuesFromDeck.class);
+        TaskManager.getManager().cancelAllTasks(CollectionTask.UpdateValuesFromDeck.class);
         // Load the deck counts for the deck from Collection asynchronously
-        TaskManager.launchCollectionTask(new CollectionTask.UpdateValuesFromDeck(resetSched), getCollectionTaskListener(resetDecklist));
+        TaskManager.getManager().launchCollectionTask(new CollectionTask.UpdateValuesFromDeck(resetSched), getCollectionTaskListener(resetDecklist));
     }
 
 
@@ -717,7 +717,7 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
         if (!mToReviewer) {
             // In the reviewer, we need the count. So don't cancel it. Otherwise, (e.g. go to browser, selecting another
             // deck) cancel counts.
-            TaskManager.cancelAllTasks(CollectionTask.UpdateValuesFromDeck.class);
+            TaskManager.getManager().cancelAllTasks(CollectionTask.UpdateValuesFromDeck.class);
         }
     }
 }

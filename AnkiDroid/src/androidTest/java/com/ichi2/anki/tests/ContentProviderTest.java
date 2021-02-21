@@ -795,9 +795,9 @@ public class ContentProviderTest extends InstrumentedTest {
         for(int i = 0; i < 10; i++) {//minimizing fails, when sched.reset() randomly chooses between multiple cards
             col.reset();
             nextCard = sched.getCard();
-            TaskManager.waitToFinish();
+            TaskManager.getManager().waitToFinish();
             if(nextCard != null && nextCard.note().getId() == noteID && nextCard.getOrd() == cardOrd)break;
-            TaskManager.waitToFinish();
+            TaskManager.getManager().waitToFinish();
 
         }
         assertNotNull("Check that there actually is a next scheduled card", nextCard);

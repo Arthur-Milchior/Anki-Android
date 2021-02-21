@@ -328,7 +328,7 @@ public class Connection extends BaseAsyncTask<Connection.Payload, Object, Connec
         sIsCancellable = true;
         Timber.d("doInBackgroundSync()");
         // Block execution until any previous background task finishes, or timeout after 5s
-        boolean ok = TaskManager.waitToFinish(5);
+        boolean ok = TaskManager.getManager().waitToFinish(5);
 
         // Unique key allowing to identify the user to AnkiWeb without password
         String hkey = (String) data.data[0];

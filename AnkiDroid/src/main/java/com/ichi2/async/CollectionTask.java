@@ -89,7 +89,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import timber.log.Timber;
 
-import static com.ichi2.async.TaskManager.setLatestInstance;
 import static com.ichi2.libanki.Card.deepCopyCardArray;
 import static com.ichi2.libanki.Collection.DismissType.BURY_CARD;
 import static com.ichi2.libanki.Collection.DismissType.BURY_NOTE;
@@ -116,27 +115,6 @@ public class CollectionTask<ProgressListener, ProgressBackground extends Progres
      */
     private Context mContext;
 
-    /**
-     * Block the current thread until all CollectionTasks have finished.
-     * @param timeoutSeconds timeout in seconds
-     * @return whether all tasks exited successfully
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public static boolean waitForAllToFinish(Integer timeoutSeconds) {
-        // HACK: This should be better - there is currently a race condition in sLatestInstance, and no means to obtain this information.
-        // This should work in all reasonable cases given how few tasks we have concurrently blocking.
-        boolean result;
-        result = TaskManager.waitToFinish(timeoutSeconds / 4);
-        ThreadUtil.sleep(10);
-        result &= TaskManager.waitToFinish(timeoutSeconds / 4);
-        ThreadUtil.sleep(10);
-        result &= TaskManager.waitToFinish(timeoutSeconds / 4);
-        ThreadUtil.sleep(10);
-        result &= TaskManager.waitToFinish(timeoutSeconds / 4);
-        ThreadUtil.sleep(10);
-        Timber.i("Waited for all tasks to finish");
-        return result;
-    }
 
     /** Cancel the current task.
      * @return whether cancelling did occur.*/
@@ -151,7 +129,7 @@ public class CollectionTask<ProgressListener, ProgressBackground extends Progres
             // AsyncTask.cancel
             Timber.w(e, "Exception cancelling task");
         } finally {
-            TaskManager.removeTask(this);
+            TaskManager.getManager().removeTask(this);
         }
         return false;
     }
@@ -176,7 +154,6 @@ public class CollectionTask<ProgressListener, ProgressBackground extends Progres
         mTask = task;
         mListener = listener;
         mPreviousTask = previousTask;
-        TaskManager.addTasks(this);
     }
 
     @Override
@@ -184,7 +161,7 @@ public class CollectionTask<ProgressListener, ProgressBackground extends Progres
         try {
             return actualDoInBackground();
         } finally {
-            TaskManager.removeTask(this);
+            TaskManager.getManager().removeTask(this);
         }
     }
 
@@ -210,7 +187,7 @@ public class CollectionTask<ProgressListener, ProgressBackground extends Progres
                 Timber.d(e, "previously running task was cancelled: %s", mPreviousTask.mTask.getClass());
             }
         }
-        setLatestInstance(this);
+        TaskManager.getManager().setLatestInstance(this);
         mContext = AnkiDroidApp.getInstance().getApplicationContext();
 
         // Skip the task if the collection cannot be opened
@@ -256,7 +233,7 @@ public class CollectionTask<ProgressListener, ProgressBackground extends Progres
 
     @Override
     protected void onCancelled(){
-        TaskManager.removeTask(this);
+        TaskManager.getManager().removeTask(this);
         if (mListener != null) {
             mListener.onCancelled();
         }

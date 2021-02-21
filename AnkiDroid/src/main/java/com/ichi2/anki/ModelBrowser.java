@@ -230,7 +230,7 @@ public class ModelBrowser extends AnkiActivity {
 
     @Override
     public void onDestroy() {
-        TaskManager.cancelAllTasks(CollectionTask.CountModels.class);
+        TaskManager.getManager().cancelAllTasks(CollectionTask.CountModels.class);
         super.onDestroy();
     }
 
@@ -242,7 +242,7 @@ public class ModelBrowser extends AnkiActivity {
     public void onCollectionLoaded(Collection col) {
         super.onCollectionLoaded(col);
         this.col = col;
-        TaskManager.launchCollectionTask(new CollectionTask.CountModels(), loadingModelsHandler());
+        TaskManager.getManager().launchCollectionTask(new CollectionTask.CountModels(), loadingModelsHandler());
     }
 
 
@@ -498,14 +498,14 @@ public class ModelBrowser extends AnkiActivity {
      * Reloads everything
      */
     private void fullRefresh() {
-        TaskManager.launchCollectionTask(new CollectionTask.CountModels(), loadingModelsHandler());
+        TaskManager.getManager().launchCollectionTask(new CollectionTask.CountModels(), loadingModelsHandler());
     }
 
     /*
      * Deletes the currently selected model
      */
     private void deleteModel() {
-        TaskManager.launchCollectionTask(new CollectionTask.DeleteModel(mCurrentID), deleteModelHandler());
+        TaskManager.getManager().launchCollectionTask(new CollectionTask.DeleteModel(mCurrentID), deleteModelHandler());
         mModels.remove(mModelListPosition);
         mModelIds.remove(mModelListPosition);
         mModelDisplayList.remove(mModelListPosition);
@@ -606,7 +606,7 @@ public class ModelBrowser extends AnkiActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_TEMPLATE_EDIT) {
-            TaskManager.launchCollectionTask(new CollectionTask.CountModels(), loadingModelsHandler());
+            TaskManager.getManager().launchCollectionTask(new CollectionTask.CountModels(), loadingModelsHandler());
         }
     }
 }

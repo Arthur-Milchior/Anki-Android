@@ -482,7 +482,7 @@ public class CustomStudyDialog extends AnalyticsDialogFragment {
         dyn.put("resched", resched);
         // Rebuild the filtered deck
         Timber.i("Rebuilding Custom Study Deck");
-        TaskManager.launchCollectionTask(new CollectionTask.RebuildCram(), createCustomStudySessionListener());
+        TaskManager.getManager().launchCollectionTask(new CollectionTask.RebuildCram(), createCustomStudySessionListener());
 
         // Hide the dialogs
         activity.dismissAllDialogFragments();
