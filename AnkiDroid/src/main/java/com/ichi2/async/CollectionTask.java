@@ -1256,7 +1256,7 @@ public class CollectionTask<ProgressListener, ProgressBackground extends Progres
                     // reset actually required because of counts, which is used in getCollectionTaskListener
                     sched.resetCounts();
                 }
-                Counts counts = sched.counts();
+                Counts counts = sched.counts(collectionTask);
                 int totalNewCount = sched.totalNewForCurrentDeck();
                 int totalCount = sched.cardCount();
                 return new int[] {counts.getNew(), counts.getLrn(), counts.getRev(), totalNewCount,
