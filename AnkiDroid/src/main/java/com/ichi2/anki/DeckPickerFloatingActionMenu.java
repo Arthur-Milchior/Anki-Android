@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.ichi2.anki.dialogs.CreateDeckDialog;
 import com.ichi2.libanki.Decks;
 import com.ichi2.ui.FixedEditText;
 
@@ -80,30 +81,11 @@ public class DeckPickerFloatingActionMenu {
         mAddDeckButton.setOnClickListener(addDeckButtonView -> {
             if (mIsFABOpen) {
                 closeFloatingActionMenu();
-                EditText mDialogEditText = new FixedEditText(mDeckPicker);
-                mDialogEditText.setSingleLine(true);
-                mDialogEditText.requestFocus();
-                MaterialDialog materialDialog = new MaterialDialog.Builder(mDeckPicker)
-                        .title(R.string.new_deck)
-                        .positiveText(R.string.dialog_ok)
-                        .customView(mDialogEditText, true)
-                        .onPositive((dialog, which) -> {
-                            String deckName = mDialogEditText.getText().toString();
-                            if (Decks.isValidDeckName(deckName)) {
-                                boolean creation_succeed = deckPicker.createNewDeck(deckName);
-                                if (!creation_succeed) {
-                                    return;
-                                }
-                            } else {
-                                Timber.d("configureFloatingActionsMenu::addDeckButton::onPositiveListener - Not creating invalid deck name '%s'", deckName);
-                                UIUtils.showThemedToast(mDeckPicker, mDeckPicker.getString(R.string.invalid_deck_name), false);
-                            }
-                        })
-                        .negativeText(R.string.dialog_cancel)
-                        .show();
-
-                // Open keyboard when dialog shows
-                Objects.requireNonNull(materialDialog.getWindow()).setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                CreateDeckDialog createDeckDialog = new CreateDeckDialog(mDeckPicker, R.string.new_deck, false, null);
+                createDeckDialog.setOnNewDeckCreated((i) -> {
+                    deckPicker.updateDeckList();
+                });
+                createDeckDialog.showDialog();
             }
         });
 
