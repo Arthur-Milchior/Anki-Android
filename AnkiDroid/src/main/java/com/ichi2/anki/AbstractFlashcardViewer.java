@@ -582,9 +582,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     }
 
 
-    protected final NextCardHandler<BooleanGetter> mDismissCardHandler = new NextCardHandler();
-
-
     private final TaskListener<CardGetter, BooleanGetter> mUpdateCardHandler = new TaskListener<CardGetter, BooleanGetter>() {
         private boolean mNoMoreCards;
 
@@ -3341,7 +3338,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
 
     protected void dismiss(CollectionTask.DismissNote dismiss) {
         blockControls(false);
-        TaskManager.launchCollectionTask(dismiss, mDismissCardHandler);
+        TaskManager.launchCollectionTask(dismiss, new NextCardHandler());
     }
 
     /** Signals from a WebView represent actions with no parameters */
