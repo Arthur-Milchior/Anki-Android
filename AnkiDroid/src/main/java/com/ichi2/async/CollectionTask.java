@@ -97,10 +97,38 @@ import static com.ichi2.utils.BooleanGetter.FALSE;
 import static com.ichi2.utils.BooleanGetter.TRUE;
 
 /**
- * Loading in the background, so that AnkiDroid does not look like frozen.
+ * This is essentially an AsyncTask with some more logging. It delegates to TaskDelegate the actual business logic.
+ * It adds some extra check.
+ * TODO: explain the goal of those extra checks. They seems redundant with AsyncTask specification.
+ *
+ * The CollectionTask should be created by the TaskManager. All creation of background tasks (except for Connection and Widget) should be done by sending a TaskDelegate to the ThreadManager.launchTask.
+ *
+ * @param <Progress>   The type of progress sent by the Task. E.g. a Card, a BooleanGetter.
+ * @param <Result>     The type of result returned by the Task. E.g. the trees of decks, counts of a deck
  */
 public class CollectionTask<ProgressBackground, ResultBackground> extends BaseAsyncTask<Void, ProgressBackground, ResultBackground> {
 
+    /**
+     * Task contains the business logic of background tasks.
+     * While CollectionTask deals with all general task features, such as ensuring that no two tasks runs simultaneously
+     * and Timberings, the Task contains the code that we actually want to execute.
+     *
+     * TaskManager.launchCollectionTask takes a Task, and potentially a TaskListener. It is in charge of running
+     * ensuring that the task is executed, by embedding this Task in an object that can actually be executed.
+     *
+     *
+     * Currently, background processes uses CollectionTask, which inherits from AsyncTask, which is deprecated. Using this
+     * delegation, we should hopefully eventually be able to stop using AsyncTask without making any change to the Task.
+     *
+     * Tests can runs tasks in Foreground by changing the task manager. Those tasks can then be directly executed by
+     * ForegroundTaskManager without needing an executor.
+     *
+     * The Task type is used to cancel planified tasks. In particular it means that no Task should
+     * be an anonymous class if we want to be able to cancel the task running it.
+     *
+     * @param <ProgressBackground> The type of values that the task can send to indicates its progress. E.g. a card to dislay while remaining work is done; the progression of a counter.
+     * @param <ResultBackground> The type of result returned by the task at the end. E.g. the tree of decks, counts for a particular deck
+     */
     public abstract static class Task<ProgressBackground, ResultBackground> {
         protected abstract ResultBackground task(@NonNull Collection col, @NonNull ProgressSenderAndCancelListener<ProgressBackground> collectionTask);
 
