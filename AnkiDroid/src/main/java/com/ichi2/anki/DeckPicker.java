@@ -379,7 +379,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
                 deckPicker.mProgressDialog.dismiss();
             }
             Resources res = deckPicker.getResources();
-            if (result.getBoolean()) {
+            if (result.success()) {
                 deckPicker.updateDeckList();
             } else {
                 deckPicker.showSimpleMessageDialog(res.getString(R.string.import_log_no_apkg), true);
@@ -1635,7 +1635,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
             if (deckPicker.mProgressDialog != null && deckPicker.mProgressDialog.isShowing()) {
                 deckPicker.mProgressDialog.dismiss();
             }
-            if (result.getBoolean()) {
+            if (result.success()) {
                 @SuppressWarnings("unchecked")
                 List<List<String>> checkList = result.value;
                 deckPicker.showMediaCheckDialog(MediaCheckDialog.DIALOG_MEDIA_CHECK_RESULTS, checkList);

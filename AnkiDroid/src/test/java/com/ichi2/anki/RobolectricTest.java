@@ -426,7 +426,7 @@ public class RobolectricTest implements CollectionGetter {
             @Override
             public void onPostExecute(Result result) {
 
-                if (result == null || !result.getBoolean()) {
+                if (result == null || !result.success()) {
                     throw new IllegalArgumentException("Task failed");
                 }
                 completed[0] = true;

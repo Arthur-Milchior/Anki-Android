@@ -20,7 +20,7 @@ package com.ichi2.utils;
  * Represents whether a computation succeded or failed
  */
 public interface Status {
-    boolean getBoolean();
+    boolean success();
 
     Status TRUE = () -> true;
 }

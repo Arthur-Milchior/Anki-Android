@@ -25,7 +25,7 @@ public class PairWithBoolean<U> implements Status {
      */
     public final @Nullable U value;
 
-    public boolean getBoolean() {
+    public boolean success() {
         return value != null;
     }
     public static PairWithBoolean FALSE = new PairWithBoolean();
