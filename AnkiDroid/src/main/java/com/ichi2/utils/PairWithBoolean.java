@@ -19,7 +19,7 @@ package com.ichi2.utils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class PairWithBoolean<U> implements BooleanGetter {
+public class PairWithBoolean<U> implements Status {
     /**
      * The computed value in case of success. Null in case of failure
      */

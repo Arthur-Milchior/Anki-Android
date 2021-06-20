@@ -127,7 +127,7 @@ import com.ichi2.utils.AdaptionUtil;
 import com.ichi2.utils.AndroidUiUtils;
 import com.ichi2.utils.AssetHelper;
 import com.ichi2.utils.ClipboardUtil;
-import com.ichi2.utils.BooleanGetter;
+import com.ichi2.utils.Status;
 import com.ichi2.utils.DiffEngine;
 import com.ichi2.utils.FunctionalInterfaces.Consumer;
 import com.ichi2.utils.FunctionalInterfaces.Function;
@@ -570,7 +570,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
     }
 
 
-    private final TaskListener<Card, BooleanGetter> mUpdateCardHandler = new TaskListener<Card, BooleanGetter>() {
+    private final TaskListener<Card, Status> mUpdateCardHandler = new TaskListener<Card, Status>() {
         private boolean mNoMoreCards;
 
 
@@ -619,7 +619,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
 
 
         @Override
-        public void onPostExecute(BooleanGetter result) {
+        public void onPostExecute(Status result) {
             if (!result.getBoolean()) {
                 // RuntimeException occurred on update cards
                 closeReviewer(DeckPicker.RESULT_DB_ERROR, false);
@@ -631,7 +631,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
         }
     };
 
-    class NextCardHandler<Result extends BooleanGetter> extends TaskListener<Card, Result> {
+    class NextCardHandler<Result extends Status> extends TaskListener<Card, Result> {
         private boolean mNoMoreCards;
 
 
@@ -718,7 +718,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity i
         }
     }
 
-    protected class AnswerCardHandler extends NextCardHandler<BooleanGetter> {
+    protected class AnswerCardHandler extends NextCardHandler<Status> {
 
         private final boolean mQuick;
 

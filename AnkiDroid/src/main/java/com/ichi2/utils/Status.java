@@ -17,10 +17,10 @@
 package com.ichi2.utils;
 
 /**
- * A simple interface with a getter for a specific type
+ * Represents whether a computation succeded or failed
  */
-public interface BooleanGetter {
+public interface Status {
     boolean getBoolean();
 
-    BooleanGetter TRUE = () -> true;
+    Status TRUE = () -> true;
 }

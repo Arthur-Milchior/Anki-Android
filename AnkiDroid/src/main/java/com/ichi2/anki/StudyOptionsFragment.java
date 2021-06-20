@@ -54,7 +54,7 @@ import com.ichi2.libanki.Decks;
 import com.ichi2.libanki.Utils;
 import com.ichi2.libanki.Deck;
 import com.ichi2.themes.StyledProgressDialog;
-import com.ichi2.utils.BooleanGetter;
+import com.ichi2.utils.Status;
 import com.ichi2.utils.FragmentFactoryUtils;
 import com.ichi2.utils.HtmlUtils;
 
@@ -308,7 +308,7 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
         parent.addView(newView);
     }
 
-    private final TaskListener<Card, BooleanGetter> mUndoListener = new TaskListener<Card, BooleanGetter>() {
+    private final TaskListener<Card, Status> mUndoListener = new TaskListener<Card, Status>() {
         @Override
         public void onPreExecute() {
 
@@ -316,7 +316,7 @@ public class StudyOptionsFragment extends Fragment implements Toolbar.OnMenuItem
 
 
         @Override
-        public void onPostExecute(BooleanGetter v) {
+        public void onPostExecute(Status v) {
             openReviewer();
         }
     };
