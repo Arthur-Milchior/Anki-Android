@@ -23,17 +23,17 @@ public class PairWithBoolean<U> implements BooleanGetter {
     /**
      * The computed value in case of success. Null in case of failure
      */
-    public final @Nullable U other;
+    public final @Nullable U value;
 
     public boolean getBoolean() {
-        return other != null;
+        return value != null;
     }
     public static PairWithBoolean FALSE = new PairWithBoolean();
 
     private PairWithBoolean() {
-        other = null;
+        value = null;
     }
-    public PairWithBoolean(@NonNull U other) {
-        this.other = other;
+    public PairWithBoolean(@NonNull U value) {
+        this.value = value;
     }
 }
