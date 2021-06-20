@@ -22,5 +22,5 @@ package com.ichi2.utils;
 public interface Status {
     boolean success();
 
-    Status TRUE = () -> true;
+    Status OK = () -> true;
 }

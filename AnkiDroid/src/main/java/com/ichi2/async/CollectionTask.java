@@ -93,7 +93,7 @@ import timber.log.Timber;
 import static com.ichi2.async.TaskManager.setLatestInstance;
 import static com.ichi2.libanki.Card.deepCopyCardArray;
 import static com.ichi2.libanki.UndoAction.*;
-import static com.ichi2.utils.Status.TRUE;
+import static com.ichi2.utils.Status.OK;
 import static com.ichi2.utils.PairWithBoolean.FALSE;
 
 /**
@@ -344,7 +344,7 @@ public class CollectionTask<Progress, Result> extends BaseAsyncTask<Void, Progre
                 AnkiDroidApp.sendExceptionReport(e, "doInBackgroundUpdateNote");
                 return FALSE;
             }
-            return TRUE;
+            return OK;
         }
 
         public boolean isFromReviewer() {
@@ -362,7 +362,7 @@ public class CollectionTask<Progress, Result> extends BaseAsyncTask<Void, Progre
                 newCard._getQA(true);
             }
             collectionTask.doProgress(newCard);
-            return TRUE;
+            return OK;
         }
     }
 
@@ -509,7 +509,7 @@ public class CollectionTask<Progress, Result> extends BaseAsyncTask<Void, Progre
                 AnkiDroidApp.sendExceptionReport(e, "doInBackgroundDismissNote");
                 return FALSE;
             }
-            return TRUE;
+            return OK;
         }
     }
 
@@ -1075,7 +1075,7 @@ public class CollectionTask<Progress, Result> extends BaseAsyncTask<Void, Progre
                 AnkiDroidApp.sendExceptionReport(e, "doInBackgroundUndo");
                 return FALSE;
             }
-            return TRUE;
+            return OK;
         }
     }
 
@@ -1524,7 +1524,7 @@ public class CollectionTask<Progress, Result> extends BaseAsyncTask<Void, Progre
                 zip.close();
                 // delete tmp dir
                 BackupManager.removeDir(dir);
-                return TRUE;
+                return OK;
             } catch (RuntimeException e) {
                 Timber.e(e, "doInBackgroundImportReplace - RuntimeException");
                 AnkiDroidApp.sendExceptionReport(e, "doInBackgroundImportReplace1");
