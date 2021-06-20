@@ -63,7 +63,7 @@ import com.ichi2.libanki.utils.Time;
 import com.ichi2.utils.JSONArray;
 import com.ichi2.utils.JSONException;
 import com.ichi2.utils.JSONObject;
-import com.ichi2.utils.PairWithBoolean;
+import com.ichi2.utils.StatusOr;
 import com.ichi2.utils.SyncStatus;
 import com.ichi2.utils.Triple;
 
@@ -94,7 +94,7 @@ import static com.ichi2.async.TaskManager.setLatestInstance;
 import static com.ichi2.libanki.Card.deepCopyCardArray;
 import static com.ichi2.libanki.UndoAction.*;
 import static com.ichi2.utils.Status.OK;
-import static com.ichi2.utils.PairWithBoolean.FALSE;
+import static com.ichi2.utils.StatusOr.FALSE;
 
 /**
  * This is essentially an AsyncTask with some more logging. It delegates to TaskDelegate the actual business logic.
@@ -747,7 +747,7 @@ public class CollectionTask<Progress, Result> extends BaseAsyncTask<Void, Progre
         }
     }
 
-    private static abstract class DismissNotes<Progress> extends Task<Progress, PairWithBoolean<Card[]>> {
+    private static abstract class DismissNotes<Progress> extends Task<Progress, StatusOr<Card[]>> {
         protected final List<Long> mCardIds;
 
         public DismissNotes(List<Long> cardIds) {
@@ -760,7 +760,7 @@ public class CollectionTask<Progress, Result> extends BaseAsyncTask<Void, Progre
          * @param collectionTask Represents the background tasks.
          * @return whether the task succeeded, and the array of cards affected.
          */
-        protected PairWithBoolean<Card[]> task(@NonNull Collection col, @NonNull ProgressSenderAndCancelListener<Progress> collectionTask) {
+        protected StatusOr<Card[]> task(@NonNull Collection col, @NonNull ProgressSenderAndCancelListener<Progress> collectionTask) {
             // query cards
             Card[] cards = new Card[mCardIds.size()];
             for (int i = 0; i < mCardIds.size(); i++) {
@@ -785,7 +785,7 @@ public class CollectionTask<Progress, Result> extends BaseAsyncTask<Void, Progre
             }
             // pass cards back so more actions can be performed by the caller
             // (querying the cards again is unnecessarily expensive)
-            return new PairWithBoolean<>(cards);
+            return new StatusOr<>(cards);
         }
 
         /**
@@ -1728,9 +1728,9 @@ public class CollectionTask<Progress, Result> extends BaseAsyncTask<Void, Progre
     /**
      * @return The results list from the check, or false if any errors.
      */
-    public static class CheckMedia extends Task<Void, PairWithBoolean<List<List<String>>>> {
+    public static class CheckMedia extends Task<Void, StatusOr<List<List<String>>>> {
         @Override
-        protected PairWithBoolean<List<List<String>>> task(@NonNull Collection col, @NonNull ProgressSenderAndCancelListener<Void> collectionTask) {
+        protected StatusOr<List<List<String>>> task(@NonNull Collection col, @NonNull ProgressSenderAndCancelListener<Void> collectionTask) {
             Timber.d("doInBackgroundCheckMedia");
             // Ensure that the DB is valid - unknown why, but some users were missing the meta table.
             try {
@@ -1742,7 +1742,7 @@ public class CollectionTask<Progress, Result> extends BaseAsyncTask<Void, Progre
             // A media check on AnkiDroid will also update the media db
             col.getMedia().findChanges(true);
             // Then do the actual check
-            return new PairWithBoolean<>(col.getMedia().check());
+            return new StatusOr<>(col.getMedia().check());
         }
     }
 

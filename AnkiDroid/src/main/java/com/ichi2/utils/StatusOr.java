@@ -19,7 +19,11 @@ package com.ichi2.utils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class PairWithBoolean<U> implements Status {
+/**
+ * Represents either a computation which failed, or the computed value. The value should be non null.
+ * @param <U> The value of a succesful computation
+ */
+public class StatusOr<U> implements Status {
     /**
      * The computed value in case of success. Null in case of failure
      */
@@ -28,12 +32,12 @@ public class PairWithBoolean<U> implements Status {
     public boolean success() {
         return value != null;
     }
-    public static PairWithBoolean FALSE = new PairWithBoolean();
+    public static StatusOr FALSE = new StatusOr();
 
-    private PairWithBoolean() {
+    private StatusOr() {
         value = null;
     }
-    public PairWithBoolean(@NonNull U value) {
+    public StatusOr(@NonNull U value) {
         this.value = value;
     }
 }

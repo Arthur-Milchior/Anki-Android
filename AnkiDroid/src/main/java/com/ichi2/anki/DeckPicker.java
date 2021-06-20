@@ -134,7 +134,7 @@ import com.ichi2.ui.BadgeDrawableBuilder;
 import com.ichi2.utils.AdaptionUtil;
 import com.ichi2.utils.Status;
 import com.ichi2.utils.ImportUtils;
-import com.ichi2.utils.PairWithBoolean;
+import com.ichi2.utils.StatusOr;
 import com.ichi2.utils.Permissions;
 import com.ichi2.utils.SyncStatus;
 import com.ichi2.utils.Triple;
@@ -1618,7 +1618,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
     private MediaCheckListener mediaCheckListener() {
         return new MediaCheckListener(this);
     }
-    private static class MediaCheckListener extends TaskListenerWithContext<DeckPicker, Void, PairWithBoolean<List<List<String>>>>{
+    private static class MediaCheckListener extends TaskListenerWithContext<DeckPicker, Void, StatusOr<List<List<String>>>>{
         public MediaCheckListener (DeckPicker deckPicker) {
             super(deckPicker);
         }
@@ -1631,7 +1631,7 @@ public class DeckPicker extends NavigationDrawerActivity implements
 
 
         @Override
-        public void actualOnPostExecute(@NonNull DeckPicker deckPicker, PairWithBoolean<List<List<String>>> result) {
+        public void actualOnPostExecute(@NonNull DeckPicker deckPicker, StatusOr<List<List<String>>> result) {
             if (deckPicker.mProgressDialog != null && deckPicker.mProgressDialog.isShowing()) {
                 deckPicker.mProgressDialog.dismiss();
             }

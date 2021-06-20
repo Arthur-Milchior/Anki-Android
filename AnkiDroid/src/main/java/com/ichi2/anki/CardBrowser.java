@@ -88,7 +88,7 @@ import com.ichi2.upgrade.Upgrade;
 import com.ichi2.utils.Status;
 import com.ichi2.utils.FunctionalInterfaces;
 import com.ichi2.utils.LanguageUtil;
-import com.ichi2.utils.PairWithBoolean;
+import com.ichi2.utils.StatusOr;
 import com.ichi2.utils.Permissions;
 import com.ichi2.widget.WidgetStatus;
 
@@ -350,7 +350,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
         return new RepositionCardHandler(this);
     }
 
-    private static class RepositionCardHandler extends TaskListenerWithContext<CardBrowser, Object, PairWithBoolean<Card[]>> {
+    private static class RepositionCardHandler extends TaskListenerWithContext<CardBrowser, Object, StatusOr<Card[]>> {
         public RepositionCardHandler(CardBrowser browser) {
             super(browser);
         }
@@ -362,7 +362,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
 
         @Override
-        public void actualOnPostExecute(@NonNull CardBrowser browser, PairWithBoolean<Card[]> cards) {
+        public void actualOnPostExecute(@NonNull CardBrowser browser, StatusOr<Card[]> cards) {
             Timber.d("CardBrowser::RepositionCardHandler() onPostExecute");
             browser.mReloadRequired = true;
             int cardCount = cards.value.length;
@@ -376,7 +376,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
     private ResetProgressCardHandler resetProgressCardHandler() {
         return new ResetProgressCardHandler(this);
     }
-    private static class ResetProgressCardHandler extends TaskListenerWithContext<CardBrowser, Object, PairWithBoolean<Card[]>>{
+    private static class ResetProgressCardHandler extends TaskListenerWithContext<CardBrowser, Object, StatusOr<Card[]>>{
         public ResetProgressCardHandler(CardBrowser browser) {
             super(browser);
         }
@@ -388,7 +388,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
 
         @Override
-        public void actualOnPostExecute(@NonNull CardBrowser browser, PairWithBoolean<Card[]> cards) {
+        public void actualOnPostExecute(@NonNull CardBrowser browser, StatusOr<Card[]> cards) {
             Timber.d("CardBrowser::ResetProgressCardHandler() onPostExecute");
             browser.mReloadRequired = true;
             int cardCount = cards.value.length;
@@ -402,7 +402,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
     private RescheduleCardHandler rescheduleCardHandler() {
         return new RescheduleCardHandler(this);
     }
-    private static class RescheduleCardHandler extends TaskListenerWithContext<CardBrowser, Card, PairWithBoolean<Card[]>>{
+    private static class RescheduleCardHandler extends TaskListenerWithContext<CardBrowser, Card, StatusOr<Card[]>>{
         public RescheduleCardHandler (CardBrowser browser) {
             super(browser);
         }
@@ -414,7 +414,7 @@ public class CardBrowser extends NavigationDrawerActivity implements
 
 
         @Override
-        public void actualOnPostExecute(@NonNull CardBrowser browser, PairWithBoolean<Card[]> cards) {
+        public void actualOnPostExecute(@NonNull CardBrowser browser, StatusOr<Card[]> cards) {
             Timber.d("CardBrowser::RescheduleCardHandler() onPostExecute");
             browser.mReloadRequired = true;
             int cardCount = cards.value.length;
@@ -1714,14 +1714,14 @@ public class CardBrowser extends NavigationDrawerActivity implements
     }
 
 
-    private static class ChangeDeckHandler extends ListenerWithProgressBarCloseOnFalse<Object, PairWithBoolean<Card[]>> {
+    private static class ChangeDeckHandler extends ListenerWithProgressBarCloseOnFalse<Object, StatusOr<Card[]>> {
         public ChangeDeckHandler(CardBrowser browser) {
             super("Card Browser - changeDeckHandler.actualOnPostExecute(CardBrowser browser)", browser);
         }
 
 
         @Override
-        protected void actualOnValidPostExecute(CardBrowser browser, PairWithBoolean<Card[]> result) {
+        protected void actualOnValidPostExecute(CardBrowser browser, StatusOr<Card[]> result) {
             browser.hideProgressBar();
 
             browser.searchCards();
@@ -1825,13 +1825,13 @@ public class CardBrowser extends NavigationDrawerActivity implements
         return new SuspendCardHandler(this);
     }
 
-    private static class SuspendCardHandler extends ListenerWithProgressBarCloseOnFalse<Void, PairWithBoolean<Card[]>> {
+    private static class SuspendCardHandler extends ListenerWithProgressBarCloseOnFalse<Void, StatusOr<Card[]>> {
         public SuspendCardHandler(CardBrowser browser) {
             super(browser);
         }
 
         @Override
-        protected void actualOnValidPostExecute(CardBrowser browser, PairWithBoolean<Card[]> cards) {
+        protected void actualOnValidPostExecute(CardBrowser browser, StatusOr<Card[]> cards) {
             browser.updateCardsInList(Arrays.asList(cards.value));
             browser.hideProgressBar();
             browser.invalidateOptionsMenu();    // maybe the availability of undo changed
@@ -1852,13 +1852,13 @@ public class CardBrowser extends NavigationDrawerActivity implements
     private MarkCardHandler markCardHandler() {
         return new MarkCardHandler(this);
     }
-    private static class MarkCardHandler extends ListenerWithProgressBarCloseOnFalse<Void, PairWithBoolean<Card[]>> {
+    private static class MarkCardHandler extends ListenerWithProgressBarCloseOnFalse<Void, StatusOr<Card[]>> {
         public MarkCardHandler(CardBrowser browser) {
             super(browser);
         }
 
         @Override
-        protected void actualOnValidPostExecute(CardBrowser browser, PairWithBoolean<Card[]> cards) {
+        protected void actualOnValidPostExecute(CardBrowser browser, StatusOr<Card[]> cards) {
             browser.updateCardsInList(CardUtils.getAllCards(CardUtils.getNotes(Arrays.asList(cards.value))));
             browser.hideProgressBar();
             browser.invalidateOptionsMenu();    // maybe the availability of undo changed
