@@ -537,6 +537,8 @@ public class DeckPicker extends NavigationDrawerActivity implements
         mReviewSummaryTextView = findViewById(R.id.today_stats_text_view);
 
         mShortAnimDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+        new Onboarding.DeckPicker(this, mRecyclerViewLayoutManager).onCreate();
     }
 
     /**
@@ -2932,7 +2934,6 @@ public class DeckPicker extends NavigationDrawerActivity implements
     public boolean hasDecksBeingDisplayed() {
         return mDeckListAdapter.getItemCount() > 0 && mRecyclerViewLayoutManager.getChildAt(0) != null;
     }
-
 
     private enum DeckSelectionType {
         /** Show study options if fragmented, otherwise, review */
