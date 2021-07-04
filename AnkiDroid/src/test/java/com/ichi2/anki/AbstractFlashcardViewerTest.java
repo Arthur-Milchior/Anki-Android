@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
+import org.robolectric.annotation.Config;
 
 import androidx.annotation.NonNull;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -339,6 +340,7 @@ public class AbstractFlashcardViewerTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void testEditingCardChangesTypedAnswer() {
         // 7363
        addNoteUsingBasicTypedModel("Hello", "World");
@@ -362,6 +364,7 @@ public class AbstractFlashcardViewerTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void testEditingCardChangesTypedAnswerOnDisplayAnswer() {
         // 7363
         addNoteUsingBasicTypedModel("Hello", "World");

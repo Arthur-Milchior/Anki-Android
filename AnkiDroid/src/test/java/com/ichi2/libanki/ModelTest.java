@@ -93,6 +93,7 @@ public class ModelTest extends RobolectricTest {
 
 
     @Test
+    @Config(qualifiers = "en")
     public void test_modelCopy() {
         Collection col = getCol();
         Model m = col.getModels().current();
@@ -502,6 +503,7 @@ public class ModelTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void test_req() {
 
         Collection col = getCol();
@@ -568,6 +570,7 @@ public class ModelTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void nonEmptyFieldTest() {
         Collection col = getCol();
         Models mm = col.getModels();
@@ -582,6 +585,7 @@ public class ModelTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void avail_standard_order_test() {
         Collection col = getCol();
         Models mm = col.getModels();
@@ -617,6 +621,7 @@ public class ModelTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void avail_ords_test() {
         Collection col = getCol();
         Models mm = col.getModels();

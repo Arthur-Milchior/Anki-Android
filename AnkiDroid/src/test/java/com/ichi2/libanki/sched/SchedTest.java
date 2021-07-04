@@ -40,6 +40,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import java.util.Collections;
 import java.util.List;
@@ -104,6 +105,7 @@ public class SchedTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void learnCardsAreNotFiltered() {
         //Replicates Anki commit: 13c54e02d8fd2b35f6c2f4b796fc44dec65043b8
 
@@ -157,6 +159,7 @@ public class SchedTest extends RobolectricTest {
 
 
     @NonNull
+    @Config(qualifiers = "en")
     private Card createBuriedCardInDefaultDeck() {
         Note n = addNoteUsingBasicModel("Hello", "World");
         Card c = n.firstCard();
@@ -185,6 +188,7 @@ public class SchedTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void testRevLogValues() {
         MutableTime time = new MutableTime(MockTime.timeStamp(2020, 8, 4, 11, 22, 19, 123), 10);
         Collection col =  CollectionHelper.getInstance().getCol(getTargetContext(), time);

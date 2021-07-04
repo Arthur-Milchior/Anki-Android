@@ -24,6 +24,7 @@ import com.ichi2.libanki.Note;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -36,6 +37,7 @@ import static org.hamcrest.Matchers.is;
 public class PreviewerTest extends RobolectricTest {
 
     @Test
+    @Config(qualifiers = "en")
     public void editingNoteDoesNotChangePreviewedCardId() {
         // #7801
         addNoteUsingBasicModel("Hello", "World");
@@ -55,6 +57,7 @@ public class PreviewerTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void editingNoteChangesContent() {
         // #7801
         addNoteUsingBasicModel("Hello", "World");
@@ -76,6 +79,7 @@ public class PreviewerTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void previewerShouldNotAccessScheduler() {
         Card cardToPreview = addNoteUsingBasicModel("Hello", "World").firstCard();
         Previewer previewer = getPreviewerPreviewing(cardToPreview);

@@ -31,6 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
 
 import java.io.IOException;
 
@@ -55,6 +56,7 @@ public class KeyboardShortcutIntegrationTest extends RobolectricTest {
 
     @Before
     @Override
+    @Config(qualifiers = "en")
     public void setUp() {
         super.setUp();
         addNoteUsingBasicModel("Hello", "World");

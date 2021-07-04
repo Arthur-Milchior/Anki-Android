@@ -63,6 +63,7 @@ public class NoteEditorTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void verifyPreviewAddingNote() {
         NoteEditor n = getNoteEditorAdding(NoteType.BASIC).withFirstField("Preview Test").build();
         n.performPreview();
@@ -78,6 +79,7 @@ public class NoteEditorTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void whenEditingMultimediaEditUsesCurrentValueOfFields() {
         //Arrange
         int fieldIndex = 0;
@@ -94,6 +96,7 @@ public class NoteEditorTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void errorSavingNoteWithNoFirstFieldDisplaysNoFirstField() {
         NoteEditor noteEditor = getNoteEditorAdding(NoteType.BASIC)
                 .withNoFirstField()
@@ -105,6 +108,7 @@ public class NoteEditorTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void errorSavingInvalidNoteWithAllFieldsDisplaysInvalidTemplate() {
         NoteEditor noteEditor = getNoteEditorAdding(NoteType.THREE_FIELD_INVALID_TEMPLATE)
                 .withFirstField("A")
@@ -118,6 +122,7 @@ public class NoteEditorTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void errorSavingInvalidNoteWitSomeFieldsDisplaysEnterMore() {
         NoteEditor noteEditor = getNoteEditorAdding(NoteType.THREE_FIELD_INVALID_TEMPLATE)
                 .withFirstField("A")
@@ -130,6 +135,7 @@ public class NoteEditorTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void errorSavingClozeNoteWithNoFirstFieldDisplaysClozeError() {
         NoteEditor noteEditor = getNoteEditorAdding(NoteType.CLOZE)
                 .withNoFirstField()
@@ -141,6 +147,7 @@ public class NoteEditorTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void errorSavingClozeNoteWithNoClozeDeletionsDisplaysClozeError() {
         NoteEditor noteEditor = getNoteEditorAdding(NoteType.CLOZE)
                 .withFirstField("NoCloze")
@@ -152,6 +159,7 @@ public class NoteEditorTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void errorSavingNoteWithNoTemplatesShowsNoCardsCreated() {
         NoteEditor noteEditor = getNoteEditorAdding(NoteType.BACKTOFRONT)
                 .withFirstField("front is not enough")
@@ -163,6 +171,7 @@ public class NoteEditorTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void clozeNoteWithNoClozeDeletionsDoesNotSave() {
         int initialCards = getCardCount();
         NoteEditor editor = getNoteEditorAdding(NoteType.CLOZE)
@@ -175,6 +184,7 @@ public class NoteEditorTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void clozeNoteWithClozeDeletionsDoesSave() {
         int initialCards = getCardCount();
         NoteEditor editor = getNoteEditorAdding(NoteType.CLOZE)
@@ -187,6 +197,7 @@ public class NoteEditorTest extends RobolectricTest {
 
     @Test
     @Ignore("Not yet implemented")
+    @Config(qualifiers = "en")
     public void clozeNoteWithClozeInWrongFieldDoesNotSave() {
         //Anki Desktop blocks with "Continue?", we should just block to match the above test
         int initialCards = getCardCount();
@@ -214,6 +225,7 @@ public class NoteEditorTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void copyNoteCopiesDeckId() {
         // value returned if deck not found
         final int DECK_ID_NOT_FOUND = -404;
@@ -234,6 +246,7 @@ public class NoteEditorTest extends RobolectricTest {
 
 
     @Test
+    @Config(qualifiers = "en")
     public void stickyFieldsAreUnchangedAfterAdd() {
         // #6795 - newlines were converted to <br>
         Model basic = makeNoteForType(NoteType.BASIC);

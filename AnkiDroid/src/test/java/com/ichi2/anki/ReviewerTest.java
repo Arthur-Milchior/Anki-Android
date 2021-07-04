@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -102,6 +103,7 @@ public class ReviewerTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void jsTime4ShouldBeBlankIfButtonUnavailable() {
         // #6623 - easy should be blank when displaying a card with 3 buttons (after displaying a review)
         Note firstNote = addNoteUsingBasicModel("Hello", "World");
@@ -189,6 +191,7 @@ public class ReviewerTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void testLrnQueueAfterUndo() {
         Collection col = getCol();
         JSONObject nw = col.getDecks().confForDid(1).getJSONObject("new");
@@ -230,6 +233,7 @@ public class ReviewerTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void baseDeckName() {
         Collection col = getCol();
         Models models = col.getModels();
@@ -247,6 +251,7 @@ public class ReviewerTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void jsAnkiGetDeckName() {
         Collection col = getCol();
         Models models = col.getModels();

@@ -142,6 +142,7 @@ public class CardBrowserTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void browserDoesNotFailWhenSelectingANonExistingCard() {
         //#5900
         CardBrowser browser = getBrowserWithNotes(6);
@@ -155,6 +156,7 @@ public class CardBrowserTest extends RobolectricTest {
 
     @Test
     @Ignore("Not yet implemented, feature has performance implications in large collections, instead we remove selections")
+    @Config(qualifiers = "en")
     public void selectionsAreCorrectWhenNonExistingCardIsRemoved() {
         CardBrowser browser = getBrowserWithNotes(7);
         browser.checkCardsAtPositions(1, 3, 5, 6);
@@ -172,6 +174,7 @@ public class CardBrowserTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void canChangeDeckToRegularDeck() {
         addDeck("Hello");
         CardBrowser b = getBrowserWithNotes(5);
@@ -187,6 +190,7 @@ public class CardBrowserTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void cannotChangeDeckToDynamicDeck() {
         //5932 - dynamic decks are meant to have cards added to them through "Rebuild".
         addDynamicDeck("World");
@@ -203,6 +207,7 @@ public class CardBrowserTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void changeDeckIntegrationTestDynamicAndNon() {
         addDeck("Hello");
         addDynamicDeck("World");
@@ -221,6 +226,7 @@ public class CardBrowserTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void moveToNonDynamicDeckWorks() {
         addDeck("Foo");
         addDynamicDeck("Bar");
@@ -251,6 +257,7 @@ public class CardBrowserTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void changeDeckViaTaskIsHandledCorrectly() {
         long dynId = addDynamicDeck("World");
         selectDefaultDeck();
@@ -268,6 +275,7 @@ public class CardBrowserTest extends RobolectricTest {
 
 
     @Test
+    @Config(qualifiers = "en")
     public void flagsAreShownInBigDecksTest() {
         int numberOfNotes = 75;
         CardBrowser cardBrowser = getBrowserWithNotes(numberOfNotes);
@@ -368,6 +376,7 @@ public class CardBrowserTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void filterByFlagDisplaysProperly() {
         Note cardWithRedFlag = addNoteUsingBasicModel("Card with red flag", "Reverse");
         flagCardForNote(cardWithRedFlag, 1);
@@ -467,6 +476,7 @@ public class CardBrowserTest extends RobolectricTest {
 
 
     @Test
+    @Config(qualifiers = "en")
     public void repositionDataTest() {
         CardBrowser b = getBrowserWithNotes(1);
 
@@ -527,6 +537,7 @@ public class CardBrowserTest extends RobolectricTest {
 
     @Test
     @Ignore("Doesn't work - but should")
+    @Config(qualifiers = "en")
     public void dataUpdatesAfterUndoReposition() {
         CardBrowser b = getBrowserWithNotes(1);
 
@@ -551,6 +562,7 @@ public class CardBrowserTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     @Ignore("FLAKY: Robolectric getOptionsMenu does not require supportInvalidateOptionsMenu - so would not fail")
     public void rescheduleUndoTest() {
         CardBrowser b = getBrowserWithNotes(1);
@@ -568,6 +580,7 @@ public class CardBrowserTest extends RobolectricTest {
 
     /** 8027 */
     @Test
+    @Config(qualifiers = "en")
     public void checkSearchString() {
         addNoteUsingBasicModel("Hello", "John");
         long deck = addDeck("Deck 1");
@@ -618,6 +631,7 @@ public class CardBrowserTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void checkIfLongSelectChecksAllCardsInBetween() {
         // #8467 - selecting cards outside the view pane (20) caused a crash as we were using view-based positions
         CardBrowser browser = getBrowserWithNotes(25);
@@ -627,6 +641,7 @@ public class CardBrowserTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void checkIfSearchAllDecksWorks() {
         addNoteUsingBasicModel("Hello", "World");
         long deck = addDeck("Test Deck");
@@ -771,6 +786,7 @@ public class CardBrowserTest extends RobolectricTest {
 
     // Regression test for #8821
     @Test
+    @Config(qualifiers = "en")
     public void emptyScroll() {
         CardBrowser cardBrowser = getBrowserWithNotes(2);
 
@@ -779,6 +795,7 @@ public class CardBrowserTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void searchCardsNumberOfResultCount() {
         int cardsToRender = 1;
 

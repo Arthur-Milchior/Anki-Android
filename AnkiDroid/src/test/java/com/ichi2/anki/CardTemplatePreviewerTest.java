@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.android.controller.ActivityController;
+import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,7 @@ import androidx.annotation.NonNull;
 public class CardTemplatePreviewerTest extends RobolectricTest {
 
     @Test
+    @Config(qualifiers = "en")
     public void testPreviewUnsavedTemplate() {
 
         String modelName = "Basic";
@@ -81,6 +83,7 @@ public class CardTemplatePreviewerTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void testPreviewNormal() {
 
         // Make sure we test previewing a new card template

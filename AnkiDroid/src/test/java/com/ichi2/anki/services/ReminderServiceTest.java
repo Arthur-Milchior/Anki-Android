@@ -10,6 +10,7 @@ import com.ichi2.libanki.Collection;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowNotificationManager;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -34,6 +35,7 @@ public class ReminderServiceTest extends RobolectricTest {
 
 
     @Test
+    @Config(qualifiers = "en")
     public void testReminderServiceReviewsDue() {
         addNoteUsingBasicModel("test front", "test back");
         assertThat("No notifications exist", getNotificationManagerShadow().size() == 0);
@@ -43,6 +45,7 @@ public class ReminderServiceTest extends RobolectricTest {
 
 
     @Test
+    @Config(qualifiers = "en")
     public void testReminderServiceNullCollection() {
         addNoteUsingBasicModel("test front", "test back");
         enableNullCollection();

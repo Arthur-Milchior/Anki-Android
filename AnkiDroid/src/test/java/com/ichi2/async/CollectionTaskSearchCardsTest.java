@@ -21,6 +21,7 @@ import com.ichi2.anki.CardBrowser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.robolectric.annotation.Config;
 
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class CollectionTaskSearchCardsTest extends AbstractCollectionTaskTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    @Config(qualifiers = "en")
     public void searchCardsNumberOfResultCount() {
         addNoteUsingBasicModel("Hello", "World");
         addNoteUsingBasicModel("One", "Two");

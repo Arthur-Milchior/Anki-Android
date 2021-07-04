@@ -6,6 +6,7 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -33,6 +34,7 @@ public class LaTeXTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void  _imgLinkTest() {
         Collection col = getCol();
         Media m = new MockMedia(col);
@@ -48,6 +50,7 @@ public class LaTeXTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void  mungeQATest() {
         Collection col = getCol();
         Media m = new MockMedia(col);

@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowIntent;
 
@@ -49,6 +50,7 @@ public class CardTemplateEditorTest extends RobolectricTest {
 
     @Test
     @SuppressWarnings("PMD.NPathComplexity")
+    @Config(qualifiers = "en")
     public void testEditTemplateContents() throws Exception {
         String modelName = "Basic";
 
@@ -130,6 +132,7 @@ public class CardTemplateEditorTest extends RobolectricTest {
 
 
     @Test
+    @Config(qualifiers = "en")
     public void testDeleteTemplate() {
 
         String modelName = "Basic (and reversed card)";
@@ -172,6 +175,7 @@ public class CardTemplateEditorTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void testTemplateAdd() throws Exception {
 
         // Make sure we test previewing a new card template - not working for real yet
@@ -235,6 +239,7 @@ public class CardTemplateEditorTest extends RobolectricTest {
      *
      */
     @Test
+    @Config(qualifiers = "en")
     public void testDeleteTemplateWithSelectivelyGeneratedCards() {
 
         String modelName = "Basic (optional reversed card)";
@@ -318,6 +323,7 @@ public class CardTemplateEditorTest extends RobolectricTest {
      */
     @SuppressWarnings("PMD.ExcessiveMethodLength")
     @Test
+    @Config(qualifiers = "en")
     public void testDeleteTemplateWithGeneratedCards() {
 
         String modelName = "Basic (and reversed card)";
@@ -443,6 +449,7 @@ public class CardTemplateEditorTest extends RobolectricTest {
      */
     @SuppressWarnings("PMD.ExcessiveMethodLength")
     @Test
+    @Config(qualifiers = "en")
     public void testDeletePendingAddExistingCardCount() {
 
         String modelName = "Basic (optional reversed card)";
@@ -517,6 +524,7 @@ public class CardTemplateEditorTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void testDeckOverride() {
         String modelName = "Basic (optional reversed card)";
         Model model = getCurrentDatabaseModelCopy(modelName);
@@ -537,6 +545,7 @@ public class CardTemplateEditorTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void testContentPreservedAfterChangingEditorView() {
         String modelName = "Basic";
 
@@ -567,6 +576,7 @@ public class CardTemplateEditorTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void testBottomNavigationViewLayoutTransition() {
         String modelName = "Basic";
 

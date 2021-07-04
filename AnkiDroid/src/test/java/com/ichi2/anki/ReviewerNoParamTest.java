@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
+import org.robolectric.annotation.Config;
 
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
@@ -130,6 +131,7 @@ public class ReviewerNoParamTest extends RobolectricTest {
 
 
     @Test
+    @Config(qualifiers = "en")
     public void flippingCardHidesFullscreen() {
         addNoteUsingBasicModel("Hello", "World");
         ReviewerExt reviewer = startReviewerFullScreen();
@@ -159,6 +161,7 @@ public class ReviewerNoParamTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void undoingCardHidesFullScreen() {
         addNoteUsingBasicModel("Hello", "World");
         ReviewerExt reviewer = startReviewerFullScreen();

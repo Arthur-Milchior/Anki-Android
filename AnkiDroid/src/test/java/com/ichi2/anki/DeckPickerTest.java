@@ -180,6 +180,7 @@ public class DeckPickerTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void limitAppliedAfterReview() {
         Collection col = getCol();
         AbstractSched sched = col.getSched();

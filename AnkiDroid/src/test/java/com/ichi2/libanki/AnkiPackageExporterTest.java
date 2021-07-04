@@ -23,6 +23,7 @@ import com.ichi2.libanki.exception.EmptyMediaException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,6 +54,7 @@ public class AnkiPackageExporterTest extends RobolectricTest {
 
 
     @Test
+    @Config(qualifiers = "en")
     public void missingFileInDeckExportDoesSkipsFile() throws IOException, ImportExportException {
         // arrange
         File mediaFilePath = addTempFileToMediaAndNote();
@@ -82,6 +84,7 @@ public class AnkiPackageExporterTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void fileInExportIsCopied() throws IOException, ImportExportException {
         // arrange
         File tempFileInCollection = addTempFileToMediaAndNote();

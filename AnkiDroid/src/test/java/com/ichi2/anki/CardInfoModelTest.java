@@ -21,6 +21,7 @@ import com.ichi2.libanki.Card;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -33,6 +34,7 @@ public class CardInfoModelTest extends RobolectricTest {
 
 
     @Before
+    @Config(qualifiers = "en")
     public void setupModel() {
         // using a card from my collection
         Card c = addNoteUsingBasicModel("Hello", "World").firstCard();

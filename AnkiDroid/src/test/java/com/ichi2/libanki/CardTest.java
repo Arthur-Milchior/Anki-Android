@@ -130,6 +130,7 @@ public class CardTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void test_gen_or() throws ConfirmModSchemaException {
         Collection col = getCol();
         Models models = col.getModels();
@@ -187,6 +188,7 @@ public class CardTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void test_gen_not() throws ConfirmModSchemaException {
         Collection col = getCol();
         Models models = col.getModels();

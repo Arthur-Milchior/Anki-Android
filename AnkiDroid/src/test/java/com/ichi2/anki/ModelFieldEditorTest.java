@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
+import org.robolectric.annotation.Config;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -61,6 +62,7 @@ public class ModelFieldEditorTest extends RobolectricTest {
      * Tests if field names with illegal characters get removed from beginning of field names when adding field
      */
     @Test
+    @Config(qualifiers = "en")
     public void testIllegalCharactersInFieldName_addField() {
         String fieldName = setupInvalidFieldName(mForbiddenCharacter, ADD_FIELD);
 
@@ -72,6 +74,7 @@ public class ModelFieldEditorTest extends RobolectricTest {
      * Tests if field names with illegal characters get removed from beginning of field names when renaming field
      */
     @Test
+    @Config(qualifiers = "en")
     public void testIllegalCharactersInFieldName_renameField() {
         String fieldName = setupInvalidFieldName(mForbiddenCharacter, RENAME_FIELD);
 

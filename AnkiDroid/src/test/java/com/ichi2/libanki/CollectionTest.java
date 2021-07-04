@@ -6,6 +6,7 @@ import com.ichi2.utils.JSONObject;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -204,6 +205,7 @@ public class CollectionTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void test_filterToValidCards() {
         Collection col = getCol();
         long cid = addNoteUsingBasicModel("foo", "bar").firstCard().getId();

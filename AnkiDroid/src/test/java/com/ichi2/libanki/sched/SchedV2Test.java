@@ -40,6 +40,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -110,6 +111,7 @@ public class SchedV2Test extends RobolectricTest {
      * Reported by /u/CarelessSecretary9 on reddit:
      */
     @Test
+    @Config(qualifiers = "en")
     public void filteredDeckSchedulingOptionsRegressionTest() {
         Collection col = getCol();
         col.setCrt(1587852900L);
@@ -234,6 +236,7 @@ public class SchedV2Test extends RobolectricTest {
 
 
     @Test
+    @Config(qualifiers = "en")
     public void rebuildFilteredDeckSuspendHandling() throws ConfirmModSchemaException {
         getCol().changeSchedulerVer(2);
 
@@ -260,6 +263,7 @@ public class SchedV2Test extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void handlesSmallSteps() throws ConfirmModSchemaException {
         // a delay of 0 crashed the app (step of 0.01).
         getCol().changeSchedulerVer(2);
@@ -1727,6 +1731,7 @@ public class SchedV2Test extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void regression_test_preview() throws Exception {
         //"https://github.com/ankidroid/Anki-Android/issues/7285"
         Collection col = getColV2();

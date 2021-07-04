@@ -39,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
+import org.robolectric.annotation.Config;
 
 import java.util.Arrays;
 
@@ -81,6 +82,7 @@ public class AbstractSchedTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void testUndoResetsCardCountsToCorrectValue() throws InterruptedException {
         // #6587
         addNoteUsingBasicModel("Hello", "World");
@@ -132,6 +134,7 @@ public class AbstractSchedTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void testCardQueue() {
         Collection col = getCol();
         SchedV2 sched = (SchedV2) col.getSched();
@@ -160,6 +163,7 @@ public class AbstractSchedTest extends RobolectricTest {
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void siblingCorrectlyBuried() {
         // #6903
         Collection col = getCol();
@@ -304,6 +308,7 @@ mw.col.sched.extendLimits(1, 0)
 
     /** Those test may be unintuitive, but they follow upstream as close as possible. */
     @Test
+    @Config(qualifiers = "en")
     public void increaseToday() {
         new IncreaseToday().test();
     }
@@ -400,6 +405,7 @@ mw.col.sched.extendLimits(1, 0)
 
 
     @Test
+    @Config(qualifiers = "en")
     public void regression_7066() {
         Collection col = getCol();
         DeckConfig dconf = col.getDecks().getConf(1);
@@ -418,6 +424,7 @@ mw.col.sched.extendLimits(1, 0)
     }
 
     @Test
+    @Config(qualifiers = "en")
     public void regression_7984() {
         Collection col = getCol();
         SchedV2 sched = (SchedV2) col.getSched();
