@@ -2925,6 +2925,15 @@ public class DeckPicker extends NavigationDrawerActivity implements
         }
     }
 
+
+    /**
+     * Check if at least one deck is being displayed.
+     */
+    public boolean hasDecksBeingDisplayed() {
+        return mDeckListAdapter.getItemCount() > 0 && mRecyclerViewLayoutManager.getChildAt(0) != null;
+    }
+
+
     private enum DeckSelectionType {
         /** Show study options if fragmented, otherwise, review */
         DEFAULT,
