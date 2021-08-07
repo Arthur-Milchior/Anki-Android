@@ -21,6 +21,7 @@ import android.app.Activity
 import android.view.View
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ichi2.anki.OnboardingCategoryFlag.Companion.addCategory
 import com.ichi2.anki.OnboardingUtils.Companion.isVisited
 import com.ichi2.anki.OnboardingUtils.Companion.setVisited
 import com.ichi2.utils.HandlerUtils.executeFunctionUsingHandler
@@ -62,18 +63,26 @@ abstract class Onboarding<Feature, ActivityType>(
 )
         where Feature : Enum<Feature>, Feature : OnboardingFlag, ActivityType : Activity {
 
-    companion object {
-        const val DECK_PICKER_ONBOARDING = "DeckPickerOnboarding"
-        const val ABSTRACT_FLASHCARD_VIEWER_ONBOARDING = "AbstractFlashcardViewerOnboarding"
-        const val REVIEWER_ONBOARDING = "ReviewerOnboarding"
-        const val NOTE_EDITOR_ONBOARDING = "NoteEditorOnboarding"
-        const val CARD_BROWSER_ONBOARDING = "CardBrowserOnboarding"
+    enum class OnboardingFlagEnumName(val preference_name: String) : OnboardingCategoryFlag {
+        DECK_PICKER_ONBOARDING("DeckPickerOnboarding"),
+        ABSTRACT_FLASHCARD_VIEWER_ONBOARDING("AbstractFlashcardViewerOnboarding"),
+        REVIEWER_ONBOARDING("ReviewerOnboarding"),
+        NOTE_EDITOR_ONBOARDING("NoteEditorOnboarding"),
+        CARD_BROWSER_ONBOARDING("CardBrowserOnboarding");
+
+        override fun getCategoryName(): String {
+            return preference_name
+        }
+    }
+
+    init {
+        addCategory(OnboardingFlagEnumName.values())
     }
 
     fun onCreate() {
         mTutorials.forEach {
             // If tutorial is visited or condition is false then return from the loop.
-            if (isVisited(it.mFeatureIdentifier, mContext) || it.mOnboardingCondition?.invoke(mContext) == false) {
+            if (isVisited(it.mFeatureIdentifier, mContext) || it.mOnboardingCondition?.invoke() == false) {
                 return@forEach
             }
 
@@ -97,7 +106,7 @@ abstract class Onboarding<Feature, ActivityType>(
     data class TutorialArguments<Feature, ActivityType>(
         val mFeatureIdentifier: Feature,
         val mOnboardingFunction: () -> Unit,
-        val mOnboardingCondition: ((ActivityType) -> Boolean)? = null
+        val mOnboardingCondition: (() -> Boolean)? = null
     )
             where Feature : Enum<Feature>, Feature : OnboardingFlag, ActivityType : Activity
 
@@ -108,8 +117,8 @@ abstract class Onboarding<Feature, ActivityType>(
 
         init {
             mTutorials.add(TutorialArguments(DeckPickerOnboardingEnum.FAB, this::showTutorialForFABIfNew))
-            mTutorials.add(TutorialArguments(DeckPickerOnboardingEnum.DECK_NAME, this::showTutorialForDeckIfNew, { mActivityContext.hasDecksBeingDisplayed() }))
-            mTutorials.add(TutorialArguments(DeckPickerOnboardingEnum.COUNTS_LAYOUT, this::showTutorialForCountsLayoutIfNew, { mActivityContext.hasDecksBeingDisplayed() }))
+            mTutorials.add(TutorialArguments(DeckPickerOnboardingEnum.DECK_NAME, this::showTutorialForDeckIfNew, mActivityContext::hasDecksBeingDisplayed))
+            mTutorials.add(TutorialArguments(DeckPickerOnboardingEnum.COUNTS_LAYOUT, this::showTutorialForCountsLayoutIfNew, mActivityContext::hasDecksBeingDisplayed))
         }
 
         private fun showTutorialForFABIfNew() {
@@ -149,8 +158,8 @@ abstract class Onboarding<Feature, ActivityType>(
                 return mValue
             }
 
-            override fun getFeatureConstant(): String {
-                return DECK_PICKER_ONBOARDING
+            override fun getFeatureConstant(): OnboardingFlagEnumName {
+                return OnboardingFlagEnumName.DECK_PICKER_ONBOARDING
             }
         }
     }
@@ -194,8 +203,8 @@ abstract class Onboarding<Feature, ActivityType>(
                 return mValue
             }
 
-            override fun getFeatureConstant(): String {
-                return ABSTRACT_FLASHCARD_VIEWER_ONBOARDING
+            override fun getFeatureConstant(): OnboardingFlagEnumName {
+                return OnboardingFlagEnumName.ABSTRACT_FLASHCARD_VIEWER_ONBOARDING
             }
         }
     }
@@ -244,8 +253,8 @@ abstract class Onboarding<Feature, ActivityType>(
                 return mValue
             }
 
-            override fun getFeatureConstant(): String {
-                return REVIEWER_ONBOARDING
+            override fun getFeatureConstant(): OnboardingFlagEnumName {
+                return OnboardingFlagEnumName.REVIEWER_ONBOARDING
             }
         }
     }
@@ -284,8 +293,8 @@ abstract class Onboarding<Feature, ActivityType>(
                 return mValue
             }
 
-            override fun getFeatureConstant(): String {
-                return NOTE_EDITOR_ONBOARDING
+            override fun getFeatureConstant(): OnboardingFlagEnumName {
+                return OnboardingFlagEnumName.NOTE_EDITOR_ONBOARDING
             }
         }
     }
@@ -324,8 +333,8 @@ abstract class Onboarding<Feature, ActivityType>(
                 return mValue
             }
 
-            override fun getFeatureConstant(): String {
-                return CARD_BROWSER_ONBOARDING
+            override fun getFeatureConstant(): OnboardingFlagEnumName {
+                return OnboardingFlagEnumName.CARD_BROWSER_ONBOARDING
             }
         }
     }

@@ -18,6 +18,7 @@
 package com.ichi2.anki
 
 import android.content.Context
+import timber.log.Timber
 import java.util.BitSet
 
 class OnboardingUtils {
@@ -28,6 +29,11 @@ class OnboardingUtils {
          * Preference can be toggled by visiting 'Advanced' settings in the app.
          */
         const val SHOW_ONBOARDING = "showOnboarding"
+        val featureConstants = HashSet<String>()
+
+        fun addFeature(featureCategory: OnboardingCategoryFlag) {
+            featureConstants.add(featureCategory.getCategoryName())
+        }
 
         /**
          * Check if the tutorial for a feature should be displayed or not.
@@ -54,15 +60,26 @@ class OnboardingUtils {
             // Set the bit at the index defined for a feature once the tutorial for that feature is seen by the user.
             visitedFeatures.set(featureIdentifier.getOnboardingEnumValue())
 
-            AnkiDroidApp.getSharedPrefs(context).edit().putLong(featureIdentifier.getFeatureConstant(), visitedFeatures.toLongArray()[0]).apply()
+            AnkiDroidApp.getSharedPrefs(context).edit().putLong(featureIdentifier.getFeatureConstant().preference_name, visitedFeatures.toLongArray()[0]).apply()
         }
 
         /**
          * Returns a BitSet where the set bits indicate the visited screens.
          */
-        private fun getAllVisited(context: Context, featureConstant: String): BitSet {
-            val currentValue = AnkiDroidApp.getSharedPrefs(context).getLong(featureConstant, 0)
+        private fun getAllVisited(context: Context, featureConstant: Onboarding.OnboardingFlagEnumName): BitSet {
+            val currentValue = AnkiDroidApp.getSharedPrefs(context).getLong(featureConstant.preference_name, 0)
             return BitSet.valueOf(longArrayOf(currentValue))
+        }
+
+        fun reset(context: Context) {
+            Timber.i("Resetting all onboarding")
+            reset(context, Onboarding.OnboardingFlagEnumName.values().map { it.preference_name })
+        }
+
+        private fun reset(context: Context, featureConstants: Collection<String>) {
+            var editor = AnkiDroidApp.getSharedPrefs(context).edit()
+            featureConstants.forEach { editor.putLong(it, 0) }
+            editor.apply()
         }
     }
 }

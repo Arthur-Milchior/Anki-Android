@@ -14,29 +14,20 @@
  * You should have received a copy of the GNU General Public License along with         *
  * this program.  If not, see <http://www.gnu.org/licenses/>.                           *
  ****************************************************************************************/
-
 package com.ichi2.anki
 
-/**
- * Enumeration related to onboarding to use fixed integral values for enum constants
- * instead of using ordinals and ensuring that the used values are distinct. Implement this
- * interface whenever an onboarding related enum is needed.
- *
- * For removing constants, comment out the constant instead of removing it so that older values
- * are not used again.
- */
-interface OnboardingFlag {
-
-    /**
-     * Distinct values should be used in a particular onboarding enum class.
-     * The returned value should be between 0 and 63, the position range of bits in Long.
-     */
-    fun getOnboardingEnumValue(): Int
-    // TODO: Add lint check.
+interface OnboardingCategoryFlag {
 
     /**
      * Constant used to represent preference key for screens.
      * Values once defined should not be changed.
      */
-    fun getFeatureConstant(): Onboarding.OnboardingFlagEnumName
+    fun getCategoryName(): String
+
+    companion object {
+        /** All enums implementing OnboardingCategoryFlag should call this method */
+        fun <T> addCategory(category: Array<T>) where T : Enum<T>, T : OnboardingCategoryFlag {
+            category.forEach { OnboardingUtils.Companion.addFeature(it) }
+        }
+    }
 }
