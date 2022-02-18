@@ -17,14 +17,24 @@
 
 package com.ichi2.libanki;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.net.Uri;
+import android.os.Build;
 import android.text.TextUtils;
 
 import android.util.Pair;
 
 import com.ichi2.anki.AnkiDroidApp;
+import com.ichi2.anki.model.Directory;
+import com.ichi2.anki.servicelayer.scopedstorage.MigrateUserData;
+import com.ichi2.anki.servicelayer.scopedstorage.MoveDirectory;
+import com.ichi2.async.CollectionTask;
+import com.ichi2.async.ProgressSenderAndCancelListener;
+import com.ichi2.async.TaskDelegate;
+import com.ichi2.async.TaskManager;
 import com.ichi2.libanki.exception.EmptyMediaException;
 import com.ichi2.libanki.template.TemplateFilters;
 import com.ichi2.utils.Assert;
@@ -61,8 +71,10 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import timber.log.Timber;
 
+import static androidx.core.app.ActivityCompat.requestPermissions;
 import static java.lang.Math.min;
 
 /**
@@ -138,6 +150,37 @@ public class Media {
         }
         // change database
         connect();
+    }
+
+
+    public void testSpeed() {
+        String sourceName = dir();
+        File sourceFile = new File(sourceName);
+        Directory sourceDirectory = Directory.Companion.createInstance(sourceFile);
+        File dest = new File(sourceFile,"copy");
+        MoveDirectory.Companion.createDirectory(dest);
+        MoveDirectory op = new MoveDirectory(sourceDirectory, dest);
+        Timber.w("Moving test: Listing files from %s. Exists %b. is file %b. Is directory %b. %s.", sourceName, sourceFile.exists(), sourceFile.isFile(), sourceFile.isDirectory(), sourceFile.toString());
+        Timber.w("Moving test: Moving %d", sourceFile.listFiles().length);
+        long start = System.nanoTime();
+        MigrateUserData.MigrationContext context = new MigrateUserData.MigrationContext() {
+
+            @Override
+            public void reportProgress(long transferred) {
+
+            }
+
+
+            @Override
+            public void reportError(@NonNull MigrateUserData.Operation context, @NonNull Exception ex) {
+
+            }
+        };
+        context.setAttemptRename(false);
+        op.execute(context);
+        long end = System.nanoTime();
+        long duration = end - start;
+        Timber.w("Moving test: Listing files took %f seconds", duration / 1_000_000_000.d);
     }
 
 

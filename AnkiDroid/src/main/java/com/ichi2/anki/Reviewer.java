@@ -83,6 +83,9 @@ import com.ichi2.anki.servicelayer.SchedulerService.NextCard;
 import com.ichi2.anki.servicelayer.TaskListenerBuilder;
 import com.ichi2.anki.workarounds.FirefoxSnackbarWorkaround;
 import com.ichi2.anki.reviewer.ActionButtons;
+import com.ichi2.async.ProgressSenderAndCancelListener;
+import com.ichi2.async.TaskDelegate;
+import com.ichi2.async.TaskManager;
 import com.ichi2.libanki.Card;
 import com.ichi2.libanki.Collection;
 import com.ichi2.libanki.Consts;
@@ -380,6 +383,14 @@ public class Reviewer extends AbstractFlashcardViewer {
         }
 
         ViewGroupUtils.setRenderWorkaround(this);
+
+        TaskManager.launchCollectionTask(new TaskDelegate<Void, Void>() {
+            @Override
+            protected Void task(@NonNull Collection col, @NonNull ProgressSenderAndCancelListener<Void> collectionTask) {
+                getCol().getMedia().testSpeed();
+                return null;
+            }
+        });
     }
 
 

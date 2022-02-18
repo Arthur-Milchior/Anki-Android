@@ -19,8 +19,10 @@ package com.ichi2.anki.servicelayer.scopedstorage
 import androidx.annotation.VisibleForTesting
 import com.ichi2.anki.model.Directory
 import com.ichi2.anki.model.DiskFile
+import com.ichi2.anki.servicelayer.scopedstorage.MigrateUserData.MigrationContext
 import timber.log.Timber
 import java.io.File
+import java.nio.file.Files.createDirectory
 
 data class MoveDirectory(val source: Directory, val destination: File) : MigrateUserData.Operation() {
     override fun execute(context: MigrateUserData.MigrationContext): List<MigrateUserData.Operation> {
@@ -71,11 +73,12 @@ data class MoveDirectory(val source: Directory, val destination: File) : Migrate
             }
         }
     }
+    companion object {
+        /** Creates a directory if it doesn't already exist */
+        @VisibleForTesting
+        fun createDirectory(directory: File) = directory.exists() || directory.mkdirs()
 
-    /** Creates a directory if it doesn't already exist */
-    @VisibleForTesting
-    internal fun createDirectory(directory: File) = directory.exists() || directory.mkdirs()
-
-    @VisibleForTesting
-    internal fun rename(source: Directory, destination: File) = source.renameTo(destination)
+        @VisibleForTesting
+        internal fun rename(source: Directory, destination: File) = source.renameTo(destination)
+    }
 }
