@@ -18,7 +18,9 @@ package com.ichi2.testutils
 
 import com.ichi2.anki.model.Directory
 import com.ichi2.anki.model.DiskFile
+import com.ichi2.compat.CompatHelper
 import org.acra.util.IOUtils
+import timber.log.Timber
 import java.io.File
 import java.util.*
 
@@ -55,6 +57,7 @@ object FileUtil {
 }
 
 fun DiskFile.length(): Long = this.file.length()
+fun Directory.exists(): Boolean = this.directory.exists()
 
 /** Adds a file to the directory with the provided name and content */
 fun File.withTempFile(fileName: String, content: String = "default content"): File {
@@ -69,4 +72,11 @@ fun File.withTempFile(fileName: String, content: String = "default content"): Fi
 fun Directory.withTempFile(fileName: String, content: String = "default content"): Directory {
     this.directory.withTempFile(fileName, content)
     return this
+}
+
+/** Deletes the [Directory], returning a [File] referencing the deleted location */
+fun Directory.deleteForFileRef(): File {
+    Timber.d("test: deleting $this")
+    CompatHelper.getCompat().deleteFile(this.directory)
+    return this.directory
 }
