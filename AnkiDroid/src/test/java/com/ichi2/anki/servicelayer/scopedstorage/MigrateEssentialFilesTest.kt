@@ -257,6 +257,7 @@ class MigrateEssentialFilesTest : RobolectricTest() {
     }
 
     companion object {
+        // TODO: Move to Utils
         fun RobolectricTest.assertMigrationInProgress() {
             assertThat("the migration should be in progress", ScopedStorageService.userMigrationIsInProgress(this.targetContext), equalTo(true))
         }

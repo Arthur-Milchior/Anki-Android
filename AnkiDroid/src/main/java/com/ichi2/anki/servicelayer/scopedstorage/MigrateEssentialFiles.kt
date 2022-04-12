@@ -23,18 +23,43 @@ import androidx.core.content.edit
 import com.ichi2.anki.AnkiDroidApp
 import com.ichi2.anki.CollectionHelper
 import com.ichi2.anki.exception.RetryableException
+import com.ichi2.anki.model.Directory
 import com.ichi2.anki.servicelayer.*
 import com.ichi2.anki.servicelayer.ScopedStorageService.PREF_MIGRATION_DESTINATION
 import com.ichi2.anki.servicelayer.ScopedStorageService.PREF_MIGRATION_SOURCE
+import com.ichi2.anki.servicelayer.scopedstorage.MigrateEssentialFiles.UserActionRequiredException
 import com.ichi2.annotations.NeedsTest
 import com.ichi2.compat.CompatHelper
 import com.ichi2.libanki.Collection
 import com.ichi2.libanki.Storage
+import com.ichi2.libanki.Utils
 import timber.log.Timber
 import java.io.Closeable
 import java.io.File
 
-open class MigrateEssentialFiles(
+/**
+ * Algorithm class which represents copying the essential files (collection and media SQL-related
+ * files, and .nomedia/collection logs) to a location under scoped storage: [listEssentialFiles]
+ * This exists as a class to allow overriding operations for fault injection testing
+ *
+ * Our main concerns here are ensuring that there are no errors, and the graceful handling of issues.
+ * One primary concern is whether the failure case leaves files in the destination (scoped) directory.
+ *
+ * Many of our users are low on space, and leaving "difficult to delete" files in the app private
+ * directory is user-hostile.
+ *
+ * See: [execute]
+ *
+ * Preconditions (verified inside [migrateEssentialFiles] and [execute] - exceptions thrown if not met):
+ * * Collection is not corrupt and can be opened
+ * * Collection basic check passes [UserActionRequiredException.CheckDatabaseException]
+ * * Collection can be closed and locked
+ * * User has space to mve files [UserActionRequiredException.OutOfSpaceException] (the size of essential files + [EXCESS_SPACE_REQUIRED_BYTES]
+ * * A migration is not currently taking place
+ */
+open class MigrateEssentialFiles
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+internal constructor(
     private val context: Context,
     private val sourceDirectory: AnkiDroidDirectory,
     private val destinationDirectory: ScopedAnkiDroidDirectory
@@ -383,9 +408,32 @@ open class MigrateEssentialFiles(
          * The user must determine why essential files don't exist
          */
         class MissingEssentialFileException(val file: File) : UserActionRequiredException("missing essential file: ${file.name}")
+
+        /**
+         * A user requires more free space on their device before starting a scoped storage migration
+         */
+        class OutOfSpaceException(val available: Long, val required: Long) : UserActionRequiredException("More free space is required. Available: $available. Required: $required") {
+            companion object {
+                /**
+                 * Throws if [required] > [available]
+                 * @throws OutOfSpaceException
+                 */
+                fun throwIfInsufficient(available: Long, required: Long) {
+                    if (required > available) {
+                        throw OutOfSpaceException(available, required)
+                    }
+                    Timber.d("Appropriate space for operation. Needed %d bytes. Had %d", required, available)
+                }
+            }
+        }
     }
 
     companion object {
+        /**
+         * The amount of space required to migrate as a buffer (on top of the files that we move)
+         */
+        private const val EXCESS_SPACE_REQUIRED_BYTES = 10 * 1024 * 1024
+
         /**
          * Lists the files to be moved by [MigrateEssentialFiles]
          */
@@ -403,5 +451,65 @@ open class MigrateEssentialFiles(
          */
         private fun iterateEssentialFiles(sourcePath: AnkiDroidDirectory) =
             listEssentialFiles().flatMap { it.getFiles(sourcePath.directory.canonicalPath) }
+
+        /**
+         * Creates and invokes a [MigrateEssentialFiles] instance.
+         *
+         * Validates the paths are scoped and non-scoped and that the user has space.
+         * Creates [destination] optionally
+         * Runs the migration and handles retries
+         *
+         * @param destination The directory which is to be created and migrated to.
+         * Does not need to exist. Must be non-empty and non-legacy
+         * @param transformAlgo test-only: Allows wrapping the generated [MigrateEssentialFiles] to allow for mocking
+         *
+         * @throws IllegalStateException The current collection was under scoped storage
+         * @throws IllegalStateException [destination] was non-empty
+         * @throws IllegalStateException [destination] was not under scoped storage
+         * @throws UserActionRequiredException.OutOfSpaceException if insufficient space to migrate
+         * @throws UserActionRequiredException.MissingEssentialFileException if an essential file does not exist
+         * @throws UserActionRequiredException.CheckDatabaseException if 'Check Database' needs to be done first
+         *
+         * @see [execute] for other failures
+         */
+        internal fun migrateEssentialFiles(
+            context: Context,
+            destination: File,
+            transformAlgo: ((MigrateEssentialFiles) -> MigrateEssentialFiles)? = null
+        ) {
+            val collectionPath: CollectionFilePath = CollectionHelper.getInstance().getCol(context).path
+            val sourceDirectory = File(collectionPath).parent!!
+
+            if (!ScopedStorageService.isLegacyStorage(sourceDirectory, context)) {
+                throw IllegalStateException("Directory is already under scoped storage")
+            }
+
+            // creates directory and ensures it's not empty
+            if (!destination.mkdirs() && destination.exists() && CompatHelper.compat.hasFiles(destination)) {
+                throw IllegalStateException("Target directory was not empty: '$destination'")
+            }
+
+            // ensure we have space
+            // this must be after .mkdirs(): determineBytesAvailable works on non-empty directories,
+            UserActionRequiredException.OutOfSpaceException.throwIfInsufficient(
+                available = Utils.determineBytesAvailable(destination.absolutePath),
+                required = listEssentialFiles().sumOf { it.spaceRequired(sourceDirectory) } + EXCESS_SPACE_REQUIRED_BYTES
+            )
+
+            val destinationDirectory = Directory.createInstance(destination)!!
+            // ensure destination is under scoped storage
+            val destinationAnkiDroidDirectory = ScopedAnkiDroidDirectory.createInstance(destinationDirectory, context) ?: throw IllegalStateException("Destination folder was not under scoped storage '$destinationDirectory'")
+
+            var algo = MigrateEssentialFiles(
+                context,
+                AnkiDroidDirectory.createInstance(sourceDirectory)!!, // !! is fine here - parent of collection.anki2 is a directory
+                destinationAnkiDroidDirectory
+            )
+
+            algo = transformAlgo?.invoke(algo) ?: algo
+
+            // this executes the algorithm
+            RetryableException.retryOnce { algo.execute() }
+        }
     }
 }
