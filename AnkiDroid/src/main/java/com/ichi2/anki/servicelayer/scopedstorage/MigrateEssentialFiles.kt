@@ -37,7 +37,69 @@ import java.io.File
 open class MigrateEssentialFiles(
     private val context: Context,
     private val sourceDirectory: AnkiDroidDirectory,
+    private val destinationDirectory: ScopedAnkiDroidDirectory
 ) {
+    /**
+     * Copies (not moves) the [essential files][listEssentialFiles] to [destinationDirectory]
+     *
+     * Then opens a collection at the new location, and updates "deckPath" there.
+     *
+     * @throws IllegalStateException Migration in progress
+     * @throws IllegalStateException [destinationDirectory] is not empty
+     * @throws UserActionRequiredException.MissingEssentialFileException if an essential file does not exist
+     * @throws UserActionRequiredException.CheckDatabaseException if 'Check Database' needs to be done first
+     * @throws IllegalStateException If a lock cannot be acquired on the collection
+     *
+     * After:
+     *
+     * [PREF_MIGRATION_SOURCE] contains the [AnkiDroidDirectory] with the remaining items to move ([sourceDirectory])
+     * [PREF_MIGRATION_DESTINATION] contains an [AnkiDroidDirectory] with the copied collection.anki2/media ([destinationDirectory])
+     * "deckPath" now points to the new location of the collection in private storage
+     * [ScopedStorageService.UserDataMigrationPreferences.migrationInProgress] returns `true`
+     */
+    fun execute() {
+        if (ScopedStorageService.userMigrationIsInProgress(context)) {
+            throw IllegalStateException("Migration is already in progress")
+        }
+
+        val destinationPath = destinationDirectory.path
+
+        ensureFolderIsEmpty(destinationPath)
+
+        // ensure the current collection is the one in sourcePath
+        ensurePathIsCurrentCollectionPath(sourceDirectory)
+
+        // Throws MissingEssentialFileException if the files we need to copy don't exist
+        ensureEssentialFilesExist(sourceDirectory)
+
+        // Close the collection before we lock the files.
+        // ensureCollectionNotCorrupted is not compatible with an already open collection
+        closeCollection()
+
+        // Race Condition! - The collection could be opened here before locking (maybe by API?).
+        // This is resolved as a RetryableException is thrown if the collection is open
+
+        // open the collection directly and ensure it's not corrupted (must be closed and not locked)
+        ensureCollectionNotCorrupted(sourceDirectory.getCollectionAnki2Path())
+
+        // Lock the collection & journal, to ensure that nobody can open/corrupt it
+        // Also ensures the collection may not be opened
+        lockCollection().use {
+            // Copy essential files to new location. Guaranteed to be empty
+            for (file in iterateEssentialFiles(sourceDirectory)) {
+                copyTopLevelFile(file, destinationPath)
+            }
+        }
+
+        val destinationCollectionAnki2Path = destinationPath.getCollectionAnki2Path()
+
+        // Open the collection in the new location, checking for corruption
+        ensureCollectionNotCorrupted(destinationCollectionAnki2Path)
+
+        // set the preferences to the new deck path + checks CollectionHelper
+        // sets migration variables (migrationIsInProgress will be true)
+        updatePreferences(destinationPath)
+    }
 
     /**
      * Ensures that all files in [listEssentialFiles] exist
