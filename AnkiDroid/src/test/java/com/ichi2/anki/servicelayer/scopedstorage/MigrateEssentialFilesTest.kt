@@ -193,7 +193,7 @@ class MigrateEssentialFilesTest : RobolectricTest() {
 
         assertThrows<TestException> {
             executeAlgorithmSuccessfully(collectionSourcePath) {
-                Mockito.doThrow(TestException("simulating final collection open failure")).whenever(it).checkCollection()
+                Mockito.doReturn(TestException("simulating final collection open failure")).whenever(it).checkCollection()
             }
         }
 

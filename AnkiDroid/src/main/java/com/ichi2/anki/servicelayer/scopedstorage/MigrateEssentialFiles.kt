@@ -18,6 +18,7 @@ package com.ichi2.anki.servicelayer.scopedstorage
 
 import android.content.Context
 import android.provider.Settings.Global.putString
+import androidx.annotation.CheckResult
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.edit
 import com.ichi2.anki.AnkiDroidApp
@@ -168,19 +169,16 @@ internal constructor(
         }
 
         // open the collection in the new location - data is now migrated
-        try {
-            checkCollection()
-        } catch (e: Throwable) {
-            // if we can't open the migrated collection, revert the preference change so the user
-            // can still use their collection.
-            Timber.w("error opening new collection, restoring old values")
-            prefs.edit {
-                oldPrefValues.forEach {
-                    putString(it.key, it.value)
-                }
+        val e = checkCollection() ?: return
+        // if we can't open the migrated collection, revert the preference change so the user
+        // can still use their collection.
+        Timber.w("error opening new collection, restoring old values")
+        prefs.edit {
+            oldPrefValues.forEach {
+                putString(it.key, it.value)
             }
-            throw e
         }
+        throw e
     }
 
     /**
@@ -197,8 +195,17 @@ internal constructor(
 
     /** Checks that the default collection (from [CollectionHelper.getCol]) can be opened */
     @VisibleForTesting
-    open fun checkCollection() {
-        CollectionHelper.getInstance().getCol(context) ?: throw IllegalStateException("collection could not be opened")
+    @CheckResult
+    open fun checkCollection(): Throwable? {
+        return try {
+            if (CollectionHelper.getInstance().getCol(context) == null) {
+                throw IllegalStateException("collection could not be opened")
+            } else {
+                null
+            }
+        } catch (e: Throwable) {
+            e
+        }
     }
 
     /**
