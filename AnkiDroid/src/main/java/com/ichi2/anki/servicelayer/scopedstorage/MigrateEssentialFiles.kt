@@ -48,6 +48,16 @@ open class MigrateEssentialFiles(
         col.close()
     }
 
+    /**
+     * Ensures that the provided [path] represents the current AnkiDroid collection ([CollectionHelper.getCol])
+     */
+    private fun ensurePathIsCurrentCollectionPath(path: AnkiDroidDirectory) {
+        val currentCollectionFilePath = getCurrentCollectionPath()
+        if (path.directory.canonicalPath != currentCollectionFilePath.directory.canonicalPath) {
+            throw IllegalStateException("paths did not match: '$path' and '$currentCollectionFilePath' (Collection)")
+        }
+    }
+
     /** Converts the current AnkiDroid collection path to an [AnkiDroidDirectory] instance */
     private fun getCurrentCollectionPath(): AnkiDroidDirectory {
         val collectionAnki2Path = File(CollectionHelper.getCollectionPath(context))
