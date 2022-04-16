@@ -37,6 +37,13 @@ open class MigrateEssentialFiles(
         CollectionHelper.getInstance().getCol(context) ?: throw IllegalStateException("collection could not be opened")
     }
 
+    /** Converts the current AnkiDroid collection path to an [AnkiDroidDirectory] instance */
+    private fun getCurrentCollectionPath(): AnkiDroidDirectory {
+        val collectionAnki2Path = File(CollectionHelper.getCollectionPath(context))
+        // happy with the !! here: the parent of the AnkiDroid file is a directory
+        return AnkiDroidDirectory.createInstance(File(collectionAnki2Path.canonicalPath).parent!!)!!
+    }
+
     /**
      * Locks the collection and returns a [LockedCollection] which allows the collection to be unlocked
      */
