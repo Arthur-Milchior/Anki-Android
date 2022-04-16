@@ -83,6 +83,18 @@ open class MigrateEssentialFiles(
         }
     }
 
+    /** A standard file which may not exist */
+    class OptionalFile(val fileName: String) : EssentialFile() {
+        override fun getFiles(sourceDirectory: String): List<File> {
+            val file = File(sourceDirectory, fileName)
+            return if (!file.exists()) {
+                emptyList()
+            } else {
+                listOf(file)
+            }
+        }
+    }
+
     /**
      * An exception which requires user action to resolve
      */
