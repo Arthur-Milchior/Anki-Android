@@ -33,6 +33,12 @@ open class MigrateEssentialFiles(
     }
 
     /**
+     * Locks the collection and returns a [LockedCollection] which allows the collection to be unlocked
+     */
+    @VisibleForTesting
+    fun createLockedCollection() = LockedCollection.createLockedInstance()
+
+    /**
      * Represents a locked collection. Unlocks the collection when [close] is called
      *
      * Usage:
