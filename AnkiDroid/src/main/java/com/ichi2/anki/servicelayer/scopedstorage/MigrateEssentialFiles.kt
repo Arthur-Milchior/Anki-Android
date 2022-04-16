@@ -124,4 +124,18 @@ open class MigrateEssentialFiles(
          */
         class CheckDatabaseException : UserActionRequiredException()
     }
+
+    companion object {
+        /**
+         * Lists the files to be moved by [MigrateEssentialFiles]
+         */
+        internal fun listEssentialFiles(): List<EssentialFile> {
+            return listOf(
+                SqliteDb("collection.anki2"), // Anki collection
+                SqliteDb("collection.media.ad.db2"), // media database + journal
+                OptionalFile(".nomedia"), // written immediately
+                OptionalFile("collection.log") // written immediately and conflicts
+            )
+        }
+    }
 }
