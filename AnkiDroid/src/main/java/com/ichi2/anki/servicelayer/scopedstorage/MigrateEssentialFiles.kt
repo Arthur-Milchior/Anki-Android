@@ -21,6 +21,7 @@ import androidx.annotation.VisibleForTesting
 import com.ichi2.anki.CollectionHelper
 import com.ichi2.libanki.Storage
 import java.io.Closeable
+import java.io.File
 
 open class MigrateEssentialFiles(
     private val context: Context,
@@ -66,6 +67,19 @@ open class MigrateEssentialFiles(
         /** Unlocks the collection */
         override fun close() {
             Storage.unlockCollection()
+        }
+    }
+
+    /**
+     * A file, or group of files which must be migrated synchronously while the collection is closed
+     * This is either because the file is vital for when a collection is reopened in a new location
+     * Or because it is immediately created and may cause a conflict
+     */
+    abstract class EssentialFile {
+        abstract fun getFiles(sourceDirectory: String): List<File>
+
+        fun spaceRequired(sourceDirectory: String): NumberOfBytes {
+            return getFiles(sourceDirectory).sumOf { it.length() }
         }
     }
 
