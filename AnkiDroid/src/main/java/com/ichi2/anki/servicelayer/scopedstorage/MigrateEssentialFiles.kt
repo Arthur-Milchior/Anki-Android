@@ -17,7 +17,6 @@
 package com.ichi2.anki.servicelayer.scopedstorage
 
 import android.content.Context
-import android.provider.Settings.Global.putString
 import androidx.annotation.CheckResult
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.edit
@@ -336,7 +335,8 @@ internal constructor(
      * } // collection is unlocked here
      * ```
      */
-    class LockedCollection private constructor() : Closeable {
+    class LockedCollection private constructor(val lock: Any) : Closeable {
+
         companion object {
             /**
              * Locks the collection and creates an instance of [LockedCollection]
@@ -346,14 +346,14 @@ internal constructor(
                 // In Java, file locking is per JVM and not per thread. This means that on macOS,
                 // a collection can be opened even if the underlying .anki2 is locked. So we need to lock it
                 // with a static
-                Storage.lockCollection()
-                return LockedCollection()
+                val lock = Storage.lockCollection()!!
+                return LockedCollection(lock)
             }
         }
 
         /** Unlocks the collection */
         override fun close() {
-            Storage.unlockCollection()
+            Storage.unlockCollection(lock)
         }
     }
 
