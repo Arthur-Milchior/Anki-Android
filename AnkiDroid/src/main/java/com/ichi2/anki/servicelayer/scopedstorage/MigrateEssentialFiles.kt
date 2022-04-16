@@ -17,10 +17,15 @@
 package com.ichi2.anki.servicelayer.scopedstorage
 
 import android.content.Context
+import android.provider.Settings.Global.putString
 import androidx.annotation.VisibleForTesting
+import androidx.core.content.edit
+import com.ichi2.anki.AnkiDroidApp
 import com.ichi2.anki.CollectionHelper
 import com.ichi2.anki.exception.RetryableException
 import com.ichi2.anki.servicelayer.*
+import com.ichi2.anki.servicelayer.ScopedStorageService.PREF_MIGRATION_DESTINATION
+import com.ichi2.anki.servicelayer.ScopedStorageService.PREF_MIGRATION_SOURCE
 import com.ichi2.libanki.Collection
 import com.ichi2.libanki.Storage
 import timber.log.Timber
@@ -29,7 +34,42 @@ import java.io.File
 
 open class MigrateEssentialFiles(
     private val context: Context,
+    private val sourceDirectory: AnkiDroidDirectory,
 ) {
+    /**
+     * Updates preferences after a successful "essential files" migration.
+     * After changing the preferences, we validate them
+     */
+    private fun updatePreferences(destinationPath: AnkiDroidDirectory) {
+        val prefs = AnkiDroidApp.getSharedPrefs(context)
+
+        // keep the old values in case we need to restore them
+        val oldPrefValues = listOf(PREF_MIGRATION_SOURCE, PREF_MIGRATION_DESTINATION, "deckPath")
+            .associateWith { prefs.getString(it, null) }
+
+        prefs.edit {
+            // specify that a migration is in progress
+            putString(PREF_MIGRATION_SOURCE, sourceDirectory.directory.absolutePath)
+            putString(PREF_MIGRATION_DESTINATION, destinationPath.directory.absolutePath)
+            putString("deckPath", destinationPath.directory.absolutePath)
+        }
+
+        // open the collection in the new location - data is now migrated
+        try {
+            checkCollection()
+        } catch (e: Throwable) {
+            // if we can't open the migrated collection, revert the preference change so the user
+            // can still use their collection.
+            Timber.w("error opening new collection, restoring old values")
+            prefs.edit {
+                oldPrefValues.forEach {
+                    putString(it.key, it.value)
+                }
+            }
+            throw e
+        }
+    }
+
     /**
      * Ensures that [directory] is empty
      * @throws IllegalStateException if [directory] is not empty
