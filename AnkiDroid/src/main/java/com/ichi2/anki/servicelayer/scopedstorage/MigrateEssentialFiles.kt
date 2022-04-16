@@ -45,6 +45,25 @@ open class MigrateEssentialFiles(
     }
 
     /**
+     * Locks the collection and returns a [Closeable] when the closeable is closed,
+     * the collection is unlocked
+     *
+     * @throws IllegalStateException Collection is openable after lock acquired
+     */
+    private fun lockCollection(): Closeable {
+        return createLockedCollection().also {
+            // Since we locked the files, we want to ensure that the collection can no longer be opened
+            try {
+                ensureCollectionNotOpenable()
+            } catch (e: Exception) {
+                Timber.w(e, "collection was openable")
+                it.close()
+                throw e
+            }
+        }
+    }
+
+    /**
      * Locks the collection and returns a [LockedCollection] which allows the collection to be unlocked
      */
     @VisibleForTesting
