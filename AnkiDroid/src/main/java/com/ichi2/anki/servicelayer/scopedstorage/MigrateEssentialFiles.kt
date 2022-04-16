@@ -83,6 +83,24 @@ open class MigrateEssentialFiles(
         }
     }
 
+    /**
+     * A SQLite database, which contains both a database and a journal
+     * @see EssentialFile
+     */
+    internal class SqliteDb(val fileName: String) : EssentialFile() {
+        override fun getFiles(sourceDirectory: String): List<File> {
+            val list = mutableListOf(File(sourceDirectory, fileName))
+            val journal = File(sourceDirectory, journalName)
+            if (journal.exists()) {
+                list.add(journal)
+            }
+            return list
+        }
+
+        // guaranteed to be + "-journal": https://www.sqlite.org/tempfiles.html
+        private val journalName = "$fileName-journal"
+    }
+
     /** A standard file which may not exist */
     class OptionalFile(val fileName: String) : EssentialFile() {
         override fun getFiles(sourceDirectory: String): List<File> {
