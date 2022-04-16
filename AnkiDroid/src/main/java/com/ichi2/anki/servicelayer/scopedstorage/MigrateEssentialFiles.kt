@@ -19,8 +19,11 @@ package com.ichi2.anki.servicelayer.scopedstorage
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.ichi2.anki.CollectionHelper
+import com.ichi2.anki.exception.RetryableException
 import com.ichi2.anki.servicelayer.*
+import com.ichi2.libanki.Collection
 import com.ichi2.libanki.Storage
+import timber.log.Timber
 import java.io.Closeable
 import java.io.File
 
@@ -39,6 +42,32 @@ open class MigrateEssentialFiles(
      */
     @VisibleForTesting
     fun createLockedCollection() = LockedCollection.createLockedInstance()
+
+    /**
+     * Check that the collection is not openable. This is expected to be called after the collection is locked, to check whether it was correctly locked.
+     * We must check it because improperly locked collections may lead to database corruption. (copying may mean the DB is out of sync with the journal)
+     * If the collection is openable or open, close it.
+     * @throws RetryableException ([IllegalStateException]) if the collection was openable
+     */
+    private fun ensureCollectionNotOpenable() {
+        val lockedCollection: Collection?
+        try {
+            lockedCollection = CollectionHelper.getInstance().getCol(context)
+        } catch (e: Exception) {
+            Timber.i("Expected exception thrown: ", e)
+            return
+        }
+
+        // Unexpected: collection was opened. Close it and report an error.
+        // Note: it shouldn't be null - a null value infers a new collection can't be created
+        // or if the storage media is removed
+        try {
+            lockedCollection?.close()
+        } catch (e: Exception) {
+        }
+
+        throw RetryableException(IllegalStateException("Collection not locked correctly"))
+    }
 
     /**
      * Represents a locked collection. Unlocks the collection when [close] is called
