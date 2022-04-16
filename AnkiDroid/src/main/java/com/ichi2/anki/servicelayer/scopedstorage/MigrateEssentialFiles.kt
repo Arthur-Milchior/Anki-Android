@@ -123,6 +123,11 @@ open class MigrateEssentialFiles(
          * The user must perform 'Check Database'
          */
         class CheckDatabaseException : UserActionRequiredException()
+
+        /**
+         * The user must determine why essential files don't exist
+         */
+        class MissingEssentialFileException(val file: File) : UserActionRequiredException("missing essential file: ${file.name}")
     }
 
     companion object {
