@@ -24,6 +24,7 @@ import com.ichi2.anki.CollectionHelper
 import com.ichi2.anki.model.Directory
 import com.ichi2.anki.model.DiskFile
 import com.ichi2.anki.model.RelativeFilePath
+import com.ichi2.anki.servicelayer.ScopedStorageService.isLegacyStorage
 import com.ichi2.anki.servicelayer.scopedstorage.MigrateUserData
 import timber.log.Timber
 import java.io.File
@@ -47,6 +48,37 @@ fun AnkiDroidDirectory.getRelativeFilePath(file: DiskFile): RelativeFilePath? =
         baseDir = this,
         file = file
     )
+
+/**
+ * An [AnkiDroidDirectory] for an AnkiDroid collection which is undr scoped storage
+ * This storage directory is accessible without permissions after scoped storage changes,
+ * and is much faster to access
+ *
+ * When uninstalling: A user will be asked if they want to delete this folder
+ * A folder here may be modifiable via USB. In AnkiDroid's case, all collection folders should
+ * be modifiable
+ *
+ * @see [isLegacyStorage]
+ */
+class ScopedAnkiDroidDirectory private constructor(val path: AnkiDroidDirectory) {
+    companion object {
+        /**
+         * Creates an instance of [ScopedAnkiDroidDirectory] from [directory]
+         * @param directory The [AnkiDroidDirectory] which should contain the AnkiDroid collection.
+         * This should not be a directory which is under the legacy (non-scoped storage) model
+         *
+         * @return The directory, or `null` if the provided [directory] was a [legacy directory][isLegacyStorage]
+         * @see [isLegacyStorage]
+         */
+        fun createInstance(directory: Directory, context: Context): ScopedAnkiDroidDirectory? {
+            if (isLegacyStorage(directory.directory.absolutePath, context)) {
+                return null
+            }
+
+            return ScopedAnkiDroidDirectory(directory)
+        }
+    }
+}
 
 object ScopedStorageService {
     /**
