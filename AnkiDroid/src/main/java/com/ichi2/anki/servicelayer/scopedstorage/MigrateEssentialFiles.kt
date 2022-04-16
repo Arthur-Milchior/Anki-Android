@@ -16,7 +16,19 @@
 
 package com.ichi2.anki.servicelayer.scopedstorage
 
-open class MigrateEssentialFiles {
+import android.content.Context
+import androidx.annotation.VisibleForTesting
+import com.ichi2.anki.CollectionHelper
+
+open class MigrateEssentialFiles(
+    private val context: Context,
+) {
+
+    /** Checks that the default collection (from [CollectionHelper.getCol]) can be opened */
+    @VisibleForTesting
+    open fun checkCollection() {
+        CollectionHelper.getInstance().getCol(context) ?: throw IllegalStateException("collection could not be opened")
+    }
 
     /**
      * An exception which requires user action to resolve
