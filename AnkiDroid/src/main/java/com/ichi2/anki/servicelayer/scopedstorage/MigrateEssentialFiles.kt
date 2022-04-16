@@ -70,6 +70,45 @@ open class MigrateEssentialFiles(
     }
 
     /**
+     * Given the path to a `collection.anki2` which is not open, ensures the collection is usable
+     *
+     * Otherwise: throws an exception
+     *
+     * @throws UserActionRequiredException.CheckDatabaseException If "check database" is required
+     *
+     * This may also fail for the following, less likely reasons:
+     * * Collection is already open
+     * * Collection directory does not exist
+     * * Collection directory is not writable
+     * * Error opening collection
+     */
+    open fun ensureCollectionNotCorrupted(path: CollectionFilePath) {
+        var result: Collection? = null
+        var exceptionInFinally: Exception? = null
+        try {
+            // Store the collection in `result` so we can close it in the `finally`
+            // this can throw [StorageAccessException]: locked or invalid
+            result = CollectionHelper.getInstance().getColFromPath(path, context)
+            if (!result.basicCheck()) {
+                throw UserActionRequiredException.CheckDatabaseException()
+            }
+        } finally {
+            // this can throw, which ruins the stack trace if the above block threw
+            try {
+                result?.close()
+            } catch (ex: Exception) {
+                Timber.w("exception thrown closing database", ex)
+                exceptionInFinally = ex
+            }
+        }
+
+        // If close() threw in the finally {}, we want to abort.
+        if (exceptionInFinally != null) {
+            throw exceptionInFinally
+        }
+    }
+
+    /**
      * Represents a locked collection. Unlocks the collection when [close] is called
      *
      * Usage:
