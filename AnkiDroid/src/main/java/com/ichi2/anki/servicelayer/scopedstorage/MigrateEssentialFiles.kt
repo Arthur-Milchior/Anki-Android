@@ -19,6 +19,8 @@ package com.ichi2.anki.servicelayer.scopedstorage
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.ichi2.anki.CollectionHelper
+import com.ichi2.libanki.Storage
+import java.io.Closeable
 
 open class MigrateEssentialFiles(
     private val context: Context,
@@ -28,6 +30,37 @@ open class MigrateEssentialFiles(
     @VisibleForTesting
     open fun checkCollection() {
         CollectionHelper.getInstance().getCol(context) ?: throw IllegalStateException("collection could not be opened")
+    }
+
+    /**
+     * Represents a locked collection. Unlocks the collection when [close] is called
+     *
+     * Usage:
+     * ```kotlin
+     * LockedCollection.createLockedInstance().use {
+     *      // do something requiring the collection to be closed
+     * } // collection is unlocked here
+     * ```
+     */
+    class LockedCollection private constructor() : Closeable {
+        companion object {
+            /**
+             * Locks the collection and creates an instance of [LockedCollection]
+             * @see Storage.lockCollection
+             */
+            fun createLockedInstance(): LockedCollection {
+                // In Java, file locking is per JVM and not per thread. This means that on macOS,
+                // a collection can be opened even if the underlying .anki2 is locked. So we need to lock it
+                // with a static
+                Storage.lockCollection()
+                return LockedCollection()
+            }
+        }
+
+        /** Unlocks the collection */
+        override fun close() {
+            Storage.unlockCollection()
+        }
     }
 
     /**
