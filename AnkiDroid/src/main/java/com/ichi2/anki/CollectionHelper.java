@@ -128,6 +128,18 @@ public class CollectionHelper {
         return getCol(context, new SystemTime());
     }
 
+    /**
+     * Opens the collection without checking to see if the directory exists.
+     *
+     * path should be tested with File.exists() and File.canWrite() before this is called
+     */
+    private Collection openCollection(Context context, @NonNull Time time, String path) {
+        Timber.i("Begin openCollection: %s", path);
+        Collection collection = Storage.Collection(context, path, false, true, time);
+        Timber.i("End openCollection: %s", path);
+        return collection;
+    }
+
     @VisibleForTesting
     public synchronized Collection getCol(Context context, @NonNull Time time) {
         // Open collection
@@ -142,9 +154,7 @@ public class CollectionHelper {
                 return null;
             }
             // Open the database
-            Timber.i("Begin openCollection: %s", path);
-            mCollection = Storage.Collection(context, path, false, true, time);
-            Timber.i("End openCollection: %s", path);
+            mCollection = openCollection(context, time, path);
         }
         return mCollection;
     }
