@@ -31,6 +31,13 @@ import java.io.File
 /** A path to the AnkiDroid directory, named "AnkiDroid" by default */
 typealias AnkiDroidDirectory = Directory
 
+/** A path to collection.anki2 */
+typealias CollectionFilePath = String
+
+/** Returns the collection.anki2 from a collection folder path */
+fun AnkiDroidDirectory.getCollectionAnki2Path(): CollectionFilePath =
+    File(this.directory, CollectionHelper.COLLECTION_FILENAME).canonicalPath
+
 /**
  * Returns the relative file path from a given [AnkiDroidDirectory]
  * @return null if the file was not inside the directory, or referred to the root directory
