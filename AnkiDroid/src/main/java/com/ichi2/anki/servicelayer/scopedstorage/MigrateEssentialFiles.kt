@@ -26,6 +26,7 @@ import com.ichi2.anki.exception.RetryableException
 import com.ichi2.anki.servicelayer.*
 import com.ichi2.anki.servicelayer.ScopedStorageService.PREF_MIGRATION_DESTINATION
 import com.ichi2.anki.servicelayer.ScopedStorageService.PREF_MIGRATION_SOURCE
+import com.ichi2.annotations.NeedsTest
 import com.ichi2.compat.CompatHelper
 import com.ichi2.libanki.Collection
 import com.ichi2.libanki.Storage
@@ -37,6 +38,20 @@ open class MigrateEssentialFiles(
     private val context: Context,
     private val sourceDirectory: AnkiDroidDirectory,
 ) {
+
+    /**
+     * Ensures that all files in [listEssentialFiles] exist
+     * @throws UserActionRequiredException.MissingEssentialFileException if a file does not exist
+     */
+    @NeedsTest("untested")
+    private fun ensureEssentialFilesExist(sourcePath: AnkiDroidDirectory) {
+        for (file in iterateEssentialFiles(sourcePath)) {
+            if (!file.exists()) {
+                throw UserActionRequiredException.MissingEssentialFileException(file)
+            }
+        }
+    }
+
     /**
      * Copies [file] to [destinationDirectory], retaining the same filename
      */
