@@ -26,6 +26,7 @@ import com.ichi2.anki.exception.RetryableException
 import com.ichi2.anki.servicelayer.*
 import com.ichi2.anki.servicelayer.ScopedStorageService.PREF_MIGRATION_DESTINATION
 import com.ichi2.anki.servicelayer.ScopedStorageService.PREF_MIGRATION_SOURCE
+import com.ichi2.compat.CompatHelper
 import com.ichi2.libanki.Collection
 import com.ichi2.libanki.Storage
 import timber.log.Timber
@@ -36,6 +37,16 @@ open class MigrateEssentialFiles(
     private val context: Context,
     private val sourceDirectory: AnkiDroidDirectory,
 ) {
+    /**
+     * Copies [file] to [destinationDirectory], retaining the same filename
+     */
+    fun copyTopLevelFile(file: File, destinationDirectory: AnkiDroidDirectory) {
+        val destinationPath = File(destinationDirectory.directory, file.name).path
+        Timber.i("Migrating essential file: '${file.name}'")
+        Timber.d("Copying '$file' to '$destinationPath'")
+        CompatHelper.compat.copyFile(file.path, destinationPath)
+    }
+
     /**
      * Updates preferences after a successful "essential files" migration.
      * After changing the preferences, we validate them
