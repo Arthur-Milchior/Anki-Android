@@ -159,6 +159,31 @@ public class CollectionHelper {
         return mCollection;
     }
 
+    /**
+     * Given a path to a .anki2 file returns an open {@link Collection} associated with the path.
+     *
+     * This operation does not call {@link #initializeAnkiDroidDirectory} and does not set the singleton instance's {@link #mCollection}
+     *
+     * @param path The path to collection.anki2
+     * @return An open {@link Collection} object
+     *
+     * @throws StorageAccessException the file at `path` is not writable
+     * @throws StorageAccessException `path` does not exist
+     */
+    public Collection getColFromPath(String path, Context context) throws StorageAccessException {
+        File f = new File(path);
+
+        if (!f.exists()) {
+            throw new StorageAccessException(path + " does not exist");
+        }
+
+        if (!f.canWrite()) {
+            throw new StorageAccessException(path + " is not writable");
+        }
+
+        return openCollection(context, new SystemTime(), path);
+    }
+
     /** Collection time if possible, otherwise real time.*/
     public synchronized Time getTimeSafe(Context context) {
         try {
