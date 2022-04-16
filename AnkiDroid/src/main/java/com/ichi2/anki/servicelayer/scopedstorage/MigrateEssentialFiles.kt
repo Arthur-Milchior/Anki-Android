@@ -19,6 +19,7 @@ package com.ichi2.anki.servicelayer.scopedstorage
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.ichi2.anki.CollectionHelper
+import com.ichi2.anki.servicelayer.*
 import com.ichi2.libanki.Storage
 import java.io.Closeable
 import java.io.File
@@ -142,5 +143,11 @@ open class MigrateEssentialFiles(
                 OptionalFile("collection.log") // written immediately and conflicts
             )
         }
+
+        /**
+         * A collection of [File] objects to be moved by [MigrateEssentialFiles]
+         */
+        private fun iterateEssentialFiles(sourcePath: AnkiDroidDirectory) =
+            listEssentialFiles().flatMap { it.getFiles(sourcePath.directory.canonicalPath) }
     }
 }
