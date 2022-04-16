@@ -16,4 +16,17 @@
 
 package com.ichi2.anki.servicelayer.scopedstorage
 
-open class MigrateEssentialFiles
+open class MigrateEssentialFiles {
+
+    /**
+     * An exception which requires user action to resolve
+     */
+    abstract class UserActionRequiredException(message: String) : RuntimeException(message) {
+        constructor() : this("")
+
+        /**
+         * The user must perform 'Check Database'
+         */
+        class CheckDatabaseException : UserActionRequiredException()
+    }
+}
