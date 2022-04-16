@@ -30,6 +30,17 @@ import java.io.File
 open class MigrateEssentialFiles(
     private val context: Context,
 ) {
+    /**
+     * Ensures that [directory] is empty
+     * @throws IllegalStateException if [directory] is not empty
+     */
+    private fun ensureFolderIsEmpty(directory: AnkiDroidDirectory) {
+        val listFiles = directory.listFiles()
+
+        if (listFiles.any()) {
+            throw IllegalStateException("destination was non-empty '$directory'")
+        }
+    }
 
     /** Checks that the default collection (from [CollectionHelper.getCol]) can be opened */
     @VisibleForTesting
