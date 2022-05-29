@@ -2528,15 +2528,13 @@ open class CardBrowser : NavigationDrawerActivity(), SubtitleListener, DeckSelec
                 }
             }
             // update the original hash map to include rendered question & answer
-            var q = qa.question_text
-            var a = qa.answer_text
+            val q = qa.question_text
+            val a = qa.answer_text
             // remove the question from the start of the answer if it exists
-            if (a.startsWith(q)) {
-                a = a.substring(q.length)
-            }
-            a = formatQA(a, AnkiDroidApp.getInstance())
-            q = formatQA(q, AnkiDroidApp.getInstance())
-            mQa = Pair(q, a)
+            val aWithoutQuestionPrefix = if (a.startsWith(q)) a.substring(q.length) else a
+            val aFormatted = formatQA(aWithoutQuestionPrefix, AnkiDroidApp.getInstance())
+            val qFormatted = formatQA(q, AnkiDroidApp.getInstance())
+            mQa = Pair(qFormatted, aFormatted)
         }
 
         override fun equals(other: Any?): Boolean {
