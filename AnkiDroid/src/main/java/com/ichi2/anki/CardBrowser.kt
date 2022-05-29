@@ -390,10 +390,7 @@ open class CardBrowser : NavigationDrawerActivity(), SubtitleListener, DeckSelec
                 )
                 return
             }
-            var savedFiltersObj = col.get_config("savedFilters", null as JSONObject?)
-            if (savedFiltersObj == null) {
-                savedFiltersObj = JSONObject()
-            }
+            val savedFiltersObj = col.get_config("savedFilters", null as JSONObject?) ?: JSONObject()
             if (!savedFiltersObj.has(searchName)) {
                 savedFiltersObj.put(searchName, searchTerms)
                 col.set_config("savedFilters", savedFiltersObj)
