@@ -248,7 +248,6 @@ object MetaDB {
      */
     fun getLanguage(context: Context, did: Long, ord: Int, qa: SoundSide): String {
         openDBIfClosed(context)
-        var language = ""
         val query = "SELECT language FROM languages WHERE did = ? AND ord = ? AND qa = ? LIMIT 1"
         try {
             mMetaDb!!.rawQuery(
@@ -261,13 +260,13 @@ object MetaDB {
             ).use { cur ->
                 Timber.v("getLanguage: %s", query)
                 if (cur.moveToNext()) {
-                    language = cur.getString(0)
+                    return cur.getString(0)
                 }
             }
         } catch (e: Exception) {
             Timber.e(e, "Error fetching language ")
         }
-        return language
+        return ""
     }
 
     /**
