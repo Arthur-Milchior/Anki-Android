@@ -1622,18 +1622,17 @@ open class CardBrowser : NavigationDrawerActivity(), SubtitleListener, DeckSelec
             2 -> sb.append("is:due ")
             else -> {}
         }
-        var i = 0
-        for (tag in selectedTags) {
-            if (i != 0) {
+        for (indexedTag in selectedTags.iterator().withIndex()) {
+            val tag = indexedTag.value
+            if (indexedTag.index != 0) {
                 sb.append("or ")
             } else {
                 sb.append("(") // Only if we really have selected tags
             }
             // 7070: quote tags so brackets are properly escaped
             sb.append("\"tag:").append(tag).append("\"").append(" ")
-            i++
         }
-        if (i > 0) {
+        if (selectedTags.isNotEmpty()) {
             sb.append(")") // Only if we added anything to the tag list
         }
         mSearchTerms = sb.toString()
