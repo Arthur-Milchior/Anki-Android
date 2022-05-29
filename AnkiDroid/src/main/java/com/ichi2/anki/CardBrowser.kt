@@ -2043,28 +2043,15 @@ open class CardBrowser : NavigationDrawerActivity(), SubtitleListener, DeckSelec
         }
 
         private fun setMenuIcons(browser: Context, hasUnsuspended: Boolean, hasUnmarked: Boolean, actionBarMenu: Menu) {
-            var title: Int
-            var icon: Int
-            if (hasUnsuspended) {
-                title = R.string.card_browser_suspend_card
-                icon = R.drawable.ic_pause_circle_outline
-            } else {
-                title = R.string.card_browser_unsuspend_card
-                icon = R.drawable.ic_pause_circle_filled
+            actionBarMenu.findItem(R.id.action_suspend_card).run {
+                title =
+                    browser.getString(if (hasUnsuspended) R.string.card_browser_suspend_card else R.string.card_browser_unsuspend_card)
+                setIcon(if (hasUnsuspended) R.drawable.ic_pause_circle_outline else R.drawable.ic_pause_circle_filled)
             }
-            val suspendItem = actionBarMenu.findItem(R.id.action_suspend_card)
-            suspendItem.title = browser.getString(title)
-            suspendItem.setIcon(icon)
-            if (hasUnmarked) {
-                title = R.string.card_browser_mark_card
-                icon = R.drawable.ic_star_border_white
-            } else {
-                title = R.string.card_browser_unmark_card
-                icon = R.drawable.ic_star_white
+            actionBarMenu.findItem(R.id.action_mark_card).run {
+                title = browser.getString(if (hasUnmarked) R.string.card_browser_mark_card else R.string.card_browser_unmark_card)
+                setIcon(if (hasUnmarked) R.drawable.ic_star_border_white else R.drawable.ic_star_white)
             }
-            val markItem = actionBarMenu.findItem(R.id.action_mark_card)
-            markItem.title = browser.getString(title)
-            markItem.setIcon(icon)
         }
 
         override fun actualOnCancelled(context: CardBrowser) {
