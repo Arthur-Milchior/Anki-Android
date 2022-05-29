@@ -393,10 +393,7 @@ open class BackupManager {
          * @return Array of files with names which matches the backup name pattern
          */
         fun getBackups(colFile: File): Array<File> {
-            var files = getBackupDirectory(colFile.parentFile!!).listFiles()
-            if (files == null) {
-                files = arrayOf<File>()
-            }
+            val files = getBackupDirectory(colFile.parentFile!!).listFiles() ?: arrayOf()
             val backups = mutableListOf<File>()
             for (aktFile in files) {
                 if (backupNameRegex.matchEntire(aktFile.name) != null) {
