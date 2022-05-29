@@ -174,23 +174,21 @@ open class AnkiDroidJsAPI(private val activity: AbstractFlashcardViewer) {
 
     @JavascriptInterface
     fun init(jsonData: String?): String {
-        val data: JSONObject
-        var apiStatusJson = ""
         try {
-            data = JSONObject(jsonData)
+            val data = JSONObject(jsonData)
             cardSuppliedApiVersion = data.optString("version", "")
             cardSuppliedDeveloperContact = data.optString("developer", "")
             if (requireApiVersion(cardSuppliedApiVersion, cardSuppliedDeveloperContact)) {
                 enableJsApi()
             }
-            apiStatusJson = JSONObject.fromMap(mJsApiListMap).toString()
+            return JSONObject.fromMap(mJsApiListMap).toString()
         } catch (j: JSONException) {
             Timber.w(j)
             activity.runOnUiThread {
                 showThemedToast(context, context.getString(R.string.invalid_json_data, j.localizedMessage), false)
             }
         }
-        return apiStatusJson
+        return ""
     }
 
     // This method and the one belows return "default" values when there is no count nor ETA.
