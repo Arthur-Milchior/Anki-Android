@@ -54,16 +54,16 @@ object DatabaseUtils {
         positionParam: Int,
         window: CursorWindow
     ) {
-        var position = positionParam
-        if (position < 0 || position >= cursor.count) {
+        if (positionParam < 0 || positionParam >= cursor.count) {
             return
         }
         val oldPos = cursor.position
         val numColumns = cursor.columnCount
         window.clear()
-        window.startPosition = position
+        window.startPosition = positionParam
         window.setNumColumns(numColumns)
-        if (cursor.moveToPosition(position)) {
+        if (cursor.moveToPosition(positionParam)) {
+            var position = positionParam
             rowloop@ do {
                 if (!window.allocRow()) {
                     break
