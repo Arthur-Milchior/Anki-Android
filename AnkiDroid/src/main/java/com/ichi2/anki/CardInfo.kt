@@ -294,26 +294,16 @@ class CardInfo : AnkiActivity() {
         }
 
         companion object {
+            private fun Long.zeroToNull() = if (this == 0L) null else this
+
             @JvmStatic
             @CheckResult
             fun create(c: Card, collection: Collection): CardInfoModel {
                 val addedDate = c.id
-                var firstReview: Long? = collection.db.queryLongScalar("select min(id) from revlog where cid = ?", c.id)
-                if (firstReview == 0L) {
-                    firstReview = null
-                }
-                var latestReview: Long? = collection.db.queryLongScalar("select max(id) from revlog where cid = ?", c.id)
-                if (latestReview == 0L) {
-                    latestReview = null
-                }
-                var averageTime: Long? = collection.db.queryLongScalar("select avg(time) from revlog where cid = ?", c.id)
-                if (averageTime == 0L) {
-                    averageTime = null
-                }
-                var totalTime: Long? = collection.db.queryLongScalar("select sum(time) from revlog where cid = ?", c.id)
-                if (totalTime == 0L) {
-                    totalTime = null
-                }
+                val firstReview: Long? = collection.db.queryLongScalar("select min(id) from revlog where cid = ?", c.id).zeroToNull()
+                val latestReview: Long? = collection.db.queryLongScalar("select max(id) from revlog where cid = ?", c.id).zeroToNull()
+                val averageTime: Long? = collection.db.queryLongScalar("select avg(time) from revlog where cid = ?", c.id).zeroToNull()
+                val totalTime: Long? = collection.db.queryLongScalar("select sum(time) from revlog where cid = ?", c.id).zeroToNull()
                 var easeInPercent: Double? = c.factor / 1000.0
                 val lapses = c.lapses
                 val reviews = c.reps
