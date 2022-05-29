@@ -2794,19 +2794,17 @@ open class CardBrowser : NavigationDrawerActivity(), SubtitleListener, DeckSelec
         @JvmStatic
         @VisibleForTesting
         @CheckResult
-        fun formatQAInternal(txt: String, showFileNames: Boolean): String {
+        fun formatQAInternal(txt: String, showFileNames: Boolean) =
             /* Strips all formatting from the string txt for use in displaying question/answer in browser */
-            var s = txt
-            s = s.replace("<!--.*?-->".toRegex(), "")
-            s = s.replace("<br>", " ")
-            s = s.replace("<br />", " ")
-            s = s.replace("<div>", " ")
-            s = s.replace("\n", " ")
-            s = if (showFileNames) Utils.stripSoundMedia(s) else Utils.stripSoundMedia(s, " ")
-            s = s.replace("\\[\\[type:[^]]+]]".toRegex(), "")
-            s = if (showFileNames) Utils.stripHTMLMedia(s) else Utils.stripHTMLMedia(s, " ")
-            s = s.trim { it <= ' ' }
-            return s
-        }
+            txt
+                .replace("<!--.*?-->".toRegex(), "")
+                .replace("<br>", " ")
+                .replace("<br />", " ")
+                .replace("<div>", " ")
+                .replace("\n", " ")
+                .let { if (showFileNames) Utils.stripSoundMedia(it) else Utils.stripSoundMedia(it, " ") }
+                .replace("\\[\\[type:[^]]+]]".toRegex(), "")
+                .let { if (showFileNames) Utils.stripHTMLMedia(it) else Utils.stripHTMLMedia(it, " ") }
+                .trim { it <= ' ' }
     }
 }
