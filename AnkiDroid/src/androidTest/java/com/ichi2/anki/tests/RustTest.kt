@@ -26,7 +26,7 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 class RustTest : InstrumentedTest() {
-    /** Ensure that the database isn't be locked
+    /** Ensure that the database isn't locked
      * This happened before the database code was converted to use the Rust backend.
      */
     @get:Rule
