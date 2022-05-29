@@ -394,9 +394,8 @@ open class CardBrowser : NavigationDrawerActivity(), SubtitleListener, DeckSelec
             var shouldSave = false
             if (savedFiltersObj == null) {
                 savedFiltersObj = JSONObject()
-                savedFiltersObj.put(searchName, searchTerms)
-                shouldSave = true
-            } else if (!savedFiltersObj.has(searchName)) {
+            }
+            if (!savedFiltersObj.has(searchName)) {
                 savedFiltersObj.put(searchName, searchTerms)
                 shouldSave = true
             } else {
