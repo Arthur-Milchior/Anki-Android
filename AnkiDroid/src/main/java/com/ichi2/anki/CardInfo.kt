@@ -304,7 +304,7 @@ class CardInfo : AnkiActivity() {
                 val latestReview: Long? = collection.db.queryLongScalar("select max(id) from revlog where cid = ?", c.id).zeroToNull()
                 val averageTime: Long? = collection.db.queryLongScalar("select avg(time) from revlog where cid = ?", c.id).zeroToNull()
                 val totalTime: Long? = collection.db.queryLongScalar("select sum(time) from revlog where cid = ?", c.id).zeroToNull()
-                var easeInPercent: Double? = c.factor / 1000.0
+                val easeInPercent = if (c.type < Consts.CARD_TYPE_REV) null else c.factor / 1000.0
                 val lapses = c.lapses
                 val reviews = c.reps
                 val model = collection.models.get(c.note().mid)
@@ -313,9 +313,6 @@ class CardInfo : AnkiActivity() {
                 val deckName = collection.decks.get(c.did).getString("name")
                 val noteId = c.nid
                 val interval = if (c.ivl <= 0) null else c.ivl
-                if (c.type < Consts.CARD_TYPE_REV) {
-                    easeInPercent = null
-                }
                 val due = c.dueString
                 val entries: MutableList<RevLogEntry> = ArrayList(collection.db.queryScalar("select count() from revlog where cid = ?", c.id))
                 collection.db.query(
