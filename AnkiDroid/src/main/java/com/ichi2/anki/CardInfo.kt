@@ -312,10 +312,7 @@ class CardInfo : AnkiActivity() {
                 val noteType = model!!.getString("name")
                 val deckName = collection.decks.get(c.did).getString("name")
                 val noteId = c.nid
-                var interval: Int? = c.ivl
-                if (interval!! <= 0) {
-                    interval = null
-                }
+                val interval = if (c.ivl <= 0) null else c.ivl
                 if (c.type < Consts.CARD_TYPE_REV) {
                     easeInPercent = null
                 }
