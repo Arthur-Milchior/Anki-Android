@@ -391,24 +391,20 @@ open class CardBrowser : NavigationDrawerActivity(), SubtitleListener, DeckSelec
                 return
             }
             var savedFiltersObj = col.get_config("savedFilters", null as JSONObject?)
-            var shouldSave = false
             if (savedFiltersObj == null) {
                 savedFiltersObj = JSONObject()
             }
             if (!savedFiltersObj.has(searchName)) {
                 savedFiltersObj.put(searchName, searchTerms)
-                shouldSave = true
+                col.set_config("savedFilters", savedFiltersObj)
+                col.flush()
+                mSearchView!!.setQuery("", false)
+                mMySearchesItem!!.isVisible = true
             } else {
                 showThemedToast(
                     this@CardBrowser,
                     getString(R.string.card_browser_list_my_searches_new_search_error_dup), true
                 )
-            }
-            if (shouldSave) {
-                col.set_config("savedFilters", savedFiltersObj)
-                col.flush()
-                mSearchView!!.setQuery("", false)
-                mMySearchesItem!!.isVisible = true
             }
         }
     }
