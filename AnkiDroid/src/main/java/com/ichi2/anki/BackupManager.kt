@@ -304,25 +304,25 @@ open class BackupManager {
 
             // move file
             val value: Date = time.genToday(utcOffset())
-            var movedFilename = String.format(
+            val numberLessMovedFilename = String.format(
                 Utils.ENGLISH_LOCALE,
                 colFile.name.replace(".anki2", "") +
                     "-corrupt-%tF.anki2",
                 value
             )
-            var movedFile = File(getBrokenDirectory(colFile.parentFile!!), movedFilename)
+            var movedFile = File(getBrokenDirectory(colFile.parentFile!!), numberLessMovedFilename)
             var i = 1
             while (movedFile.exists()) {
                 movedFile = File(
                     getBrokenDirectory(colFile.parentFile!!),
-                    movedFilename.replace(
+                    numberLessMovedFilename.replace(
                         ".anki2",
                         "-$i.anki2"
                     )
                 )
                 i++
             }
-            movedFilename = movedFile.name
+            val movedFilename = movedFile.name
             if (!colFile.renameTo(movedFile)) {
                 return false
             }
