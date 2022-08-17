@@ -692,7 +692,7 @@ open class Collection(
     /**
      * Bulk delete notes by ID. Don't call this directly.
      */
-    fun _remNotes(ids: kotlin.collections.Collection<Long>) {
+    fun _remNotes(ids: kotlin.collections.Collection<NoteId>) {
         if (ids.isEmpty()) {
             return
         }
@@ -1057,7 +1057,7 @@ open class Collection(
             return
         }
         val sids = Utils.ids2str(ids)
-        var nids: List<Long> = db.queryLongList("SELECT nid FROM cards WHERE id IN $sids")
+        var nids: List<NoteId> = db.queryLongList("SELECT nid FROM cards WHERE id IN $sids")
         // remove cards
         _logRem(ids, Consts.REM_CARD)
         db.execute("DELETE FROM cards WHERE id IN $sids")
@@ -1122,7 +1122,7 @@ open class Collection(
     /** Update field checksums and sort cache, after find&replace, etc.
      * @param nids
      */
-    fun updateFieldCache(nids: kotlin.collections.Collection<Long>?) {
+    fun updateFieldCache(nids: kotlin.collections.Collection<NoteId>?) {
         val snids = Utils.ids2str(nids)
         updateFieldCache(snids)
     }

@@ -56,7 +56,7 @@ abstract class TagManager {
      * Add any missing tags from notes to the tags list.
      * @param nids The old list is cleared first if this is null
      */
-    abstract fun registerNotes(nids: kotlin.collections.Collection<Long>? = null)
+    abstract fun registerNotes(nids: kotlin.collections.Collection<NoteId>? = null)
 
     abstract fun allItems(): Iterable<TagUsnTuple>
     @RustCleanup("Tags.java only")

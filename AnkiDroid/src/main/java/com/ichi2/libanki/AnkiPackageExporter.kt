@@ -151,7 +151,7 @@ open class AnkiExporter(col: Collection, did: DeckId?, val includeSched: Boolean
         Timber.d("Copy cards")
         col.db.database
             .execSQL("INSERT INTO DST_DB.cards select * from cards where id in " + Utils.ids2str(cids))
-        val uniqueNids: List<Long> = col.db.queryLongList(
+        val uniqueNids: List<NoteId> = col.db.queryLongList(
             "select distinct nid from cards where id in " + Utils.ids2str(cids)
         )
         // notes

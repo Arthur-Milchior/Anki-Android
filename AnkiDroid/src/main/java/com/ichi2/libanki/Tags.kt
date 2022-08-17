@@ -87,7 +87,7 @@ class Tags
     }
 
     /** Add any missing tags from notes to the tags list.  */
-    override fun registerNotes(nids: kotlin.collections.Collection<Long>?) {
+    override fun registerNotes(nids: kotlin.collections.Collection<NoteId>?) {
         // when called with a null argument, the old list is cleared first.
         val lim: String
         if (nids != null) {
@@ -146,7 +146,7 @@ class Tags
      * ***********************************************************
      */
     /** {@inheritDoc}  */
-    override fun bulkAdd(ids: List<Long>, tags: String, add: Boolean) {
+    override fun bulkAdd(ids: List<NoteId>, tags: String, add: Boolean) {
         val newTags: List<String> = split(tags)
         if (newTags.isEmpty()) {
             return

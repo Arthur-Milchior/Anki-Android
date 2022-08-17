@@ -37,7 +37,7 @@ open class NoteImporter(col: com.ichi2.libanki.Collection, file: String) : Impor
 
     /** _nextID in python  */
     private var mNextId: Long = 0
-    private var mIds: ArrayList<Long>? = null
+    private var mIds: ArrayList<NoteId>? = null
     private var mEmptyNotes = false
     private var mUpdateCount = 0
     private val mTemplateParsed: List<ParsedNode> = mModel!!.parsedNodes()

@@ -63,7 +63,7 @@ class TagsV16(val col: CollectionV16) : TagManager() {
     }
 
     /** Add any missing tags from notes to the tags list. */
-    override fun registerNotes(nids: kotlin.collections.Collection<Long>?) {
+    override fun registerNotes(nids: kotlin.collections.Collection<NoteId>?) {
         TODO("no longer in backend")
     }
 
@@ -92,13 +92,13 @@ class TagsV16(val col: CollectionV16) : TagManager() {
      */
 
     /** Add space-separate tags to provided notes. */
-    fun bulkAdd(noteIds: List<Long>, tags: String): OpChangesWithCount {
+    fun bulkAdd(noteIds: List<NoteId>, tags: String): OpChangesWithCount {
         return col.backend.addNoteTags(noteIds = noteIds, tags = tags)
     }
 
     /* Remove space-separated tags from provided notes. */
     fun bulkRemove(
-        noteIds: List<Long>,
+        noteIds: List<NoteId>,
         tags: String,
     ): OpChangesWithCount {
         return col.backend.removeNoteTags(
@@ -107,7 +107,7 @@ class TagsV16(val col: CollectionV16) : TagManager() {
     }
 
     /* Legacy signature, used by unit tests. */
-    override fun bulkAdd(ids: List<Long>, tags: String, add: Boolean) {
+    override fun bulkAdd(ids: List<NoteId>, tags: String, add: Boolean) {
         if (add) {
             bulkAdd(ids, tags)
         } else {
