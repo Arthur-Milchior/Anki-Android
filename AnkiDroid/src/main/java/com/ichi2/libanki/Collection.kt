@@ -757,7 +757,7 @@ open class Collection(
      */
     @KotlinCleanup("Check CollectionTask<Int?, Int> - should be fine")
     @KotlinCleanup("change to ArrayList!")
-    fun genCards(nids: kotlin.collections.Collection<Long?>?, model: Model): ArrayList<Long>? {
+    fun genCards(nids: kotlin.collections.Collection<NoteId?>?, model: Model): ArrayList<Long>? {
         return genCards<CollectionTask<Int?, Int>>(Utils.collection2Array(nids), model)
     }
 
@@ -1353,22 +1353,22 @@ open class Collection(
         return Finder(this).findNotes(query)
     }
 
-    fun findReplace(nids: List<Long?>?, src: String?, dst: String?): Int {
+    fun findReplace(nids: List<NoteId?>?, src: String?, dst: String?): Int {
         return Finder.findReplace(this, nids, src, dst)
     }
 
-    fun findReplace(nids: List<Long?>?, src: String?, dst: String?, regex: Boolean): Int {
+    fun findReplace(nids: List<NoteId?>?, src: String?, dst: String?, regex: Boolean): Int {
         return Finder.findReplace(this, nids, src, dst, regex)
     }
 
-    fun findReplace(nids: List<Long?>?, src: String?, dst: String?, field: String?): Int {
+    fun findReplace(nids: List<NoteId?>?, src: String?, dst: String?, field: String?): Int {
         return Finder.findReplace(this, nids, src, dst, field)
     }
 
     @KotlinCleanup("JvmOverloads")
     @KotlinCleanup("make non-null")
     fun findReplace(
-        nids: List<Long?>?,
+        nids: List<NoteId?>?,
         src: String?,
         dst: String?,
         regex: Boolean,
