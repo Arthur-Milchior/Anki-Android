@@ -625,7 +625,7 @@ class DecksV16(private val col: CollectionV16) :
         return Optional.empty()
     }
 
-    fun setDeck(cids: LongArray, did: DeckId) {
+    fun setDeck(cids: CardIds, did: DeckId) {
         this.col.db.execute(
             "update cards set did=?,usn=?,mod=? where id in " + ids2str(cids),
             did,
