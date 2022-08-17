@@ -163,7 +163,7 @@ abstract class BaseSched(val col: Collection) {
     /**
      * @param ids Ids of cards to put at the end of the new queue.
      */
-    open fun forgetCards(ids: List<Long>) {
+    open fun forgetCards(ids: List<CardId>) {
         val request = scheduleCardsAsNewRequest {
             cardIds.addAll(ids)
             log = true
@@ -180,7 +180,7 @@ abstract class BaseSched(val col: Collection) {
      * @param imin the minimum interval (inclusive)
      * @param imax The maximum interval (inclusive)
      */
-    open fun reschedCards(ids: List<Long>, imin: Int, imax: Int) {
+    open fun reschedCards(ids: List<CardId>, imin: Int, imax: Int) {
         // there is an available non-raw method, but the config key arg
         // is not declared as optional
         val request = setDueDateRequest {
@@ -199,7 +199,7 @@ abstract class BaseSched(val col: Collection) {
      */
     @JvmOverloads
     open fun sortCards(
-        cids: List<Long>,
+        cids: List<CardId>,
         start: Int,
         step: Int = 1,
         shuffle: Boolean = false,
@@ -388,7 +388,7 @@ abstract class BaseSched(val col: Collection) {
             "end)"
     }
 
-    fun remFromDyn(cids: Iterable<Long>?) {
+    fun remFromDyn(cids: Iterable<CardId>?) {
         emptyDyn("id IN " + Utils.ids2str(cids) + " AND odid")
     }
 
@@ -400,8 +400,8 @@ abstract class BaseSched(val col: Collection) {
      * Completely reset cards for export.
      */
     @RustCleanup("remove once old apkg exporter dropped")
-    open fun resetCards(ids: Array<Long>) {
-        val nonNew: List<Long> = col.db.queryLongList(
+    open fun resetCards(ids: Array<CardId>) {
+        val nonNew: List<CardId> = col.db.queryLongList(
             "select id from cards where id in " + Utils.ids2str(ids) + " and (queue != " + Consts.QUEUE_TYPE_NEW + " or type != " + Consts.CARD_TYPE_NEW + ")"
         )
         col.db.execute("update cards set reps=0, lapses=0 where id in " + Utils.ids2str(nonNew))

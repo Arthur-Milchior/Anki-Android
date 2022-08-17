@@ -762,14 +762,14 @@ open class Collection(
     }
 
     fun <T> genCards(
-        nids: kotlin.collections.Collection<Long?>?,
+        nids: kotlin.collections.Collection<NoteId?>?,
         model: Model,
         task: T?
-    ): ArrayList<Long>? where T : ProgressSender<Int?>?, T : CancelListener? {
+    ): ArrayList<CardId>? where T : ProgressSender<Int?>?, T : CancelListener? {
         return genCards(Utils.collection2Array(nids), model, task)
     }
 
-    fun genCards(nids: kotlin.collections.Collection<Long?>?, mid: NoteTypeId): ArrayList<Long>? {
+    fun genCards(nids: kotlin.collections.Collection<NoteId?>?, mid: NoteTypeId): ArrayList<CardId>? {
         return genCards(nids, models.get(mid)!!)
     }
 
@@ -1047,12 +1047,12 @@ open class Collection(
     /**
      * Bulk delete cards by ID.
      */
-    fun remCards(ids: List<Long>) {
+    fun remCards(ids: List<CardId>) {
         remCards(ids, true)
     }
 
     @KotlinCleanup("JvmOverloads")
-    fun remCards(ids: kotlin.collections.Collection<Long>, notes: Boolean) {
+    fun remCards(ids: kotlin.collections.Collection<CardId>, notes: Boolean) {
         if (ids.isEmpty()) {
             return
         }
@@ -1080,7 +1080,7 @@ open class Collection(
         return rem
     }
 
-    fun emptyCardReport(cids: List<Long>?): String {
+    fun emptyCardReport(cids: List<CardId>?): String {
         val rep = StringBuilder()
         db.query(
             "select group_concat(ord+1), count(), flds from cards c, notes n " +
@@ -2304,7 +2304,7 @@ open class Collection(
     /**
      * Card Flags *****************************************************************************************************
      */
-    fun setUserFlag(flag: Int, cids: List<Long>?) {
+    fun setUserFlag(flag: Int, cids: List<CardId>?) {
         assert(0 <= flag && flag <= 7)
         db.execute(
             "update cards set flags = (flags & ~?) | ?, usn=?, mod=? where id in " + Utils.ids2str(
