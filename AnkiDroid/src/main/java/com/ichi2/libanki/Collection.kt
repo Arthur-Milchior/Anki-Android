@@ -683,7 +683,7 @@ open class Collection(
         return ncards
     }
 
-    fun remNotes(ids: LongArray?) {
+    fun remNotes(ids: NoteIds?) {
         val list = db
             .queryLongList("SELECT id FROM cards WHERE nid IN " + Utils.ids2str(ids))
         remCards(list)
@@ -789,7 +789,7 @@ open class Collection(
      */
     @JvmOverloads
     fun <T> genCards(
-        nids: LongArray?,
+        nids: NoteIds?,
         model: Model,
         task: T? = null
     ): ArrayList<Long>? where T : ProgressSender<Int?>?, T : CancelListener? {
@@ -1130,7 +1130,7 @@ open class Collection(
     /** Update field checksums and sort cache, after find&replace, etc.
      * @param nids
      */
-    fun updateFieldCache(nids: LongArray?) {
+    fun updateFieldCache(nids: NoteIds?) {
         val snids = Utils.ids2str(nids)
         updateFieldCache(snids)
     }

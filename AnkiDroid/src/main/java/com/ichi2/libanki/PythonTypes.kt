@@ -32,6 +32,7 @@ internal typealias CardId = Long
 internal typealias CardIds = LongArray
 internal typealias dcid = Long
 internal typealias NoteId = Long
+internal typealias NoteIds = LongArray
 internal typealias NoteTypeId = Long
 internal typealias bool = Boolean
 internal typealias Tuple<T1, T2> = Pair<T1, T2>
