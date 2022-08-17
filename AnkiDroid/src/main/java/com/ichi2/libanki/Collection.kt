@@ -598,7 +598,7 @@ open class Collection(
      * Deletion logging ********************************************************* **************************************
      */
     @KotlinCleanup("scope function")
-    fun _logRem(ids: LongArray, type: Int) {
+    fun _logRem(ids: DeckIds, type: Int) {
         for (id in ids) {
             val values = ContentValues()
             values.put("usn", usn())
