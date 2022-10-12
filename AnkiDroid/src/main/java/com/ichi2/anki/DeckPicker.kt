@@ -769,7 +769,12 @@ open class DeckPicker :
             }
             R.id.action_sync -> {
                 Timber.i("DeckPicker:: Sync button pressed")
-                sync()
+                sync {
+                    MaterialDialog(this).show {
+                        setTitle(title = "Test")
+                        positiveButton(text = "OK")
+                    }
+                }
                 return true
             }
             R.id.action_import -> {
