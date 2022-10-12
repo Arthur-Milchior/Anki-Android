@@ -96,6 +96,7 @@ import com.ichi2.async.*
 import com.ichi2.async.CollectionTask.*
 import com.ichi2.async.Connection.CancellableTaskListener
 import com.ichi2.async.Connection.ConflictResolution
+import com.ichi2.async.service.startSillyService
 import com.ichi2.compat.CompatHelper.Companion.sdkVersion
 import com.ichi2.libanki.*
 import com.ichi2.libanki.Collection
@@ -377,6 +378,9 @@ open class DeckPicker :
         if (showedActivityFailedScreen(savedInstanceState)) {
             return
         }
+
+        this.startSillyService()
+
         Timber.d("onCreate()")
         mExportingDelegate = ActivityExportingDelegate(this) { col }
         mCustomStudyDialogFactory = CustomStudyDialogFactory({ col }, this).attachToActivity(this)
