@@ -35,8 +35,6 @@ import net.ankiweb.rsdroid.BackendFactory
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
-import java.lang.Exception
-import kotlin.Throws
 
 /**
  * Singleton which opens, stores, and closes the reference to the Collection.
@@ -259,7 +257,7 @@ open class CollectionHelper {
                 val requiredSpaceInBytes = maybeCurrentCollectionSizeInBytes * 2
 
                 // We currently use the same directory as the collection for VACUUM/ANALYZE due to the SQLite APIs
-                val collectionFile = File(getCollectionPath(context))
+                val collectionFile = getCollectionFile(context)
                 val freeSpace = FileUtil.getFreeDiskSpace(collectionFile, -1)
                 if (freeSpace == -1L) {
                     Timber.w("Error obtaining free space for '%s'", collectionFile.path)
@@ -324,8 +322,7 @@ open class CollectionHelper {
 
         fun getCollectionSize(context: Context): Long? {
             return try {
-                val path = getCollectionPath(context)
-                File(path).length()
+                getCollectionFile(context).length()
             } catch (e: Exception) {
                 Timber.e(e, "Error getting collection Length")
                 null
@@ -353,10 +350,10 @@ open class CollectionHelper {
             // Create specified directory if it doesn't exit
             val dir = File(path)
             if (!dir.exists() && !dir.mkdirs()) {
-                throw StorageAccessException("Failed to create AnkiDroid directory $path")
+                throw StorageAccessException("Failed to create AnkiDroid directory ${dir.absolutePath}")
             }
             if (!dir.canWrite()) {
-                throw StorageAccessException("No write access to AnkiDroid directory $path")
+                throw StorageAccessException("No write access to AnkiDroid directory ${dir.absolutePath}")
             }
             // Add a .nomedia file to it if it doesn't exist
             val nomedia = File(dir, ".nomedia")
@@ -467,7 +464,9 @@ open class CollectionHelper {
          * @return Absolute path to the AnkiDroid directory in primary shared/external storage
          */
         private val legacyAnkiDroidDirectory: String
-            get() = File(Environment.getExternalStorageDirectory(), "AnkiDroid").absolutePath
+            get() = legacyAnkiDroidDirectoryFile.absolutePath
+        private val legacyAnkiDroidDirectoryFile: File
+            get() = File(Environment.getExternalStorageDirectory(), "AnkiDroid")
 
         /**
          * Returns the absolute path to the AnkiDroid directory under the app-specific, primary/shared external storage
@@ -514,7 +513,15 @@ open class CollectionHelper {
 
         /**
          *
-         * @return the path to the actual [Collection] file
+         * @return the path to the actual [Collection] file (collection.anki2)
+         */
+        fun getCollectionFile(context: Context): File {
+            return File(getCurrentAnkiDroidDirectory(context), COLLECTION_FILENAME)
+        }
+
+        /**
+         *
+         * @return the path to the actual [Collection] file (collection.anki2)
          */
         fun getCollectionPath(context: Context): String {
             return File(getCurrentAnkiDroidDirectory(context), COLLECTION_FILENAME).absolutePath

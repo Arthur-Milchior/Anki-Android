@@ -250,7 +250,7 @@ internal constructor(
 
     /** Converts the current AnkiDroid collection path to an [AnkiDroidDirectory] instance */
     private fun getCurrentCollectionPath(): AnkiDroidDirectory {
-        val collectionAnki2Path = File(CollectionHelper.getCollectionPath(context))
+        val collectionAnki2Path = CollectionHelper.getCollectionFile(context)
         // happy with the !! here: the parent of the AnkiDroid file is a directory
         return AnkiDroidDirectory.createInstance(File(collectionAnki2Path.canonicalPath).parent!!)!!
     }

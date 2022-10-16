@@ -194,8 +194,8 @@ class DatabaseErrorDialog : AsyncDialogFragment() {
             DIALOG_RESTORE_BACKUP -> {
 
                 // Allow user to restore one of the backups
-                val path = CollectionHelper.getCollectionPath(requireContext())
-                mBackups = BackupManager.getBackups(File(path))
+                val path = CollectionHelper.getCollectionFile(requireContext())
+                mBackups = BackupManager.getBackups(path)
                 if (mBackups.isEmpty()) {
                     dialog.title(R.string.backup_restore)
                         .contentNullable(message)
@@ -263,7 +263,7 @@ class DatabaseErrorDialog : AsyncDialogFragment() {
                         val ch = CollectionHelper.instance
                         val time = TimeManager.time
                         ch.closeCollection(false, "DatabaseErrorDialog: Before Create New Collection")
-                        val path1 = CollectionHelper.getCollectionPath(requireActivity())
+                        val path1 = CollectionHelper.getCollectionFile(requireActivity())
                         if (BackupManager.moveDatabaseToBrokenDirectory(path1, false, time)) {
                             (activity as DeckPicker).restartActivity()
                         } else {

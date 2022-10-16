@@ -230,18 +230,14 @@ open class BackupManager {
             return colFile.length() + MIN_FREE_SPACE * 1024 * 1024
         }
 
-        fun enoughDiscSpace(path: String): Boolean {
+        fun enoughDiscSpace(path: File): Boolean {
             return getFreeDiscSpace(path) >= MIN_FREE_SPACE * 1024 * 1024
         }
 
         /**
          * Get free disc space in bytes from path to Collection
          */
-        fun getFreeDiscSpace(path: String): Long {
-            return getFreeDiscSpace(File(path))
-        }
-
-        private fun getFreeDiscSpace(file: File): Long {
+        fun getFreeDiscSpace(file: File): Long {
             return getFreeDiskSpace(file, (MIN_FREE_SPACE * 1024 * 1024).toLong())
         }
 
@@ -270,7 +266,7 @@ open class BackupManager {
                     Timber.e("repairCollection - dump to %s.tmp failed", deckPath)
                     return false
                 }
-                if (!moveDatabaseToBrokenDirectory(deckPath, false, time)) {
+                if (!moveDatabaseToBrokenDirectory(deckFile, false, time)) {
                     Timber.e("repairCollection - could not move corrupt file to broken directory")
                     return false
                 }
@@ -285,9 +281,7 @@ open class BackupManager {
             return false
         }
 
-        fun moveDatabaseToBrokenDirectory(colPath: String, moveConnectedFilesToo: Boolean, time: Time): Boolean {
-            val colFile = File(colPath)
-
+        fun moveDatabaseToBrokenDirectory(colFile: File, moveConnectedFilesToo: Boolean, time: Time): Boolean {
             // move file
             val value: Date = time.genToday(utcOffset())
             var movedFilename = String.format(

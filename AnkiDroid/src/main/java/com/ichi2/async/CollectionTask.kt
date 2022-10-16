@@ -40,7 +40,6 @@ import timber.log.Timber
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
-import java.util.*
 import java.util.concurrent.CancellationException
 import java.util.concurrent.ExecutionException
 
@@ -305,9 +304,9 @@ open class CollectionTask<Progress, Result>(val task: TaskDelegateBase<Progress,
             Timber.d("doInBackgroundImportReplace")
             val res = AnkiDroidApp.instance.baseContext.resources
             val context = col.context
-            val colPath = CollectionHelper.getCollectionPath(context)
+            val colPath = CollectionHelper.getCollectionFile(context)
             // extract the deck from the zip file
-            val dir = File(File(colPath).parentFile, "tmpzip")
+            val dir = File(colPath.parentFile, "tmpzip")
             if (dir.exists()) {
                 BackupManager.removeDir(dir)
             }
@@ -367,7 +366,7 @@ open class CollectionTask<Progress, Result>(val task: TaskDelegateBase<Progress,
                 }
                 // overwrite collection
                 val f = File(colFile)
-                if (!f.renameTo(File(colPath))) {
+                if (!f.renameTo(colPath)) {
                     // Exit early if this didn't work
                     return Computation.ERR
                 }
@@ -394,7 +393,7 @@ open class CollectionTask<Progress, Result>(val task: TaskDelegateBase<Progress,
                             }
                         }
                     }
-                    val mediaDir = Media.getCollectionMediaPath(colPath)
+                    val mediaDir = Media.getCollectionMediaPath(colPath.absolutePath)
                     val total = nameToNum.size
                     var i = 0
                     for ((file, c) in nameToNum) {

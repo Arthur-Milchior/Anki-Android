@@ -1099,7 +1099,7 @@ open class DeckPicker :
                 Timber.i("Android 8/8.1 detected, software render preference already exists.")
             }
         }
-        if (!BackupManager.enoughDiscSpace(CollectionHelper.getCurrentAnkiDroidDirectory(this))) {
+        if (!BackupManager.enoughDiscSpace(File(CollectionHelper.getCurrentAnkiDroidDirectory(this)))) {
             Timber.i("Not enough space to do backup")
             showDialogFragment(DeckPickerNoSpaceLeftDialog.newInstance())
         } else if (preferences.getBoolean("noSpaceLeft", false)) {
@@ -1243,8 +1243,7 @@ open class DeckPicker :
     open fun displayDowngradeFailedNoSpace() {
         Timber.w("Not enough space to downgrade")
         val formatter = FileSizeFormatter(this)
-        val collectionPath = CollectionHelper.getCollectionPath(this)
-        val collectionFile = File(collectionPath)
+        val collectionFile = CollectionHelper.getCollectionFile(this)
         showDialogFragment(DeckPickerNoSpaceToDowngradeDialog.newInstance(formatter, collectionFile))
     }
 
