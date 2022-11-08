@@ -53,7 +53,7 @@ import androidx.core.graphics.drawable.IconCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -2962,9 +2962,10 @@ suspend fun foo(context: Context, size: Int) {
 
     data class StudyReminder(val deckId: Long, val timeOfDay: TimeOfDay)
 
+    val set = mutableSetOf<String>()
     Timber.e("Testing on $size decks")
-    val studyReminders = (0..size).map {
-        StudyReminder(123L, TimeOfDay(11, 45))
+    (0..size).forEach() {
+        set.add(it.toString())
     }
 
     fun ByteBuffer.putStudyReminder(studyReminder: StudyReminder) {
@@ -2981,34 +2982,23 @@ suspend fun foo(context: Context, size: Int) {
 
     val fileSizeBefore = prefFile.length()
 
-    val (serializedString, encodeTime) = measureTimedValue {
-        val capacity = (Long.SIZE_BYTES + Char.SIZE_BYTES + Char.SIZE_BYTES) * studyReminders.size
-        val buffer = ByteBuffer.allocate(capacity)
-        studyReminders.forEach { buffer.putStudyReminder(it) }
-        String(buffer.array(), Charsets.ISO_8859_1)
-    }
-    Timber.e("::: encode time: $encodeTime")
-
-    val FOO_KEY = stringPreferencesKey("foo")
+    val FOO_KEY = stringSetPreferencesKey("foo")
     val writeTime = measureTime {
         context.dataStore.edit { preferences ->
-            preferences[FOO_KEY] = serializedString
+            preferences[FOO_KEY] = set
         }
     }
     Timber.e("::: write time: $writeTime")
 
     val (serializedString1, readTime) = measureTimedValue {
         context.dataStore.data.map { preferences ->
-            preferences[FOO_KEY] ?: ""
+            preferences[FOO_KEY] ?: setOf()
         }.first()
     }
     Timber.e("::: read time: $readTime")
 
     val (_, decodeTime) = measureTimedValue {
-        val bytes = serializedString1.toByteArray(Charsets.ISO_8859_1)
-        val buffer = ByteBuffer.wrap(bytes)
-        val numberOfReminders = bytes.size / (Long.SIZE_BYTES + Char.SIZE_BYTES + Char.SIZE_BYTES)
-        (0 until numberOfReminders).map { buffer.getStudyReminder() }
+        serializedString1.forEach { _ -> }
     }
     Timber.e("::: decode time: $decodeTime")
 
@@ -3042,10 +3032,9 @@ W/DeckPickerKt: ::: write time: 1.023779230s
 W/DeckPickerKt: ::: read time: 58us
 I/com.ichi2.anki: Background concurrent copying GC freed 1580(7422KB) AllocSpace objects, 3(11MB) LOS objects, 11% free, 192MB/216MB, paused 197us total 781.712ms
 W/DeckPickerKt: ::: decode time: 810.870807ms
-W/DeckPickerKt: ::: pref file size: 7535 → 43007611
+W/DeckPickerKt: ::: pref file size: 7535 → 43_007_611
 W/DeckPickerKt: Testing on 5000000 decks
      */
-
 
 /*
  * Result with data store
@@ -3068,7 +3057,7 @@ W/DeckPickerKt: Testing on 5000000 decks
 2022-11-08 06:17:41.544 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: write time: 710.859884ms
 2022-11-08 06:17:41.546 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: read time: 1.434962ms
 2022-11-08 06:17:42.246 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: decode time: 699.213230ms
-2022-11-08 06:17:42.247 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: pref file size: 12026 → 12000032
+2022-11-08 06:17:42.247 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: pref file size: 12026 → 12_000_032
 2022-11-08 06:17:42.247 2489-2489/com.ichi2.anki E/DeckPickerKt: Testing on 5000000 decks
 2022-11-08 06:17:51.683 2489-2489/com.ichi2.anki E/ACRA: ACRA caught a OutOfMemoryError for com.ichi2.anki
     java.lang.OutOfMemoryError: Failed to allocate a 120000040 byte allocation with 25165824 free bytes and 30MB until OOM, target footprint 529588512, growth limit 536870912
@@ -3091,3 +3080,23 @@ W/DeckPickerKt: Testing on 5000000 decks
 
  */
 
+/*
+Test with set of strings
+
+2022-11-08 06:31:13.466 4909-4909/com.ichi2.anki E/DeckPickerKt: Testing on 10 decks
+2022-11-08 06:31:13.958 4909-4909/com.ichi2.anki E/DeckPickerKt: ::: write time: 464.257499ms
+2022-11-08 06:31:14.001 4909-4909/com.ichi2.anki E/DeckPickerKt: ::: read time: 42.567615ms
+2022-11-08 06:31:14.003 4909-4909/com.ichi2.anki E/DeckPickerKt: ::: decode time: 119.616us
+2022-11-08 06:31:14.027 4909-4909/com.ichi2.anki E/DeckPickerKt: ::: pref file size: 0 → 45
+2022-11-08 06:31:14.028 4909-4909/com.ichi2.anki E/DeckPickerKt: Testing on 1000 decks
+2022-11-08 06:31:14.424 4909-4909/com.ichi2.anki E/DeckPickerKt: ::: write time: 382.209999ms
+2022-11-08 06:31:14.427 4909-4909/com.ichi2.anki E/DeckPickerKt: ::: read time: 1.011307ms
+2022-11-08 06:31:14.432 4909-4909/com.ichi2.anki E/DeckPickerKt: ::: decode time: 3.779923ms
+2022-11-08 06:31:14.462 4909-4909/com.ichi2.anki E/DeckPickerKt: ::: pref file size: 0 → 4910
+2022-11-08 06:31:14.463 4909-4909/com.ichi2.anki E/DeckPickerKt: Testing on 1000000 decks
+2022-11-08 06:31:18.702 4909-4909/com.ichi2.anki E/DeckPickerKt: ::: write time: 2.394464999s
+2022-11-08 06:31:18.704 4909-4909/com.ichi2.anki E/DeckPickerKt: ::: read time: 1.126731ms
+2022-11-08 06:31:18.844 4909-4909/com.ichi2.anki E/DeckPickerKt: ::: decode time: 138.822615ms
+2022-11-08 06:31:19.045 4909-4909/com.ichi2.anki E/DeckPickerKt: ::: pref file size: 0 → 7888919
+2022-11-08 06:31:19.045 4909-4909/com.ichi2.anki E/DeckPickerKt: Testing on 5000000 decks
+ */
