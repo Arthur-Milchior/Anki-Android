@@ -50,8 +50,12 @@ import androidx.core.content.edit
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.commit
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -124,6 +128,8 @@ import com.ichi2.utils.Permissions.hasStorageAccessPermission
 import com.ichi2.widget.WidgetStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import net.ankiweb.rsdroid.BackendFactory
 import net.ankiweb.rsdroid.RustCleanup
@@ -2238,7 +2244,9 @@ open class DeckPicker :
             }
         }
         Timber.d("Startup - Deck List UI Completed")
-        bar(baseContext)
+        launchCatchingTask {
+            bar(baseContext)
+        }
     }
 
     fun renderPage() {
@@ -2940,20 +2948,21 @@ enum class SyncIconState {
  */
 data class ImporterData(val impList: List<AnkiPackageImporter>?, val errList: String?)
 
-fun bar(context: Context) {
+suspend fun bar(context: Context) {
     for (i in listOf(10, 1000, 1_000_000, 5_000_000, 10_000_000)) {
         foo(context, i)
     }
 }
 
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "measure")
 @OptIn(ExperimentalTime::class)
-fun foo(context: Context, size: Int) {
+suspend fun foo(context: Context, size: Int) {
 
     data class TimeOfDay(val hour: Int, val minute: Int)
 
     data class StudyReminder(val deckId: Long, val timeOfDay: TimeOfDay)
 
-    print("Testing on $size decks")
+    Timber.e("Testing on $size decks")
     val studyReminders = (0..size).map {
         StudyReminder(123L, TimeOfDay(11, 45))
     }
@@ -2968,9 +2977,7 @@ fun foo(context: Context, size: Int) {
     fun ByteBuffer.getStudyReminder() =
         StudyReminder(getLong(), TimeOfDay(getChar().code, getChar().code))
 
-    val pref = PreferenceManager.getDefaultSharedPreferences(context)
-
-    val prefFile = File("/data/user/0/com.ichi2.anki/shared_prefs/com.ichi2.anki_preferences.xml")
+    val prefFile = File("/data/data/com.ichi2.anki/files/datastore/measure.preferences_pb")
 
     val fileSizeBefore = prefFile.length()
 
@@ -2980,19 +2987,22 @@ fun foo(context: Context, size: Int) {
         studyReminders.forEach { buffer.putStudyReminder(it) }
         String(buffer.array(), Charsets.ISO_8859_1)
     }
-    Timber.w("::: encode time: $encodeTime")
+    Timber.e("::: encode time: $encodeTime")
 
+    val FOO_KEY = stringPreferencesKey("foo")
     val writeTime = measureTime {
-        pref.edit()
-            .putString("foo", serializedString)
-            .commit()
+        context.dataStore.edit { preferences ->
+            preferences[FOO_KEY] = serializedString
+        }
     }
-    Timber.w("::: write time: $writeTime")
+    Timber.e("::: write time: $writeTime")
 
     val (serializedString1, readTime) = measureTimedValue {
-        pref.getString("foo", "") ?: ""
+        context.dataStore.data.map { preferences ->
+            preferences[FOO_KEY] ?: ""
+        }.first()
     }
-    Timber.w("::: read time: $readTime")
+    Timber.e("::: read time: $readTime")
 
     val (_, decodeTime) = measureTimedValue {
         val bytes = serializedString1.toByteArray(Charsets.ISO_8859_1)
@@ -3000,13 +3010,15 @@ fun foo(context: Context, size: Int) {
         val numberOfReminders = bytes.size / (Long.SIZE_BYTES + Char.SIZE_BYTES + Char.SIZE_BYTES)
         (0 until numberOfReminders).map { buffer.getStudyReminder() }
     }
-    Timber.w("::: decode time: $decodeTime")
+    Timber.e("::: decode time: $decodeTime")
 
     val fileSizeAfter = prefFile.length()
 
-    pref.edit().remove("foo").commit()
+    context.dataStore.edit { preferences ->
+        preferences.remove(FOO_KEY)
+    }
 
-    Timber.w("::: pref file size: $fileSizeBefore → $fileSizeAfter")
+    Timber.e("::: pref file size: $fileSizeBefore → $fileSizeAfter")
 }
     /*
     Result with shared preference
@@ -3033,3 +3045,49 @@ W/DeckPickerKt: ::: decode time: 810.870807ms
 W/DeckPickerKt: ::: pref file size: 7535 → 43007611
 W/DeckPickerKt: Testing on 5000000 decks
      */
+
+
+/*
+ * Result with data store
+2022-11-08 06:17:37.745 2489-2489/com.ichi2.anki E/DeckPickerKt: Testing on 10 decks
+2022-11-08 06:17:37.762 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: encode time: 1.272962ms
+2022-11-08 06:17:39.364 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: write time: 1.600551537s
+2022-11-08 06:17:39.387 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: read time: 22.156654ms
+2022-11-08 06:17:39.388 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: decode time: 366.731us
+2022-11-08 06:17:39.388 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: pref file size: 12000032 → 146
+2022-11-08 06:17:39.389 2489-2489/com.ichi2.anki E/DeckPickerKt: Testing on 1000 decks
+2022-11-08 06:17:39.407 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: encode time: 13.603116ms
+2022-11-08 06:17:39.751 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: write time: 342.752154ms
+2022-11-08 06:17:39.752 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: read time: 660.577us
+2022-11-08 06:17:39.765 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: decode time: 12.508654ms
+2022-11-08 06:17:39.766 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: pref file size: 146 → 12026
+2022-11-08 06:17:39.766 2489-2489/com.ichi2.anki E/DeckPickerKt: Testing on 1000000 decks
+2022-11-08 06:17:40.832 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: encode time: 702.758038ms
+2022-11-08 06:17:40.880 2489-2489/com.ichi2.anki E/DeckPickerKt: Testing on 10 decks
+2022-11-08 06:17:40.881 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: encode time: 88.654us
+2022-11-08 06:17:41.544 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: write time: 710.859884ms
+2022-11-08 06:17:41.546 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: read time: 1.434962ms
+2022-11-08 06:17:42.246 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: decode time: 699.213230ms
+2022-11-08 06:17:42.247 2489-2489/com.ichi2.anki E/DeckPickerKt: ::: pref file size: 12026 → 12000032
+2022-11-08 06:17:42.247 2489-2489/com.ichi2.anki E/DeckPickerKt: Testing on 5000000 decks
+2022-11-08 06:17:51.683 2489-2489/com.ichi2.anki E/ACRA: ACRA caught a OutOfMemoryError for com.ichi2.anki
+    java.lang.OutOfMemoryError: Failed to allocate a 120000040 byte allocation with 25165824 free bytes and 30MB until OOM, target footprint 529588512, growth limit 536870912
+        at java.lang.StringFactory.newStringFromChars(StringFactory.java:260)
+        at java.lang.StringFactory.newStringFromBytes(StringFactory.java:245)
+        at java.lang.StringFactory.newStringFromBytes(StringFactory.java:249)
+        at com.ichi2.anki.DeckPickerKt.foo(DeckPicker.kt:3015)
+        at com.ichi2.anki.DeckPickerKt.bar(DeckPicker.kt:2953)
+        at com.ichi2.anki.DeckPickerKt$bar$1.invokeSuspend(Unknown Source:17)
+        at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+        at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:106)
+        at android.os.Handler.handleCallback(Handler.java:938)
+        at android.os.Handler.dispatchMessage(Handler.java:99)
+        at android.os.Looper.loop(Looper.java:246)
+        at android.app.ActivityThread.main(ActivityThread.java:8653)
+        at java.lang.reflect.Method.invoke(Native Method)
+        at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:602)
+        at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1130)
+    	Suppressed: kotlinx.coroutines.DiagnosticCoroutineContextException: [StandaloneCoroutine{Cancelling}@2cf7e7b, Dispatchers.Main.immediate]
+
+ */
+
