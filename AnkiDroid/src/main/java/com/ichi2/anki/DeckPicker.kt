@@ -51,6 +51,7 @@ import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.fragment.app.commit
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -130,8 +131,12 @@ import org.intellij.lang.annotations.Language
 import org.json.JSONException
 import timber.log.Timber
 import java.io.File
+import java.nio.ByteBuffer
 import kotlin.math.abs
 import kotlin.math.roundToLong
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
+import kotlin.time.measureTimedValue
 
 const val MIGRATION_WAS_LAST_POSTPONED_AT_SECONDS = "secondWhenMigrationWasPostponedLast"
 const val POSTPONE_MIGRATION_INTERVAL_DAYS = 5L
@@ -2233,6 +2238,7 @@ open class DeckPicker :
             }
         }
         Timber.d("Startup - Deck List UI Completed")
+        bar(baseContext)
     }
 
     fun renderPage() {
@@ -2933,3 +2939,97 @@ enum class SyncIconState {
  * @param errList: a string describing the errors. Null if no error.
  */
 data class ImporterData(val impList: List<AnkiPackageImporter>?, val errList: String?)
+
+fun bar(context: Context) {
+    for (i in listOf(10, 1000, 1_000_000, 5_000_000, 10_000_000)) {
+        foo(context, i)
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+fun foo(context: Context, size: Int) {
+
+    data class TimeOfDay(val hour: Int, val minute: Int)
+
+    data class StudyReminder(val deckId: Long, val timeOfDay: TimeOfDay)
+
+    print("Testing on $size decks")
+    val studyReminders = (0..size).map {
+        StudyReminder(123L, TimeOfDay(11, 45))
+    }
+
+    fun ByteBuffer.putStudyReminder(studyReminder: StudyReminder) {
+        putLong(studyReminder.deckId)
+        putChar(studyReminder.timeOfDay.hour.toChar())
+        putChar(studyReminder.timeOfDay.minute.toChar())
+    }
+
+    @Suppress("UsePropertyAccessSyntax")
+    fun ByteBuffer.getStudyReminder() =
+        StudyReminder(getLong(), TimeOfDay(getChar().code, getChar().code))
+
+    val pref = PreferenceManager.getDefaultSharedPreferences(context)
+
+    val prefFile = File("/data/user/0/com.ichi2.anki/shared_prefs/com.ichi2.anki_preferences.xml")
+
+    val fileSizeBefore = prefFile.length()
+
+    val (serializedString, encodeTime) = measureTimedValue {
+        val capacity = (Long.SIZE_BYTES + Char.SIZE_BYTES + Char.SIZE_BYTES) * studyReminders.size
+        val buffer = ByteBuffer.allocate(capacity)
+        studyReminders.forEach { buffer.putStudyReminder(it) }
+        String(buffer.array(), Charsets.ISO_8859_1)
+    }
+    Timber.w("::: encode time: $encodeTime")
+
+    val writeTime = measureTime {
+        pref.edit()
+            .putString("foo", serializedString)
+            .commit()
+    }
+    Timber.w("::: write time: $writeTime")
+
+    val (serializedString1, readTime) = measureTimedValue {
+        pref.getString("foo", "") ?: ""
+    }
+    Timber.w("::: read time: $readTime")
+
+    val (_, decodeTime) = measureTimedValue {
+        val bytes = serializedString1.toByteArray(Charsets.ISO_8859_1)
+        val buffer = ByteBuffer.wrap(bytes)
+        val numberOfReminders = bytes.size / (Long.SIZE_BYTES + Char.SIZE_BYTES + Char.SIZE_BYTES)
+        (0 until numberOfReminders).map { buffer.getStudyReminder() }
+    }
+    Timber.w("::: decode time: $decodeTime")
+
+    val fileSizeAfter = prefFile.length()
+
+    pref.edit().remove("foo").commit()
+
+    Timber.w("::: pref file size: $fileSizeBefore → $fileSizeAfter")
+}
+    /*
+    Result with shared preference
+    W/DeckPickerKt: Testing on 10 decks
+W/DeckPickerKt: ::: encode time: 1.040115ms
+W/DeckPickerKt: ::: write time: 11.325039ms
+W/DeckPickerKt: ::: read time: 25.846us
+W/DeckPickerKt: ::: decode time: 342.654us
+W/DeckPickerKt: ::: pref file size: 7535 → 8041
+W/DeckPickerKt: Testing on 1000 decks
+W/DeckPickerKt: ::: encode time: 14.480346ms
+W/DeckPickerKt: ::: write time: 7.692500ms
+W/DeckPickerKt: ::: read time: 22.385us
+W/DeckPickerKt: ::: decode time: 13.366692ms
+W/DeckPickerKt: ::: pref file size: 7535 → 50611
+W/DeckPickerKt: Testing on 1000000 decks
+D/LeakCanary: Setting up flushing for Thread[Filter,5,main]
+I/com.ichi2.anki: Background concurrent copying GC freed 80881(13MB) AllocSpace objects, 13(71MB) LOS objects, 15% free, 126MB/150MB, paused 264us total 704.041ms
+W/DeckPickerKt: ::: encode time: 782.625499ms
+W/DeckPickerKt: ::: write time: 1.023779230s
+W/DeckPickerKt: ::: read time: 58us
+I/com.ichi2.anki: Background concurrent copying GC freed 1580(7422KB) AllocSpace objects, 3(11MB) LOS objects, 11% free, 192MB/216MB, paused 197us total 781.712ms
+W/DeckPickerKt: ::: decode time: 810.870807ms
+W/DeckPickerKt: ::: pref file size: 7535 → 43007611
+W/DeckPickerKt: Testing on 5000000 decks
+     */
