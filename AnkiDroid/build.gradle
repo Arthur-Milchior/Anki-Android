@@ -29,7 +29,7 @@ android {
     compileSdkVersion 33 // change api compileSdkVersion at the same time
 
     defaultConfig {
-        applicationId "com.ichi2.anki"
+        applicationId "com.ichi2.anki.baz"
         buildConfigField "Boolean", "CI", (System.getenv("CI") == "true").toString()
         buildConfigField "Boolean", "LEGACY_SCHEMA", "true"
         buildConfigField "String", "ACRA_URL", '"https://ankidroid.org/acra/report"'
@@ -62,7 +62,7 @@ android {
         versionName="2.16alpha92"
         minSdkVersion 21
         //noinspection OldTargetApi - also performed in api/build.fradle
-        targetSdkVersion 29 // change .travis.yml platform download at same time
+        targetSdkVersion 30 // change .travis.yml platform download at same time
         testApplicationId "com.ichi2.anki.tests"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner 'com.ichi2.testutils.NewCollectionPathTestRunner'
