@@ -220,7 +220,7 @@
     <string name="menu__study_options" comment="Menu item that opens options for a Filtered deck (aka Cram deck, aka Custom study)">Opcions d\'estudi</string>
     <string name="select_tts">Selecciona idioma per TTS</string>
     <string name="custom_study">Estudi a mida</string>
-    <string name="more_options"> Més</string>
+    <string name="more_options"> Més</string>
     <string name="dyn_deck_desc">Es tracta d\'un paquet especial per a l\'estudi fora de la planificació normal. Després de revisar-les, les fitxes es tornaran automàticament al seus paquets originals. Si suprimiu aquest paquet de la llista de paquets, totes les fitxes tornaran al seu paquet inicial.</string>
     <string name="steps_error">Els passos han de ser números majors que 0</string>
     <string name="steps_min_error">Com a mínim un pas s\'exigeix</string>

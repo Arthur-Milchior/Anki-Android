@@ -214,7 +214,7 @@ class ModelsV16(col: CollectionV16) : ModelManager(col) {
     /** Get current model.*/
     @RustCleanup("Check the -1 fallback - copied from the Java")
     override fun current(forDeck: bool): NoteType {
-        var m = get(col.decks.current().getLongOrNull("mid"))
+        var m = get(col.decks.current(col).getLongOrNull("mid"))
         if (!forDeck || m == null) {
             m = get(col.get_config("curModel", -1L)!!)
         }

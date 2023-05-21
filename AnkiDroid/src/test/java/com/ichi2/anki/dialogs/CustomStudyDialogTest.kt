@@ -15,7 +15,6 @@
  */
 package com.ichi2.anki.dialogs
 
-import androidx.core.view.get
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.lifecycle.Lifecycle
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -73,7 +72,7 @@ class CustomStudyDialogTest : RobolectricTest() {
             MatcherAssert.assertThat(dialog, IsNull.notNullValue())
             dialog!!.getActionButton(WhichButton.POSITIVE).callOnClick()
         }
-        val customStudy = col.decks.current()
+        val customStudy = col.decks.current(col)
         MatcherAssert.assertThat("Custom Study should be dynamic", customStudy.isDyn)
         MatcherAssert.assertThat("could not find deck: Custom study session", customStudy, notNullValue())
         customStudy.remove("id")
@@ -114,7 +113,7 @@ class CustomStudyDialogTest : RobolectricTest() {
         val mockCollection = Mockito.mock(Collection::class.java, Mockito.RETURNS_DEEP_STUBS)
         val mockSched = Mockito.mock(AbstractSched::class.java)
         whenever(mockCollection.sched).thenReturn(mockSched)
-        whenever(mockSched.newCount()).thenReturn(0)
+        whenever(mockSched.newCount(col)).thenReturn(0)
         val factory = CustomStudyDialogFactory({ mockCollection }, mMockListener)
         val scenario = FragmentScenario.launch(CustomStudyDialog::class.java, args, R.style.Theme_AppCompat, factory)
         scenario.moveToState(Lifecycle.State.STARTED)

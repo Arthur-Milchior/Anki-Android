@@ -400,10 +400,10 @@ open class RobolectricTest : CollectionGetter, AndroidTest {
 
     protected fun addRevNoteUsingBasicModelDueToday(@Suppress("SameParameterValue") front: String, @Suppress("SameParameterValue") back: String): Note {
         val note = addNoteUsingBasicModel(front, back)
-        val card = note.firstCard()
+        val card = note.firstCard(col)
         card.queue = Consts.QUEUE_TYPE_REV
         card.type = Consts.CARD_TYPE_REV
-        card.due = col.sched.today.toLong()
+        card.due = col.sched.today(col).toLong()
         return note
     }
 
@@ -453,7 +453,7 @@ open class RobolectricTest : CollectionGetter, AndroidTest {
 
     protected fun addDeck(deckName: String?): Long {
         return try {
-            col.decks.id(deckName!!)
+            col.decks.id(col, deckName!!)
         } catch (filteredAncestor: DeckRenameException) {
             throw RuntimeException(filteredAncestor)
         }
@@ -461,7 +461,7 @@ open class RobolectricTest : CollectionGetter, AndroidTest {
 
     protected fun addDynamicDeck(name: String?): Long {
         return try {
-            col.decks.newDyn(name!!)
+            col.decks.newDyn(col, name!!)
         } catch (filteredAncestor: DeckRenameException) {
             throw RuntimeException(filteredAncestor)
         }
@@ -561,7 +561,7 @@ open class RobolectricTest : CollectionGetter, AndroidTest {
     }
 
     fun equalFirstField(expected: Card, obtained: Card) {
-        MatcherAssert.assertThat(obtained.note().fields[0], Matchers.equalTo(expected.note().fields[0]))
+        MatcherAssert.assertThat(obtained.note(col).fields[0], Matchers.equalTo(expected.note(col).fields[0]))
     }
 
     @CheckResult
@@ -574,7 +574,7 @@ open class RobolectricTest : CollectionGetter, AndroidTest {
 
     protected val card: Card?
         get() {
-            val card = col.sched.card
+            val card = col.sched.card(col)
             advanceRobolectricLooperWithSleep()
             return card
         }

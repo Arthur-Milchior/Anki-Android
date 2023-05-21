@@ -52,8 +52,8 @@ class CardTemplatePreviewerTest : RobolectricTest() {
         var testCardTemplatePreviewer = previewerController.get()
         Assert.assertTrue(
             "model change did not show up?",
-            testCardTemplatePreviewer.getDummyCard(collectionBasicModelOriginal, 0)!!.q().contains("PREVIEWER_TEST") &&
-                testCardTemplatePreviewer.getDummyCard(collectionBasicModelOriginal, 0)!!.a().contains("PREVIEWER_TEST")
+            testCardTemplatePreviewer.getDummyCard(collectionBasicModelOriginal, 0)!!.q(col).contains("PREVIEWER_TEST") &&
+                testCardTemplatePreviewer.getDummyCard(collectionBasicModelOriginal, 0)!!.a(col).contains("PREVIEWER_TEST")
         )
 
         // Take it through a destroy/re-create lifecycle in order to test instance state persistence
@@ -65,8 +65,8 @@ class CardTemplatePreviewerTest : RobolectricTest() {
         testCardTemplatePreviewer = previewerController.get()
         Assert.assertTrue(
             "model change not preserved in lifecycle??",
-            testCardTemplatePreviewer.getDummyCard(collectionBasicModelOriginal, 0)!!.q().contains("PREVIEWER_TEST") &&
-                testCardTemplatePreviewer.getDummyCard(collectionBasicModelOriginal, 0)!!.a().contains("PREVIEWER_TEST")
+            testCardTemplatePreviewer.getDummyCard(collectionBasicModelOriginal, 0)!!.q(col).contains("PREVIEWER_TEST") &&
+                testCardTemplatePreviewer.getDummyCard(collectionBasicModelOriginal, 0)!!.a(col).contains("PREVIEWER_TEST")
         )
 
         // Make sure we can click
@@ -92,7 +92,7 @@ class CardTemplatePreviewerTest : RobolectricTest() {
         val previewerController = Robolectric.buildActivity(TestCardTemplatePreviewer::class.java, intent).create().start().resume().visible()
         saveControllerForCleanup(previewerController)
         val testCardTemplatePreviewer = previewerController.get()
-        val arr = testCardTemplatePreviewer.getDummyCard(collectionBasicModelOriginal, 0)!!.note().fields
+        val arr = testCardTemplatePreviewer.getDummyCard(collectionBasicModelOriginal, 0)!!.note(col).fields
         assertThat(arr[0], equalTo("(" + fields[0] + ")"))
         assertThat(arr[1], equalTo("(" + fields[1] + ")"))
     }
@@ -113,7 +113,7 @@ class CardTemplatePreviewerTest : RobolectricTest() {
         val previewerController = Robolectric.buildActivity(TestCardTemplatePreviewer::class.java, intent).create().start().resume().visible()
         saveControllerForCleanup(previewerController)
         val testCardTemplatePreviewer = previewerController.get()
-        val arr = testCardTemplatePreviewer.getDummyCard(collectionBasicModelOriginal, 0)!!.note().fields
+        val arr = testCardTemplatePreviewer.getDummyCard(collectionBasicModelOriginal, 0)!!.note(col).fields
         assertThat(arr[0], equalTo(testCardTemplatePreviewer.getString(R.string.cloze_sample_text, "c1")))
         assertThat(arr[1], equalTo("(" + fields[1] + ")"))
     }
@@ -134,7 +134,7 @@ class CardTemplatePreviewerTest : RobolectricTest() {
         val previewerController = Robolectric.buildActivity(TestCardTemplatePreviewer::class.java, intent).create().start().resume().visible()
         saveControllerForCleanup(previewerController)
         val testCardTemplatePreviewer = previewerController.get()
-        val arr = testCardTemplatePreviewer.getDummyCard(collectionBasicModelOriginal, 0)!!.note().fields
+        val arr = testCardTemplatePreviewer.getDummyCard(collectionBasicModelOriginal, 0)!!.note(col).fields
         assertThat(arr[0], equalTo("(" + fields[0] + ")"))
         assertThat(arr[1], equalTo(testCardTemplatePreviewer.getString(R.string.basic_answer_sample_text)))
     }
@@ -262,7 +262,7 @@ class CardTemplatePreviewerTest : RobolectricTest() {
 
     @Test
     fun cardTemplatePreviewerSecondOrd_issue8001() {
-        val cid = addNoteUsingBasicAndReversedModel("hello", "world").cards()[1].id
+        val cid = addNoteUsingBasicAndReversedModel("hello", "world").cards(col)[1].id
 
         val model = getCurrentDatabaseModelCopy("Basic (and reversed card)")
         val tempModelPath = TemporaryModel.saveTempModel(targetContext, model)
@@ -338,7 +338,7 @@ class CardTemplatePreviewerTest : RobolectricTest() {
         for (i in fieldNames.indices) {
             n.setField(i, fieldNames[i])
         }
-        n.flush()
+        n.flush(col)
         return col.getNewLinkedCard(Card(col), n, model.getJSONArray("tmpls").getJSONObject(ordinal), 1, 1, true)
     }
 

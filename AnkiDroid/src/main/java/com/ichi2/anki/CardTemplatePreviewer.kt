@@ -23,15 +23,17 @@ import com.ichi2.anki.UIUtils.showThemedToast
 import com.ichi2.anki.cardviewer.PreviewLayout
 import com.ichi2.anki.cardviewer.PreviewLayout.Companion.createAndDisplay
 import com.ichi2.annotations.NeedsTest
-import com.ichi2.libanki.*
+import com.ichi2.libanki.Card
 import com.ichi2.libanki.Collection
+import com.ichi2.libanki.Model
+import com.ichi2.libanki.Note
+import com.ichi2.libanki.TemplateManager
 import com.ichi2.libanki.TemplateManager.TemplateRenderContext.TemplateRenderOutput
 import com.ichi2.libanki.utils.NoteUtils
 import net.ankiweb.rsdroid.BackendFactory
 import org.json.JSONObject
 import timber.log.Timber
 import java.io.IOException
-import java.util.*
 
 /**
  * The card template previewer intent must supply one or more cards to show and the index in the list from where
@@ -236,7 +238,7 @@ open class CardTemplatePreviewer : AbstractFlashcardViewer() {
             // loading from the note editor
             val toPreview = setCurrentCardFromNoteEditorBundle(col)
             if (toPreview != null) {
-                mTemplateCount = col.findTemplates(toPreview.note()).size
+                mTemplateCount = col.findTemplates(toPreview.note(col)).size
                 if (mTemplateCount >= 2) {
                     previewLayout!!.showNavigationButtons()
                 }
@@ -280,13 +282,13 @@ open class CardTemplatePreviewer : AbstractFlashcardViewer() {
             return null
         }
         val newDid = mNoteEditorBundle!!.getLong("did")
-        if (col.decks.isDyn(newDid)) {
+        if (col.decks.isDyn(col, newDid)) {
             currentCard!!.oDid = currentCard!!.did
         }
         currentCard!!.did = newDid
-        val currentNote = currentCard!!.note()
+        val currentNote = currentCard!!.note(col)
         val tagsList = mNoteEditorBundle!!.getStringArrayList("tags")
-        NoteUtils.setTags(currentNote, tagsList)
+        NoteUtils.setTags(col, currentNote, tagsList)
         return currentCard
     }
 
@@ -305,12 +307,11 @@ open class CardTemplatePreviewer : AbstractFlashcardViewer() {
         // we map from "int" -> field, but the order isn't guaranteed, and there may be skips.
         // so convert this to a list of strings, with null in place of the invalid fields
         val elementCount = noteFields.keySet().stream().map { s: String -> s.toInt() }.max { obj: Int, anotherInteger: Int? -> obj.compareTo(anotherInteger!!) }.orElse(-1) + 1
-        val ret = arrayOfNulls<String>(elementCount)
-        Arrays.fill(ret, "") // init array, nulls cause a crash
+        val ret = Array(elementCount) { "" }
         for (fieldOrd in noteFields.keySet()) {
-            ret[fieldOrd.toInt()] = noteFields.getString(fieldOrd)
+            ret[fieldOrd.toInt()] = noteFields.getString(fieldOrd)!!
         }
-        return ArrayList(listOf(*ret))
+        return ret.toMutableList()
     }
 
     /**
@@ -372,51 +373,52 @@ open class CardTemplatePreviewer : AbstractFlashcardViewer() {
             mNote = null
         }
 
-        /* if we have an unsaved note saved, use it instead of a collection lookup */ override fun note(
+        /* if we have an unsaved note saved, use it instead of a collection lookup */
+        override fun note(
+            col: Collection,
             reload: Boolean
         ): Note {
-            return mNote ?: super.note(reload)
+            return mNote ?: super.note(col, reload)
         }
 
         /** if we have an unsaved note saved, use it instead of a collection lookup  */
-        override fun note(): Note {
-            return mNote ?: super.note()
+        override fun note(col: Collection): Note {
+            return mNote ?: super.note(col)
         }
 
         /** if we have an unsaved note, never return empty  */
-        override val isEmpty: Boolean
-            get() = if (mNote != null) {
-                false
-            } else {
-                super.isEmpty
-            }
-
-        /** Override the method that fetches the model so we can render unsaved models  */
-        override fun model(): Model {
-            return mEditedModel ?: super.model()
+        override fun isEmpty(col: Collection) = if (mNote != null) {
+            false
+        } else {
+            super.isEmpty(col)
         }
 
-        override fun render_output(reload: Boolean, browser: Boolean): TemplateRenderOutput {
-            if (render_output == null || reload) {
-                render_output = if (BackendFactory.defaultLegacySchema) {
-                    col.render_output_legacy(this, reload, browser)
+        /** Override the method that fetches the model so we can render unsaved models  */
+        override fun model(col: Collection) =
+            mEditedModel ?: super.model(col)
+
+        override fun renderOutput(col: Collection, reload: Boolean, browser: Boolean): TemplateRenderOutput {
+            if (renderOutput == null || reload) {
+                renderOutput = if (BackendFactory.defaultLegacySchema) {
+                    col.renderOutput_legacy(this, reload, browser)
                 } else {
-                    val index = if (model().isCloze) {
+                    val index = if (model(col).isCloze) {
                         0
                     } else {
                         ord
                     }
                     val context = TemplateManager.TemplateRenderContext.from_card_layout(
-                        note(),
+                        col,
+                        note(col),
                         this,
-                        model(),
-                        model().getJSONArray("tmpls")[index] as JSONObject,
+                        model(col),
+                        model(col).getJSONArray("tmpls")[index] as JSONObject,
                         fill_empty = false
                     )
                     context.render()
                 }
             }
-            return render_output!!
+            return renderOutput!!
         }
     }
 }

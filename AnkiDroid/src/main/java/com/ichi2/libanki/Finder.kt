@@ -407,8 +407,8 @@ class Finder(private val col: Collection) {
         } else if ("buried" == `val`) {
             "c.queue in (" + Consts.QUEUE_TYPE_SIBLING_BURIED + ", " + Consts.QUEUE_TYPE_MANUALLY_BURIED + ")"
         } else if ("due" == `val`) {
-            "(c.queue in (" + Consts.QUEUE_TYPE_REV + "," + Consts.QUEUE_TYPE_DAY_LEARN_RELEARN + ") and c.due <= " + col.sched.today +
-                ") or (c.queue = " + Consts.QUEUE_TYPE_LRN + " and c.due <= " + col.sched.dayCutoff + ")"
+            "(c.queue in (" + Consts.QUEUE_TYPE_REV + "," + Consts.QUEUE_TYPE_DAY_LEARN_RELEARN + ") and c.due <= " + col.sched.today(col) +
+                ") or (c.queue = " + Consts.QUEUE_TYPE_LRN + " and c.due <= " + col.sched.dayCutoff(col) + ")"
         } else {
             null
         }
@@ -450,7 +450,7 @@ class Finder(private val col: Collection) {
             }
             ease = "and ease=" + r[1]
         }
-        val cutoff = (col.sched.dayCutoff - Stats.SECONDS_PER_DAY * days) * 1000
+        val cutoff = (col.sched.dayCutoff(col) - Stats.SECONDS_PER_DAY * days) * 1000
         return "c.id in (select cid from revlog where id>$cutoff $ease)"
     }
 
@@ -462,7 +462,7 @@ class Finder(private val col: Collection) {
             Timber.w(e)
             return null
         }
-        val cutoff = (col.sched.dayCutoff - Stats.SECONDS_PER_DAY * days) * 1000
+        val cutoff = (col.sched.dayCutoff(col) - Stats.SECONDS_PER_DAY * days) * 1000
         return "c.id > $cutoff"
     }
 
@@ -495,7 +495,7 @@ class Finder(private val col: Collection) {
         // query
         var q = ""
         if ("due" == prop) {
-            `val` += col.sched.today
+            `val` += col.sched.today(col)
             // only valid for review/daily learning
             q =
                 "(c.queue in (" + Consts.QUEUE_TYPE_REV + "," + Consts.QUEUE_TYPE_DAY_LEARN_RELEARN + ")) and "
@@ -556,7 +556,7 @@ class Finder(private val col: Collection) {
         if (did == null) {
             return null
         }
-        val children: kotlin.collections.Collection<Long> = col.decks.children(did).values
+        val children: kotlin.collections.Collection<Long> = col.decks.children(col, did).values
         val res: MutableList<Long> = ArrayList(children.size + 1)
         res.add(did)
         res.addAll(children)
@@ -576,18 +576,18 @@ class Finder(private val col: Collection) {
         var ids: MutableList<Long>?
         // current deck?
         if ("current".equals(`val`, ignoreCase = true)) {
-            ids = dids(col.decks.selected())
+            ids = dids(col.decks.selected(col))
         } else if (!`val`.contains("*")) {
             // single deck
-            ids = dids(col.decks.id_for_name(`val`))
+            ids = dids(col.decks.id_for_name(col, `val`))
         } else {
             // wildcard
-            ids = dids(col.decks.id_for_name(`val`))
+            ids = dids(col.decks.id_for_name(col, `val`))
             if (ids == null) {
                 ids = ArrayList()
                 `val` = `val`.replace("*", ".*")
                 `val` = `val`.replace("+", "\\+")
-                for (d in col.decks.all()) {
+                for (d in col.decks.all(col)) {
                     var deckName = d.getString("name")
                     deckName = Normalizer.normalize(deckName, Normalizer.Form.NFC)
                     if (deckName.matches("(?i)$`val`".toRegex())) {

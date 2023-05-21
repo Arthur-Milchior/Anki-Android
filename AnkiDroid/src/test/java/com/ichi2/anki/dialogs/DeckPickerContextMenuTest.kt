@@ -62,7 +62,7 @@ class DeckPickerContextMenuTest : RobolectricTest() {
             val models = col.models
             val didA = addDeck("Deck 1")
             updateDeckList()
-            col.decks.select(didA)
+            col.decks.select(col, didA)
             val basic = models.byName(AnkiDroidApp.appResources.getString(R.string.basic_model_name))
             basic!!.put("did", didA)
             addNoteUsingBasicModel("Front", "Back")
@@ -84,7 +84,7 @@ class DeckPickerContextMenuTest : RobolectricTest() {
             val browser = shadowOf(this).nextStartedActivity!!
             assertEquals("com.ichi2.anki.CardBrowser", browser.component!!.className)
 
-            assertEquals(deckId, col.decks.selected())
+            assertEquals(deckId, col.decks.selected(col))
         }
     }
 
@@ -143,7 +143,7 @@ class DeckPickerContextMenuTest : RobolectricTest() {
 
             openContextMenuAndSelectItem(recyclerView, 8)
 
-            assertThat(col.decks.allIds(), not(containsInAnyOrder(deckId)))
+            assertThat(col.decks.allIds(col), not(containsInAnyOrder(deckId)))
         }
     }
 
@@ -172,16 +172,16 @@ class DeckPickerContextMenuTest : RobolectricTest() {
 
             val deckId = addDeck("Deck 1")
             col.models.byName("Basic")!!.put("did", deckId)
-            val card = addNoteUsingBasicModel("front", "back").firstCard()
-            col.sched.buryCards(longArrayOf(card.id))
+            val card = addNoteUsingBasicModel("front", "back").firstCard(col)
+            col.sched.buryCards(col, longArrayOf(card.id))
             updateDeckList()
             assertEquals(1, visibleDeckCount)
 
-            assertTrue(col.sched.haveBuried(deckId), "Deck should have buried cards")
+            assertTrue(col.sched.haveBuried(col, deckId), "Deck should have buried cards")
 
             openContextMenuAndSelectItem(recyclerView, 7)
 
-            assertFalse(col.sched.haveBuried(deckId))
+            assertFalse(col.sched.haveBuried(col, deckId))
         }
     }
 
@@ -215,10 +215,10 @@ class DeckPickerContextMenuTest : RobolectricTest() {
     fun testDynRebuildAndEmpty() = runTest {
         startActivityNormallyOpenCollectionWithIntent(DeckPicker::class.java, Intent()).run {
             val cardIds = (0..3)
-                .map { addNoteUsingBasicModel("$it", "").firstCard().id }
+                .map { addNoteUsingBasicModel("$it", "").firstCard(col).id }
             assertTrue(allCardsInSameDeck(cardIds, 1))
             val deckId = addDynamicDeck("Deck 1")
-            col.sched.rebuildDyn(deckId)
+            col.sched.rebuildDyn(col, deckId)
             assertTrue(allCardsInSameDeck(cardIds, deckId))
             updateDeckList()
             assertEquals(1, visibleDeckCount)

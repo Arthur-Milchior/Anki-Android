@@ -37,6 +37,7 @@ import org.json.JSONObject
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.CancellationException
+import kotlin.math.min
 
 /**
  * A Card is the ultimate entity subject to review; it encapsulates the scheduling parameters (from which to derive
@@ -66,7 +67,6 @@ import java.util.concurrent.CancellationException
  */
 open class Card : Cloneable {
     // Needed for tests
-    var col: Collection
 
     /**
      * Time in MS when timer was started
@@ -107,7 +107,7 @@ open class Card : Cloneable {
     // END SQL table entries
     @set:JvmName("setRenderOutput")
     @get:JvmName("getRenderOutput")
-    protected var render_output: TemplateRenderOutput?
+    protected var renderOutput: TemplateRenderOutput?
     private var note: Note?
 
     /** Used by Sched to determine which queue to move the card to after answering. */
@@ -117,12 +117,11 @@ open class Card : Cloneable {
     var lastIvl = 0
 
     constructor(col: Collection) {
-        this.col = col
         timerStarted = 0L
-        render_output = null
+        renderOutput = null
         note = null
         // to flush, set nid, ord, and due
-        this.id = TimeManager.time.timestampID(this.col.db, "cards")
+        this.id = TimeManager.time.timestampID(col.db, "cards")
         did = 1
         this.type = Consts.CARD_TYPE_NEW
         queue = Consts.QUEUE_TYPE_NEW
@@ -138,15 +137,14 @@ open class Card : Cloneable {
     }
 
     constructor(col: Collection, id: Long) {
-        this.col = col
         timerStarted = 0L
-        render_output = null
+        renderOutput = null
         note = null
         this.id = id
-        load()
+        load(col)
     }
 
-    fun load() {
+    fun load(col: Collection) {
         col.db.query("SELECT * FROM cards WHERE id = ?", this.id).use { cursor ->
             if (!cursor.moveToFirst()) {
                 throw WrongId(this.id, "card")
@@ -170,11 +168,11 @@ open class Card : Cloneable {
             flags = cursor.getInt(16)
             data = cursor.getString(17)
         }
-        render_output = null
+        renderOutput = null
         note = null
     }
 
-    fun flush(changeModUsn: Boolean = true) {
+    fun flush(col: Collection, changeModUsn: Boolean = true) {
         if (changeModUsn) {
             mod = TimeManager.time.intTime()
             usn = col.usn()
@@ -205,7 +203,7 @@ open class Card : Cloneable {
         col.log(this)
     }
 
-    fun flushSched() {
+    fun flushSched(col: Collection) {
         mod = TimeManager.time.intTime()
         usn = col.usn()
         assert(due < "4294967296".toLong())
@@ -224,47 +222,37 @@ open class Card : Cloneable {
         values.put("odid", oDid)
         values.put("did", did)
         // TODO: The update DB call sets mod=true. Verify if this is intended.
-        col.db.update("cards", values, "id = ?", arrayOf(java.lang.Long.toString(this.id)))
+        col.db.update("cards", values, "id = ?", arrayOf(this.id.toString()))
         col.log(this)
     }
 
-    fun q(reload: Boolean = false, browser: Boolean = false): String {
-        return render_output(reload, browser).question_and_style()
-    }
+    fun q(col: Collection, reload: Boolean = false, browser: Boolean = false) = renderOutput(col, reload, browser).question_and_style()
 
-    fun a(): String {
-        return render_output().answer_and_style()
-    }
+    fun a(col: Collection) = renderOutput(col = col).answer_and_style()
 
     @RustCleanup("legacy")
-    fun css(): String {
-        return "<style>${render_output().css}</style>"
-    }
+    fun css(col: Collection) = "<style>${renderOutput(col = col).css}</style>"
 
-    fun questionAvTags(): List<AvTag> {
-        return render_output().question_av_tags
-    }
+    fun questionAvTags(col: Collection) = renderOutput(col = col).question_av_tags
 
-    fun answerAvTags(): List<AvTag> {
-        return render_output().answer_av_tags
-    }
+    fun answerAvTags(col: Collection) = renderOutput(col = col).answer_av_tags
 
     /**
      * @throws net.ankiweb.rsdroid.exceptions.BackendInvalidInputException: If the card does not exist
      */
-    @RustCleanup("move col.render_output back to Card once the java collection is removed")
-    open fun render_output(reload: Boolean = false, browser: Boolean = false): TemplateRenderOutput {
-        if (render_output == null || reload) {
-            render_output = col.render_output(this, reload, browser)
+    @RustCleanup("move col.renderOutput back to Card once the java collection is removed")
+    open fun renderOutput(col: Collection, reload: Boolean = false, browser: Boolean = false): TemplateRenderOutput {
+        if (renderOutput == null || reload) {
+            renderOutput = col.renderOutput(col, this, reload, browser)
         }
-        return render_output!!
+        return renderOutput!!
     }
 
-    open fun note(): Note {
-        return note(false)
+    open fun note(col: Collection): Note {
+        return note(col, false)
     }
 
-    open fun note(reload: Boolean): Note {
+    open fun note(col: Collection, reload: Boolean): Note {
         if (note == null || reload) {
             note = col.getNote(nid)
         }
@@ -272,16 +260,16 @@ open class Card : Cloneable {
     }
 
     // not in upstream
-    open fun model(): Model {
-        return note().model()
+    open fun model(col: Collection): Model {
+        return note(col).model()
     }
 
-    fun template(): JSONObject {
-        val m = model()
+    fun template(col: Collection): JSONObject {
+        val m = model(col)
         return if (m.isStd) {
             m.getJSONArray("tmpls").getJSONObject(ord)
         } else {
-            model().getJSONArray("tmpls").getJSONObject(0)
+            model(col).getJSONArray("tmpls").getJSONObject(0)
         }
     }
 
@@ -292,51 +280,47 @@ open class Card : Cloneable {
     /**
      * Time limit for answering in milliseconds.
      */
-    fun timeLimit(): Int {
-        val conf = col.decks.confForDid(if (!isInDynamicDeck) did else oDid)
+    fun timeLimit(col: Collection): Int {
+        val conf = col.decks.confForDid(col, if (!isInDynamicDeck) did else oDid)
         return conf.getInt("maxTaken") * 1000
     }
 
     /*
      * Time taken to answer card, in integer MS.
      */
-    fun timeTaken(): Int {
+    fun timeTaken(col: Collection): Int {
         // Indeed an int. Difference between two big numbers is still small.
         val total = (TimeManager.time.intTimeMS() - timerStarted).toInt()
-        return Math.min(total, timeLimit())
+        return min(total, timeLimit(col))
     }
 
-    open val isEmpty: Boolean
-        get() = try {
-            Models.emptyCard(model(), ord, note().fields)
-        } catch (er: TemplateError) {
-            Timber.w("Card is empty because the card's template has an error: %s.", er.message(col.context))
-            true
-        }
+    open fun isEmpty(col: Collection) = try {
+        Models.emptyCard(model(col), ord, note(col).fields)
+    } catch (er: TemplateError) {
+        Timber.w("Card is empty because the card's template has an error: %s.", er.message(col.context))
+        true
+    }
 
     /*
      * ***********************************************************
      * The methods below are not in LibAnki.
      * ***********************************************************
      */
-    fun qSimple(): String {
-        return render_output(false).question_text
-    }
+    fun qSimple(col: Collection) = renderOutput(col, false).question_text
 
     /*
      * Returns the answer with anything before the <hr id=answer> tag removed
      */
-    val pureAnswer: String
-        get() {
-            val s = render_output(false).answer_text
-            for (target in arrayOf("<hr id=answer>", "<hr id=\"answer\">")) {
-                val pos = s.indexOf(target)
-                if (pos == -1) continue
-                return s.substring(pos + target.length).trim { it <= ' ' }
-            }
-            // neither found
-            return s
+    fun pureAnswer(col: Collection): String {
+        val s = renderOutput(col, false).answer_text
+        for (target in arrayOf("<hr id=answer>", "<hr id=\"answer\">")) {
+            val pos = s.indexOf(target)
+            if (pos == -1) continue
+            return s.substring(pos + target.length).trim { it <= ' ' }
         }
+        // neither found
+        return s
+    }
 
     /**
      * Save the currently elapsed reviewing time so it can be restored on resume.
@@ -369,8 +353,8 @@ open class Card : Cloneable {
         return ++reps
     }
 
-    fun showTimer(): Boolean {
-        val options = col.decks.confForDid(if (!isInDynamicDeck) did else oDid)
+    fun showTimer(col: Collection): Boolean {
+        val options = col.decks.confForDid(col, if (!isInDynamicDeck) did else oDid)
         return DeckConfig.parseTimerOpt(options, true)
     }
 
@@ -431,18 +415,17 @@ open class Card : Cloneable {
     }
 
     // not in Anki.
-    val dueString: String
-        get() {
-            var t = nextDue()
-            if (queue < 0) {
-                t = "($t)"
-            }
-            return t
+    fun dueString(col: Collection): String {
+        var t = nextDue(col)
+        if (queue < 0) {
+            t = "($t)"
         }
+        return t
+    }
 
     // as in Anki aqt/browser.py
     @VisibleForTesting
-    fun nextDue(): String {
+    fun nextDue(col: Collection): String {
         val date: Long
         val due = due
         date = if (isInDynamicDeck) {
@@ -453,7 +436,7 @@ open class Card : Cloneable {
             return java.lang.Long.valueOf(due).toString()
         } else if (queue == Consts.QUEUE_TYPE_REV || queue == Consts.QUEUE_TYPE_DAY_LEARN_RELEARN || type == Consts.CARD_TYPE_REV && queue < 0) {
             val time = TimeManager.time.intTime()
-            val nbDaySinceCreation = due - col.sched.today
+            val nbDaySinceCreation = due - col.sched.today(col)
             time + nbDaySinceCreation * Stats.SECONDS_PER_DAY
         } else {
             return ""
@@ -461,7 +444,7 @@ open class Card : Cloneable {
         return LanguageUtil.getShortDateFormatFromS(date)
     } // In Anki Desktop, a card with oDue <> 0 && oDid == 0 is not marked as dynamic.
 
-    fun avgEaseOfNote() = avgEase(note())
+    fun avgEaseOfNote(col: Collection) = avgEase(col, note(col))
 
     /** Non libAnki  */
     val isInDynamicDeck: Boolean
@@ -500,25 +483,21 @@ open class Card : Cloneable {
      * Card card2 = cache.getCard();
      */
     open class Cache : Cloneable {
-        val col: Collection
         val id: Long
         private var mCard: Card? = null
 
-        constructor(col: Collection, id: Long) {
-            this.col = col
+        constructor(id: Long) {
             this.id = id
         }
 
         /** Copy of cache. Useful to create a copy of a subclass without loosing card if it is loaded.  */
         protected constructor(cache: Cache) {
-            col = cache.col
             this.id = cache.id
             mCard = cache.mCard
         }
 
         /** Copy of cache. Useful to create a copy of a subclass without loosing card if it is loaded.  */
         constructor(card: Card) {
-            col = card.col
             this.id = card.id
             mCard = card
         }
@@ -527,14 +506,13 @@ open class Card : Cloneable {
          * The card with id given at creation. Note that it has content of the time at which the card was loaded, which
          * may have changed in database. So it is not equivalent to getCol().getCard(getId()). If you need fresh data, reload
          * first. */
-        @get:Synchronized
-        val card: Card
-            get() {
-                if (mCard == null) {
-                    mCard = col.getCard(this.id)
-                }
-                return mCard!!
+        @Synchronized
+        fun card(col: Collection): Card {
+            if (mCard == null) {
+                mCard = col.getCard(this.id)
             }
+            return mCard!!
+        }
 
         /** Next access to card will reload the card from the database.  */
         @Synchronized
@@ -548,7 +526,7 @@ open class Card : Cloneable {
 
         /** The cloned version represents the same card but data are not loaded.  */
         public override fun clone(): Cache {
-            return Cache(col, this.id)
+            return Cache(this.id)
         }
 
         override fun equals(other: Any?): Boolean {
@@ -559,8 +537,8 @@ open class Card : Cloneable {
             }
         }
 
-        fun loadQA(reload: Boolean, browser: Boolean) {
-            card.render_output(reload, browser)
+        fun loadQA(col: Collection, reload: Boolean, browser: Boolean) {
+            card(col).renderOutput(col, reload, browser)
         }
     }
 

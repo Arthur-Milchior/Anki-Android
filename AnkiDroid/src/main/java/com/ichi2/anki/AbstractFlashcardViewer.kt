@@ -424,8 +424,8 @@ abstract class AbstractFlashcardViewer :
         currentCard = result
         launchCatchingTask {
             withCol {
-                sched.counts() // Ensure counts are recomputed if necessary, to know queue to look for
-                sched.preloadNextCard()
+                sched.counts(col) // Ensure counts are recomputed if necessary, to know queue to look for
+                sched.preloadNextCard(col)
             }
         }
         if (currentCard == null) {
@@ -533,7 +533,7 @@ abstract class AbstractFlashcardViewer :
     }
 
     open val answerButtonCount: Int
-        get() = col.sched.answerButtons(currentCard!!)
+        get() = col.sched.answerButtons(col, currentCard!!)
 
     // ----------------------------------------------------------------------------
     // ANDROID METHODS
@@ -802,8 +802,7 @@ abstract class AbstractFlashcardViewer :
     // CUSTOM METHODS
     // ----------------------------------------------------------------------------
     // Get the did of the parent deck (ignoring any subdecks)
-    protected val parentDid: DeckId
-        get() = col.decks.selected()
+    protected fun parentDid(col: Collection) = col.decks.selected(col)
 
     private fun redrawCard() {
         // #3654 We can call this from ActivityResult, which could mean that the card content hasn't yet been set
@@ -881,7 +880,7 @@ abstract class AbstractFlashcardViewer :
     }
 
     fun generateQuestionSoundList() {
-        val tags = Sound.extractTagsFromLegacyContent(currentCard!!.qSimple())
+        val tags = Sound.extractTagsFromLegacyContent(currentCard!!.qSimple(col))
         mSoundPlayer.addSounds(tags, SingleSoundSide.QUESTION)
     }
 
@@ -892,7 +891,7 @@ abstract class AbstractFlashcardViewer :
             message(
                 text = resources.getString(
                     R.string.delete_note_message,
-                    Utils.stripHTML(currentCard!!.q(true))
+                    Utils.stripHTML(currentCard!!.q(col, true))
                 )
             )
             positiveButton(R.string.dialog_positive_delete) {
@@ -910,7 +909,7 @@ abstract class AbstractFlashcardViewer :
     /** Consumers should use [.showDeleteNoteDialog]   */
     private fun deleteNoteWithoutConfirmation() {
         dismiss(DeleteNote(currentCard!!)) {
-            showSnackbarWithUndoButtonText(TR.browsingCardsDeleted(currentCard!!.note().numberOfCards()))
+            showSnackbarWithUndoButtonText(TR.browsingCardsDeleted(currentCard!!.note(col).numberOfCards(col)))
         }
     }
 
@@ -953,7 +952,7 @@ abstract class AbstractFlashcardViewer :
                 return@launchCatchingTask
             }
             mIsSelecting = false
-            val buttonNumber = col.sched.answerButtons(currentCard!!)
+            val buttonNumber = col.sched.answerButtons(col, currentCard!!)
             // Detect invalid ease for current card (e.g. by using keyboard shortcut or gesture).
             if (buttonNumber < ease) {
                 return@launchCatchingTask
@@ -965,9 +964,9 @@ abstract class AbstractFlashcardViewer :
             val oldCard = currentCard!!
             val newCard = withCol {
                 Timber.i("Answering card %d", oldCard.id)
-                col.sched.answerCard(oldCard, ease)
+                col.sched.answerCard(col, oldCard, ease)
                 Timber.i("Obtaining next card")
-                sched.card?.apply { render_output(reload = true) }
+                sched.card(col)?.apply { renderOutput(col, reload = true) }
             }
             // TODO: this handling code is unnecessarily complex, and would be easier to follow
             //  if written imperatively
@@ -1330,7 +1329,7 @@ abstract class AbstractFlashcardViewer :
         if (currentCard == null) return
         val actionBar = supportActionBar
         if (actionBar != null) {
-            val title = Decks.basename(col.decks.get(currentCard!!.did).getString("name"))
+            val title = Decks.basename(col.decks.get(col, currentCard!!.did).getString("name"))
             actionBar.title = title
         }
         if (!prefShowTopbar) {
@@ -1373,15 +1372,15 @@ abstract class AbstractFlashcardViewer :
         mBackButtonPressedToReturn = false
         setInterface()
         typeAnswer!!.input = ""
-        typeAnswer!!.updateInfo(currentCard!!, resources)
-        if (!currentCard!!.isEmpty && typeAnswer!!.validForEditText()) {
+        typeAnswer!!.updateInfo(col, currentCard!!, resources)
+        if (!currentCard!!.isEmpty(col) && typeAnswer!!.validForEditText()) {
             // Show text entry based on if the user wants to write the answer
             answerField!!.visibility = View.VISIBLE
             answerField!!.applyLanguageHint(typeAnswer!!.languageHint)
         } else {
             answerField!!.visibility = View.GONE
         }
-        val content = mHtmlGenerator!!.generateHtml(currentCard!!, reload, Side.FRONT)
+        val content = mHtmlGenerator!!.generateHtml(col, currentCard!!, reload, Side.FRONT)
         updateCard(content)
         hideEaseButtons()
         automaticAnswer.onDisplayQuestion()
@@ -1407,7 +1406,7 @@ abstract class AbstractFlashcardViewer :
 
         // TODO needs testing: changing a card's model without flipping it back to the front
         //  (such as editing a card, then editing the card template)
-        typeAnswer!!.updateInfo(currentCard!!, resources)
+        typeAnswer!!.updateInfo(col, currentCard!!, resources)
 
         // Explicitly hide the soft keyboard. It *should* be hiding itself automatically,
         // but sometimes failed to do so (e.g. if an OnKeyListener is attached).
@@ -1423,7 +1422,7 @@ abstract class AbstractFlashcardViewer :
             typeAnswer!!.input = answerField!!.text.toString()
         }
         mIsSelecting = false
-        val answerContent = mHtmlGenerator!!.generateHtml(currentCard!!, false, Side.BACK)
+        val answerContent = mHtmlGenerator!!.generateHtml(col, currentCard!!, false, Side.BACK)
         updateCard(answerContent)
         displayAnswerBottomBar()
         automaticAnswer.onDisplayAnswer()
@@ -1552,8 +1551,8 @@ abstract class AbstractFlashcardViewer :
     }
 
     private fun readCardTts(side: SingleSoundSide) {
-        val tags = legacyGetTtsTags(currentCard!!, side, this)
-        mTTS.readCardText(tags, currentCard!!, side.toSoundSide())
+        val tags = legacyGetTtsTags(col, currentCard!!, side, this)
+        mTTS.readCardText(col, tags, currentCard!!, side.toSoundSide())
     }
 
     private fun playSounds(questionAndAnswer: SoundSide) {
@@ -1600,7 +1599,7 @@ abstract class AbstractFlashcardViewer :
      */
     protected fun showSelectTtsDialogue() {
         if (mTtsInitialized) {
-            mTTS.selectTts(this, currentCard!!, if (displayAnswer) SoundSide.ANSWER else SoundSide.QUESTION)
+            mTTS.selectTts(col, this, currentCard!!, if (displayAnswer) SoundSide.ANSWER else SoundSide.QUESTION)
         }
     }
 
@@ -1680,14 +1679,14 @@ abstract class AbstractFlashcardViewer :
 
     internal fun suspendNote(): Boolean {
         return dismiss(SuspendNote(currentCard!!)) {
-            val noteSuspended = resources.getQuantityString(R.plurals.note_suspended, currentCard!!.note().numberOfCards(), currentCard!!.note().numberOfCards())
+            val noteSuspended = resources.getQuantityString(R.plurals.note_suspended, currentCard!!.note(col).numberOfCards(col), currentCard!!.note(col).numberOfCards(col))
             showSnackbarWithUndoButtonText(noteSuspended)
         }
     }
 
     internal fun buryNote(): Boolean {
         return dismiss(BuryNote(currentCard!!)) {
-            showSnackbarWithUndoButtonText(TR.studyingCardsBuried(currentCard!!.note().numberOfCards()))
+            showSnackbarWithUndoButtonText(TR.studyingCardsBuried(currentCard!!.note(col).numberOfCards(col)))
         }
     }
 
@@ -2114,9 +2113,7 @@ abstract class AbstractFlashcardViewer :
         }
     }
 
-    protected open fun shouldDisplayMark(): Boolean {
-        return isMarked(currentCard!!.note())
-    }
+    protected open fun shouldDisplayMark(col: Collection) = isMarked(col, currentCard!!.note(col))
 
     protected fun <TResult : Computation<NextCard<*>>?> nextCardHandler(): TaskListenerBuilder<Unit, TResult> {
         return TaskListenerBuilder(NextCardHandler())
@@ -2571,17 +2568,17 @@ abstract class AbstractFlashcardViewer :
 
     internal fun showTagsDialog() {
         val tags = ArrayList(col.tags.all())
-        val selTags = ArrayList(currentCard!!.note().tags)
+        val selTags = ArrayList(currentCard!!.note(col).tags)
         val dialog = mTagsDialogFactory!!.newTagsDialog().withArguments(TagsDialog.DialogType.EDIT_TAGS, selTags, tags)
         showDialogFragment(dialog)
     }
 
     override fun onSelectedTags(selectedTags: List<String>, indeterminateTags: List<String>, option: Int) {
-        if (currentCard!!.note().tags != selectedTags) {
+        if (currentCard!!.note(col).tags != selectedTags) {
             val tagString = selectedTags.joinToString(" ")
-            val note = currentCard!!.note()
-            note.setTagsFromStr(tagString)
-            note.flush()
+            val note = currentCard!!.note(col)
+            note.setTagsFromStr(col, tagString)
+            note.flush(col)
             // Reload current card to reflect tag changes
             displayCardQuestion(true)
         }

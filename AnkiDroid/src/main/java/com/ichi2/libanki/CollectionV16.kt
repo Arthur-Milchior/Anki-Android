@@ -42,7 +42,7 @@ class CollectionV16(
     }
 
     override fun initDecks(deckConf: String?): DeckManager {
-        return DecksV16(this)
+        return DecksV16()
     }
 
     override fun initModels(): ModelManager {
@@ -130,12 +130,13 @@ class CollectionV16(
         }
     }
 
-    override fun render_output(
+    override fun renderOutput(
+        col: Collection,
         c: Card,
         reload: Boolean,
         browser: Boolean
     ): TemplateManager.TemplateRenderContext.TemplateRenderOutput {
-        return TemplateManager.TemplateRenderContext.from_existing_card(c, browser).render()
+        return TemplateManager.TemplateRenderContext.from_existing_card(col, c, browser).render()
     }
 
     override fun findCards(
@@ -235,7 +236,7 @@ class CollectionV16(
         backend.setDeck(cardIds = cids.asIterable(), deckId = did)
     }
 
-    /** Save (flush) the note to the DB. Unlike note.flush(), this is undoable. */
+    /** Save (flush) the note to the DB. Unlike note.flush(col), this is undoable. */
     fun updateNote(note: Note) {
         backend.updateNotes(notes = listOf(note.toBackendNote()), skipUndoEntry = false)
     }
@@ -255,6 +256,6 @@ class CollectionV16(
     @RustCleanup("Remove this in favour of addNote() above; call addNote() inside undoableOp()")
     override fun addNote(note: Note, allowEmpty: Models.AllowEmpty): Int {
         addNote(note, note.model().did)
-        return note.numberOfCards()
+        return note.numberOfCards(col)
     }
 }

@@ -30,11 +30,15 @@ import com.ichi2.anki.R
 import com.ichi2.async.CancelListener
 import com.ichi2.libanki.*
 import com.ichi2.libanki.Collection
-import com.ichi2.libanki.Consts.BUTTON_TYPE
+import com.ichi2.libanki.Consts.CARD_TYPE_LRN
+import com.ichi2.libanki.Consts.CARD_TYPE_NEW
 import com.ichi2.libanki.Consts.CARD_TYPE_RELEARNING
+import com.ichi2.libanki.Consts.CARD_TYPE_REV
+import com.ichi2.libanki.Consts.NEW_CARDS_RANDOM
 import com.ichi2.libanki.Consts.QUEUE_TYPE_DAY_LEARN_RELEARN
+import com.ichi2.libanki.Consts.QUEUE_TYPE_NEW
+import com.ichi2.libanki.Consts.QUEUE_TYPE_REV
 import com.ichi2.libanki.stats.Stats
-import com.ichi2.libanki.utils.TimeManager
 import com.ichi2.libanki.utils.TimeManager.time
 import net.ankiweb.rsdroid.RustCleanup
 
@@ -45,9 +49,9 @@ import net.ankiweb.rsdroid.RustCleanup
  * BackendFactory.defaultLegacySchema is false, so for now, SchedV2
  * will need to (conditionally) override them.
  */
-abstract class BaseSched(val col: Collection) {
+abstract class BaseSched() {
     /** Update a V1 scheduler collection to V2. Requires full sync. */
-    fun upgradeToV2() {
+    fun upgradeToV2(col: Collection) {
         col.modSchema()
         col.clearUndo()
         col.newBackend.backend.upgradeScheduler()
@@ -57,14 +61,14 @@ abstract class BaseSched(val col: Collection) {
     /**
      * @param cids Ids of cards to bury
      */
-    fun buryCards(cids: LongArray) {
-        buryCards(cids, manual = true)
+    fun buryCards(col: Collection, cids: LongArray) {
+        buryCards(col, cids, manual = true)
     }
 
     /**
      * @param ids Id of cards to suspend
      */
-    open fun suspendCards(ids: LongArray) {
+    open fun suspendCards(col: Collection, ids: LongArray) {
         col.newBackend.backend.buryOrSuspendCards(
             cardIds = ids.toList(),
             noteIds = listOf(),
@@ -75,7 +79,7 @@ abstract class BaseSched(val col: Collection) {
     /**
      * @param ids Id of cards to unsuspend
      */
-    open fun unsuspendCards(ids: LongArray) {
+    open fun unsuspendCards(col: Collection, ids: LongArray) {
         col.newBackend.backend.restoreBuriedAndSuspendedCards(
             cids = ids.toList()
         )
@@ -86,7 +90,7 @@ abstract class BaseSched(val col: Collection) {
      * @param manual Whether bury is made manually or not. Only useful for sched v2.
      */
     @VisibleForTesting
-    open fun buryCards(cids: LongArray, manual: Boolean) {
+    open fun buryCards(col: Collection, cids: LongArray, manual: Boolean) {
         val mode = if (manual) {
             BuryOrSuspendCardsRequest.Mode.BURY_USER
         } else {
@@ -103,7 +107,7 @@ abstract class BaseSched(val col: Collection) {
      * Bury all cards for note until next session.
      * @param nid The id of the targeted note.
      */
-    open fun buryNote(nid: NoteId) {
+    open fun buryNote(col: Collection, nid: NoteId) {
         col.newBackend.backend.buryOrSuspendCards(
             cardIds = listOf(),
             noteIds = listOf(nid),
@@ -116,7 +120,7 @@ abstract class BaseSched(val col: Collection) {
      * @param type Which kind of cards should be unburied. See [UnburyType]
      * @param did: the deck whose cards must be unburied
      */
-    open fun unburyCardsForDeck(did: DeckId, type: UnburyType = UnburyType.ALL) {
+    open fun unburyCardsForDeck(col: Collection, did: DeckId, type: UnburyType = UnburyType.ALL) {
         val mode = when (type) {
             UnburyType.ALL -> UnburyDeckRequest.Mode.ALL
             UnburyType.MANUAL -> UnburyDeckRequest.Mode.USER_ONLY
@@ -148,39 +152,35 @@ abstract class BaseSched(val col: Collection) {
     /**
      * Unbury all buried cards in selected decks
      */
-    fun unburyCardsForDeck(type: UnburyType = UnburyType.ALL) {
-        unburyCardsForDeck(col.decks.selected(), type)
+    fun unburyCardsForDeck(col: Collection, type: UnburyType = UnburyType.ALL) {
+        unburyCardsForDeck(col, col.decks.selected(col), type)
     }
 
     /**
      * Unbury all buried cards in all decks. Only used for tests.
      */
-    open fun unburyCards() {
-        for (did in col.decks.allIds()) {
-            unburyCardsForDeck(did)
+    open fun unburyCards(col: Collection) {
+        for (did in col.decks.allIds(col)) {
+            unburyCardsForDeck(col, did)
         }
     }
 
     /**
      * @return Whether there are buried card is selected deck
      */
-    open fun haveBuried(): Boolean {
-        return col.newBackend.backend.congratsInfo().run {
-            haveUserBuried && haveSchedBuried
-        }
+    open fun haveBuried(col: Collection) = col.newBackend.backend.congratsInfo().run {
+        haveUserBuried && haveSchedBuried
     }
 
     /** @return whether there are cards in learning, with review due the same
      * day, in the selected decks.
      */
-    open fun hasCardsTodayAfterStudyAheadLimit(): Boolean {
-        return col.newBackend.backend.congratsInfo().secsUntilNextLearn < 86_400
-    }
+    open fun hasCardsTodayAfterStudyAheadLimit(col: Collection) = col.newBackend.backend.congratsInfo().secsUntilNextLearn < 86_400
 
     /**
      * @param ids Ids of cards to put at the end of the new queue.
      */
-    open fun forgetCards(ids: List<Long>) {
+    open fun forgetCards(col: Collection, ids: List<Long>) {
         val request = scheduleCardsAsNewRequest {
             cardIds.addAll(ids)
             log = true
@@ -197,7 +197,7 @@ abstract class BaseSched(val col: Collection) {
      * @param imin the minimum interval (inclusive)
      * @param imax The maximum interval (inclusive)
      */
-    open fun reschedCards(ids: List<Long>, imin: Int, imax: Int) {
+    open fun reschedCards(col: Collection, ids: List<Long>, imin: Int, imax: Int) {
         // there is an available non-raw method, but the config key arg
         // is not declared as optional
         val request = setDueDateRequest {
@@ -215,6 +215,7 @@ abstract class BaseSched(val col: Collection) {
      * @param shift Whether the cards already new should be shifted to make room for cards of cids
      */
     open fun sortCards(
+        col: Collection,
         cids: List<Long>,
         start: Int,
         step: Int = 1,
@@ -234,7 +235,7 @@ abstract class BaseSched(val col: Collection) {
      * Randomize the cards of did
      * @param did Id of a deck
      */
-    open fun randomizeCards(did: DeckId) {
+    open fun randomizeCards(col: Collection, did: DeckId) {
         col.newBackend.backend.sortDeck(deckId = did, randomize = true)
     }
 
@@ -242,7 +243,7 @@ abstract class BaseSched(val col: Collection) {
      * Sort the cards of deck `id` by creation date of the note
      * @param did Id of a deck
      */
-    open fun orderCards(did: DeckId) {
+    open fun orderCards(col: Collection, did: DeckId) {
         col.newBackend.backend.sortDeck(deckId = did, randomize = false)
     }
 
@@ -250,9 +251,9 @@ abstract class BaseSched(val col: Collection) {
      * @param newc Extra number of NEW cards to see today in selected deck
      * @param rev Extra number of REV cards to see today in selected deck
      */
-    open fun extendLimits(newc: Int, rev: Int) {
+    open fun extendLimits(col: Collection, newc: Int, rev: Int) {
         col.newBackend.backend.extendLimits(
-            deckId = col.decks.selected(),
+            deckId = col.decks.selected(col),
             newDelta = newc,
             reviewDelta = rev
         )
@@ -261,18 +262,18 @@ abstract class BaseSched(val col: Collection) {
     /** Rebuild a dynamic deck.
      * @param did The deck to rebuild. 0 means current deck.
      */
-    open fun rebuildDyn(did: DeckId) {
+    open fun rebuildDyn(col: Collection, did: DeckId) {
         col.newBackend.backend.rebuildFilteredDeck(did)
     }
 
-    fun rebuildDyn() {
-        rebuildDyn(col.decks.selected())
+    fun rebuildDyn(col: Collection) {
+        rebuildDyn(col, col.decks.selected(col))
     }
 
     /** Remove all cards from a dynamic deck
      * @param did The deck to empty. 0 means current deck.
      */
-    open fun emptyDyn(did: DeckId) {
+    open fun emptyDyn(col: Collection, did: DeckId) {
         col.newBackend.backend.emptyFilteredDeck(did)
     }
 
@@ -281,32 +282,24 @@ abstract class BaseSched(val col: Collection) {
      * @return the due tree. null only if task is cancelled
      */
     @RustCleanup("cancelListener ignored, and never null")
-    open fun deckDueTree(cancelListener: CancelListener?): List<TreeNode<DeckDueTreeNode>>? {
-        return deckTreeLegacy(true)
-    }
+    open fun deckDueTree(col: Collection, cancelListener: CancelListener?): List<TreeNode<DeckDueTreeNode>>? = deckTreeLegacy(col, true)
 
-    fun deckDueTree(): List<TreeNode<DeckDueTreeNode>> {
-        return deckDueTree(cancelListener = null)!!
-    }
+    fun deckDueTree(col: Collection) = deckDueTree(col, null)!!
 
     /**
      * @return The tree of decks, without numbers
      */
     @Suppress("unchecked_cast")
-    open fun <T : AbstractDeckTreeNode> quickDeckDueTree(): List<TreeNode<T>> {
-        return deckTreeLegacy(false) as List<TreeNode<T>>
-    }
+    open fun <T : AbstractDeckTreeNode> quickDeckDueTree(col: Collection) = deckTreeLegacy(col, false) as List<TreeNode<T>>
 
     /** Return the deck tree, in the native backend format. */
-    fun deckTree(includeCounts: Boolean): DeckTreeNode {
-        return col.newBackend.backend.deckTree(now = if (includeCounts) TimeManager.time.intTime() else 0)
-    }
+    fun deckTree(col: Collection, includeCounts: Boolean) = col.newBackend.backend.deckTree(now = if (includeCounts) time.intTime() else 0)
 
     /**
      * Mutate the backend reply into a format expected by legacy code. This is less efficient,
      * and AnkiDroid may wish to use .deckTree() in the future instead.
      */
-    fun deckTreeLegacy(includeCounts: Boolean): List<TreeNode<DeckDueTreeNode>> {
+    fun deckTreeLegacy(col: Collection, includeCounts: Boolean): List<TreeNode<DeckDueTreeNode>> {
         fun toLegacyNode(node: DeckTreeNode, parentName: String): TreeNode<DeckDueTreeNode> {
             val thisName = if (parentName.isEmpty()) {
                 node.name
@@ -329,7 +322,7 @@ abstract class BaseSched(val col: Collection) {
             )
             return treeNode
         }
-        return toLegacyNode(deckTree(includeCounts), "").children
+        return toLegacyNode(deckTree(col, includeCounts), "").children
     }
 
     /*
@@ -344,33 +337,33 @@ abstract class BaseSched(val col: Collection) {
      * or if they could see more card today by extending review.
      */
     @RustCleanup("remove once new congrats screen is the default")
-    fun finishedMsg(context: Context): CharSequence {
+    fun finishedMsg(col: Collection, context: Context): CharSequence {
         val sb = SpannableStringBuilder()
         sb.append(context.getString(R.string.studyoptions_congrats_finished))
         val boldSpan = StyleSpan(Typeface.BOLD)
         sb.setSpan(boldSpan, 0, sb.length, 0)
-        sb.append(_nextDueMsg(context))
+        sb.append(_nextDueMsg(col, context))
         // sb.append("\n\n");
         // sb.append(_tomorrowDueMsg(context));
         return sb
     }
 
-    fun _nextDueMsg(context: Context): String {
+    fun _nextDueMsg(col: Collection, context: Context): String {
         val sb = StringBuilder()
-        if (revDue()) {
+        if (revDue(col)) {
             sb.append("\n\n")
             sb.append(context.getString(R.string.studyoptions_congrats_more_rev))
         }
-        if (newDue()) {
+        if (newDue(col)) {
             sb.append("\n\n")
             sb.append(context.getString(R.string.studyoptions_congrats_more_new))
         }
-        if (haveBuried()) {
+        if (haveBuried(col)) {
             val now = " " + context.getString(R.string.sched_unbury_action)
             sb.append("\n\n")
             sb.append("").append(context.getString(R.string.sched_has_buried)).append(now)
         }
-        if (col.decks.current().isStd) {
+        if (col.decks.current(col).isStd) {
             sb.append("\n\n")
             sb.append(context.getString(R.string.studyoptions_congrats_custom))
         }
@@ -382,7 +375,7 @@ abstract class BaseSched(val col: Collection) {
      when you do something like changing a card's deck.
      * @param cids Cards to remove from their dynamic deck (it is assumed they are in one)
      */
-    open fun emptyDyn(lim: String) {
+    open fun emptyDyn(col: Collection, lim: String) {
         col.db.execute(
             "update cards set did = odid, " + _restoreQueueWhenEmptyingSnippet() +
                 ", due = (case when odue>0 then odue else due end), odue = 0, odid = 0, usn = ? where " + lim,
@@ -404,24 +397,24 @@ abstract class BaseSched(val col: Collection) {
             "end)"
     }
 
-    fun remFromDyn(cids: Iterable<Long>) {
-        emptyDyn("id IN " + Utils.ids2str(cids) + " AND odid")
+    fun remFromDyn(col: Collection, cids: Iterable<Long>) {
+        emptyDyn(col, "id IN " + Utils.ids2str(cids) + " AND odid")
     }
 
-    fun remFromDyn(cids: LongArray) {
-        remFromDyn(cids.toList())
+    fun remFromDyn(col: Collection, cids: LongArray) {
+        remFromDyn(col, cids.toList())
     }
 
     /**
      * Completely reset cards for export.
      */
     @RustCleanup("remove once old apkg exporter dropped")
-    open fun resetCards(ids: Array<Long>) {
+    open fun resetCards(col: Collection, ids: Array<Long>) {
         val nonNew: List<Long> = col.db.queryLongList(
-            "select id from cards where id in " + Utils.ids2str(ids) + " and (queue != " + Consts.QUEUE_TYPE_NEW + " or type != " + Consts.CARD_TYPE_NEW + ")"
+            "select id from cards where id in " + Utils.ids2str(ids) + " and (queue != " + QUEUE_TYPE_NEW + " or type != " + CARD_TYPE_NEW + ")"
         )
         col.db.execute("update cards set reps=0, lapses=0 where id in " + Utils.ids2str(nonNew))
-        forgetCards(nonNew)
+        forgetCards(col, nonNew)
         col.log(*ids)
     }
 
@@ -429,11 +422,11 @@ abstract class BaseSched(val col: Collection) {
      * for post-import
      */
     @RustCleanup("remove after removing old apkg importer")
-    fun maybeRandomizeDeck(did: DeckId) {
-        val conf = col.decks.confForDid(did)
+    fun maybeRandomizeDeck(col: Collection, did: DeckId) {
+        val conf = col.decks.confForDid(col, did)
         // in order due?
-        if (conf.getJSONObject("new").getInt("order") == Consts.NEW_CARDS_RANDOM) {
-            randomizeCards(did)
+        if (conf.getJSONObject("new").getInt("order") == NEW_CARDS_RANDOM) {
+            randomizeCards(col, did)
         }
     }
 
@@ -441,69 +434,58 @@ abstract class BaseSched(val col: Collection) {
      * Sort or randomize all cards of all decks with this deck configuration.
      * @param conf A deck configuration
      */
-    fun resortConf(conf: DeckConfig) {
-        val dids = col.decks.didsForConf(conf)
+    fun resortConf(col: Collection, conf: DeckConfig) {
+        val dids = col.decks.didsForConf(col, conf)
         for (did in dids) {
             if (conf.getJSONObject("new").getLong("order") == 0L) {
-                randomizeCards(did)
+                randomizeCards(col, did)
             } else {
-                orderCards(did)
+                orderCards(col, did)
             }
         }
     }
 
-    fun logCount(): Int {
-        return col.db.queryScalar("SELECT count() FROM revlog")
-    }
+    fun logCount(col: Collection) = col.db.queryScalar("SELECT count() FROM revlog")
 
-    fun _deckLimit(): String {
-        return Utils.ids2str(col.decks.active())
-    }
+    fun _deckLimit(col: Collection) = Utils.ids2str(col.decks.active(col))
 
     /**
      * @return Number of new card in current deck and its descendants. Capped at [REPORT_LIMIT]
      */
-    fun totalNewForCurrentDeck(): Int {
-        return col.db.queryScalar(
-            "SELECT count() FROM cards WHERE id IN (SELECT id FROM cards WHERE did IN " + _deckLimit() + " AND queue = " + Consts.QUEUE_TYPE_NEW + " LIMIT ?)",
-            REPORT_LIMIT
-        )
-    }
+    fun totalNewForCurrentDeck(col: Collection) = col.db.queryScalar(
+        "SELECT count() FROM cards WHERE id IN (SELECT id FROM cards WHERE did IN " + _deckLimit(col) + " AND queue = " + QUEUE_TYPE_NEW + " LIMIT ?)",
+        REPORT_LIMIT
+    )
 
     /** @return Number of review cards in current deck.
      */
-    fun totalRevForCurrentDeck(): Int {
-        return col.db.queryScalar(
-            "SELECT count() FROM cards WHERE id IN (SELECT id FROM cards WHERE did IN " + _deckLimit() + "  AND queue = " + Consts.QUEUE_TYPE_REV + " AND due <= ? LIMIT ?)",
-            today,
-            REPORT_LIMIT
-        )
-    }
+    fun totalRevForCurrentDeck(col: Collection) = col.db.queryScalar(
+        "SELECT count() FROM cards WHERE id IN (SELECT id FROM cards WHERE did IN " + _deckLimit(col) + "  AND queue = " + QUEUE_TYPE_REV + " AND due <= ? LIMIT ?)",
+        today(col),
+        REPORT_LIMIT
+    )
 
     /**
      * @return Number of days since creation of the collection.
      */
-    open val today: Int
-        get() = _timingToday().daysElapsed
+    open fun today(col: Collection) = _timingToday(col).daysElapsed
 
     /**
      * @return Timestamp of when the day ends. Takes into account hour at which day change for anki and timezone
      */
-    open val dayCutoff: Long
-        get() = _timingToday().nextDayAt
+    open fun dayCutoff(col: Collection) = _timingToday(col).nextDayAt
 
     /* internal */
-    fun _timingToday(): SchedTimingTodayResponse {
+    fun _timingToday(col: Collection): SchedTimingTodayResponse {
         return if (true) { // (BackendFactory.defaultLegacySchema) {
-            @Suppress("useless_cast")
             val request = schedTimingTodayLegacyRequest {
                 createdSecs = col.crt
                 col.get_config("creationOffset", null as Int?)?.let {
                     createdMinsWest = it
                 }
                 nowSecs = time.intTime()
-                nowMinsWest = _current_timezone_offset()
-                rolloverHour = _rolloverHour()
+                nowMinsWest = _current_timezone_offset(col)
+                rolloverHour = _rolloverHour(col)
             }
             return col.backend.schedTimingTodayLegacy(request)
         } else {
@@ -514,14 +496,9 @@ abstract class BaseSched(val col: Collection) {
     }
 
     @Suppress("useless_cast")
-    fun _rolloverHour(): Int {
-        return col.get_config("rollover", 4 as Int)!!
-    }
+    fun _rolloverHour(col: Collection) = col.get_config("rollover", 4 as Int)!!
 
-    @Suppress("useless_cast")
-    open fun _current_timezone_offset(): Int {
-        return localMinutesWest(time.intTime())
-    }
+    open fun _current_timezone_offset(col: Collection) = localMinutesWest(col, time.intTime())
 
     /**
      * For the given timestamp, return minutes west of UTC in the local timezone.
@@ -532,55 +509,41 @@ abstract class BaseSched(val col: Collection) {
      * @param timestampSeconds The timestamp in seconds
      * @return minutes west of UTC in the local timezone
      */
-    fun localMinutesWest(timestampSeconds: Long): Int {
-        return col.backend.localMinutesWestLegacy(timestampSeconds)
-    }
+    fun localMinutesWest(col: Collection, timestampSeconds: Long) = col.backend.localMinutesWestLegacy(timestampSeconds)
 
     /**
      * Save the UTC west offset at the time of creation into the DB.
      * Once stored, this activates the new timezone handling code.
      */
-    fun set_creation_offset() {
-        val minsWest = localMinutesWest(col.crt)
-        col.set_config("creationOffset", minsWest)
-    }
+    fun set_creation_offset(col: Collection) = col.set_config("creationOffset", localMinutesWest(col, col.crt))
 
     // New timezone handling
     // ////////////////////////////////////////////////////////////////////////
 
-    fun _new_timezone_enabled(): Boolean {
-        return col.has_config_not_null("creationOffset")
+    fun _new_timezone_enabled(col: Collection) = col.has_config_not_null("creationOffset")
+
+    fun useNewTimezoneCode(col: Collection) {
+        set_creation_offset(col)
     }
 
-    fun useNewTimezoneCode() {
-        set_creation_offset()
-    }
-
-    fun clear_creation_offset() {
+    fun clear_creation_offset(col: Collection) {
         col.remove_config("creationOffset")
     }
 
     /** true if there are any rev cards due.  */
-    open fun revDue(): Boolean {
-        return col.db
-            .queryScalar(
-                "SELECT 1 FROM cards WHERE did IN " + _deckLimit() + " AND queue = " + Consts.QUEUE_TYPE_REV + " AND due <= ?" +
-                    " LIMIT 1",
-                today
-            ) != 0
-    }
+    open fun revDue(col: Collection) = col.db
+        .queryScalar(
+            "SELECT 1 FROM cards WHERE did IN " + _deckLimit(col) + " AND queue = " + QUEUE_TYPE_REV + " AND due <= ?" +
+                " LIMIT 1",
+            today(col)
+        ) != 0
 
     /** true if there are any new cards due.  */
-    open fun newDue(): Boolean {
-        return col.db.queryScalar("SELECT 1 FROM cards WHERE did IN " + _deckLimit() + " AND queue = " + Consts.QUEUE_TYPE_NEW + " LIMIT 1") != 0
-    }
+    open fun newDue(col: Collection) = col.db.queryScalar("SELECT 1 FROM cards WHERE did IN " + _deckLimit(col) + " AND queue = " + QUEUE_TYPE_NEW + " LIMIT 1") != 0
 
     /** @return Number of cards in the current deck and its descendants.
      */
-    fun cardCount(): Int {
-        val dids = _deckLimit()
-        return col.db.queryScalar("SELECT count() FROM cards WHERE did IN $dids")
-    }
+    fun cardCount(col: Collection) = col.db.queryScalar("SELECT count() FROM cards WHERE did IN ${_deckLimit(col)}")
 
     private val etaCache: DoubleArray = doubleArrayOf(-1.0, -1.0, -1.0, -1.0, -1.0, -1.0)
 
@@ -601,7 +564,7 @@ abstract class BaseSched(val col: Collection) {
      * @param counts An array of [new, lrn, rev] counts from the scheduler's counts() method.
      * @param reload Force rebuild of estimator rates using the revlog.
      */
-    fun eta(counts: Counts, reload: Boolean = true): Int {
+    fun eta(col: Collection, counts: Counts, reload: Boolean = true): Int {
         var newRate: Double
         var newTime: Double
         var revRate: Double
@@ -613,12 +576,12 @@ abstract class BaseSched(val col: Collection) {
                 .db
                 .query(
                     "select " +
-                        "avg(case when type = " + Consts.CARD_TYPE_NEW + " then case when ease > 1 then 1.0 else 0.0 end else null end) as newRate, avg(case when type = " + Consts.CARD_TYPE_NEW + " then time else null end) as newTime, " +
-                        "avg(case when type in (" + Consts.CARD_TYPE_LRN + ", " + Consts.CARD_TYPE_RELEARNING + ") then case when ease > 1 then 1.0 else 0.0 end else null end) as revRate, avg(case when type in (" + Consts.CARD_TYPE_LRN + ", " + Consts.CARD_TYPE_RELEARNING + ") then time else null end) as revTime, " +
-                        "avg(case when type = " + Consts.CARD_TYPE_REV + " then case when ease > 1 then 1.0 else 0.0 end else null end) as relrnRate, avg(case when type = " + Consts.CARD_TYPE_REV + " then time else null end) as relrnTime " +
+                        "avg(case when type = " + CARD_TYPE_NEW + " then case when ease > 1 then 1.0 else 0.0 end else null end) as newRate, avg(case when type = " + CARD_TYPE_NEW + " then time else null end) as newTime, " +
+                        "avg(case when type in (" + CARD_TYPE_LRN + ", " + CARD_TYPE_RELEARNING + ") then case when ease > 1 then 1.0 else 0.0 end else null end) as revRate, avg(case when type in (" + CARD_TYPE_LRN + ", " + CARD_TYPE_RELEARNING + ") then time else null end) as revTime, " +
+                        "avg(case when type = " + CARD_TYPE_REV + " then case when ease > 1 then 1.0 else 0.0 end else null end) as relrnRate, avg(case when type = " + CARD_TYPE_REV + " then time else null end) as relrnTime " +
                         "from revlog where id > " +
                         "?",
-                    (col.sched.dayCutoff - (10 * Stats.SECONDS_PER_DAY)) * 1000
+                    (col.sched.dayCutoff(col) - (10 * Stats.SECONDS_PER_DAY)) * 1000
                 ).use { cur ->
                     if (!cur.moveToFirst()) {
                         return -1
@@ -692,9 +655,7 @@ abstract class BaseSched(val col: Collection) {
      * @param card A random card
      * @return The conf of the deck of the card.
      */
-    fun _cardConf(card: Card): DeckConfig {
-        return col.decks.confForDid(card.did)
-    }
+    fun _cardConf(col: Collection, card: Card) = col.decks.confForDid(col, card.did)
 
     /*
       Next time reports ********************************************************
@@ -712,8 +673,8 @@ abstract class BaseSched(val col: Collection) {
      * @param ease The button number (easy, good etc.)
      * @return A string like “1 min” or “1.7 mo”
      */
-    open fun nextIvlStr(context: Context, card: Card, @BUTTON_TYPE ease: Int): String {
-        val ivl: Long = nextIvl(card, ease)
+    open fun nextIvlStr(col: Collection, context: Context, card: Card, @Consts.BUTTON_TYPE ease: Int): String {
+        val ivl: Long = nextIvl(col, card, ease)
         if (ivl == 0L) {
             return context.getString(R.string.sched_end)
         }
@@ -729,7 +690,7 @@ abstract class BaseSched(val col: Collection) {
      * @param ease a button, between 1 and answerButtons(card)
      * @return the next interval for CARD, in seconds if ease is pressed.
      */
-    abstract fun nextIvl(card: Card, @BUTTON_TYPE ease: Int): Long
+    abstract fun nextIvl(col: Collection, card: Card, @Consts.BUTTON_TYPE ease: Int): Long
 
     companion object {
         const val REPORT_LIMIT = 99999

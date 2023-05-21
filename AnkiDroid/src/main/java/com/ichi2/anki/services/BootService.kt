@@ -5,7 +5,10 @@ import android.app.AlarmManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.ichi2.anki.*
+import com.ichi2.anki.AnkiDroidApp
+import com.ichi2.anki.CollectionHelper
+import com.ichi2.anki.DeckOptionsActivity
+import com.ichi2.anki.R
 import com.ichi2.anki.UIUtils.showThemedToast
 import com.ichi2.anki.preferences.Preferences
 import com.ichi2.compat.CompatHelper
@@ -34,7 +37,7 @@ class BootService : BroadcastReceiver() {
             return
         }
         Timber.i("Executing Boot Service")
-        catchAlarmManagerErrors(context) { scheduleDeckReminder(context) }
+        catchAlarmManagerErrors(context) { scheduleDeckReminder(col, context) }
         catchAlarmManagerErrors(context) { scheduleNotification(TimeManager.time, context) }
         mFailedToShowNotifications = false
         sWasRun = true
@@ -72,9 +75,9 @@ class BootService : BroadcastReceiver() {
         }
     }
 
-    private fun scheduleDeckReminder(context: Context) {
+    private fun scheduleDeckReminder(col: Collection, context: Context) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        for (deckConfiguration in CollectionHelper.instance.getCol(context)!!.decks.allConf()) {
+        for (deckConfiguration in CollectionHelper.instance.getCol(context)!!.decks.allConf(col)) {
             if (deckConfiguration.has("reminder")) {
                 val reminder = deckConfiguration.getJSONObject("reminder")
                 if (reminder.getBoolean("enabled")) {

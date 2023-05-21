@@ -153,7 +153,7 @@ class FilteredDeckOptions :
 
                 // save deck
                 try {
-                    col.decks.save(deck)
+                    col.decks.save(col, deck)
                 } catch (e: RuntimeException) {
                     Timber.e(e, "RuntimeException on saving deck")
                     CrashReportService.sendExceptionReport(e, "FilteredDeckOptionsSaveDeck")
@@ -194,9 +194,9 @@ class FilteredDeckOptions :
         }
         val extras = intent.extras
         deck = if (extras != null && extras.containsKey("did")) {
-            col.decks.get(extras.getLong("did"))
+            col.decks.get(col, extras.getLong("did"))
         } else {
-            col.decks.current()
+            col.decks.current(col)
         }
         registerExternalStorageListener()
         if (deck.isStd) {
@@ -258,7 +258,7 @@ class FilteredDeckOptions :
         if (prefChanged) {
             // Rebuild the filtered deck if a setting has changed
             try {
-                col.sched.rebuildDyn(deck.getLong("id"))
+                col.sched.rebuildDyn(col, deck.getLong("id"))
             } catch (e: JSONException) {
                 Timber.e(e)
             }

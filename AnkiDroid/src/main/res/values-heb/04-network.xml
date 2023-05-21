@@ -105,7 +105,7 @@
     <string name="sync_media_partial_updated">סנכרון המדיה הושלם חלקית:\n%1$d קובצי מדיה הורדו.\n%2$d קובצי מדיה הועלו.</string>
     <string name="sync_media_changes_count">%d קבצי מדיה נותרו להעלאה</string>
     <string name="sync_media_downloaded_count">%d קבצי מדיה נותרו להורדה</string>
-    <string name="sync_sanity_failed">לאחר הסכנרון אוסף החפיסות נותר במצב בלתי עקבי. כדי לתקן את הבעיה, אפליקציית AnkiDroid תבצע סינכרון מלא. עליך לבחור איזה משני הצדדים תרצה לשמור.</string>
+    <string name="sync_sanity_failed">לאחר הסכנרון אוסף החפיסות נותר במצב בלתי עקבי. כדי לתקן את הבעיה, אפליקציית AnkiDroid תבצע סינכרון מלא. עליך לבחור איזה משני הצדדים תרצה לשמור.</string>
     <string name="sync_media_sanity_failed">סנכרון קבצי המדיה הושלם, אך קיימת חוסר התאמה בין קבצי המדיה המקומיים ואלה שבשרת. סנכרון המדיה הבא יהיה מלא, במטרה לתקן את התקלה.</string>
     <string name="sync_media_db_error">סנכרון המדיה נכשל כי מסד הנתונים הנוכחי פגום. מומלץ לבצע בדיקת מדיה.</string>
     <string name="sync_media_error">תקלה בסנכרון המידע של קבצי המדיה</string>

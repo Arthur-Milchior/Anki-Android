@@ -244,7 +244,7 @@
     <string name="help_dialog_exception_report_debounce">Raporto sendita</string>
     <!--Sync-->
     <plurals name="sync_automatic_sync_needs_more_time">
-        <item quantity="one">Aŭtomata samtempigo povas startigi post %d sekundo</item>
+        <item quantity="one">Aŭtomata samtempigo povas startigi post %d sekundo</item>
         <item quantity="other">Aŭtomata samtempigo povas startigi post %d sekundoj</item>
     </plurals>
     <string name="metered_sync_warning">Your connection is metered. Data transfer may cost money</string>

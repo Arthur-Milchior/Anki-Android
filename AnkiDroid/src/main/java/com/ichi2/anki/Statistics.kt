@@ -110,7 +110,7 @@ class Statistics : NavigationDrawerActivity(), DeckSelectionListener, SubtitleLi
         invalidateOptionsMenu()
         //        StatisticFragment.updateAllFragments();
         when (val defaultDeck = AnkiDroidApp.getSharedPrefs(this).getString("stats_default_deck", "current")) {
-            "current" -> mStatsDeckId = col.decks.selected()
+            "current" -> mStatsDeckId = col.decks.selected(col)
             "all" -> mStatsDeckId = Stats.ALL_DECKS_ID
             else -> Timber.w("Unknown defaultDeck: %s", defaultDeck)
         }
@@ -123,7 +123,7 @@ class Statistics : NavigationDrawerActivity(), DeckSelectionListener, SubtitleLi
             showFilteredDecks = true
         )
         mDeckSpinnerSelection.initializeActionBarDeckSpinner(this.supportActionBar!!)
-        mDeckSpinnerSelection.selectDeckById(mStatsDeckId, false)
+        mDeckSpinnerSelection.selectDeckById(col, mStatsDeckId, false)
         taskHandler.setDeckId(mStatsDeckId)
         viewPager.adapter!!.notifyDataSetChanged()
     }
@@ -200,7 +200,7 @@ class Statistics : NavigationDrawerActivity(), DeckSelectionListener, SubtitleLi
         }
         mDeckSpinnerSelection.initializeActionBarDeckSpinner(this.supportActionBar!!)
         mStatsDeckId = deck.deckId
-        mDeckSpinnerSelection.selectDeckById(mStatsDeckId, true)
+        mDeckSpinnerSelection.selectDeckById(col, mStatsDeckId, true)
         taskHandler.setDeckId(mStatsDeckId)
         viewPager.adapter!!.notifyDataSetChanged()
     }
@@ -361,7 +361,7 @@ class Statistics : NavigationDrawerActivity(), DeckSelectionListener, SubtitleLi
             deckId = (requireActivity() as Statistics).mStatsDeckId
             if (deckId != Stats.ALL_DECKS_ID) {
                 val col = CollectionHelper.instance.getCol(requireActivity())!!
-                val baseName = Decks.basename(col.decks.current().getString("name"))
+                val baseName = Decks.basename(col.decks.current(col).getString("name"))
                 if (sIsSubtitle) {
                     (requireActivity() as AppCompatActivity).supportActionBar!!.subtitle = baseName
                 } else {
@@ -437,7 +437,7 @@ class Statistics : NavigationDrawerActivity(), DeckSelectionListener, SubtitleLi
             val col = CollectionHelper.instance.getCol(requireActivity())!!
             deckId = (requireActivity() as Statistics).mStatsDeckId
             if (deckId != Stats.ALL_DECKS_ID) {
-                val basename = Decks.basename(col.decks.current().getString("name"))
+                val basename = Decks.basename(col.decks.current(col).getString("name"))
                 if (sIsSubtitle) {
                     (requireActivity() as AppCompatActivity).supportActionBar!!.subtitle = basename
                 } else {

@@ -38,6 +38,7 @@ import com.ichi2.anki.UIUtils.showThemedToast
 import com.ichi2.anki.analytics.AnalyticsDialogFragment
 import com.ichi2.anki.dialogs.DeckSelectionDialog.DecksArrayAdapter.DecksFilter
 import com.ichi2.anki.dialogs.DeckSelectionDialog.SelectableDeck
+import com.ichi2.anki.launchWithCol
 import com.ichi2.annotations.NeedsTest
 import com.ichi2.compat.CompatHelper.Companion.getParcelableArrayListCompat
 import com.ichi2.libanki.*
@@ -52,7 +53,6 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import timber.log.Timber
 import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * "Deck Search": A dialog allowing the user to select a deck from a list of decks.
@@ -150,14 +150,16 @@ open class DeckSelectionDialog : AnalyticsDialogFragment() {
         }
     }
 
-    private fun showSubDeckDialog(parentDeckPath: String) {
+    private fun showSubDeckDialog(col: Collection, parentDeckPath: String) {
         try {
             // create subdeck
-            val parentId = decks.id(parentDeckPath)
+            val parentId = decks.id(col, parentDeckPath)
             val createDeckDialog = CreateDeckDialog(requireActivity(), R.string.create_subdeck, CreateDeckDialog.DeckDialogType.SUB_DECK, parentId)
             createDeckDialog.setOnNewDeckCreated { id: Long? ->
                 // a sub deck was created
-                selectDeckWithDeckName(decks.name(id!!))
+                launchWithCol {
+                    selectDeckWithDeckName(col, decks.name(col, id!!))
+                }
             }
             createDeckDialog.showDialog()
         } catch (ex: DeckRenameException) {
@@ -171,7 +173,9 @@ open class DeckSelectionDialog : AnalyticsDialogFragment() {
         // setOnNewDeckCreated parameter to be made non null
         createDeckDialog.setOnNewDeckCreated { id: Long? ->
             // a deck was created
-            selectDeckWithDeckName(decks.name(id!!))
+            launchWithCol {
+                selectDeckWithDeckName(col, decks.name(col, id!!))
+            }
         }
         createDeckDialog.showDialog()
     }
@@ -187,9 +191,9 @@ open class DeckSelectionDialog : AnalyticsDialogFragment() {
      * Create the deck if it does not exists.
      * If name is valid, send the deck with this name to listener and close the dialog.
      */
-    private fun selectDeckWithDeckName(deckName: String) {
+    private fun selectDeckWithDeckName(col: Collection, deckName: String) {
         try {
-            val id = decks.id(deckName)
+            val id = decks.id(col, deckName)
             val dec = SelectableDeck(id, deckName)
             selectDeckAndClose(dec)
         } catch (ex: DeckRenameException) {
@@ -252,7 +256,9 @@ open class DeckSelectionDialog : AnalyticsDialogFragment() {
                     if (deckID == DeckSpinnerSelection.ALL_DECKS_ID) {
                         context?.let { showThemedToast(it, R.string.cannot_create_subdeck_for_all_decks, true) }
                     } else {
-                        showSubDeckDialog(deckName)
+                        launchWithCol {
+                            showSubDeckDialog(col, deckName)
+                        }
                     }
                     true
                 }
@@ -360,8 +366,8 @@ open class DeckSelectionDialog : AnalyticsDialogFragment() {
              * @param filter A method deciding which deck to add
              * @return the list of all SelectableDecks from the collection satisfying filter
              */
-            fun fromCollection(c: Collection, filter: FunctionalInterfaces.Filter<Deck> = FunctionalInterfaces.Filters.allowAll()): List<SelectableDeck> {
-                val all = c.decks.all()
+            fun fromCollection(col: Collection, filter: FunctionalInterfaces.Filter<Deck> = FunctionalInterfaces.Filters.allowAll()): List<SelectableDeck> {
+                val all = col.decks.all(col)
                 val ret: MutableList<SelectableDeck> = ArrayList(all.size)
                 for (d in all) {
                     if (!filter.shouldInclude(d)) {

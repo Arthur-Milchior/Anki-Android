@@ -53,7 +53,7 @@ import java.util.regex.Matcher
  * @param file The path to the collection.anki2 database. Should be unicode.
  * path should be tested with File.exists() and File.canWrite() before this is called.
  */
-open class Anki2Importer(col: Collection?, file: String) : Importer(col!!, file) {
+open class Anki2Importer(col: Collection, file: String) : Importer(col, file) {
     private val mDeckPrefix: String?
     private val mAllowUpdate: Boolean
     private var mDupeOnSchemaChange: Boolean
@@ -104,14 +104,14 @@ open class Anki2Importer(col: Collection?, file: String) : Importer(col!!, file)
     }
 
     private fun _import() {
-        mDecks = HashUtil.HashMapInit(src.decks.count())
+        mDecks = HashUtil.HashMapInit(src.decks.count(col))
         try {
             // Use transactions for performance and rollbacks in case of error
             dst.db.database.beginTransaction()
             dst.media.db!!.database.beginTransaction()
             if (!mDeckPrefix.isNullOrEmpty()) {
-                val id = dst.decks.id_safe(mDeckPrefix)
-                dst.decks.select(id)
+                val id = dst.decks.id_safe(col, mDeckPrefix)
+                dst.decks.select(col, id)
             }
             Timber.i("Preparing Import")
             _prepareTS()
@@ -423,7 +423,7 @@ open class Anki2Importer(col: Collection?, file: String) : Importer(col!!, file)
             return mDecks!![did]!!
         }
         // get the name in src
-        val g = src.decks.get(did)
+        val g = src.decks.get(col, did)
         var name = g.getString("name")
         // if there's a prefix, replace the top level deck
         if (!mDeckPrefix.isNullOrEmpty()) {
@@ -442,24 +442,24 @@ open class Anki2Importer(col: Collection?, file: String) : Importer(col!!, file)
                 head += "::"
             }
             head += parent
-            val idInSrc = src.decks.id_safe(head!!)
+            val idInSrc = src.decks.id_safe(col, head!!)
             _did(idInSrc)
         }
         // create in local
-        val newid = dst.decks.id_safe(name)
+        val newid = dst.decks.id_safe(col, name)
         // pull conf over
         if (g.has("conf") && g.getLong("conf") != 1L) {
-            val conf = src.decks.getConf(g.getLong("conf"))
-            dst.decks.save(conf!!)
-            dst.decks.updateConf(conf)
-            val g2 = dst.decks.get(newid)
+            val conf = src.decks.getConf(col, g.getLong("conf"))
+            dst.decks.save(col, conf!!)
+            dst.decks.updateConf(col, conf)
+            val g2 = dst.decks.get(col, newid)
             g2.put("conf", g.getLong("conf"))
-            dst.decks.save(g2)
+            dst.decks.save(col, g2)
         }
         // save desc
-        val deck = dst.decks.get(newid)
+        val deck = dst.decks.get(col, newid)
         deck.put("desc", g.getString("desc"))
-        dst.decks.save(deck)
+        dst.decks.save(col, deck)
         // add to deck map and return
         mDecks!![did] = newid
         return newid
@@ -513,11 +513,11 @@ open class Anki2Importer(col: Collection?, file: String) : Importer(col!!, file)
         val cards: MutableList<Array<Any>> = ArrayList(nbCardsToImport)
         var totalCardCount = 0
         val thresExecCards = 1000
-        val revlog: MutableList<Array<Any>> = ArrayList(src.sched.logCount())
+        val revlog: MutableList<Array<Any>> = ArrayList(src.sched.logCount(col))
         var totalRevlogCount = 0
         val thresExecRevlog = 1000
         val usn = dst.usn()
-        val aheadBy = (src.sched.today - dst.sched.today).toLong()
+        val aheadBy = (src.sched.today(col) - dst.sched.today(col)).toLong()
         dst.db.database.beginTransaction()
         try {
             src.db.query(
@@ -695,11 +695,7 @@ open class Anki2Importer(col: Collection?, file: String) : Importer(col!!, file)
     }
 
     private fun _mediaData(fname: String, directory: String): BufferedInputStream? {
-        var dir: String? = directory
-        if (dir == null) {
-            dir = src.media.dir()
-        }
-        val path = File(dir, fname).absolutePath
+        val path = File(directory, fname).absolutePath
         return try {
             BufferedInputStream(FileInputStream(path), MEDIAPICKLIMIT * 2)
         } catch (e: IOException) {
@@ -802,7 +798,7 @@ open class Anki2Importer(col: Collection?, file: String) : Importer(col!!, file)
      */
     private fun _postImport() {
         for (did in mDecks!!.values) {
-            mCol.sched.maybeRandomizeDeck(did)
+            mCol.sched.maybeRandomizeDeck(col, did)
         }
         // make sure new position is correct
         dst.set_config("nextPos", dst.db.queryLongScalar("select max(due)+1 from cards where type = $CARD_TYPE_NEW"))

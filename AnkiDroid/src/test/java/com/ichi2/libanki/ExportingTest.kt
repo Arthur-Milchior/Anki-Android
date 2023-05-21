@@ -32,7 +32,7 @@ class ExportingTest : RobolectricTest() {
         var note = mCol.newNote()
         note.setItem("Front", "foo")
         note.setItem("Back", "bar<br>")
-        note.setTagsFromStr("tag, tag2")
+        note.setTagsFromStr(col, "tag, tag2")
         mCol.addNote(note)
         // with a different col
         note = mCol.newNote()
@@ -57,7 +57,7 @@ class ExportingTest : RobolectricTest() {
        long confId = col.getDecks().add_config_returning_id("newconf");
        DeckConfig conf = col.getDecks().getConf(confId);
        conf.getJSONObject("new").put("perDay", 5);
-       col.getDecks().save(conf);
+       col.getDecks().save(col, conf);
        col.getDecks().setConf(dobj, confId);
        // export
        AnkiPackageExporter e = AnkiExporter(col);
@@ -118,8 +118,8 @@ class ExportingTest : RobolectricTest() {
        col.flush();
        col.getSched().reset();
        Card c = col.getSched().getCard();
-       col.getSched().answerCard(c, 3);
-       col.getSched().answerCard(c, 3);
+       col.getSched().answerCard(col, c,  3);
+       col.getSched().answerCard(col, c,  3);
        // should have ivl of 1, due on day 11
        assertEquals(1, c.getIvl());
        assertEquals(11, c.getDue());

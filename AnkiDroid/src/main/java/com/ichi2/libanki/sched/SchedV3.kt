@@ -17,10 +17,14 @@
 package com.ichi2.libanki.sched
 
 import android.app.Activity
-import anki.scheduler.*
+import anki.scheduler.CardAnswer
+import anki.scheduler.QueuedCards
+import anki.scheduler.SchedulingState
+import anki.scheduler.SchedulingStates
+import anki.scheduler.cardAnswer
 import com.ichi2.async.CancelListener
 import com.ichi2.libanki.Card
-import com.ichi2.libanki.CollectionV16
+import com.ichi2.libanki.Collection
 import com.ichi2.libanki.DeckId
 import com.ichi2.libanki.utils.TimeManager.time
 import java.lang.ref.WeakReference
@@ -30,42 +34,40 @@ import java.lang.ref.WeakReference
  * future, it would be better for the reviewer to fetch queuedCards directly, so they only
  * need to be fetched once.
  */
-class SchedV3(col: CollectionV16) : AbstractSched(col) {
+class SchedV3 : AbstractSched() {
     private var activityForLeechNotification: WeakReference<Activity>? = null
 
-    override val today: Int
-        get() = col.backend.schedTimingToday().daysElapsed
+    override fun today(col: Collection) = col.backend.schedTimingToday().daysElapsed
 
-    override fun reset() {
+    override fun reset(col: Collection) {
         // backend automatically resets queues as operations are performed
     }
 
-    override fun resetCounts() {
+    override fun resetCounts(col: Collection) {
         // backend automatically resets queues as operations are performed
     }
 
-    override fun deferReset(undoneCard: Card?) {
+    override fun deferReset(col: Collection, undoneCard: Card?) {
         // backend automatically resets queues as operations are performed
     }
 
     // could be made more efficient by constructing a native Card object from
     // the backend card object, instead of doing a separate fetch
-    override val card: Card?
-        get() = queuedCards.cardsList.firstOrNull()?.card?.id?.let {
+    override fun card(col: Collection) =
+        queuedCards(col).cardsList.firstOrNull()?.card?.id?.let {
             col.getCard(it).apply { startTimer() }
         }
 
-    private val queuedCards: QueuedCards
-        get() = col.backend.getQueuedCards(fetchLimit = 1, intradayLearningOnly = false)
+    private fun queuedCards(col: Collection) = col.backend.getQueuedCards(fetchLimit = 1, intradayLearningOnly = false)
 
-    override fun preloadNextCard() {
+    override fun preloadNextCard(col: Collection) {
         // if this proves necessary in the future, it could be implemented by increasing
         // fetchLimit above
     }
 
-    override fun answerCard(card: Card, ease: Int) {
-        val top = queuedCards.cardsList.first()
-        val answer = buildAnswer(card, top.states, ease)
+    override fun answerCard(col: Collection, card: Card, ease: Int) {
+        val top = queuedCards(col).cardsList.first()
+        val answer = buildAnswer(col, card, top.states, ease)
         col.backend.answerCard(answer)
         reps += 1
         // if this were checked in the UI, there'd be no need to store an activity here
@@ -73,17 +75,17 @@ class SchedV3(col: CollectionV16) : AbstractSched(col) {
             activityForLeechNotification?.get()?.let { leech(card, it) }
         }
         // tests assume the card was mutated
-        card.load()
+        card.load(col)
     }
 
-    fun buildAnswer(card: Card, states: SchedulingStates, ease: Int): CardAnswer {
+    fun buildAnswer(col: Collection, card: Card, states: SchedulingStates, ease: Int): CardAnswer {
         return cardAnswer {
             cardId = card.id
             currentState = states.current
             newState = stateFromEase(states, ease)
             rating = ratingFromEase(ease)
             answeredAtMillis = time.intTimeMS()
-            millisecondsTaken = card.timeTaken()
+            millisecondsTaken = card.timeTaken(col)
         }
     }
 
@@ -107,19 +109,19 @@ class SchedV3(col: CollectionV16) : AbstractSched(col) {
         }
     }
 
-    override fun counts(cancelListener: CancelListener?): Counts {
-        return queuedCards.let {
+    override fun counts(col: Collection, cancelListener: CancelListener?): Counts {
+        return queuedCards(col).let {
             Counts(it.newCount, it.learningCount, it.reviewCount)
         }
     }
 
-    override fun counts(card: Card): Counts {
-        return counts(null)
+    override fun counts(col: Collection, card: Card): Counts {
+        return counts(col, null)
     }
 
     /** Ignores provided card and uses top of queue */
-    override fun countIdx(card: Card): Counts.Queue {
-        return when (queuedCards.cardsList.first().queue) {
+    override fun countIdx(col: Collection, card: Card): Counts.Queue {
+        return when (queuedCards(col).cardsList.first().queue) {
             QueuedCards.Queue.NEW -> Counts.Queue.NEW
             QueuedCards.Queue.LEARNING -> Counts.Queue.LRN
             QueuedCards.Queue.REVIEW -> Counts.Queue.REV
@@ -127,13 +129,13 @@ class SchedV3(col: CollectionV16) : AbstractSched(col) {
         }
     }
 
-    override fun answerButtons(card: Card): Int {
+    override fun answerButtons(col: Collection, card: Card): Int {
         return 4
     }
 
     override val goodNewButton: Int = 3
 
-    override fun haveBuried(did: DeckId): Boolean {
+    override fun haveBuried(col: Collection, did: DeckId): Boolean {
         // Backend does not support checking bury status of an arbitrary deck. This is
         // only used to decide whether to show an "unbury" option on a long press of a
         // deck.
@@ -148,13 +150,13 @@ class SchedV3(col: CollectionV16) : AbstractSched(col) {
         this.activityForLeechNotification = contextReference
     }
 
-    override fun undoReview(card: Card, wasLeech: Boolean) {
+    override fun undoReview(col: Collection, card: Card, wasLeech: Boolean) {
         // Only used by UndoTest
         TODO("Not yet implemented")
     }
 
     /** Only provided for legacy unit tests. */
-    override fun nextIvl(card: Card, ease: Int): Long {
+    override fun nextIvl(col: Collection, card: Card, ease: Int): Long {
         val states = col.backend.getSchedulingStates(card.id)
         val state = stateFromEase(states, ease)
         return intervalForState(state)

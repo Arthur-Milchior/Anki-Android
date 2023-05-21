@@ -50,7 +50,7 @@
     <string name="CardEditorCardDeck">Paquet de cartes :</string>
     <string name="CardEditorNoteDeck">Paquet :</string>
     <string name="CardEditorModel">Type :</string>
-    <string name="CardEditorTags">Étiquettes : %1$s</string>
+    <string name="CardEditorTags">Étiquettes : %1$s</string>
     <string name="CardEditorCards">Cartes : %1$s</string>
     <string name="tag_name">Nom d\'étiquette</string>
     <string name="add_new_filter_tags">Ajouter/filtrer étiquettes</string>
@@ -70,16 +70,16 @@
     <string name="clear_whiteboard">Effacer le tableau blanc</string>
     <string name="replay_audio">Rejouer le son</string>
     <string name="leech_suspend_notification">Carte marquée comme sangsue et suspendue</string>
-    <string name="leech_notification">Carte marquée « encombrante »</string>
+    <string name="leech_notification">Carte marquée « encombrante »</string>
     <string name="corrupt_font">Fichier de police corrompu %s</string>
     <string name="webview_crash_unknown">Erreur inconnue</string>
     <string name="webview_crash_unknwon_detailed">Erreur interne dans le système WebView</string>
     <string name="webview_crash_oom">Mémoire insuffisante</string>
     <string name="webview_crash_oom_details">WebView a été arrêté par le système. Cela se produit généralement lorsque l\'application manque de mémoire, souvent en raison de la taille des polices ou des fichiers.</string>
-    <string name="webview_crash_nonfatal">Plantage du moteur de rendu Webview. Cause : %s</string>
+    <string name="webview_crash_nonfatal">Plantage du moteur de rendu Webview. Cause : %s</string>
     <string name="webview_crash_fatal">Erreur Fatale : Plantage du moteur de rendu Webview. Cause : %s</string>
     <string name="webview_crash_loop_dialog_title">Échec de rendu du système WebView</string>
-    <string name="webview_crash_loop_dialog_content">Le système WebView n\'a pas réussi à afficher la carte « %1$s ».\n %2$s</string>
+    <string name="webview_crash_loop_dialog_content">Le système WebView n\'a pas réussi à afficher la carte « %1$s ».\n %2$s</string>
     <!-- Browser -->
     <string-array name="browser_column1_headings">
         <item>Question</item>
@@ -175,7 +175,7 @@
     <string name="import_log_insufficient_space_error">Il n\'y a pas assez d\'espace pour importer le paquet.\nEspace nécessaire - %1$s \nEspace disponible - %2$s.\n\nVous avez du mal ? Essayez de libérer de l\'espace sur votre appareil. Sinon, la synchronisation utilise moins d\'espace que l\'importation. Vous pouvez essayer d\'importer le paquet sur un appareil qui possède plus d\'espace (par exemple Anki Desktop) et ensuite le synchroniser à cet appareil.</string>
     <string name="import_log_file_cache_cleared">Erreur lors de l\'importation du fichier, il est probable que le cache ait été effacé pendant le traitement.\nVeuillez réessayer</string>
     <string name="import_succeeded_but_check_database">L\'importation des données a réussi, mais le nettoyage après l\'importation a échoué. Exécutez la vérification de la base de données plus tard. Cause racine : %s</string>
-    <string name="import_error_corrupt_zip">Le fichier APKG est corrompu. Veuillez le supprimer et le retélécharger.\n\nRaison racine : %s</string>
+    <string name="import_error_corrupt_zip">Le fichier APKG est corrompu. Veuillez le supprimer et le retélécharger.\n\nRaison racine : %s</string>
     <string name="import_error_handle_exception">Impossible d\'importer le fichier\n\n%s</string>
     <string name="import_error_not_apkg_extension">Le nom de fichier « %s » n\'a pas d\'extension .apkg ou .colpkg</string>
     <string name="import_error_load_imported_database">Les remplacements de la base de données Anki (.anki2) ne sont pas pris en charge. Veuillez voir le guide d’utilisation pour les instructions de remplacement.</string>
@@ -235,7 +235,7 @@
         <item quantity="other">%s secondes</item>
     </plurals>
     <plurals name="time_span_minutes">
-        <item quantity="one">%s minute</item>
+        <item quantity="one">%s minute</item>
         <item quantity="other">%s minutes</item>
     </plurals>
     <plurals name="time_span_hours">
@@ -265,7 +265,7 @@
     <string name="decks_rename_exists">Ce paquet existe déjà.</string>
     <string name="decks_rename_filtered_nosubdecks">Un paquet filtré ne peut pas avoir de sous-paquets.</string>
     <string name="filtered_deck_name">Paquet Filtré</string>
-    <string name="reminder_title">N’oubliez pas d’étudier aujourd\'hui !</string>
+    <string name="reminder_title">N’oubliez pas d’étudier aujourd\'hui !</string>
     <plurals name="reminder_text">
         <item quantity="one">%2$d carte à réviser en %1$s</item>
         <item quantity="other">%2$d cartes à réviser en %1$s</item>
@@ -277,7 +277,7 @@
     <string name="activity_start_failed">Le système ne dispose pas d\'une application qui peut effectuer cette action.</string>
     <string name="multimedia_editor_image_compression_failed"><![CDATA[Les photos d\'appareils sont potentiellement lourdes. Envisager les compresser et redimensionner dans le dossier "media"]]></string>
     <string name="no_browser_notification">Aucun navigateur internet trouvé, merci de visiter cette page sur un PC ou smartphone.</string>
-    <string name="web_page_error">Erreur lors du chargement de la page : %s</string>
+    <string name="web_page_error">Erreur lors du chargement de la page : %s</string>
     <string name="no_outgoing_link_in_cardbrowser">Le lien vers les pages externes n\'est pas autorisé dans les cartes.</string>
     <!-- The name of the deck which corrupt cards will be moved to -->
     <string name="check_integrity_recovered_deck_name">Cartes récupérées</string>
@@ -305,15 +305,15 @@
     <string name="valid_js_api_version">Version de l\'interface applicative JS d\'AnkiDroid invalide. Contactez le développeur %s ou consultez le wiki</string>
     <string name="update_js_api_version">Mise à jour de l\'interface applicative JS d\'AnkiDroid disponible. Contactez le développeur %s ou consultez le wiki</string>
     <string name="reviewer_invalid_api_version_visit_documentation">Voir</string>
-    <string name="anki_js_error_code">(Code d\'erreur : %d)</string>
+    <string name="anki_js_error_code">(Code d\'erreur : %d)</string>
     <!-- About AnkiDroid screen -->
     <string name="about_ankidroid_successfully_copied_debug_info">Copié dans le presse-papier</string>
     <string name="about_ankidroid_error_copy_debug_info">Erreur lors de la copie des informations de débogage dans le presse-papiers</string>
     <!-- Card Viewer -->
-    <string name="card_viewer_could_not_find_image">Impossible de charger « %s »</string>
+    <string name="card_viewer_could_not_find_image">Impossible de charger « %s »</string>
     <string name="card_viewer_media_relative_protocol">Erreur de contenu de la carte : mise à jour du média requise</string>
     <!-- Deck Picker -->
-    <string name="deck_picker_failed_deck_load">Impossible de charger le paquet « %s »</string>
+    <string name="deck_picker_failed_deck_load">Impossible de charger le paquet « %s »</string>
     <string name="search_decks">Rechercher dans les paquets</string>
     <string name="show_migration_progress" comment="Title for a button in deck picker\'s toolbar that shows ongoing migration progress.         Usually shown as a tooltip. The button opens a dialog with a more detailed progress information.">Show migration progress</string>
     <string name="ankidroid_init_failed_webview_title">Erreur fatale</string>
@@ -335,12 +335,12 @@
     <string name="add_toolbar_item">Créer un élément de la barre d\'outils</string>
     <string name="edit_toolbar_item">Modifier la barre d’outils</string>
     <string name="toolbar_item_explain_edit_or_remove">Entrez le code HTML à insérer avant et après le texte sélectionné\n\nAppuyez longuement sur un élément de la barre d\'outils pour le modifier ou le supprimer</string>
-    <string name="remove_toolbar_item">Supprimer l\'élément de la barre d\'outils ?</string>
+    <string name="remove_toolbar_item">Supprimer l\'élément de la barre d\'outils ?</string>
     <string name="note_editor_paste_too_large">L\'image est trop large pour être collée, veuillez insérer l\'image manuellement</string>
     <string name="ankidroid_cannot_open_after_backup_try_again" comment="After an Android backup is restored, AnkiDroid opens and shows this message.         Opening AnkiDroid again will work correctly">        Sauvergarde Android en cours. Veuillez réessayer</string>
     <string name="create_shortcut_error_vivo" comment="iManager is an app on Vivo phones">Veuillez utiliser iManager pour autoriser AnkiDroid à ajouter des raccourcis</string>
     <string name="create_shortcut_failed" comment="home screen == launcher">Votre écran d\'accueil ne permet pas à AnkiDroid d\'ajouter des raccourcis</string>
-    <string name="create_shortcut_error">Erreur lors de l\'ajout du raccourci : %s</string>
+    <string name="create_shortcut_error">Erreur lors de l\'ajout du raccourci : %s</string>
     <string name="note_editor_capitalize" comment="This is for a switch with a checkbox - on: enabled">Mettre en majuscules les phrases</string>
     <string name="menu_scroll_toolbar" comment="Checkbox stating whether note editor toolbar is scrollable or stacked. Checked: Scroll">Barre d\'outils à défilement</string>
     <!-- Symbols used as Button text in IncrementNumberRangePreference -->

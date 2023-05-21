@@ -27,7 +27,6 @@ import com.ichi2.libanki.Note
 import com.ichi2.libanki.UndoAction
 import com.ichi2.libanki.Utils
 import timber.log.Timber
-import java.util.ArrayList
 
 /** @param hasUnsuspended  whether there were any unsuspended card (in which card the action was "Suspend",
  * otherwise the action was "Unsuspend")
@@ -60,8 +59,8 @@ class UndoSuspendCardMulti(
         for (i in toUnsuspendIds.indices) {
             toUnsuspendIdsArray[i] = toUnsuspendIds[i]
         }
-        col.sched.suspendCards(toSuspendIdsArray)
-        col.sched.unsuspendCards(toUnsuspendIdsArray)
+        col.sched.suspendCards(col, toSuspendIdsArray)
+        col.sched.unsuspendCards(col, toUnsuspendIdsArray)
         return null // don't fetch new card
     }
 }
@@ -74,11 +73,11 @@ class UndoDeleteNoteMulti(private val notesArr: Array<Note>, private val allCard
         // undo all of these at once instead of one-by-one
         val ids = ArrayList<Long>(notesArr.size + allCards.size)
         for (n in notesArr) {
-            n.flush(n.mod, false)
+            n.flush(col, n.mod, false)
             ids.add(n.id)
         }
         for (c in allCards) {
-            c.flush(false)
+            c.flush(col, false)
             ids.add(c.id)
         }
         col.db.execute("DELETE FROM graves WHERE oid IN " + Utils.ids2str(ids))
@@ -94,11 +93,11 @@ class UndoChangeDeckMulti(private val cards: Array<Card>, private val originalDi
         // move cards to original deck
         for (i in cards.indices) {
             val card = cards[i]
-            card.load()
+            card.load(col)
             card.did = originalDids[i]
-            val note = card.note()
-            note.flush()
-            card.flush()
+            val note = card.note(col)
+            note.flush(col)
+            card.flush(col)
         }
         return null // don't fetch new card
     }
@@ -111,8 +110,8 @@ class UndoMarkNoteMulti
 (private val originalMarked: List<Note>, private val originalUnmarked: List<Note>, hasUnmarked: Boolean) : UndoAction(if (hasUnmarked) R.string.card_browser_mark_card else R.string.card_browser_unmark_card) {
     override fun undo(col: Collection): Card? {
         Timber.i("Undo: Mark notes")
-        CardUtils.markAll(originalMarked, true)
-        CardUtils.markAll(originalUnmarked, false)
+        CardUtils.markAll(col, originalMarked, true)
+        CardUtils.markAll(col, originalUnmarked, false)
         return null // don't fetch new card
     }
 }

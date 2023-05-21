@@ -136,40 +136,39 @@ class TemplateManager {
         private var extra_state: HashMap<str, Any> = Dict()
 
         companion object {
-            fun from_existing_card(card: Card, browser: bool): TemplateRenderContext {
-                return TemplateRenderContext(card.col, card, card.note(), browser)
+            fun from_existing_card(col: Collection, card: Card, browser: bool): TemplateRenderContext {
+                return TemplateRenderContext(col, card, card.note(col), browser)
             }
 
             fun from_card_layout(
+                col: Collection,
                 note: Note,
                 card: Card,
                 notetype: NoteType,
                 template: JSONObject,
                 fill_empty: bool
-            ): TemplateRenderContext {
-                return TemplateRenderContext(
-                    note.col,
-                    card,
-                    note,
-                    notetype = notetype,
-                    template = template,
-                    fill_empty = fill_empty
-                )
-            }
+            ) = TemplateRenderContext(
+                col,
+                card,
+                note,
+                notetype = notetype,
+                template = template,
+                fill_empty = fill_empty
+            )
         }
 
         fun col() = _col
 
-        fun fields(): Dict<str, str> {
+        fun fields(col: Collection): Dict<str, str> {
             Timber.w(".fields() is obsolete, use .note() or .card()")
             if (_fields == null) {
                 // fields from note
                 val fields = _note.items().map { Pair(it[0]!!, it[1]!!) }.toMap().toMutableMap()
 
                 // add (most) special fields
-                fields["Tags"] = _note.stringTags().trim()
+                fields["Tags"] = _note.stringTags(col).trim()
                 fields["Type"] = _note_type.name
-                fields["Deck"] = _col.decks.name(_card.oDid or _card.did)
+                fields["Deck"] = _col.decks.name(col, _card.oDid or _card.did)
                 fields["Subdeck"] = Decks.basename(fields["Deck"]!!)
                 if (_template != null) {
                     fields["Card"] = _template!!["name"] as String
@@ -186,7 +185,7 @@ class TemplateManager {
 
         /**
          * Returns the card being rendered.
-         * Be careful not to call .q() or .a() on the card, or you'll create an
+         * Be careful not to call .q(col) or .a(col) on the card, or you'll create an
          * infinite loop.
          */
         fun card() = _card
@@ -195,13 +194,13 @@ class TemplateManager {
         fun note_type() = _note_type
 
         @RustCleanup("legacy")
-        fun qfmt(): str {
-            return templates_for_card(card(), _browser).first
+        fun qfmt(col: Collection): str {
+            return templates_for_card(col, card(), _browser).first
         }
 
         @RustCleanup("legacy")
-        fun afmt(): str {
-            return templates_for_card(card(), _browser).second
+        fun afmt(col: Collection): str {
+            return templates_for_card(col, card(), _browser).second
         }
 
         fun render(): TemplateRenderOutput {
@@ -279,8 +278,8 @@ class TemplateManager {
         }
 
         @RustCleanup("legacy")
-        fun templates_for_card(card: Card, browser: bool): Pair<str, str> {
-            val template = card.template()
+        fun templates_for_card(col: Collection, card: Card, browser: bool): Pair<str, str> {
+            val template = card.template(col)
             var a: String? = null
             var q: String? = null
 

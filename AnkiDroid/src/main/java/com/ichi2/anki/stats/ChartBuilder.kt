@@ -23,11 +23,23 @@ import com.ichi2.libanki.stats.Stats
 import com.ichi2.libanki.stats.Stats.AxisType
 import com.ichi2.libanki.stats.Stats.ChartType
 import com.ichi2.themes.Themes.getColorFromAttr
-import com.wildplot.android.rendering.*
+import com.wildplot.android.rendering.BarGraph
+import com.wildplot.android.rendering.LegendDrawable
+import com.wildplot.android.rendering.Lines
+import com.wildplot.android.rendering.PieChart
+import com.wildplot.android.rendering.PlotSheet
+import com.wildplot.android.rendering.XAxis
+import com.wildplot.android.rendering.XGrid
+import com.wildplot.android.rendering.YAxis
+import com.wildplot.android.rendering.YGrid
 import com.wildplot.android.rendering.graphics.wrapper.ColorWrap
 import com.wildplot.android.rendering.graphics.wrapper.RectangleWrap
 import timber.log.Timber
-import kotlin.math.*
+import kotlin.math.floor
+import kotlin.math.ln
+import kotlin.math.log10
+import kotlin.math.pow
+import kotlin.math.roundToInt
 
 class ChartBuilder(private val chartView: ChartView, private val collectionData: Collection, private val deckId: DeckId, private val chartType: ChartType) {
     private var mMaxCards = 0
@@ -42,22 +54,22 @@ class ChartBuilder(private val chartView: ChartView, private val collectionData:
     private var mHasColoredCumulative = false
     private var mMcount = 0.0
     private var mDynamicAxis = false
-    private fun calcStats(type: AxisType) {
-        val stats = Stats(collectionData, deckId)
+    private fun calcStats(col: Collection, type: AxisType) {
+        val stats = Stats(deckId)
         when (chartType) {
-            ChartType.FORECAST -> stats.calculateDue(chartView.context, type)
-            ChartType.REVIEW_COUNT -> stats.calculateReviewCount(type)
-            ChartType.REVIEW_TIME -> stats.calculateReviewTime(type)
-            ChartType.INTERVALS -> stats.calculateIntervals(chartView.context, type)
-            ChartType.HOURLY_BREAKDOWN -> stats.calculateBreakdown(type)
-            ChartType.WEEKLY_BREAKDOWN -> stats.calculateWeeklyBreakdown(type)
-            ChartType.ANSWER_BUTTONS -> stats.calculateAnswerButtons(type)
-            ChartType.CARDS_TYPES -> stats.calculateCardTypes(type)
+            ChartType.FORECAST -> stats.calculateDue(col, chartView.context, type)
+            ChartType.REVIEW_COUNT -> stats.calculateReviewCount(col, type)
+            ChartType.REVIEW_TIME -> stats.calculateReviewTime(col, type)
+            ChartType.INTERVALS -> stats.calculateIntervals(col, chartView.context, type)
+            ChartType.HOURLY_BREAKDOWN -> stats.calculateBreakdown(col, type)
+            ChartType.WEEKLY_BREAKDOWN -> stats.calculateWeeklyBreakdown(col, type)
+            ChartType.ANSWER_BUTTONS -> stats.calculateAnswerButtons(col, type)
+            ChartType.CARDS_TYPES -> stats.calculateCardTypes(col, type)
             else -> {}
         }
         mCumulative = stats.cumulative
         mSeriesList = stats.seriesList!!
-        val metaData = stats.metaInfo
+        val metaData = stats.metaInfo(col)
         mBackwards = metaData[2] as Boolean
         mValueLabels = metaData[3] as IntArray
         mColors = metaData[4] as IntArray
@@ -70,8 +82,8 @@ class ChartBuilder(private val chartView: ChartView, private val collectionData:
         mDynamicAxis = metaData[20] as Boolean
     }
 
-    fun renderChart(type: AxisType): PlotSheet? {
-        calcStats(type)
+    fun renderChart(col: Collection, type: AxisType): PlotSheet? {
+        calcStats(col, type)
         val paint = Paint(Paint.LINEAR_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG)
         paint.style = Paint.Style.STROKE
         val height = chartView.measuredHeight

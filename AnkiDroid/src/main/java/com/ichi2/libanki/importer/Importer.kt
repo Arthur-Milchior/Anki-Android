@@ -25,7 +25,7 @@ import com.ichi2.libanki.utils.TimeManager.time
 import com.ichi2.utils.KotlinCleanup
 import java.io.File
 
-abstract class Importer(col: Collection, protected var file: String) {
+abstract class Importer(val col: Collection, protected var file: String) {
     protected open var needMapper = false
     protected open var needDelimiter = false
     var fileName: String

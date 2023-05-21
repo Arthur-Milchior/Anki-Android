@@ -188,7 +188,7 @@ open class Reviewer :
     }
 
     override fun onResume() {
-        answerTimer.resume()
+        answerTimer.resume(col)
         super.onResume()
     }
 
@@ -225,8 +225,8 @@ open class Reviewer :
     @NeedsTest("is hidden if marked is on app bar")
     @NeedsTest("is not hidden if marked is not on app bar")
     @NeedsTest("is not hidden if marked is on app bar and fullscreen is enabled")
-    override fun shouldDisplayMark(): Boolean {
-        val markValue = super.shouldDisplayMark()
+    override fun shouldDisplayMark(col: Collection): Boolean {
+        val markValue = super.shouldDisplayMark(col)
         if (!markValue) {
             return false
         }
@@ -241,7 +241,7 @@ open class Reviewer :
             return
         }
         launchCatchingTask {
-            toggleMark(card.note())
+            toggleMark(col, card.note(col))
             refreshActionBar()
             onMarkChanged()
         }
@@ -251,7 +251,7 @@ open class Reviewer :
         if (currentCard == null) {
             return
         }
-        mCardMarker!!.displayMark(shouldDisplayMark())
+        mCardMarker!!.displayMark(shouldDisplayMark(col))
     }
 
     protected open fun onFlag(card: Card?, flag: Int) {
@@ -261,7 +261,7 @@ open class Reviewer :
         launchCatchingTask {
             card.setUserFlag(flag)
             if (BackendFactory.defaultLegacySchema) {
-                card.flush()
+                card.flush(col)
                 /* Following code would allow to update value of {{cardFlag}}.
                Anki does not update this value when a flag is changed, so
                currently this code would do something that anki itself
@@ -301,24 +301,24 @@ open class Reviewer :
         Timber.d("selectDeckFromExtra() with deckId = %d", did)
 
         // deckId does not exist, load default
-        if (col.decks.get(did, _default = false) == null) {
+        if (col.decks.get(col, did, _default = false) == null) {
             Timber.w("selectDeckFromExtra() deckId '%d' doesn't exist", did)
             return
         }
 
         // Clear the undo history when selecting a new deck
-        if (col.decks.selected() != did) {
+        if (col.decks.selected(col) != did) {
             col.clearUndo()
         }
         // Select the deck
-        col.decks.select(did)
+        col.decks.select(col, did)
         // Reset the schedule so that we get the counts for the currently selected deck
-        col.sched.deferReset()
+        col.sched.deferReset(col)
     }
 
     override fun setTitle() {
         val title: String = if (colIsOpen()) {
-            Decks.basename(col.decks.current().getString("name"))
+            Decks.basename(col.decks.current(col).getString("name"))
         } else {
             Timber.e("Could not set title in reviewer because collection closed")
             ""
@@ -345,16 +345,16 @@ open class Reviewer :
         // Load the first card and start reviewing. Uses the answer card
         // task to load a card, but since we send null
         // as the card to answer, no card will be answered.
-        prefWhiteboard = MetaDB.getWhiteboardState(this, parentDid)
+        prefWhiteboard = MetaDB.getWhiteboardState(this, parentDid(col))
         if (prefWhiteboard) {
             // DEFECT: Slight inefficiency here, as we set the database using these methods
-            val whiteboardVisibility = MetaDB.getWhiteboardVisibility(this, parentDid)
+            val whiteboardVisibility = MetaDB.getWhiteboardVisibility(this, parentDid(col))
             setWhiteboardEnabledState(true)
             setWhiteboardVisibility(whiteboardVisibility)
-            toggleStylus = MetaDB.getWhiteboardStylusState(this, parentDid)
+            toggleStylus = MetaDB.getWhiteboardStylusState(this, parentDid(col))
             whiteboard!!.toggleStylus = toggleStylus
         }
-        col.sched.deferReset() // Reset schedule in case card was previously loaded
+        col.sched.deferReset(col) // Reset schedule in case card was previously loaded
         col.startTimebox()
         GetCard().runWithHandler(answerCardHandler(false))
         disableDrawerSwipeOnConflicts()
@@ -470,7 +470,7 @@ open class Reviewer :
                 Timber.i("Reviewer:: Stylus set to %b", !toggleStylus)
                 toggleStylus = !toggleStylus
                 whiteboard!!.toggleStylus = toggleStylus
-                MetaDB.storeWhiteboardStylusState(this, parentDid, toggleStylus)
+                MetaDB.storeWhiteboardStylusState(this, parentDid(col), toggleStylus)
                 refreshActionBar()
             }
             R.id.action_toggle_whiteboard -> {
@@ -480,7 +480,7 @@ open class Reviewer :
                 val i = if (BackendFactory.defaultLegacySchema) {
                     Intent(this, DeckOptionsActivity::class.java)
                 } else {
-                    com.ichi2.anki.pages.DeckOptions.getIntent(this, col.decks.current().id)
+                    com.ichi2.anki.pages.DeckOptions.getIntent(this, col.decks.current(col).id)
                 }
                 deckOptionsLauncher.launch(i)
             }
@@ -729,7 +729,7 @@ open class Reviewer :
         mActionButtons.setCustomButtonsStatus(menu)
         var alpha = if (super.controlBlocked !== ReviewerUi.ControlBlock.SLOW) Themes.ALPHA_ICON_ENABLED_LIGHT else Themes.ALPHA_ICON_DISABLED_LIGHT
         val markCardIcon = menu.findItem(R.id.action_mark_card)
-        if (currentCard != null && isMarked(currentCard!!.note())) {
+        if (currentCard != null && isMarked(col, currentCard!!.note(col))) {
             markCardIcon.setTitle(R.string.menu_unmark_note).setIcon(R.drawable.ic_star_white)
         } else {
             markCardIcon.setTitle(R.string.menu_mark_note).setIcon(R.drawable.ic_star_border_white)
@@ -843,7 +843,7 @@ open class Reviewer :
         } else {
             toggleWhiteboardIcon.setTitle(R.string.enable_whiteboard)
         }
-        if (colIsOpen() && col.decks.isDyn(parentDid)) {
+        if (colIsOpen() && col.decks.isDyn(col, parentDid(col))) {
             menu.findItem(R.id.action_open_deck_options).isVisible = false
         }
         if (mTTS.enabled && !mActionButtons.status.selectTtsIsDisabled()) {
@@ -986,7 +986,7 @@ open class Reviewer :
     }
 
     override fun performReload() {
-        col.sched.deferReset()
+        col.sched.deferReset(col)
         GetCard().runWithHandler(answerCardHandler(false))
     }
 
@@ -1035,7 +1035,7 @@ open class Reviewer :
 
         // Show next review time
         if (shouldShowNextReviewTime()) {
-            fun nextIvlStr(button: Int) = sched!!.nextIvlStr(this, currentCard!!, button)
+            fun nextIvlStr(button: Int) = sched!!.nextIvlStr(col, this, currentCard!!, button)
 
             easeButton1!!.nextTime = nextIvlStr(Consts.BUTTON_ONE)
             easeButton2!!.nextTime = nextIvlStr(Consts.BUTTON_TWO)
@@ -1049,7 +1049,7 @@ open class Reviewer :
     }
 
     val buttonCount: Int
-        get() = sched!!.answerButtons(currentCard!!)
+        get() = sched!!.answerButtons(col, currentCard!!)
 
     override fun automaticShowQuestion(action: AutomaticAnswerAction) {
         // explicitly do not call super
@@ -1097,10 +1097,10 @@ open class Reviewer :
         if (currentCard == null) return
         super.updateActionBar()
         val actionBar = supportActionBar
-        val counts = sched!!.counts(currentCard!!)
+        val counts = sched!!.counts(col, currentCard!!)
         if (actionBar != null) {
             if (mPrefShowETA) {
-                mEta = sched!!.eta(counts, false)
+                mEta = sched!!.eta(col, counts, false)
                 actionBar.subtitle = Utils.remainingTime(this, (mEta * 60).toLong())
             }
         }
@@ -1113,7 +1113,7 @@ open class Reviewer :
         // if this code is run as a card is being answered, currentCard may be non-null but
         // the queues may be empty - we can't call countIdx() in such a case
         if (counts.count() != 0) {
-            when (sched!!.countIdx(currentCard!!)) {
+            when (sched!!.countIdx(col, currentCard!!)) {
                 Counts.Queue.NEW -> mNewCount!!.setSpan(UnderlineSpan(), 0, mNewCount!!.length, 0)
                 Counts.Queue.LRN -> mLrnCount!!.setSpan(UnderlineSpan(), 0, mLrnCount!!.length, 0)
                 Counts.Queue.REV -> mRevCount!!.setSpan(UnderlineSpan(), 0, mRevCount!!.length, 0)
@@ -1139,7 +1139,7 @@ open class Reviewer :
 
     override fun displayCardQuestion() {
         // show timer, if activated in the deck's preferences
-        answerTimer.setupForCard(currentCard!!)
+        answerTimer.setupForCard(col, currentCard!!)
         delayedHide(100)
         super.displayCardQuestion()
     }
@@ -1305,7 +1305,7 @@ open class Reviewer :
 
     private fun setWhiteboardEnabledState(state: Boolean) {
         prefWhiteboard = state
-        MetaDB.storeWhiteboardState(this, parentDid, state)
+        MetaDB.storeWhiteboardState(this, parentDid(col), state)
         if (state && whiteboard == null) {
             createWhiteboard()
         }
@@ -1381,13 +1381,13 @@ open class Reviewer :
 
         // We use the pen color of the selected deck at the time the whiteboard is enabled.
         // This is how all other whiteboard settings are
-        val whiteboardPenColor = MetaDB.getWhiteboardPenColor(this, parentDid).fromPreferences()
+        val whiteboardPenColor = MetaDB.getWhiteboardPenColor(this, parentDid(col)).fromPreferences()
         if (whiteboardPenColor != null) {
             whiteboard!!.penColor = whiteboardPenColor
         }
         whiteboard!!.setOnPaintColorChangeListener(object : OnPaintColorChangeListener {
             override fun onPaintColorChange(color: Int?) {
-                MetaDB.storeWhiteboardPenColor(this@Reviewer, parentDid, !currentTheme.isNightMode, color)
+                MetaDB.storeWhiteboardPenColor(this@Reviewer, parentDid(col), !currentTheme.isNightMode, color)
             }
         })
         whiteboard!!.setOnTouchListener { v: View, event: MotionEvent? ->
@@ -1411,7 +1411,7 @@ open class Reviewer :
     // Show or hide the whiteboard
     private fun setWhiteboardVisibility(state: Boolean) {
         mShowWhiteboard = state
-        MetaDB.storeWhiteboardVisibility(this, parentDid, state)
+        MetaDB.storeWhiteboardVisibility(this, parentDid(col), state)
         if (state) {
             whiteboard!!.visibility = View.VISIBLE
             disableDrawerSwipe()

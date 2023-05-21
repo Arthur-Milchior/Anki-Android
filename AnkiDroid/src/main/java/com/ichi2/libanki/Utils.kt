@@ -1103,7 +1103,7 @@ object Utils {
 
     /**
      * @param left An object of type T
-     * @param right An object of type T
+     * @param right An object of type T
      * @param <T> A type on which equals can be called
      * @return Whether both objects are equal.
      </T> */

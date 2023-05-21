@@ -173,7 +173,7 @@ def upload_find_auth(file_path, project_name, summary, labels=None,
       # Read username if not specified or loaded from svn config, or on
       # subsequent tries.
       sys.stdout.write('Please enter your googlecode.com username: ')
-      sys.stdout.flush()
+      sys.stdout.flush(col)
       user_name = sys.stdin.readline().rstrip()
     if password is None:
       # Read password if not loaded from svn config, or on subsequent tries.

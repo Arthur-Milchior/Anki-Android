@@ -125,9 +125,9 @@ class OverviewStatsBuilder(private val webView: WebView, private val col: Collec
     }
 
     private fun appendOverViewStats(stringBuilder: StringBuilder) {
-        val stats = Stats(col, deckId)
+        val stats = Stats(deckId)
         val oStats = OverviewStats()
-        stats.calculateOverviewStatistics(type, oStats)
+        stats.calculateOverviewStatistics(col, type, oStats)
         val res = webView.resources
         stringBuilder.append(_title(res.getString(type.descriptionId)))
         val allDaysStudied = oStats.daysStudied == oStats.allDays
@@ -220,8 +220,8 @@ class OverviewStatsBuilder(private val webView: WebView, private val col: Collec
     }
 
     private fun appendTodaysStats(stringBuilder: StringBuilder) {
-        val stats = Stats(col, deckId)
-        val todayStats = stats.calculateTodayStats()
+        val stats = Stats(deckId)
+        val todayStats = stats.calculateTodayStats(col)
         stringBuilder.append(_title(webView.resources.getString(stats_today)))
         val res = webView.resources
         val minutes = (todayStats[THETIME_INDEX] / 60.0).roundToInt()
@@ -296,20 +296,20 @@ class OverviewStatsBuilder(private val webView: WebView, private val col: Collec
         oStats.forecastDueTomorrow = col.db.queryScalar(
             "select count() from cards where did in " + _limit() + " and queue in (" + Consts.QUEUE_TYPE_REV + "," + Consts.QUEUE_TYPE_DAY_LEARN_RELEARN + ") " +
                 "and due = ?",
-            col.sched.today + 1
+            col.sched.today(col) + 1
         )
     }
 
     private fun _due(start: Int?, end: Int?, chunk: Int): List<IntArray> {
         var lim = ""
         if (start != null) {
-            lim += String.format(Locale.US, " and due-%d >= %d", col.sched.today, start)
+            lim += String.format(Locale.US, " and due-%d >= %d", col.sched.today(col), start)
         }
         if (end != null) {
             lim += String.format(Locale.US, " and day < %d", end)
         }
         val d: MutableList<IntArray> = ArrayList()
-        val query = "select (due-" + col.sched.today + ")/" + chunk + " as day,\n" +
+        val query = "select (due-" + col.sched.today(col) + ")/" + chunk + " as day,\n" +
             "sum(case when ivl < 21 then 1 else 0 end), -- yng\n" +
             "sum(case when ivl >= 21 then 1 else 0 end) -- mtr\n" +
             "from cards\n" +

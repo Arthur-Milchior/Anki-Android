@@ -168,7 +168,7 @@ abstract class NavigationDrawerActivity :
      * Sets selected navigation drawer item
      */
     protected fun selectNavigationItem(itemId: Int) {
-        val menu = mNavigationView.menu
+        val menu = mNavigationView.menu // azerty crash
         if (itemId == -1) {
             for (i in 0 until menu.size()) {
                 menu.getItem(i).isChecked = false

@@ -228,7 +228,7 @@ class CardContentProvider : ContentProvider() {
                 val currentNote = getNoteFromUri(col, uri)
                 val columns = projection ?: FlashCardsContract.Card.DEFAULT_PROJECTION
                 val rv = MatrixCursor(columns, 1)
-                for (currentCard: Card in currentNote.cards()) {
+                for (currentCard: Card in currentNote.cards(col)) {
                     addCardToCursor(col, currentCard, rv, columns)
                 }
                 rv
@@ -293,7 +293,7 @@ class CardContentProvider : ContentProvider() {
             SCHEDULE -> {
                 val columns = projection ?: FlashCardsContract.ReviewInfo.DEFAULT_PROJECTION
                 val rv = MatrixCursor(columns, 1)
-                val selectedDeckBeforeQuery = col.decks.selected()
+                val selectedDeckBeforeQuery = col.decks.selected(col)
                 var deckIdOfTemporarilySelectedDeck: Long = -1
                 var limit = 1 // the number of scheduled cards to return
                 var selectionArgIndex = 0
@@ -321,15 +321,15 @@ class CardContentProvider : ContentProvider() {
                 }
 
                 // retrieve the number of cards provided by the selection parameter "limit"
-                col.sched.deferReset()
+                col.sched.deferReset(col)
                 var k = 0
                 while (k < limit) {
-                    val currentCard = col.sched.card ?: break
-                    val buttonCount = col.sched.answerButtons(currentCard)
+                    val currentCard = col.sched.card(col) ?: break
+                    val buttonCount = col.sched.answerButtons(col, currentCard)
                     val buttonTexts = JSONArray()
                     var i = 0
                     while (i < buttonCount) {
-                        buttonTexts.put(col.sched.nextIvlStr(context!!, currentCard, i + 1))
+                        buttonTexts.put(col.sched.nextIvlStr(col, context!!, currentCard, i + 1))
                         i++
                     }
                     addReviewInfoToCursor(col, currentCard, buttonTexts, buttonCount, rv, columns)
@@ -337,13 +337,13 @@ class CardContentProvider : ContentProvider() {
                 }
                 if (deckIdOfTemporarilySelectedDeck != -1L) { // if the selected deck was changed
                     // change the selected deck back to the one it was before the query
-                    col.decks.select(selectedDeckBeforeQuery)
+                    col.decks.select(col, selectedDeckBeforeQuery)
                 }
                 rv
             }
             DECKS -> {
                 val columns = projection ?: FlashCardsContract.Deck.DEFAULT_PROJECTION
-                val allDecks = col.sched.deckDueTree()
+                val allDecks = col.sched.deckDueTree(col)
                 val rv = MatrixCursor(columns, 1)
                 fun forEach(nodeList: List<TreeNode<DeckDueTreeNode>>, fn: (DeckDueTreeNode) -> Unit) {
                     for (node in nodeList) {
@@ -367,7 +367,7 @@ class CardContentProvider : ContentProvider() {
                 /* Direct access deck */
                 val columns = projection ?: FlashCardsContract.Deck.DEFAULT_PROJECTION
                 val rv = MatrixCursor(columns, 1)
-                val allDecks = col.sched.deckDueTree()
+                val allDecks = col.sched.deckDueTree(col)
                 val desiredDeckId = uri.pathSegments[1].toLong()
                 findInDeckTree(allDecks, desiredDeckId)?.let {
                     addDeckToCursor(col, it.did, it.fullDeckName, getDeckCountsFromDueTreeNode(it), rv, columns)
@@ -375,11 +375,11 @@ class CardContentProvider : ContentProvider() {
                 rv
             }
             DECK_SELECTED -> {
-                val id = col.decks.selected()
-                val name = col.decks.name(id)
+                val id = col.decks.selected(col)
+                val name = col.decks.name(col, id)
                 val columns = projection ?: FlashCardsContract.Deck.DEFAULT_PROJECTION
                 val rv = MatrixCursor(columns, 1)
-                val counts = JSONArray(listOf(col.sched.counts()))
+                val counts = JSONArray(listOf(col.sched.counts(col)))
                 addDeckToCursor(col, id, name, counts, rv, columns)
                 rv
             }
@@ -435,7 +435,7 @@ class CardContentProvider : ContentProvider() {
                             // Update tags
                             Timber.d("CardContentProvider: tags update...")
                             if (tags != null) {
-                                currentNote.setTagsFromStr(tags.toString())
+                                currentNote.setTagsFromStr(col, tags.toString())
                             }
                             updated++
                         }
@@ -446,7 +446,7 @@ class CardContentProvider : ContentProvider() {
                     }
                 }
                 Timber.d("CardContentProvider: Saving note...")
-                currentNote.flush()
+                currentNote.flush(col)
             }
             NOTES_ID_CARDS -> throw UnsupportedOperationException("Not yet implemented")
             NOTES_ID_CARDS_ORD -> {
@@ -461,13 +461,13 @@ class CardContentProvider : ContentProvider() {
                     isDeckUpdate = key == FlashCardsContract.Card.DECK_ID
                     did = values.getAsLong(key)
                 }
-                require(!col.decks.isDyn(did)) { "Cards cannot be moved to a filtered deck" }
+                require(!col.decks.isDyn(col, did)) { "Cards cannot be moved to a filtered deck" }
                 /* now update the card
                  */if (isDeckUpdate && did >= 0) {
                     Timber.d("CardContentProvider: Moving card to other deck...")
-                    col.decks.flush()
+                    col.decks.flush(col)
                     currentCard.did = did
-                    currentCard.flush()
+                    currentCard.flush(col)
                     col.save()
                     updated++
                 } else {
@@ -503,7 +503,7 @@ class CardContentProvider : ContentProvider() {
                         updated++
                     }
                     if (newDid != null) {
-                        if (col.decks.isDyn(newDid.toLong())) {
+                        if (col.decks.isDyn(col, newDid.toLong())) {
                             throw IllegalArgumentException("Cannot set a filtered deck as default deck for a model")
                         }
                         model!!.put("did", newDid)
@@ -704,7 +704,7 @@ class CardContentProvider : ContentProvider() {
         }
         val col = CollectionHelper.instance.getCol(context!!)
             ?: throw IllegalStateException(COL_NULL_ERROR_MSG)
-        if (col.decks.isDyn(deckId)) {
+        if (col.decks.isDyn(col, deckId)) {
             throw IllegalArgumentException("A filtered deck cannot be specified as the deck in bulkInsertNotes")
         }
         col.log(String.format(Locale.US, "bulkInsertNotes: %d items.\n%s", valuesArr.size, getLogMessage("bulkInsert", null)))
@@ -712,7 +712,7 @@ class CardContentProvider : ContentProvider() {
         // for caching model information (so we don't have to query for each note)
         var modelId = Models.NOT_FOUND_NOTE_TYPE
         var model: Model? = null
-        col.decks.flush() // is it okay to move this outside the for-loop? Is it needed at all?
+        col.decks.flush(col) // is it okay to move this outside the for-loop? Is it needed at all?
         val sqldb = col.db.database
         return try {
             var result = 0
@@ -746,13 +746,13 @@ class CardContentProvider : ContentProvider() {
                 // Set tags
                 val tags = values.getAsString(FlashCardsContract.Note.TAGS)
                 if (tags != null) {
-                    newNote.setTagsFromStr(tags)
+                    newNote.setTagsFromStr(col, tags)
                 }
                 // Add to collection
                 col.addNote(newNote, allowEmpty)
-                for (card: Card in newNote.cards()) {
+                for (card: Card in newNote.cards(col)) {
                     card.did = deckId
-                    card.flush()
+                    card.flush(col)
                 }
                 result++
             }
@@ -796,7 +796,7 @@ class CardContentProvider : ContentProvider() {
                 }
                 // Set tags
                 if (tags != null) {
-                    newNote.setTagsFromStr(tags)
+                    newNote.setTagsFromStr(col, tags)
                 }
                 // Add to collection
                 col.addNote(newNote, allowEmpty)
@@ -820,7 +820,7 @@ class CardContentProvider : ContentProvider() {
                 if (modelName == null || fieldNames == null || numCards == null) {
                     throw IllegalArgumentException("Model name, field_names, and num_cards can't be empty")
                 }
-                if (did != null && col.decks.isDyn(did)) {
+                if (did != null && col.decks.isDyn(col, did)) {
                     throw IllegalArgumentException("Cannot set a filtered deck as default deck for a model")
                 }
                 // Create a new model
@@ -932,7 +932,7 @@ class CardContentProvider : ContentProvider() {
             DECKS -> {
                 // Insert new deck with specified name
                 val deckName = values!!.getAsString(FlashCardsContract.Deck.DECK_NAME)
-                var did = col.decks.id_for_name(deckName)
+                var did = col.decks.id_for_name(col, deckName)
                 if (did != null) {
                     throw IllegalArgumentException("Deck name already exists: $deckName")
                 }
@@ -940,11 +940,11 @@ class CardContentProvider : ContentProvider() {
                     throw IllegalArgumentException("Invalid deck name '$deckName'")
                 }
                 try {
-                    did = col.decks.id(deckName)
+                    did = col.decks.id(col, deckName)
                 } catch (filteredSubdeck: DeckRenameException) {
                     throw IllegalArgumentException(filteredSubdeck.message)
                 }
-                val deck: Deck = col.decks.get(did)
+                val deck: Deck = col.decks.get(col, did)
                 @KotlinCleanup("remove the null check if deck is found to be not null in DeckManager.get(Long)")
                 @Suppress("SENSELESS_COMPARISON")
                 if (deck != null) {
@@ -958,7 +958,7 @@ class CardContentProvider : ContentProvider() {
                         return null
                     }
                 }
-                col.decks.flush()
+                col.decks.flush(col)
                 Uri.withAppendedPath(FlashCardsContract.Deck.CONTENT_ALL_URI, did.toString())
             }
             DECK_SELECTED -> throw IllegalArgumentException("Selected deck can only be queried and updated")
@@ -1060,12 +1060,12 @@ class CardContentProvider : ContentProvider() {
 
     private fun addCardToCursor(@Suppress("UNUSED_PARAMETER") col: Collection, currentCard: Card, rv: MatrixCursor, columns: Array<String>) {
         val cardName: String = try {
-            currentCard.template().getString("name")
+            currentCard.template(col).getString("name")
         } catch (je: JSONException) {
             throw IllegalArgumentException("Card is using an invalid template", je)
         }
-        val question = currentCard.q()
-        val answer = currentCard.a()
+        val question = currentCard.q(col)
+        val answer = currentCard.a(col)
         val rb = rv.newRow()
         for (column in columns) {
             when (column) {
@@ -1075,9 +1075,9 @@ class CardContentProvider : ContentProvider() {
                 FlashCardsContract.Card.DECK_ID -> rb.add(currentCard.did)
                 FlashCardsContract.Card.QUESTION -> rb.add(question)
                 FlashCardsContract.Card.ANSWER -> rb.add(answer)
-                FlashCardsContract.Card.QUESTION_SIMPLE -> rb.add(currentCard.qSimple())
-                FlashCardsContract.Card.ANSWER_SIMPLE -> rb.add(currentCard.render_output(false).answer_text)
-                FlashCardsContract.Card.ANSWER_PURE -> rb.add(currentCard.pureAnswer)
+                FlashCardsContract.Card.QUESTION_SIMPLE -> rb.add(currentCard.qSimple(col))
+                FlashCardsContract.Card.ANSWER_SIMPLE -> rb.add(currentCard.renderOutput(col, false).answer_text)
+                FlashCardsContract.Card.ANSWER_PURE -> rb.add(currentCard.pureAnswer(col))
                 else -> throw UnsupportedOperationException("Queue \"$column\" is unknown")
             }
         }
@@ -1091,7 +1091,7 @@ class CardContentProvider : ContentProvider() {
                 FlashCardsContract.ReviewInfo.CARD_ORD -> rb.add(currentCard.ord)
                 FlashCardsContract.ReviewInfo.BUTTON_COUNT -> rb.add(buttonCount)
                 FlashCardsContract.ReviewInfo.NEXT_REVIEW_TIMES -> rb.add(nextReviewTimesJson.toString())
-                FlashCardsContract.ReviewInfo.MEDIA_FILES -> rb.add(JSONArray(col.media.filesInStr(currentCard.note().mid, currentCard.q() + currentCard.a())))
+                FlashCardsContract.ReviewInfo.MEDIA_FILES -> rb.add(JSONArray(col.media.filesInStr(currentCard.note(col).mid, currentCard.q(col) + currentCard.a(col))))
                 else -> throw UnsupportedOperationException("Queue \"$column\" is unknown")
             }
         }
@@ -1106,7 +1106,7 @@ class CardContentProvider : ContentProvider() {
                     if (timeTaken != -1L) {
                         cardToAnswer.timerStarted = TimeManager.time.intTimeMS() - timeTaken
                     }
-                    sched.answerCard(cardToAnswer, ease)
+                    sched.answerCard(col, cardToAnswer, ease)
                 }
                 db.database.setTransactionSuccessful()
             } finally {
@@ -1125,10 +1125,10 @@ class CardContentProvider : ContentProvider() {
                 if (card != null) {
                     if (bury) {
                         // bury
-                        sched.buryCards(longArrayOf(card.id))
+                        sched.buryCards(col, longArrayOf(card.id))
                     } else {
                         // suspend
-                        sched.suspendCards(longArrayOf(card.id))
+                        sched.suspendCards(col, longArrayOf(card.id))
                     }
                 }
             }
@@ -1171,12 +1171,12 @@ class CardContentProvider : ContentProvider() {
                 FlashCardsContract.Deck.DECK_ID -> rb.add(id)
                 FlashCardsContract.Deck.DECK_COUNTS -> rb.add(deckCounts)
                 FlashCardsContract.Deck.OPTIONS -> {
-                    val config = col.decks.confForDid(id).toString()
+                    val config = col.decks.confForDid(col, id).toString()
                     rb.add(config)
                 }
-                FlashCardsContract.Deck.DECK_DYN -> rb.add(col.decks.isDyn(id))
+                FlashCardsContract.Deck.DECK_DYN -> rb.add(col.decks.isDyn(col, id))
                 FlashCardsContract.Deck.DECK_DESC -> {
-                    val desc = col.decks.getActualDescription()
+                    val desc = col.decks.getActualDescription(col)
                     rb.add(desc)
                 }
             }
@@ -1184,8 +1184,8 @@ class CardContentProvider : ContentProvider() {
     }
 
     private fun selectDeckWithCheck(col: Collection, did: DeckId): Boolean {
-        return if (col.decks.get(did, false) != null) {
-            col.decks.select(did)
+        return if (col.decks.get(col, did, false) != null) {
+            col.decks.select(col, did)
             true
         } else {
             Timber.e(
@@ -1206,7 +1206,7 @@ class CardContentProvider : ContentProvider() {
     private fun getCard(col: Collection, noteId: NoteId, ord: Int): Card {
         val currentNote = col.getNote(noteId)
         var currentCard: Card? = null
-        for (card in currentNote.cards()) {
+        for (card in currentNote.cards(col)) {
             if (card.ord == ord) {
                 currentCard = card
             }

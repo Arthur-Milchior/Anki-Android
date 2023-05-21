@@ -90,7 +90,7 @@ class ReviewerTest : RobolectricTest() {
     @Test
     fun noErrorShouldOccurIfSoundFileNotPresent() {
         val firstNote = addNoteUsingBasicModel("[[sound:not_on_file_system.mp3]]", "World")
-        moveToReviewQueue(firstNote.firstCard())
+        moveToReviewQueue(firstNote.firstCard(col))
 
         val reviewer = startReviewer()
         reviewer.generateQuestionSoundList()
@@ -103,7 +103,7 @@ class ReviewerTest : RobolectricTest() {
     fun jsTime4ShouldBeBlankIfButtonUnavailable() {
         // #6623 - easy should be blank when displaying a card with 3 buttons (after displaying a review)
         val firstNote = addNoteUsingBasicModel("Hello", "World")
-        moveToReviewQueue(firstNote.firstCard())
+        moveToReviewQueue(firstNote.firstCard(col))
 
         addNoteUsingBasicModel("Hello", "World2")
 
@@ -158,7 +158,7 @@ class ReviewerTest : RobolectricTest() {
     @Throws(ConfirmModSchemaException::class)
     fun testMultipleCards() = runTest {
         addNoteWithThreeCards()
-        val nw = col.decks.confForDid(1).getJSONObject("new")
+        val nw = col.decks.confForDid(col, 1).getJSONObject("new")
         val time = collectionTime
         nw.put("delays", JSONArray(intArrayOf(1, 10, 60, 120)))
 
@@ -186,14 +186,14 @@ class ReviewerTest : RobolectricTest() {
 
     @Test
     fun testLrnQueueAfterUndo() = runTest {
-        val nw = col.decks.confForDid(1).getJSONObject("new")
+        val nw = col.decks.confForDid(col, 1).getJSONObject("new")
         val time = TimeManager.time as MockTime
         nw.put("delays", JSONArray(intArrayOf(1, 10, 60, 120)))
 
         val cards = arrayOf(
-            addRevNoteUsingBasicModelDueToday("1", "bar").firstCard(),
-            addNoteUsingBasicModel("2", "bar").firstCard(),
-            addNoteUsingBasicModel("3", "bar").firstCard()
+            addRevNoteUsingBasicModelDueToday("1", "bar").firstCard(col),
+            addNoteUsingBasicModel("2", "bar").firstCard(col),
+            addNoteUsingBasicModel("3", "bar").firstCard(col)
         )
         waitForAsyncTasksToComplete()
 
@@ -234,7 +234,7 @@ class ReviewerTest : RobolectricTest() {
         basic!!.put("did", didAb)
         addNoteUsingBasicModel("foo", "bar")
         val didA = addDeck("A")
-        decks.select(didA)
+        decks.select(col, didA)
         val reviewer = startReviewer()
         waitForAsyncTasksToComplete()
         assertThat(reviewer.supportActionBar!!.title, equalTo("B"))
@@ -251,13 +251,13 @@ class ReviewerTest : RobolectricTest() {
         addNoteUsingBasicModel("foo", "bar")
 
         val didA = addDeck("A")
-        decks.select(didA)
+        decks.select(col, didA)
 
         val reviewer = startReviewer()
         val javaScriptFunction = reviewer.javaScriptFunction()
 
         waitForAsyncTasksToComplete()
-        assertThat(javaScriptFunction.ankiGetDeckName(), equalTo("B"))
+        assertThat(javaScriptFunction.ankiGetDeckName(col), equalTo("B"))
     }
 
     private fun toggleWhiteboard(reviewer: ReviewerForMenuItems) {
@@ -375,7 +375,7 @@ class ReviewerTest : RobolectricTest() {
         reviewCard.queue = Consts.QUEUE_TYPE_REV
         reviewCard.type = Consts.CARD_TYPE_REV
         reviewCard.due = 0
-        reviewCard.flush()
+        reviewCard.flush(col)
     }
 
     private class ReviewerForMenuItems : Reviewer() {

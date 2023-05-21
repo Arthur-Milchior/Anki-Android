@@ -30,6 +30,7 @@ import android.widget.AdapterView.OnItemSelectedListener
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.CheckResult
+import androidx.annotation.ColorRes
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.edit
@@ -111,7 +112,7 @@ open class CardBrowser :
         deck?.let {
             val deckId = deck.deckId
             deckSpinnerSelection!!.initializeActionBarDeckSpinner(this.supportActionBar!!)
-            deckSpinnerSelection!!.selectDeckById(deckId, true)
+            deckSpinnerSelection!!.selectDeckById(col, deckId, true)
             selectDeckAndSave(deckId)
         }
     }
@@ -444,7 +445,7 @@ open class CardBrowser :
     // TODO: This function can be simplified a lot
     @VisibleForTesting
     fun moveSelectedCardsToDeck(did: DeckId) {
-        val selectedDeck = col.decks.get(did)
+        val selectedDeck = col.decks.get(col, did)
         // TODO: Currently try-catch is at every level which isn't required, simplify that
         try {
             // #5932 - can't be dynamic
@@ -686,7 +687,7 @@ open class CardBrowser :
             true
         }
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-        val deckId = col.decks.selected()
+        val deckId = col.decks.selected(col)
         deckSpinnerSelection = DeckSpinnerSelection(
             this,
             col,
@@ -703,19 +704,19 @@ open class CardBrowser :
         // If a valid value for last deck exists then use it, otherwise use libanki selected deck
         if (lastDeckId != null && lastDeckId == ALL_DECKS_ID) {
             selectAllDecks()
-        } else if (lastDeckId != null && col.decks.get(lastDeckId!!, false) != null) {
-            deckSpinnerSelection!!.selectDeckById(lastDeckId!!, false)
+        } else if (lastDeckId != null && col.decks.get(col, lastDeckId!!, false) != null) {
+            deckSpinnerSelection!!.selectDeckById(col, lastDeckId!!, false)
         } else {
-            deckSpinnerSelection!!.selectDeckById(col.decks.selected(), false)
+            deckSpinnerSelection!!.selectDeckById(col, col.decks.selected(col), false)
         }
     }
 
     fun selectDeckAndSave(deckId: DeckId) {
-        deckSpinnerSelection!!.selectDeckById(deckId, true)
+        deckSpinnerSelection!!.selectDeckById(col, deckId, true)
         mRestrictOnDeck = if (deckId == ALL_DECKS_ID) {
             ""
         } else {
-            val deckName = col.decks.name(deckId)
+            val deckName = col.decks.name(col, deckId)
             "deck:\"$deckName\" "
         }
         saveLastDeckId(deckId)
@@ -786,11 +787,18 @@ open class CardBrowser :
             Timber.i("Not marking cards - nothing selected")
             return
         }
-        val result = withProgress { withCol { toggleNotesMarkForCardsIds(this, selectedCardIds) } }
-        updateCardsInList(getAllCards(getNotes(result.toList())))
+        val (cards, allCards) = withProgress {
+            withCol {
+                val cards = toggleNotesMarkForCardsIds(col, selectedCardIds)
+                val notes = getNotes(col, cards.toList())
+                val allCards = getAllCards(col, notes)
+                Pair(cards, allCards)
+            }
+        }
+        updateCardsInList(allCards)
         invalidateOptionsMenu() // maybe the availability of undo changed
         // reload if updated cards contain review card
-        mReloadRequired = result.map { card -> card.id }.contains(reviewerCardId)
+        mReloadRequired = cards.map { card -> card.id }.contains(reviewerCardId)
     }
 
     private fun toggleNotesMarkForCardsIds(
@@ -801,26 +809,26 @@ open class CardBrowser :
         col.db.executeInTransaction {
             // TODO: get note directly without loading cards,
             //  We can create a db query that directly fetch the nids from the cards without loading all data from card table
-            val notes = getNotes(listOf(*cards))
+            val notes = getNotes(col, listOf(*cards))
             // collect undo information
             val originalMarked: MutableList<Note> = mutableListOf()
             val originalUnmarked: MutableList<Note> = mutableListOf()
             for (n in notes) {
-                if (isMarked(n)) {
+                if (isMarked(col, n)) {
                     originalMarked.add(n)
                 } else {
                     originalUnmarked.add(n)
                 }
             }
             val hasUnmarked = originalUnmarked.isNotEmpty()
-            CardUtils.markAll(java.util.ArrayList(notes), hasUnmarked)
+            CardUtils.markAll(col, ArrayList(notes), hasUnmarked)
 
             // mark undo for all at once
             col.markUndo(UndoMarkNoteMulti(originalMarked, originalUnmarked, hasUnmarked))
 
             // reload cards because they'll be passed back to caller
             for (c in cards) {
-                c.load()
+                c.load(col)
             }
         }
         // pass cards back so more actions can be performed by the caller
@@ -1043,7 +1051,7 @@ open class CardBrowser :
         if (mCheckedCards.isNotEmpty()) {
             checkSelectedCardsJob?.cancel()
             checkSelectedCardsJob = launchCatchingTask {
-                val result = withProgress { checkCardSelection(mCheckedCards) }
+                val result = withProgress { checkCardSelection(col, mCheckedCards) }
                 onSelectedCardsChecked(result)
             }
         }
@@ -1563,7 +1571,7 @@ open class CardBrowser :
         }
         val allTags = col.tags.all()
         val selectedNotes = selectedCardIds
-            .map { cardId: CardId? -> col.getCard(cardId!!).note() }
+            .map { cardId: CardId? -> col.getCard(cardId!!).note(col) }
             .distinct()
         val checkedTags = selectedNotes
             .flatMap { note: Note -> note.tags }
@@ -1668,7 +1676,7 @@ open class CardBrowser :
             val cards = withProgress { searchForCards(query, order, inCardsMode) }
             // Render the first few items
             for (i in 0 until Math.min(numCardsToRender(), cards.size)) {
-                cards[i].load(false, mColumn1Index, mColumn2Index)
+                cards[i].load(col, false, mColumn1Index, mColumn2Index)
             }
             redrawAfterSearch(cards)
         }
@@ -1772,17 +1780,17 @@ open class CardBrowser :
     private suspend fun editSelectedCardsTags(selectedTags: List<String>, indeterminateTags: List<String>) = withProgress {
         val updatedNotes: List<Note> = withCol {
             val selectedNotes = selectedCardIds
-                .map { cardId -> getCard(cardId).note() }
+                .map { cardId -> getCard(cardId).note(col) }
                 .distinct()
                 .onEach { note ->
                     val previousTags: List<String> = note.tags
                     val updatedTags = getUpdatedTags(previousTags, selectedTags, indeterminateTags)
-                    note.setTagsFromStr(tags.join(updatedTags))
+                    note.setTagsFromStr(col, tags.join(updatedTags))
                 }
             Timber.i("CardBrowser:: editSelectedCardsTags: Saving note/s tags...")
             updateMultipleNotes(this, selectedNotes)
         }
-        val cardsToUpdate = updatedNotes.flatMap { n: Note -> n.cards() }
+        val cardsToUpdate = updatedNotes.flatMap { n: Note -> n.cards(col) }
         Timber.i("CardBrowser:: editSelectedCardsTags: Note/s updated, updating UI...")
         updateCardsInList(cardsToUpdate)
     }
@@ -1858,7 +1866,7 @@ open class CardBrowser :
         cards
             .mapNotNull { c -> idToPos[c.id] }
             .filterNot { pos -> pos >= cardCount }
-            .forEach { pos -> mCards[pos].load(true, mColumn1Index, mColumn2Index) }
+            .forEach { pos -> mCards[pos].load(col, true, mColumn1Index, mColumn2Index) }
         updateList()
     }
 
@@ -1966,7 +1974,7 @@ open class CardBrowser :
             when (lastDeckId) {
                 null -> getString(R.string.card_browser_unknown_deck_name)
                 ALL_DECKS_ID -> getString(R.string.card_browser_all_decks)
-                else -> col.decks.name(lastDeckId!!)
+                else -> col.decks.name(col, lastDeckId!!)
             }
         } catch (e: Exception) {
             Timber.w(e, "Unable to get selected deck name")
@@ -2059,6 +2067,7 @@ open class CardBrowser :
     protected suspend fun renderBrowserQAParams(firstVisibleItem: Int, visibleItemCount: Int, cards: CardCollection<CardCache>) {
         Timber.d("Starting Q&A background rendering")
         val result = renderBrowserQA(
+            col,
             cards,
             firstVisibleItem,
             visibleItemCount,
@@ -2116,22 +2125,22 @@ open class CardBrowser :
             } else {
                 v = convertView
             }
-            bindView(position, v)
+            bindView(col, position, v)
             return v
         }
 
         @Suppress("UNCHECKED_CAST")
         @KotlinCleanup("Unchecked cast")
-        private fun bindView(position: Int, v: View) {
+        private fun bindView(col: Collection, position: Int, v: View) {
             // Draw the content in the columns
             val card = mCards[position]
             (v.tag as Array<*>)
                 .forEachIndexed { i, column ->
                     setFont(column as TextView) // set font for column
-                    column.text = card.getColumnHeaderText(fromKeys[i]) // set text for column
+                    column.text = card.getColumnHeaderText(col, fromKeys[i]) // set text for column
                 }
             // set card's background color
-            val backgroundColor: Int = getColorFromAttr(this@CardBrowser, card.color)
+            val backgroundColor: Int = getColorFromAttr(this@CardBrowser, card.color(col))
             v.setBackgroundColor(backgroundColor)
             // setup checkbox to change color in multi-select mode
             val checkBox = v.findViewById<CheckBox>(R.id.card_checkbox)
@@ -2323,7 +2332,7 @@ open class CardBrowser :
         override var position: Int
 
         private val inCardMode: Boolean
-        constructor(col: Collection, id: Long, position: Int, inCardMode: Boolean) : super(col, id) {
+        constructor(id: Long, position: Int, inCardMode: Boolean) : super(id) {
             this.position = position
             this.inCardMode = inCardMode
         }
@@ -2346,59 +2355,62 @@ open class CardBrowser :
          * Get the background color of items in the card list based on the Card
          * @return index into TypedArray specifying the background color
          */
-        val color: Int
-            get() {
-                return when (card.userFlag()) {
-                    1 -> R.attr.flagRed
-                    2 -> R.attr.flagOrange
-                    3 -> R.attr.flagGreen
-                    4 -> R.attr.flagBlue
-                    5 -> R.attr.flagPink
-                    6 -> R.attr.flagTurquoise
-                    7 -> R.attr.flagPurple
-                    else -> {
-                        if (isMarked(card.note())) {
-                            R.attr.markedColor
-                        } else if (card.queue == Consts.QUEUE_TYPE_SUSPENDED) {
-                            R.attr.suspendedColor
-                        } else {
-                            android.R.attr.colorBackground
-                        }
+        @ColorRes
+        fun color(col: Collection): Int {
+            val card = card(col)
+            return when (card.userFlag()) {
+                1 -> R.attr.flagRed
+                2 -> R.attr.flagOrange
+                3 -> R.attr.flagGreen
+                4 -> R.attr.flagBlue
+                5 -> R.attr.flagPink
+                6 -> R.attr.flagTurquoise
+                7 -> R.attr.flagPurple
+                else -> {
+                    if (isMarked(col, card.note(col))) {
+                        R.attr.markedColor
+                    } else if (card.queue == Consts.QUEUE_TYPE_SUSPENDED) {
+                        R.attr.suspendedColor
+                    } else {
+                        android.R.attr.colorBackground
                     }
                 }
             }
+        }
 
-        fun getColumnHeaderText(key: Column?): String? {
+        fun getColumnHeaderText(col: Collection, key: Column?): String? {
+            val card = card(col)
             return when (key) {
                 Column.FLAGS -> Integer.valueOf(card.userFlag()).toString()
                 Column.SUSPENDED -> if (card.queue == Consts.QUEUE_TYPE_SUSPENDED) "True" else "False"
-                Column.MARKED -> if (isMarked(card.note())) "marked" else null
-                Column.SFLD -> card.note().sFld
-                Column.DECK -> col.decks.name(card.did)
-                Column.TAGS -> card.note().stringTags()
-                Column.CARD -> if (inCardMode) card.template().optString("name") else "${card.note().numberOfCards()}"
-                Column.DUE -> card.dueString
-                Column.EASE -> if (inCardMode) getEaseForCards() else getAvgEaseForNotes()
-                Column.CHANGED -> LanguageUtil.getShortDateFormatFromS(if (inCardMode) card.mod else card.note().mod)
+                Column.MARKED -> if (isMarked(col, card.note(col))) "marked" else null
+                Column.SFLD -> card.note(col).getSFld(col)
+                Column.DECK -> col.decks.name(col, card.did)
+                Column.TAGS -> card.note(col).stringTags(col)
+                Column.CARD -> if (inCardMode) card.template(col).optString("name") else "${card.note(col).numberOfCards(col)}"
+                Column.DUE -> card.dueString(col)
+                Column.EASE -> if (inCardMode) getEaseForCards(col) else getAvgEaseForNotes(col)
+                Column.CHANGED -> LanguageUtil.getShortDateFormatFromS(if (inCardMode) card.mod else card.note(col).mod)
                 Column.CREATED -> LanguageUtil.getShortDateFormatFromMs(card.nid)
-                Column.EDITED -> LanguageUtil.getShortDateFormatFromS(card.note().mod)
-                Column.INTERVAL -> if (inCardMode) queryIntervalForCards() else queryAvgIntervalForNotes()
-                Column.LAPSES -> (if (inCardMode) card.lapses else card.totalLapsesOfNote()).toString()
-                Column.NOTE_TYPE -> card.model().optString("name")
-                Column.REVIEWS -> if (inCardMode) card.reps.toString() else card.totalReviewsForNote().toString()
+                Column.EDITED -> LanguageUtil.getShortDateFormatFromS(card.note(col).mod)
+                Column.INTERVAL -> if (inCardMode) queryIntervalForCards(col) else queryAvgIntervalForNotes(col)
+                Column.LAPSES -> (if (inCardMode) card.lapses else card.totalLapsesOfNote(col)).toString()
+                Column.NOTE_TYPE -> card.model(col).optString("name")
+                Column.REVIEWS -> if (inCardMode) card.reps.toString() else card.totalReviewsForNote(col).toString()
                 Column.QUESTION -> {
-                    updateSearchItemQA()
+                    updateSearchItemQA(col)
                     mQa!!.first
                 }
                 Column.ANSWER -> {
-                    updateSearchItemQA()
+                    updateSearchItemQA(col)
                     mQa!!.second
                 }
                 else -> null
             }
         }
 
-        private fun getEaseForCards(): String {
+        private fun getEaseForCards(col: Collection): String {
+            val card = card(col)
             return if (card.type == Consts.CARD_TYPE_NEW) {
                 AnkiDroidApp.instance.getString(R.string.card_browser_interval_new_card)
             } else {
@@ -2406,8 +2418,8 @@ open class CardBrowser :
             }
         }
 
-        private fun getAvgEaseForNotes(): String {
-            val avgEase = card.avgEaseOfNote()
+        private fun getAvgEaseForNotes(col: Collection): String {
+            val avgEase = card(col).avgEaseOfNote(col)
 
             return if (avgEase == null) {
                 AnkiDroidApp.instance.getString(R.string.card_browser_interval_new_card)
@@ -2416,7 +2428,8 @@ open class CardBrowser :
             }
         }
 
-        private fun queryIntervalForCards(): String {
+        private fun queryIntervalForCards(col: Collection): String {
+            val card = card(col)
             return when (card.type) {
                 Consts.CARD_TYPE_NEW -> AnkiDroidApp.instance.getString(R.string.card_browser_interval_new_card)
                 Consts.CARD_TYPE_LRN -> AnkiDroidApp.instance.getString(R.string.card_browser_interval_learning_card)
@@ -2424,8 +2437,8 @@ open class CardBrowser :
             }
         }
 
-        private fun queryAvgIntervalForNotes(): String {
-            val avgInterval = card.avgIntervalOfNote()
+        private fun queryAvgIntervalForNotes(col: Collection): String {
+            val avgInterval = card(col).avgIntervalOfNote(col)
 
             return if (avgInterval == null) {
                 "" // upstream does not display interval for notes with new or learning cards
@@ -2436,14 +2449,14 @@ open class CardBrowser :
 
         /** pre compute the note and question/answer.  It can safely
          * be called twice without doing extra work.  */
-        fun load(reload: Boolean, column1Index: Int, column2Index: Int) {
+        fun load(col: Collection, reload: Boolean, column1Index: Int, column2Index: Int) {
             if (reload) {
                 reload()
             }
-            card.note()
+            card(col).note(col)
             // First column can not be the answer. If it were to change, this code should also be changed.
             if (COLUMN1_KEYS[column1Index] == Column.QUESTION || arrayOf(Column.QUESTION, Column.ANSWER).contains(COLUMN2_KEYS[column2Index])) {
-                updateSearchItemQA()
+                updateSearchItemQA(col)
             }
             isLoaded = true
         }
@@ -2453,15 +2466,17 @@ open class CardBrowser :
          * uses non-browser format. If answer starts by question, remove
          * question.
          */
-        private fun updateSearchItemQA() {
+        private fun updateSearchItemQA(col: Collection) {
             if (mQa != null) {
                 return
             }
+            val card = card(col)
             // render question and answer
-            val qa = card.render_output(reload = true, browser = true)
+            val qa = card.renderOutput(col, reload = true, browser = true)
             // Render full question / answer if the bafmt (i.e. "browser appearance") setting forced blank result
             if (qa.question_text.isEmpty() || qa.answer_text.isEmpty()) {
-                val (question_text, answer_text) = card.render_output(
+                val (question_text, answer_text) = card.renderOutput(
+                    col,
                     reload = true,
                     browser = false
                 )
@@ -2645,7 +2660,7 @@ open class CardBrowser :
                 cardsAdapter.notifyDataSetChanged()
                 invalidateOptionsMenu() // maybe the availability of undo changed
                 // snackbar to offer undo
-                val deckName = col.decks.name(mNewDid)
+                val deckName = col.decks.name(col, mNewDid)
                 val message = getString(R.string.changed_deck_message, deckName)
                 showUndoSnackbar(message)
             } else {
@@ -2785,11 +2800,11 @@ suspend fun searchForCards(
 ): MutableList<CardBrowser.CardCache> {
     return withCol {
         (if (inCardsMode) findCards(query, order) else findOneCardByNote(query)).asSequence()
-            .toCardCache(col, inCardsMode)
+            .toCardCache(inCardsMode)
             .toMutableList()
     }
 }
 
-private fun Sequence<CardId>.toCardCache(col: Collection, isInCardMode: Boolean): Sequence<CardBrowser.CardCache> {
-    return this.mapIndexed { idx, cid -> CardBrowser.CardCache(col, cid, idx, isInCardMode) }
+private fun Sequence<CardId>.toCardCache(isInCardMode: Boolean): Sequence<CardBrowser.CardCache> {
+    return this.mapIndexed { idx, cid -> CardBrowser.CardCache(cid, idx, isInCardMode) }
 }

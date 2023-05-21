@@ -66,7 +66,7 @@
     <string name="model_clone_suffix">copie</string>
     <!--Warnings-->
     <string name="model_delete_warning">Voulez-vous vraiment effacer ce type de note ?</string>
-    <string name="field_delete_warning">Voulez-vous vraiment supprimer ce champ ?</string>
+    <string name="field_delete_warning">Voulez-vous vraiment supprimer ce champ ?</string>
     <!--Model Add Suffixes-->
     <string name="model_browser_add_add">Ajouter : %1$s </string>
     <!--This prefix is used for standard note types-->
@@ -80,8 +80,8 @@
     <!-- Deck Override -->
     <string name="card_template_editor_deck_override_on">Substitution du paquet (activé)</string>
     <string name="card_template_editor_deck_override_off">Substitution du paquet (désactivé)</string>
-    <string name="model_manager_deck_override_added_message">Définir le paquet par défaut « %1$s » pour « %2$s »</string>
-    <string name="model_manager_deck_override_removed_message">Paquet par défaut retiré pour « %s »</string>
-    <string name="deck_override_explanation">Sélectionnez le paquet dans lequel placer les nouvelles cartes « %s »</string>
+    <string name="model_manager_deck_override_added_message">Définir le paquet par défaut « %1$s » pour « %2$s »</string>
+    <string name="model_manager_deck_override_removed_message">Paquet par défaut retiré pour « %s »</string>
+    <string name="deck_override_explanation">Sélectionnez le paquet dans lequel placer les nouvelles cartes « %s »</string>
     <string name="deck_picker_dialog_filter_decks">Filtrer les paquets</string>
 </resources>

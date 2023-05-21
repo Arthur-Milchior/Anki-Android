@@ -22,7 +22,6 @@ import org.junit.runner.RunWith
 import java.io.File
 import java.io.IOException
 import java.util.*
-import kotlin.Throws
 
 @RunWith(AndroidJUnit4::class)
 class TextCardExporterTest : RobolectricTest() {
@@ -36,7 +35,7 @@ class TextCardExporterTest : RobolectricTest() {
         var note = mCol.newNote()
         note.setItem("Front", "foo")
         note.setItem("Back", "bar<br>")
-        note.setTagsFromStr("tag, tag2")
+        note.setTagsFromStr(col, "tag, tag2")
         mCol.addNote(note)
         mNoteList.add(note)
         // with a different note

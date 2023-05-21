@@ -30,6 +30,7 @@ import com.ichi2.anki.snackbar.setMaxLines
 import com.ichi2.anki.snackbar.showSnackbar
 import com.ichi2.libanki.Card
 import com.ichi2.libanki.CardId
+import com.ichi2.libanki.Collection
 import com.ichi2.libanki.Consts.CARD_QUEUE
 import com.ichi2.libanki.Consts.CARD_TYPE
 import com.ichi2.libanki.Decks
@@ -207,8 +208,8 @@ open class AnkiDroidJsAPI(private val activity: AbstractFlashcardViewer) {
     }
 
     @JavascriptInterface
-    fun ankiGetCardMark(): Boolean {
-        return currentCard.note().hasTag("marked")
+    fun ankiGetCardMark(col: Collection): Boolean {
+        return currentCard.note(col).hasTag(col, "marked")
     }
 
     @JavascriptInterface
@@ -336,8 +337,8 @@ open class AnkiDroidJsAPI(private val activity: AbstractFlashcardViewer) {
     }
 
     @JavascriptInterface
-    fun ankiGetDeckName(): String {
-        return Decks.basename(activity.col.decks.get(currentCard.did).getString("name"))
+    fun ankiGetDeckName(col: Collection): String {
+        return Decks.basename(activity.col.decks.get(col, currentCard.did).getString("name"))
     }
 
     @JavascriptInterface
@@ -458,7 +459,7 @@ open class AnkiDroidJsAPI(private val activity: AbstractFlashcardViewer) {
     }
 
     @JavascriptInterface
-    fun ankiSearchCardWithCallback(query: String) {
+    fun ankiSearchCardWithCallback(col: Collection, query: String) {
         val cards = try {
             runBlocking {
                 searchForCards(query, SortOrder.UseCollectionOrdering(), true)
@@ -473,11 +474,12 @@ open class AnkiDroidJsAPI(private val activity: AbstractFlashcardViewer) {
         val searchResult: MutableList<String> = ArrayList()
         for (s in cards) {
             val jsonObject = JSONObject()
-            val fieldsData = s.card.note().fields
-            val fieldsName = s.card.model().fieldsNames
+            val card = s.card(col)
+            val fieldsData = card.note(col).fields
+            val fieldsName = card.model(col).fieldsNames
 
-            val noteId = s.card.nid
-            val cardId = s.card.id
+            val noteId = card.nid
+            val cardId = card.id
             jsonObject.put("cardId", cardId)
             jsonObject.put("noteId", noteId)
 
@@ -491,7 +493,7 @@ open class AnkiDroidJsAPI(private val activity: AbstractFlashcardViewer) {
         }
 
         // quote result to prevent JSON injection attack
-        val jsonEncodedString = org.json.JSONObject.quote(searchResult.toString())
+        val jsonEncodedString = JSONObject.quote(searchResult.toString())
         activity.runOnUiThread {
             activity.webView!!.evaluateJavascript("ankiSearchCard($jsonEncodedString)", null)
         }

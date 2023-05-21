@@ -333,7 +333,7 @@ create table meta (dirMod int, lastUsn int); insert into meta values (0, 0);"""
                 for (f in noteRefs) {
                     // if they're not, we'll need to fix them first
                     if (f != Utils.nfcNormalized(f)) { // TODO Call Normalizer.isNormalized instead
-                        _normalizeNoteRefs(nid)
+                        _normalizeNoteRefs(col, nid)
                         noteRefs = filesInStr(mid, flds) // TODO It seems that this does nothing; investigate
                         break
                     }
@@ -404,7 +404,7 @@ create table meta (dirMod int, lastUsn int); insert into meta values (0, 0);"""
         return MediaCheckResult(noHave, unused, invalid)
     }
 
-    private fun _normalizeNoteRefs(nid: Long) {
+    private fun _normalizeNoteRefs(col: Collection, nid: Long) {
         val note = col.getNote(nid)
         val flds = note.fields
         @KotlinCleanup("improve")
@@ -415,7 +415,7 @@ create table meta (dirMod int, lastUsn int); insert into meta values (0, 0);"""
                 note.setField(c, nfc)
             }
         }
-        note.flush()
+        note.flush(col)
     }
 
     class MediaCheckRequiredException : Exception("Media check required")

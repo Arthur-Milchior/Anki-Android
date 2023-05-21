@@ -31,7 +31,7 @@ import com.ichi2.utils.KotlinCleanup
 import timber.log.Timber
 import java.util.*
 
-class Stats(private val col: Collection, did: Long) {
+class Stats(did: Long) {
     enum class AxisType(val days: Int, val descriptionId: Int) {
         TYPE_MONTH(30, R.string.stats_period_month), TYPE_YEAR(
             365,
@@ -71,45 +71,44 @@ class Stats(private val col: Collection, did: Long) {
     private var mPeak = 0.0
     private var mMcount = 0.0
 
-    val metaInfo: Array<Any?>
-        get() {
-            val title: String
-            title = if (mWholeCollection) {
-                AnkiDroidApp.instance.resources.getString(R.string.card_browser_all_decks)
-            } else {
-                col.decks.get(mDeckId).getString("name")
-            }
-            return arrayOf(
-                /*0*/
-                mType, /*1*/
-                mTitle, /*2*/
-                mBackwards, /*3*/
-                mValueLabels, /*4*/
-                mColors, /*5*/
-                mAxisTitles, /*6*/
-                title, /*7*/
-                mMaxCards, /*8*/
-                mMaxElements, /*9*/
-                mFirstElement, /*10*/
-                mLastElement, /*11*/
-                mZeroIndex, /*12*/
-                mFoundLearnCards, /*13*/
-                mFoundCramCards, /*14*/
-                mFoundRelearnCards, /*15*/
-                mAverage, /*16*/
-                mLongest, /*17*/
-                mPeak, /*18*/
-                mMcount, /*19*/
-                mHasColoredCumulative, /*20*/
-                mDynamicAxis
-            )
+    fun metaInfo(col: Collection): Array<Any?> {
+        val title: String
+        title = if (mWholeCollection) {
+            AnkiDroidApp.instance.resources.getString(R.string.card_browser_all_decks)
+        } else {
+            col.decks.get(col, mDeckId).getString("name")
         }
+        return arrayOf(
+            /*0*/
+            mType, /*1*/
+            mTitle, /*2*/
+            mBackwards, /*3*/
+            mValueLabels, /*4*/
+            mColors, /*5*/
+            mAxisTitles, /*6*/
+            title, /*7*/
+            mMaxCards, /*8*/
+            mMaxElements, /*9*/
+            mFirstElement, /*10*/
+            mLastElement, /*11*/
+            mZeroIndex, /*12*/
+            mFoundLearnCards, /*13*/
+            mFoundCramCards, /*14*/
+            mFoundRelearnCards, /*15*/
+            mAverage, /*16*/
+            mLongest, /*17*/
+            mPeak, /*18*/
+            mMcount, /*19*/
+            mHasColoredCumulative, /*20*/
+            mDynamicAxis
+        )
+    }
 
     /**
      * Today's statistics
      */
-    fun calculateTodayStats(): IntArray {
-        var lim = _getDeckFilter()
+    fun calculateTodayStats(col: Collection): IntArray {
+        var lim = _getDeckFilter(col)
         if (lim.length > 0) {
             lim = " and $lim"
         }
@@ -123,7 +122,7 @@ class Stats(private val col: Collection, did: Long) {
                 "sum(case when type = " + Consts.CARD_TYPE_RELEARNING + " then 1 else 0 end) " + /* filter */
                 "from revlog " +
                 "where ease > 0 " + // Anki Desktop logs a '0' ease for manual reschedules, ignore them https://github.com/ankidroid/Anki-Android/issues/8008
-                "and id > " + (col.sched.dayCutoff - SECONDS_PER_DAY) * 1000 + " " + lim
+                "and id > " + (col.sched.dayCutoff(col) - SECONDS_PER_DAY) * 1000 + " " + lim
         Timber.d("todays statistics query: %s", query)
         var cards: Int
         var thetime: Int
@@ -147,7 +146,7 @@ class Stats(private val col: Collection, did: Long) {
             "select sum(case when ease > 0 then 1 else 0 end), " + /* cards, excludes rescheduled cards https://github.com/ankidroid/Anki-Android/issues/8592 */
             "sum(case when ease = 1 then 0 else 1 end) from revlog " +
             "where ease > 0 " + // Anki Desktop logs a '0' ease for manual reschedules, ignore them https://github.com/ankidroid/Anki-Android/issues/8008
-            "and lastIvl >= 21 and id > " + (col.sched.dayCutoff - SECONDS_PER_DAY) * 1000 + " " + lim
+            "and lastIvl >= 21 and id > " + (col.sched.dayCutoff(col) - SECONDS_PER_DAY) * 1000 + " " + lim
         Timber.d("todays statistics query 2: %s", query)
         var mcnt: Int
         var msum: Int
@@ -160,7 +159,7 @@ class Stats(private val col: Collection, did: Long) {
         return intArrayOf(cards, thetime, failed, lrn, rev, relrn, filt, mcnt, msum)
     }
 
-    private fun getRevlogTimeFilter(timespan: AxisType, inverse: Boolean): String {
+    private fun getRevlogTimeFilter(col: Collection, timespan: AxisType, inverse: Boolean): String {
         return if (timespan == AxisType.TYPE_LIFE) {
             ""
         } else {
@@ -170,18 +169,18 @@ class Stats(private val col: Collection, did: Long) {
             } else {
                 "> "
             }
-            "id " + operator + (col.sched.dayCutoff - timespan.days * SECONDS_PER_DAY) * 1000
+            "id " + operator + (col.sched.dayCutoff(col) - timespan.days * SECONDS_PER_DAY) * 1000
         }
     }
 
-    fun getNewCards(timespan: AxisType): Pair<Int, Double> {
+    fun getNewCards(col: Collection, timespan: AxisType): Pair<Int, Double> {
         val chunk = getChunk(timespan)
         val num = getNum(timespan)
         val lims: MutableList<String?> = ArrayList(2)
         if (timespan != AxisType.TYPE_LIFE) {
-            lims.add("id > " + (col.sched.dayCutoff - num * chunk * SECONDS_PER_DAY) * 1000)
+            lims.add("id > " + (col.sched.dayCutoff(col) - num * chunk * SECONDS_PER_DAY) * 1000)
         }
-        lims.add("did in " + _limit())
+        lims.add("did in " + _limit(col))
         val lim: String
         lim = if (!lims.isEmpty()) {
             "where " + lims.joinToString(" and ")
@@ -197,11 +196,11 @@ class Stats(private val col: Collection, did: Long) {
         }
 
         @Suppress("UNUSED_VARIABLE")
-        val cut = col.sched.dayCutoff
+        val cut = col.sched.dayCutoff(col)
         val cardCount = col.db.queryScalar("select count(id) from cards $lim")
         var periodDays = _periodDays(timespan).toLong() // 30|365|-1
         if (periodDays == -1L) {
-            periodDays = _deckAge(DeckAgeType.ADD)
+            periodDays = _deckAge(col, DeckAgeType.ADD)
         }
         // Porting - being safe to avoid DIV0
         if (periodDays == 0L) {
@@ -215,8 +214,8 @@ class Stats(private val col: Collection, did: Long) {
         ADD, REVIEW
     }
 
-    private fun _deckAge(by: DeckAgeType): Long {
-        var lim = _revlogLimit()
+    private fun _deckAge(col: Collection, by: DeckAgeType): Long {
+        var lim = _revlogLimit(col)
         if (lim.isNotEmpty()) {
             lim += " where $lim"
         }
@@ -224,33 +223,33 @@ class Stats(private val col: Collection, did: Long) {
         if (by == DeckAgeType.REVIEW) {
             t = col.db.queryLongScalar("select id from revlog $lim order by id limit 1").toDouble()
         } else if (by == DeckAgeType.ADD) {
-            lim = "where did in " + Utils.ids2str(col.decks.active())
+            lim = "where did in " + Utils.ids2str(col.decks.active(col))
             t = col.db.queryLongScalar("select id from cards $lim order by id limit 1").toDouble()
         }
         val period: Long
         period = if (t == 0.0) {
             1
         } else {
-            Math.max(1, (1 + (col.sched.dayCutoff - t / 1000) / SECONDS_PER_DAY).toInt()).toLong()
+            Math.max(1, (1 + (col.sched.dayCutoff(col) - t / 1000) / SECONDS_PER_DAY).toInt()).toLong()
         }
         return period
     }
 
-    private fun _revlogLimit(): String {
+    private fun _revlogLimit(col: Collection): String {
         return if (mWholeCollection) {
             ""
         } else {
-            "cid in (select id from cards where did in " + Utils.ids2str(col.decks.active()) + ")"
+            "cid in (select id from cards where did in " + Utils.ids2str(col.decks.active(col)) + ")"
         }
     }
 
-    private fun getRevlogFilter(timespan: AxisType, inverseTimeSpan: Boolean): String {
+    private fun getRevlogFilter(col: Collection, timespan: AxisType, inverseTimeSpan: Boolean): String {
         val lims = ArrayList<String>(2)
-        val dayFilter = getRevlogTimeFilter(timespan, inverseTimeSpan)
+        val dayFilter = getRevlogTimeFilter(col, timespan, inverseTimeSpan)
         if (dayFilter.isNotEmpty()) {
             lims.add(dayFilter)
         }
-        var lim = _getDeckFilter().replace("[\\[\\]]".toRegex(), "")
+        var lim = _getDeckFilter(col).replace("[\\[\\]]".toRegex(), "")
         if (lim.length > 0) {
             lims.add(lim)
         }
@@ -262,9 +261,9 @@ class Stats(private val col: Collection, did: Long) {
         return lim
     }
 
-    fun calculateOverviewStatistics(timespan: AxisType, oStats: OverviewStats) {
+    fun calculateOverviewStatistics(col: Collection, timespan: AxisType, oStats: OverviewStats) {
         oStats.allDays = timespan.days
-        val lim = getRevlogFilter(timespan, false)
+        val lim = getRevlogFilter(col, timespan, false)
         col.db.query(
             "SELECT COUNT(*) as num_reviews, sum(case when type = " + Consts.CARD_TYPE_NEW + " then 1 else 0 end) as new_cards FROM revlog " + lim
         ).use { cur ->
@@ -275,7 +274,7 @@ class Stats(private val col: Collection, did: Long) {
         val cntquery =
             (
                 "SELECT  COUNT(*) numDays, MIN(day) firstDay, SUM(time_per_day) sum_time  from (" +
-                    " SELECT (cast((id/1000 - " + col.sched.dayCutoff + ") / " + SECONDS_PER_DAY + " AS INT)) AS day,  sum(time/1000.0/60.0) AS time_per_day" +
+                    " SELECT (cast((id/1000 - " + col.sched.dayCutoff(col) + ") / " + SECONDS_PER_DAY + " AS INT)) AS day,  sum(time/1000.0/60.0) AS time_per_day" +
                     " FROM revlog " + lim + " GROUP BY day ORDER BY day)"
                 )
         Timber.d("Count cntquery: %s", cntquery)
@@ -289,7 +288,7 @@ class Stats(private val col: Collection, did: Long) {
             }
         }
         col.db.query(
-            "select avg(ivl), max(ivl) from cards where did in " + _limit() + " and queue = " + Consts.QUEUE_TYPE_REV + ""
+            "select avg(ivl), max(ivl) from cards where did in " + _limit(col) + " and queue = " + Consts.QUEUE_TYPE_REV + ""
         ).use { cur ->
             cur.moveToFirst()
             oStats.averageInterval = cur.getDouble(0)
@@ -301,15 +300,15 @@ class Stats(private val col: Collection, did: Long) {
         oStats.timePerDayOnAll = oStats.totalTime / oStats.allDays
         oStats.timePerDayOnStudyDays =
             if (oStats.daysStudied == 0) 0.0 else oStats.totalTime / oStats.daysStudied
-        val newCardStats = getNewCards(timespan)
+        val newCardStats = getNewCards(col, timespan)
         oStats.totalNewCards = newCardStats.first
         oStats.newCardsPerDay = newCardStats.second
-        val list = eases(timespan)
+        val list = eases(col, timespan)
         oStats.newCardsOverview = toOverview(0, list)
         oStats.youngCardsOverview = toOverview(1, list)
         oStats.matureCardsOverview = toOverview(2, list)
         val totalCountQuery =
-            "select count(id), count(distinct nid) from cards where did in " + _limit()
+            "select count(id), count(distinct nid) from cards where did in " + _limit(col)
         col.db.query(totalCountQuery).use { cur ->
             if (cur.moveToFirst()) {
                 oStats.totalCards = cur.getLong(0)
@@ -320,7 +319,7 @@ class Stats(private val col: Collection, did: Long) {
 min(factor) / 10.0,
 avg(factor) / 10.0,
 max(factor) / 10.0
-from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
+from cards where did in ${_limit(col)} and queue = ${Consts.QUEUE_TYPE_REV}"""
         col.db.query(factorQuery).use { cur ->
             if (cur.moveToFirst()) {
                 oStats.lowestEase = cur.getLong(0).toDouble()
@@ -350,10 +349,10 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
         return answerButtonsOverview
     }
 
-    fun calculateDue(context: Context?, type: AxisType): Boolean {
+    fun calculateDue(col: Collection, context: Context?, type: AxisType): Boolean {
         // Not in libanki
         var metaInfo = StatsMetaInfo()
-        metaInfo = AdvancedStatistics().calculateDueAsMetaInfo(metaInfo, type, context, _limit())
+        metaInfo = AdvancedStatistics().calculateDueAsMetaInfo(metaInfo, type, context, _limit(col))
         return if (metaInfo.isStatsCalculated) {
             mDynamicAxis = metaInfo.dynamicAxis
             mHasColoredCumulative = metaInfo.hasColoredCumulative
@@ -373,7 +372,7 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
             seriesList = metaInfo.seriesList
             metaInfo.isDataAvailable
         } else {
-            calculateDue(type)
+            calculateDue(col, type)
         }
     }
 
@@ -381,7 +380,7 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
      * Due and cumulative due
      * ***********************************************************************************************
      */
-    private fun calculateDue(type: AxisType): Boolean {
+    private fun calculateDue(col: Collection, type: AxisType): Boolean {
         mHasColoredCumulative = false
         mType = type
         mDynamicAxis = true
@@ -415,11 +414,11 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
         }
         val dues = ArrayList<IntArray>()
         val query = (
-            "SELECT (due - " + col.sched.today + ")/" + chunk +
+            "SELECT (due - " + col.sched.today(col) + ")/" + chunk +
                 " AS day, " + // day
                 "count(), " + // all cards
                 "sum(CASE WHEN ivl >= 21 THEN 1 ELSE 0 END) " + // mature cards
-                "FROM cards WHERE did IN " + _limit() + " AND queue IN (" + Consts.QUEUE_TYPE_REV + "," + Consts.QUEUE_TYPE_DAY_LEARN_RELEARN + ")" + lim +
+                "FROM cards WHERE did IN " + _limit(col) + " AND queue IN (" + Consts.QUEUE_TYPE_REV + "," + Consts.QUEUE_TYPE_DAY_LEARN_RELEARN + ")" + lim +
                 " GROUP BY day ORDER BY day"
             )
         Timber.d("Forecast query: %s", query)
@@ -490,12 +489,12 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
         return !dues.isEmpty()
     }
 
-    fun calculateReviewCount(type: AxisType): Boolean {
-        return calculateDone(type, ChartType.REVIEW_COUNT)
+    fun calculateReviewCount(col: Collection, type: AxisType): Boolean {
+        return calculateDone(col, type, ChartType.REVIEW_COUNT)
     }
 
-    fun calculateReviewTime(type: AxisType): Boolean {
-        return calculateDone(type, ChartType.REVIEW_TIME)
+    fun calculateReviewTime(col: Collection, type: AxisType): Boolean {
+        return calculateDone(col, type, ChartType.REVIEW_TIME)
     }
 
     /**
@@ -503,7 +502,7 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
      * @param type Type
      * @param charType CharType.REVIEW_COUNT or Chartype.REVIEW_TIME
      */
-    private fun calculateDone(type: AxisType, charType: ChartType): Boolean {
+    private fun calculateDone(col: Collection, type: AxisType, charType: ChartType): Boolean {
         mHasColoredCumulative = true
         mDynamicAxis = true
         mType = type
@@ -547,9 +546,9 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
         }
         val lims = ArrayList<String>(2)
         if (num != -1) {
-            lims.add("id > " + (col.sched.dayCutoff - (num + 1) * chunk * SECONDS_PER_DAY) * 1000)
+            lims.add("id > " + (col.sched.dayCutoff(col) - (num + 1) * chunk * SECONDS_PER_DAY) * 1000)
         }
-        var lim = _getDeckFilter().replace("[\\[\\]]".toRegex(), "")
+        var lim = _getDeckFilter(col).replace("[\\[\\]]".toRegex(), "")
         if (lim.length > 0) {
             lims.add(lim)
         }
@@ -588,7 +587,7 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
         val list = ArrayList<DoubleArray>()
         val query =
             (
-                "SELECT (cast((id/1000 - " + col.sched.dayCutoff + ") / " + SECONDS_PER_DAY + " AS INT))/" +
+                "SELECT (cast((id/1000 - " + col.sched.dayCutoff(col) + ") / " + SECONDS_PER_DAY + " AS INT))/" +
                     chunk + " AS day, " + "sum(CASE WHEN type = " + Consts.CARD_TYPE_NEW + " THEN " + ti + " ELSE 0 END)" +
                     tf +
                     ", " + // lrn
@@ -720,7 +719,7 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
     /**
      * Intervals ***********************************************************************************************
      */
-    fun calculateIntervals(context: Context, type: AxisType): Boolean {
+    fun calculateIntervals(col: Collection, context: Context, type: AxisType): Boolean {
         mDynamicAxis = true
         mType = type
         var all: Double
@@ -757,7 +756,7 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
             .db
             .query(
                 "select ivl / " + chunk + " as grp, count() from cards " +
-                    "where did in " + _limit() + " and queue = " + Consts.QUEUE_TYPE_REV + " " + lim + " " +
+                    "where did in " + _limit(col) + " and queue = " + Consts.QUEUE_TYPE_REV + " " + lim + " " +
                     "group by grp " +
                     "order by grp"
             ).use { cur ->
@@ -768,7 +767,7 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
         col
             .db
             .query(
-                "select count(), avg(ivl), max(ivl) from cards where did in " + _limit() +
+                "select count(), avg(ivl), max(ivl) from cards where did in " + _limit(col) +
                     " and queue = " + Consts.QUEUE_TYPE_REV + ""
             ).use { cur ->
                 cur.moveToFirst()
@@ -833,7 +832,7 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
     /**
      * Hourly Breakdown
      */
-    fun calculateBreakdown(type: AxisType?): Boolean {
+    fun calculateBreakdown(col: Collection, type: AxisType?): Boolean {
         mTitle = R.string.stats_breakdown
         mBackwards = false
         mAxisTitles = intArrayOf(
@@ -844,16 +843,16 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
         mValueLabels = intArrayOf(R.string.stats_percentage_correct, R.string.stats_answers)
         mColors = intArrayOf(R.attr.stats_counts, R.attr.stats_hours)
         mType = type
-        var lim = _getDeckFilter().replace("[\\[\\]]".toRegex(), "")
+        var lim = _getDeckFilter(col).replace("[\\[\\]]".toRegex(), "")
         if (lim.length > 0) {
             lim = " and $lim"
         }
         val rolloverHour = getDayOffset(col)
         val pd = _periodDays()
+        val cutoff = col.sched.dayCutoff(col)
         if (pd > 0) {
-            lim += " and id > " + (col.sched.dayCutoff - SECONDS_PER_DAY * pd) * 1000
+            lim += " and id > " + (cutoff - SECONDS_PER_DAY * pd) * 1000
         }
-        val cutoff = col.sched.dayCutoff
         val cut = cutoff - rolloverHour * 3600
         val list = ArrayList<DoubleArray>(24) // number of hours
         for (i in 0..23) {
@@ -961,7 +960,7 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
     /**
      * Weekly Breakdown
      */
-    fun calculateWeeklyBreakdown(type: AxisType?): Boolean {
+    fun calculateWeeklyBreakdown(col: Collection, type: AxisType?): Boolean {
         mTitle = R.string.stats_weekly_breakdown
         mBackwards = false
         mAxisTitles = intArrayOf(
@@ -972,17 +971,17 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
         mValueLabels = intArrayOf(R.string.stats_percentage_correct, R.string.stats_answers)
         mColors = intArrayOf(R.attr.stats_counts, R.attr.stats_hours)
         mType = type
-        var lim = _getDeckFilter().replace("[\\[\\]]".toRegex(), "")
+        var lim = _getDeckFilter(col).replace("[\\[\\]]".toRegex(), "")
         if (lim.length > 0) {
             lim = " and $lim"
         }
-        val sd: Calendar = gregorianCalendar(col.sched.dayCutoff * 1000)
+        val sd: Calendar = gregorianCalendar(col.sched.dayCutoff(col) * 1000)
         var pd = _periodDays()
+        val cutoff = col.sched.dayCutoff(col)
         if (pd > 0) {
             pd = Math.round((pd / 7).toFloat()) * 7
-            lim += " and id > " + (col.sched.dayCutoff - SECONDS_PER_DAY * pd) * 1000
+            lim += " and id > " + (cutoff - SECONDS_PER_DAY * pd) * 1000
         }
-        val cutoff = col.sched.dayCutoff
         val list = ArrayList<DoubleArray>(7) // one by day of the week
         val query =
             "SELECT strftime('%w',datetime( cast(id/ 1000  -" + sd[Calendar.HOUR_OF_DAY] * 3600 +
@@ -1073,7 +1072,7 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
     /**
      * Answer Buttons
      */
-    fun calculateAnswerButtons(type: AxisType): Boolean {
+    fun calculateAnswerButtons(col: Collection, type: AxisType): Boolean {
         mHasColoredCumulative = false
         cumulative = null
         mTitle = R.string.stats_answer_buttons
@@ -1086,7 +1085,7 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
         )
         mColors = intArrayOf(R.attr.stats_learn, R.attr.stats_young, R.attr.stats_mature)
         mType = type
-        val list = eases(type)
+        val list = eases(col, type)
 
         // TODO adjust for AnswerButton, for now only copied from intervals
         // small adjustment for a proper chartbuilding with achartengine
@@ -1121,8 +1120,8 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
         return !list.isEmpty()
     }
 
-    private fun eases(type: AxisType): ArrayList<DoubleArray> {
-        var lim = _getDeckFilter().replace("[\\[\\]]".toRegex(), "")
+    private fun eases(col: Collection, type: AxisType): ArrayList<DoubleArray> {
+        var lim = _getDeckFilter(col).replace("[\\[\\]]".toRegex(), "")
         val lims = Vector<String>()
         val days: Int
         if (lim.length > 0) {
@@ -1136,7 +1135,7 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
             -1
         }
         if (days > 0) {
-            lims.add("id > " + (col.sched.dayCutoff - days * SECONDS_PER_DAY) * 1000)
+            lims.add("id > " + (col.sched.dayCutoff(col) - days * SECONDS_PER_DAY) * 1000)
         }
 
         // Anki Desktop logs a '0' ease for manual reschedules, ignore them https://github.com/ankidroid/Anki-Android/issues/8008
@@ -1172,7 +1171,7 @@ from cards where did in ${_limit()} and queue = ${Consts.QUEUE_TYPE_REV}"""
     /**
      * Card Types
      */
-    fun calculateCardTypes(type: AxisType?) {
+    fun calculateCardTypes(col: Collection, type: AxisType?) {
         mTitle = R.string.title_activity_template_editor
         mBackwards = false
         mAxisTitles = intArrayOf(
@@ -1202,7 +1201,7 @@ sum(case when queue in (${Consts.QUEUE_TYPE_LRN},${Consts.QUEUE_TYPE_DAY_LEARN_R
 sum(case when queue=${Consts.QUEUE_TYPE_NEW} then 1 else 0 end), -- new
 sum(case when queue=${Consts.QUEUE_TYPE_SUSPENDED} then 1 else 0 end), -- susp
 sum(case when queue in (${Consts.QUEUE_TYPE_MANUALLY_BURIED},${Consts.QUEUE_TYPE_SIBLING_BURIED}) then 1 else 0 end) -- buried
-from cards where did in ${_limit()}"""
+from cards where did in ${_limit(col)}"""
         Timber.d("CardsTypes query: %s", query)
         col.db
             .query(query).use { cur ->
@@ -1243,15 +1242,15 @@ from cards where did in ${_limit()}"""
     /**
      * Tools ***********************************************************************************************
      */
-    private fun _limit(): String {
+    private fun _limit(col: Collection): String {
         return deckLimit(col, mDeckId)
     }
 
-    private fun _getDeckFilter(): String {
+    private fun _getDeckFilter(col: Collection): String {
         return if (mWholeCollection) {
             ""
         } else {
-            "cid IN (SELECT id FROM cards WHERE did IN " + _limit() + ")"
+            "cid IN (SELECT id FROM cards WHERE did IN " + _limit(col) + ")"
         }
     }
 
@@ -1285,7 +1284,7 @@ from cards where did in ${_limit()}"""
         fun deckLimit(col: Collection, deckId: Long): String {
             return if (deckId == ALL_DECKS_ID) {
                 // All decks
-                val decks = col.decks.all()
+                val decks = col.decks.all(col)
                 val ids = ArrayList<Long>(decks.size)
                 for (d in decks) {
                     ids.add(d.getLong("id"))
@@ -1293,7 +1292,7 @@ from cards where did in ${_limit()}"""
                 Utils.ids2str(ids)
             } else {
                 // The given deck id and its children
-                val values: kotlin.collections.Collection<Long> = col.decks.children(deckId).values
+                val values: kotlin.collections.Collection<Long> = col.decks.children(col, deckId).values
                 val ids = ArrayList<Long>(values.size)
                 ids.add(deckId)
                 ids.addAll(values)

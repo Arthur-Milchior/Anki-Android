@@ -26,9 +26,6 @@ import com.ichi2.libanki.template.TemplateError
 import com.ichi2.libanki.utils.TimeManager.time
 import com.ichi2.utils.*
 import com.ichi2.utils.HashUtil.HashMapInit
-import com.ichi2.utils.KotlinCleanup
-import com.ichi2.utils.jsonObjectIterable
-import com.ichi2.utils.stringIterable
 import org.json.JSONArray
 import org.json.JSONObject
 import timber.log.Timber
@@ -128,7 +125,7 @@ class Models(col: Collection) : ModelManager(col) {
     override fun current(forDeck: Boolean): Model? {
         var m: Model? = null
         if (forDeck) {
-            m = get(col.decks.current().optLong("mid", -1))
+            m = get(col.decks.current(col).optLong("mid", -1))
         }
         if (m == null) {
             m = get(col.get_config("curModel", -1L)!!)

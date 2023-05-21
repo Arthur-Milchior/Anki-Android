@@ -166,9 +166,9 @@
         <item>4</item>
     </string-array>
     <plurals name="stats_today_cards">
-        <item quantity="one">Dziś przerobiono &lt;b&gt;%1$d kartę&lt;/b&gt; w &lt;b&gt;%2$s&lt;/b&gt;</item>
-        <item quantity="few">Dziś przerobiono &lt;b&gt;%1$d karty&lt;/b&gt; w &lt;b&gt;%2$s&lt;/b&gt;</item>
-        <item quantity="many">Dziś przerobiono &lt;b&gt;%1$d kart&lt;/b&gt; w &lt;b&gt;%2$s&lt;/b&gt;</item>
-        <item quantity="other">Dziś przerobiono &lt;b&gt;%1$d kart&lt;/b&gt; w &lt;b&gt;%2$s&lt;/b&gt;</item>
+        <item quantity="one">Dziś przerobiono &lt;b&gt;%1$d kartę&lt;/b&gt; w &lt;b&gt;%2$s&lt;/b&gt;</item>
+        <item quantity="few">Dziś przerobiono &lt;b&gt;%1$d karty&lt;/b&gt; w &lt;b&gt;%2$s&lt;/b&gt;</item>
+        <item quantity="many">Dziś przerobiono &lt;b&gt;%1$d kart&lt;/b&gt; w &lt;b&gt;%2$s&lt;/b&gt;</item>
+        <item quantity="other">Dziś przerobiono &lt;b&gt;%1$d kart&lt;/b&gt; w &lt;b&gt;%2$s&lt;/b&gt;</item>
     </plurals>
 </resources>

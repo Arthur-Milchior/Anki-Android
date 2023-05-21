@@ -39,7 +39,7 @@ class AnkiDroidJsAPITest : RobolectricTest() {
         val basic = models.byName(AnkiDroidApp.appResources.getString(R.string.basic_model_name))
         basic!!.put("did", didA)
         addNoteUsingBasicModel("foo", "bar")
-        decks.select(didA)
+        decks.select(col, didA)
 
         val reviewer: Reviewer = startReviewer()
         val javaScriptFunction = reviewer.javaScriptFunction()
@@ -64,7 +64,7 @@ class AnkiDroidJsAPITest : RobolectricTest() {
         val basic = models.byName(AnkiDroidApp.appResources.getString(R.string.basic_model_name))
         basic!!.put("did", didA)
         addNoteUsingBasicModel("foo", "bar")
-        decks.select(didA)
+        decks.select(col, didA)
 
         val reviewer: Reviewer = startReviewer()
         val javaScriptFunction = reviewer.javaScriptFunction()
@@ -87,7 +87,7 @@ class AnkiDroidJsAPITest : RobolectricTest() {
         val basic = models.byName(AnkiDroidApp.appResources.getString(R.string.basic_model_name))
         basic!!.put("did", didA)
         addNoteUsingBasicModel("foo", "bar")
-        decks.select(didA)
+        decks.select(col, didA)
 
         val reviewer: Reviewer = startReviewer()
         val javaScriptFunction = reviewer.javaScriptFunction()
@@ -132,9 +132,9 @@ class AnkiDroidJsAPITest : RobolectricTest() {
         assertThat(javaScriptFunction.ankiGetCardFlag(), equalTo(1))
 
         // Card Mark
-        assertThat(javaScriptFunction.ankiGetCardMark(), equalTo(false))
-        reviewer.currentCard!!.note().addTag("marked")
-        assertThat(javaScriptFunction.ankiGetCardMark(), equalTo(true))
+        assertThat(javaScriptFunction.ankiGetCardMark(col), equalTo(false))
+        reviewer.currentCard!!.note(col).addTag("marked")
+        assertThat(javaScriptFunction.ankiGetCardMark(col), equalTo(true))
     }
 
     @Test
@@ -145,7 +145,7 @@ class AnkiDroidJsAPITest : RobolectricTest() {
         val basic = models.byName(AnkiDroidApp.appResources.getString(R.string.basic_model_name))
         basic!!.put("did", didA)
         addNoteUsingBasicModel("foo", "bar")
-        decks.select(didA)
+        decks.select(col, didA)
 
         val reviewer: Reviewer = startReviewer()
         val javaScriptFunction = reviewer.javaScriptFunction()
@@ -174,7 +174,7 @@ class AnkiDroidJsAPITest : RobolectricTest() {
         val basic = models.byName(AnkiDroidApp.appResources.getString(R.string.basic_model_name))
         basic!!.put("did", didA)
         addNoteUsingBasicModel("foo", "bar")
-        decks.select(didA)
+        decks.select(col, didA)
 
         val reviewer: Reviewer = startReviewer()
         val javaScriptFunction = reviewer.javaScriptFunction()
@@ -185,7 +185,7 @@ class AnkiDroidJsAPITest : RobolectricTest() {
         // Card mark test
         // ---------------
         // Before marking card
-        assertThat(javaScriptFunction.ankiGetCardMark(), equalTo(false))
+        assertThat(javaScriptFunction.ankiGetCardMark(col), equalTo(false))
 
         // call javascript function defined in card.js to mark card
         var markCardJs = "javascript:(function () {\n"
@@ -245,7 +245,7 @@ class AnkiDroidJsAPITest : RobolectricTest() {
         addNoteUsingBasicModel("Anki", "Droid")
         addNoteUsingBasicModel("Test Card", "Bury and Suspend Card")
         addNoteUsingBasicModel("Test Note", "Bury and Suspend Note")
-        decks.select(didA)
+        decks.select(col, didA)
 
         val reviewer: Reviewer = startReviewer()
 
@@ -259,7 +259,7 @@ class AnkiDroidJsAPITest : RobolectricTest() {
         reviewer.webView!!.evaluateJavascript(jsScript) { s -> assertThat(s, equalTo(true)) }
 
         // count number of notes
-        assertThat(reviewer.sched!!.cardCount(), equalTo(4))
+        assertThat(reviewer.sched!!.cardCount(col), equalTo(4))
 
         // ----------
         // Bury Note
@@ -269,7 +269,7 @@ class AnkiDroidJsAPITest : RobolectricTest() {
         reviewer.webView!!.evaluateJavascript(jsScript) { s -> assertThat(s, equalTo(true)) }
 
         // count number of notes
-        assertThat(reviewer.sched!!.cardCount(), equalTo(3))
+        assertThat(reviewer.sched!!.cardCount(col), equalTo(3))
 
         // -------------
         // Suspend Card
@@ -279,7 +279,7 @@ class AnkiDroidJsAPITest : RobolectricTest() {
         reviewer.webView!!.evaluateJavascript(jsScript) { s -> assertThat(s, equalTo(true)) }
 
         // count number of notes
-        assertThat(reviewer.sched!!.cardCount(), equalTo(2))
+        assertThat(reviewer.sched!!.cardCount(col), equalTo(2))
 
         // -------------
         // Suspend Note
@@ -289,7 +289,7 @@ class AnkiDroidJsAPITest : RobolectricTest() {
         reviewer.webView!!.evaluateJavascript(jsScript) { s -> assertThat(s, equalTo(true)) }
 
         // count number of notes
-        assertThat(reviewer.sched!!.cardCount(), equalTo(1))
+        assertThat(reviewer.sched!!.cardCount(col), equalTo(1))
     }
 
     private fun createTestScript(apiName: String): String {
@@ -321,7 +321,7 @@ class AnkiDroidJsAPITest : RobolectricTest() {
         basic!!.put("did", didA)
         addNoteUsingBasicModel("foo", "bar")
         addNoteUsingBasicModel("baz", "bak")
-        decks.select(didA)
+        decks.select(col, didA)
 
         val reviewer: Reviewer = startReviewer()
         waitForAsyncTasksToComplete()
@@ -352,7 +352,7 @@ class AnkiDroidJsAPITest : RobolectricTest() {
     @Test
     fun ankiResetProgressTest() {
         val n = addNoteUsingBasicModel("Front", "Back")
-        val c = n.firstCard()
+        val c = n.firstCard(col)
 
         // Make card review with 28L due and 280% ease
         c.type = Consts.CARD_TYPE_REV

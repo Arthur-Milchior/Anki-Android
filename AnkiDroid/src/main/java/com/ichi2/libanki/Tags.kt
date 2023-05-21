@@ -21,7 +21,9 @@ import android.content.ContentValues
 import com.ichi2.libanki.backend.model.TagUsnTuple
 import com.ichi2.libanki.utils.TimeManager
 import org.json.JSONObject
-import java.util.*
+import java.util.Locale
+import java.util.TreeMap
+import java.util.TreeSet
 import java.util.regex.Pattern
 
 /**
@@ -122,7 +124,7 @@ class Tags
     /** {@inheritDoc}  */
     override fun byDeck(did: DeckId, children: Boolean): ArrayList<String> {
         val tags: List<String?> = if (children) {
-            val values: kotlin.collections.Collection<Long> = col.decks.children(did).values
+            val values: kotlin.collections.Collection<Long> = col.decks.children(col, did).values
             val dids = ArrayList<Long>(values.size)
             dids.add(did)
             dids.addAll(values)
