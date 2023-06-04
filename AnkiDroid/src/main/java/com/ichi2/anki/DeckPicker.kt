@@ -1739,8 +1739,12 @@ open class DeckPicker :
 
     private fun handleDeckSelection(did: DeckId, selectionType: DeckSelectionType) {
         // Clear the undo history when selecting a new deck
-        if (col.decks.selected() != did) {
-            col.clearUndo()
+        launchCatchingTask {
+            withCol {
+                if (col.decks.selected() != did) {
+                    col.clearUndo()
+                }
+            }
         }
         if (col.get_config_int("schedVer", 1) == 1) {
             promptUserToUpdateScheduler()
