@@ -919,10 +919,12 @@ open class DeckPicker :
         } else if (requestCode == REQUEST_REVIEW || requestCode == SHOW_STUDYOPTIONS) {
             if (resultCode == AbstractFlashcardViewer.RESULT_NO_MORE_CARDS) {
                 // Show a message when reviewing has finished
-                if (col.sched.count() == 0) {
-                    showSnackbar(R.string.studyoptions_congrats_finished)
-                } else {
-                    showSnackbar(R.string.studyoptions_no_cards_due)
+                launchCatchingTask {
+                    if (withCol { col.sched.count() } == 0) {
+                        showSnackbar(R.string.studyoptions_congrats_finished)
+                    } else {
+                        showSnackbar(R.string.studyoptions_no_cards_due)
+                    }
                 }
             } else if (resultCode == AbstractFlashcardViewer.RESULT_ABORT_AND_SYNC) {
                 Timber.i("Obtained Abort and Sync result")
