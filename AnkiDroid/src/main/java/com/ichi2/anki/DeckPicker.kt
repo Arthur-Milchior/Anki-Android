@@ -1089,8 +1089,14 @@ open class DeckPicker :
                 sync()
             }
             KeyEvent.KEYCODE_SLASH, KeyEvent.KEYCODE_S -> {
-                Timber.i("Study from keypress")
-                handleDeckSelection(col.decks.selected(), DeckSelectionType.SKIP_STUDY_OPTIONS)
+                Timber.i("Study from keypress requested")
+                launchCatchingTask {
+                    Timber.i("Study from keypress")
+                    handleDeckSelection(
+                        withCol { col.decks.selected() },
+                        DeckSelectionType.SKIP_STUDY_OPTIONS
+                    )
+                }
             }
             else -> {}
         }
