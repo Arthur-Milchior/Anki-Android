@@ -2023,13 +2023,23 @@ open class DeckPicker :
         }
     }
 
+    /**
+     * Asynchronously show the export dialog, with default to deck with id [did].
+     */
     fun exportDeck(did: DeckId) {
-        mExportingDelegate.showExportDialog(
-            ExportDialogParams(
-                message = resources.getString(R.string.confirm_apkg_export_deck, col.decks.get(did).getString("name")),
-                exportType = ExportType.ExportDeck(did)
+        launchCatchingTask {
+            mExportingDelegate.showExportDialog(
+                ExportDialogParams(
+                    message = resources.getString(
+                        R.string.confirm_apkg_export_deck,
+                        withCol {
+                            col.decks.get(did).getString("name")
+                        }
+                    ),
+                    exportType = ExportType.ExportDeck(did)
+                )
             )
-        )
+        }
     }
 
     fun createIcon(context: Context, did: DeckId) {
