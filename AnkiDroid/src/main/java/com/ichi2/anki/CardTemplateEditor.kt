@@ -149,7 +149,7 @@ open class CardTemplateEditor : AnkiActivity(), DeckSelectionListener {
 
     @Suppress("deprecation") // onBackPressed
     override fun onBackPressed() {
-        if (modelHasChanged()) {
+        if (modelHasChanged(col)) {
             showDiscardChangesDialog()
         } else {
             super.onBackPressed()
@@ -196,7 +196,7 @@ open class CardTemplateEditor : AnkiActivity(), DeckSelectionListener {
         }
     }
 
-    fun modelHasChanged(): Boolean {
+    fun modelHasChanged(col: Collection): Boolean {
         val oldModel: JSONObject? = col.models.get(mModelId)
         return tempModel != null && tempModel!!.model.toString() != oldModel.toString()
     }
@@ -545,7 +545,7 @@ open class CardTemplateEditor : AnkiActivity(), DeckSelectionListener {
                             }
                             R.id.action_confirm -> {
                                 Timber.i("CardTemplateEditor:: Save model button pressed")
-                                if (modelHasChanged()) {
+                                if (modelHasChanged(col)) {
                                     val confirmButton = mTemplateEditor.findViewById<View>(R.id.action_confirm)
                                     if (confirmButton != null) {
                                         if (!confirmButton.isEnabled) {
@@ -725,8 +725,8 @@ open class CardTemplateEditor : AnkiActivity(), DeckSelectionListener {
             }
         }
 
-        private fun modelHasChanged(): Boolean {
-            return mTemplateEditor.modelHasChanged()
+        private fun modelHasChanged(col: Collection): Boolean {
+            return mTemplateEditor.modelHasChanged(col)
         }
 
         /**
