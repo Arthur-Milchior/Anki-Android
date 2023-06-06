@@ -1026,6 +1026,9 @@ open class DeckPicker :
         Timber.d("onDestroy()")
     }
 
+    /**
+     * Proceeds to automatic sync if it's appropriate.
+     */
     private fun automaticSync() {
         val preferences = getSharedPrefs(baseContext)
 
@@ -2171,11 +2174,15 @@ open class DeckPicker :
         }
     }
 
+    /**
+     * Asynchronously empty the filtered deck with id [did].
+     * The reload the deck list and the study options.
+     */
     fun emptyFiltered(did: DeckId) {
-        col.decks.select(did)
         launchCatchingTask {
             withProgress {
                 withCol {
+                    col.decks.select(did)
                     Timber.d("doInBackgroundEmptyCram")
                     sched.emptyDyn(decks.selected())
                     updateValuesFromDeck(this, true)
