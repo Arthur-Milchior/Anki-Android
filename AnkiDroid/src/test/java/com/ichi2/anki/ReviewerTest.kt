@@ -112,7 +112,7 @@ class ReviewerTest : RobolectricTest() {
 
         // The answer needs to be displayed to be able to get the time.
         displayAnswer(reviewer)
-        assertThat("4 buttons should be displayed", reviewer.answerButtonCount, equalTo(4))
+        assertThat("4 buttons should be displayed", reviewer.answerButtonCount(col), equalTo(4))
 
         val nextTime = javaScriptFunction.ankiGetNextTime4()
         assertThat(nextTime, not(emptyString()))
@@ -123,7 +123,7 @@ class ReviewerTest : RobolectricTest() {
         displayAnswer(reviewer)
 
         if (schedVersion == 1) {
-            assertThat("The 4th button should not be visible", reviewer.answerButtonCount, equalTo(3))
+            assertThat("The 4th button should not be visible", reviewer.answerButtonCount(col), equalTo(3))
             val learnTime = javaScriptFunction.ankiGetNextTime4()
             assertThat("If the 4th button is not visible, there should be no time4 in JS", learnTime, emptyString())
         }

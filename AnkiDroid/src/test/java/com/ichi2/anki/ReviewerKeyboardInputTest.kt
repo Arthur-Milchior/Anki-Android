@@ -32,6 +32,7 @@ import com.ichi2.anki.servicelayer.SchedulerService.NextCard
 import com.ichi2.anki.servicelayer.SchedulerService.SuspendCard
 import com.ichi2.anki.servicelayer.SchedulerService.SuspendNote
 import com.ichi2.libanki.Card
+import com.ichi2.libanki.Collection
 import com.ichi2.utils.Computation
 import kotlinx.coroutines.Job
 import org.hamcrest.MatcherAssert.assertThat
@@ -42,7 +43,6 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
 import org.mockito.kotlin.whenever
 import timber.log.Timber
-import java.lang.Exception
 
 @RunWith(AndroidJUnit4::class)
 class ReviewerKeyboardInputTest : RobolectricTest() {
@@ -340,8 +340,7 @@ class ReviewerKeyboardInputTest : RobolectricTest() {
             return this
         }
 
-        override val answerButtonCount: Int
-            get() = mAnswerButtonCount
+        override fun answerButtonCount(col: Collection) = mAnswerButtonCount
 
         override fun answerCard(ease: Int) {
             mAnswered = ease

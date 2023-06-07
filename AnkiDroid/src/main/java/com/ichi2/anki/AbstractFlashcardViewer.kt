@@ -532,8 +532,7 @@ abstract class AbstractFlashcardViewer :
             .alsoExecuteBefore { blockControls(quick) }
     }
 
-    open val answerButtonCount: Int
-        get() = col.sched.answerButtons(currentCard!!)
+    open fun answerButtonCount(col: Collection) = col.sched.answerButtons(currentCard!!)
 
     // ----------------------------------------------------------------------------
     // ANDROID METHODS
@@ -934,7 +933,7 @@ abstract class AbstractFlashcardViewer :
 
     private fun getRecommendedEase(easy: Boolean): Int {
         return try {
-            when (answerButtonCount) {
+            when (answerButtonCount(col)) {
                 2 -> EASE_2
                 3 -> if (easy) EASE_3 else EASE_2
                 4 -> if (easy) EASE_4 else EASE_3
@@ -1155,7 +1154,7 @@ abstract class AbstractFlashcardViewer :
             row1.orientation = LinearLayout.HORIZONTAL
             val row2 = LinearLayout(baseContext)
             row2.orientation = LinearLayout.HORIZONTAL
-            when (answerButtonCount) {
+            when (answerButtonCount(col)) {
                 2 -> {
                     easeButton1!!.height = mInitialFlipCardHeight * 2
                     easeButton2!!.height = mInitialFlipCardHeight * 2
