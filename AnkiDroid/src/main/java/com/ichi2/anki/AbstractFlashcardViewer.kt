@@ -931,7 +931,7 @@ abstract class AbstractFlashcardViewer :
         }
     }
 
-    private fun getRecommendedEase(easy: Boolean): Int {
+    private fun getRecommendedEase(col: Collection, easy: Boolean): Int {
         return try {
             when (answerButtonCount(col)) {
                 2 -> EASE_2
@@ -1719,11 +1719,11 @@ abstract class AbstractFlashcardViewer :
                     true
                 }
                 ViewerCommand.FLIP_OR_ANSWER_RECOMMENDED -> {
-                    flipOrAnswerCard(getRecommendedEase(false))
+                    flipOrAnswerCard(getRecommendedEase(col, false))
                     true
                 }
                 ViewerCommand.FLIP_OR_ANSWER_BETTER_THAN_RECOMMENDED -> {
-                    flipOrAnswerCard(getRecommendedEase(true))
+                    flipOrAnswerCard(getRecommendedEase(col, true))
                     true
                 }
                 ViewerCommand.EXIT -> {
