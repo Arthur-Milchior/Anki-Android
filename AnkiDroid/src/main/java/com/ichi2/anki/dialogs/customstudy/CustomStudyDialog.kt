@@ -37,6 +37,7 @@ import com.afollestad.materialdialogs.actions.getActionButton
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.list.listItems
 import com.ichi2.anki.*
+import com.ichi2.anki.CollectionManager.withCol
 import com.ichi2.anki.UIUtils.showThemedToast
 import com.ichi2.anki.analytics.AnalyticsDialogFragment
 import com.ichi2.anki.dialogs.customstudy.CustomStudyDialog.ContextMenuConfiguration.*
@@ -87,7 +88,7 @@ class CustomStudyDialog(private val collection: Collection, private val customSt
         val dialogId = requireArguments().getInt("id")
         return if (dialogId < 100) {
             // Select the specified deck
-            collection.decks.select(requireArguments().getLong("did"))
+            launchCatchingTask { withCol { col.decks.select(requireArguments().getLong("did")) } }
             buildContextMenu(dialogId)
         } else {
             buildInputDialog(ContextMenuOption.fromInt(dialogId))
