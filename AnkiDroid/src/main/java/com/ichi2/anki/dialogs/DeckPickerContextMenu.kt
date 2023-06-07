@@ -109,8 +109,10 @@ class DeckPickerContextMenu(private val collection: Collection) : AnalyticsDialo
             }
             DeckPickerContextMenuOption.DECK_OPTIONS -> {
                 Timber.i("Open deck options selected")
-                activity.showContextMenuDeckOptions(deckId)
-                activity.dismissAllDialogFragments()
+                launchCatchingTask {
+                    activity.showContextMenuDeckOptions(deckId)
+                    activity.dismissAllDialogFragments()
+                }
             }
             DeckPickerContextMenuOption.CUSTOM_STUDY -> {
                 Timber.i("Custom study option selected")

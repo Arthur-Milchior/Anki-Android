@@ -2002,10 +2002,12 @@ open class DeckPicker :
         }
     }
 
-    // Callback to show study options for currently selected deck
-    fun showContextMenuDeckOptions(did: DeckId) {
+    /**
+     * show study options for deck with id [did]
+     */
+    suspend fun showContextMenuDeckOptions(did: DeckId) {
         // open deck options
-        if (col.decks.isDyn(did)) {
+        if (withCol { col.decks.isDyn(did) }) {
             // open cram options if filtered deck
             val i = Intent(this@DeckPicker, FilteredDeckOptions::class.java)
             i.putExtra("did", did)
