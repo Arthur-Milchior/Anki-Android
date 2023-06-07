@@ -309,27 +309,31 @@ class ModelBrowser : AnkiActivity() {
     }
 
     /**
-     * Display a dialog to confirm the note type deletion, if the user accepts then proceed with the
-     * deletion process.
+     * Asynchronously display a dialog to confirm the note type deletion, if the user accepts then
+     * proceed with the deletion process.
      */
     private fun deleteModelDialog() {
         if (mModelIds!!.size > 1) {
-            val confirmTextId = try {
-                mCol.modSchema()
-                R.string.model_delete_warning
-            } catch (e: ConfirmModSchemaException) {
-                e.log()
-                R.string.full_sync_confirmation
-            }
-            showDialogFragment(
-                ConfirmationDialog().apply {
-                    setArgs(this@ModelBrowser.resources.getString(confirmTextId))
-                    setConfirm {
-                        mCol.modSchemaNoCheck()
-                        deleteModel()
+            launchCatchingTask {
+                val confirmTextId = try {
+                    withCol {
+                        col.modSchema()
                     }
+                    R.string.model_delete_warning
+                } catch (e: ConfirmModSchemaException) {
+                    e.log()
+                    R.string.full_sync_confirmation
                 }
-            )
+                showDialogFragment(
+                    ConfirmationDialog().apply {
+                        setArgs(this@ModelBrowser.resources.getString(confirmTextId))
+                        setConfirm {
+                            mCol.modSchemaNoCheck()
+                            deleteModel()
+                        }
+                    }
+                )
+            }
         } else {
             showToast(getString(R.string.toast_last_model))
         }
