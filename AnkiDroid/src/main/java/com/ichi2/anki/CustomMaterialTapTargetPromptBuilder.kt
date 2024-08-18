@@ -18,6 +18,8 @@
 package com.ichi2.anki
 
 import android.app.Activity
+import android.view.View
+import androidx.annotation.IdRes
 import com.ichi2.anki.PromptBackgroundAdapter.Companion.toPromptBackground
 import com.ichi2.themes.Themes
 import com.ichi2.utils.DimmedPromptBackgroundDecorator
