@@ -745,13 +745,16 @@ open class Reviewer :
         // Undo button
         @DrawableRes val undoIconId: Int
         val undoEnabled: Boolean
+        val cardUndoEnabled: Boolean
         val whiteboardIsShownAndHasStrokes = showWhiteboard && whiteboard?.undoEmpty() == false
         if (whiteboardIsShownAndHasStrokes) {
             undoIconId = R.drawable.eraser
             undoEnabled = true
+            cardUndoEnabled = false
         } else {
             undoIconId = R.drawable.ic_undo_white
             undoEnabled = colIsOpenUnsafe() && getColUnsafe.undoAvailable()
+            cardUndoEnabled = undoEnabled
         }
         val alphaUndo = Themes.ALPHA_ICON_ENABLED_LIGHT
         val undoIcon = menu.findItem(R.id.action_undo)
@@ -783,8 +786,8 @@ open class Reviewer :
                 }
             }
         }
-        if (undoEnabled) {
-            onboarding.onUndoButtonEnabled()
+        if (cardUndoEnabled) {
+            onboarding.onUndoButtonEnabled(undoIcon.actionView!!)
         }
         val toggleWhiteboardIcon = menu.findItem(R.id.action_toggle_whiteboard)
         val toggleStylusIcon = menu.findItem(R.id.action_toggle_stylus)

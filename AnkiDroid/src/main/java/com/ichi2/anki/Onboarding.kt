@@ -193,14 +193,14 @@ abstract class Onboarding<Feature>(
 
         init {
             tutorials.add(TutorialArguments(ReviewerOnboardingEnum.SHOW_ANSWER, this::onQuestionShown))
-            tutorials.add(TutorialArguments(ReviewerOnboardingEnum.FLAG, this::showTutorialForFlagIfNew))
+            //    tutorials.add(TutorialArguments(ReviewerOnboardingEnum.FLAG, this::showTutorialForFlagIfNew))
         }
 
         private fun onQuestionShown() {
             CustomMaterialTapTargetPromptBuilder(activityContext, ReviewerOnboardingEnum.SHOW_ANSWER)
                 .createRectangleWithDimmedBackground()
                 .setDismissedListener { onCreate() }
-                // FIXME .setTarget(R.id.flip_card)
+                .setTarget(R.id.flashcard_layout_flip)
                 .setPrimaryText(R.string.see_answer)
                 .setSecondaryText(R.string.see_answer_desc)
                 .show()
@@ -238,7 +238,7 @@ abstract class Onboarding<Feature>(
         /**
          * Show after undo button goes into enabled state
          */
-        fun onUndoButtonEnabled() {
+        fun onUndoButtonEnabled(target: View) {
             if (ReviewerOnboardingEnum.UNDO.isVisited(activityContext)) {
                 return
             }
@@ -246,7 +246,7 @@ abstract class Onboarding<Feature>(
             CustomMaterialTapTargetPromptBuilder(activityContext, ReviewerOnboardingEnum.UNDO)
                 .createCircleWithDimmedBackground()
                 .setFocalColourResource(R.color.material_blue_500)
-                .setTarget(R.id.action_undo)
+                .setTarget(target)
                 .setPrimaryText(R.string.undo)
                 .setSecondaryText(R.string.undo_desc)
                 .show()
