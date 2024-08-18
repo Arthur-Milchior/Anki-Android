@@ -29,6 +29,12 @@ import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFoc
 
 class CustomMaterialTapTargetPromptBuilder<T>(val activity: Activity, private val featureIdentifier: T) : MaterialTapTargetPrompt.Builder(activity) where T : Enum<T>, T : OnboardingEntry {
 
+    init {
+        setDismissedListener {
+            aTutorialIsDisplayed = false
+        }
+    }
+
     private fun createRectangle(): CustomMaterialTapTargetPromptBuilder<T> {
         promptFocal = RectanglePromptFocal()
         return this
@@ -69,6 +75,7 @@ class CustomMaterialTapTargetPromptBuilder<T>(val activity: Activity, private va
     fun setDismissedListener(tutorialFunction: () -> Unit): CustomMaterialTapTargetPromptBuilder<T> {
         setPromptStateChangeListener { _, state ->
             if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
+                aTutorialIsDisplayed = false
                 tutorialFunction()
             }
         }
@@ -80,6 +87,11 @@ class CustomMaterialTapTargetPromptBuilder<T>(val activity: Activity, private va
      * Mark as visited and show the tutorial.
      */
     override fun show(): MaterialTapTargetPrompt? {
+        if (aTutorialIsDisplayed) {
+            // If a tutorial is already displayed, do nothing.
+            return null
+        }
+        aTutorialIsDisplayed = true
         /* Keep the focal colour as transparent for night mode
            so that the contents being highlighted are visible properly */
         if (Themes.currentTheme.isNightMode) {
@@ -92,5 +104,9 @@ class CustomMaterialTapTargetPromptBuilder<T>(val activity: Activity, private va
 
         featureIdentifier.setVisited(activity)
         return super.show()
+    }
+
+    companion object {
+        var aTutorialIsDisplayed = false
     }
 }
