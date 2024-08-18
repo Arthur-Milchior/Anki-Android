@@ -34,6 +34,12 @@ class CustomMaterialTapTargetPromptBuilder<T>(val activity: Activity, private va
         return this
     }
 
+    override fun setTarget(@IdRes target: Int): MaterialTapTargetPrompt.Builder {
+        // Ensuring the target is present
+        activity.findViewById<View>(target)!!
+        return super.setTarget(target)
+    }
+
     fun createRectangleWithDimmedBackground(): CustomMaterialTapTargetPromptBuilder<T> {
         promptBackground = DimmedPromptBackgroundDecorator(RectanglePromptBackground()).toPromptBackground()
         return createRectangle()
