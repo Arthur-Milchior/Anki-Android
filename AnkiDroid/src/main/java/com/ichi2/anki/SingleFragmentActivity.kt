@@ -22,8 +22,6 @@ import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.commit
-import com.ichi2.compat.CompatV24
-import com.ichi2.compat.ShortcutGroupProvider
 import com.ichi2.utils.getInstanceFromClassName
 import timber.log.Timber
 import kotlin.reflect.KClass
@@ -99,7 +97,7 @@ open class SingleFragmentActivity : AnkiActivity() {
         }
     }
 
-    override val shortcuts: CompatV24.ShortcutGroup?
+    override val shortcuts: ShortcutGroup?
         get() = (fragment as? ShortcutGroupProvider)?.shortcuts
 }
 

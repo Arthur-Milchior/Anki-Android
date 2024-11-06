@@ -60,7 +60,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.content.ContextCompat.registerReceiver
 import androidx.core.content.FileProvider
 import androidx.core.content.IntentCompat
 import androidx.core.content.edit
@@ -80,6 +79,7 @@ import anki.notes.NoteFieldsCheckResponse
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import com.ichi2.anim.ActivityTransitionAnimation
+import com.ichi2.anki.AnkiActivity.ShortcutGroup
 import com.ichi2.anki.CollectionManager.TR
 import com.ichi2.anki.CollectionManager.withCol
 import com.ichi2.anki.OnContextAndLongClickListener.Companion.setOnContextAndLongClickListener
@@ -130,12 +130,8 @@ import com.ichi2.anki.utils.ext.isImageOcclusion
 import com.ichi2.anki.utils.ext.sharedPrefs
 import com.ichi2.anki.widgets.DeckDropDownAdapter.SubtitleListener
 import com.ichi2.annotations.NeedsTest
-import com.ichi2.compat.CompatHelper
 import com.ichi2.compat.CompatHelper.Companion.getSerializableCompat
-import com.ichi2.compat.CompatV24
-import com.ichi2.compat.ShortcutGroupProvider
 import com.ichi2.compat.setTooltipTextCompat
-import com.ichi2.compat.shortcut
 import com.ichi2.imagecropper.ImageCropper
 import com.ichi2.imagecropper.ImageCropper.Companion.CROP_IMAGE_RESULT
 import com.ichi2.imagecropper.ImageCropperLauncher
@@ -164,6 +160,7 @@ import com.ichi2.utils.KotlinCleanup
 import com.ichi2.utils.MapUtil
 import com.ichi2.utils.NoteFieldDecorator
 import com.ichi2.utils.TextViewUtil
+import com.ichi2.utils.configureView
 import com.ichi2.utils.message
 import com.ichi2.utils.negativeButton
 import com.ichi2.utils.neutralButton
@@ -183,7 +180,6 @@ import java.util.function.Consumer
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
-import androidx.appcompat.widget.Toolbar as MainToolbar
 
 /**
  * Allows the user to edit a note, for instance if there is a typo. A card is a presentation of a note, and has two
@@ -1637,9 +1633,8 @@ class NoteEditor : AnkiFragment(R.layout.note_editor), DeckSelectionListener, Su
                     description!!
                 )
             }
-            CompatHelper.compat.configureView(
+            editLineView.configureView(
                 requireActivity(),
-                editLineView,
                 MEDIA_MIME_TYPES,
                 DropHelper.Options.Builder()
                     .setHighlightColor(R.color.material_lime_green_A700)
@@ -2355,7 +2350,7 @@ class NoteEditor : AnkiFragment(R.layout.note_editor), DeckSelectionListener, Su
     }
 
     override val shortcuts
-        get() = CompatV24.ShortcutGroup(
+        get() = ShortcutGroup(
             listOf(
                 shortcut("Ctrl+ENTER", R.string.save),
                 shortcut("Ctrl+D", R.string.select_deck),

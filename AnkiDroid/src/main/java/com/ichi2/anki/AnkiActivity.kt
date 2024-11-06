@@ -18,6 +18,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.KeyboardShortcutGroup
+import android.view.KeyboardShortcutInfo
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -51,6 +52,8 @@ import com.ichi2.anim.ActivityTransitionAnimation
 import com.ichi2.anim.ActivityTransitionAnimation.Direction
 import com.ichi2.anim.ActivityTransitionAnimation.Direction.DEFAULT
 import com.ichi2.anim.ActivityTransitionAnimation.Direction.NONE
+import com.ichi2.anki.AnkiActivity.Shortcut
+import com.ichi2.anki.CollectionManager.TR
 import com.ichi2.anki.analytics.UsageAnalytics
 import com.ichi2.anki.dialogs.AsyncDialogFragment
 import com.ichi2.anki.dialogs.DialogHandler
@@ -63,10 +66,7 @@ import com.ichi2.anki.receiver.SdCardReceiver
 import com.ichi2.anki.snackbar.showSnackbar
 import com.ichi2.anki.workarounds.AppLoadedFromBackupWorkaround.showedActivityFailedScreen
 import com.ichi2.async.CollectionLoader
-import com.ichi2.compat.CompatHelper
 import com.ichi2.compat.CompatHelper.Companion.registerReceiverCompat
-import com.ichi2.compat.CompatV24
-import com.ichi2.compat.ShortcutGroupProvider
 import com.ichi2.compat.customtabs.CustomTabActivityHelper
 import com.ichi2.compat.customtabs.CustomTabsFallback
 import com.ichi2.compat.customtabs.CustomTabsHelper
@@ -74,6 +74,7 @@ import com.ichi2.libanki.Collection
 import com.ichi2.themes.Themes
 import com.ichi2.utils.AdaptionUtil
 import com.ichi2.utils.KotlinCleanup
+import net.ankiweb.rsdroid.Translations
 import timber.log.Timber
 import androidx.browser.customtabs.CustomTabsIntent.Builder as CustomTabsIntentBuilder
 
@@ -637,14 +638,98 @@ open class AnkiActivity : AppCompatActivity, SimpleMessageDialogListener, Shortc
         menu: Menu?,
         deviceId: Int
     ) {
-        val shortcutGroups = CompatHelper.compat.getShortcuts(this)
+        val shortcutGroups = getShortcuts()
         data.addAll(shortcutGroups)
         super.onProvideKeyboardShortcuts(data, menu, deviceId)
     }
 
+    fun getShortcuts(): List<KeyboardShortcutGroup> {
+        val generalShortcutGroup = ShortcutGroup(
+            listOf(
+                shortcut("Alt+K", R.string.show_keyboard_shortcuts_dialog),
+                shortcut("Ctrl+Z", R.string.undo)
+            ),
+            R.string.pref_cat_general
+        ).toShortcutGroup(this)
+
+        return listOfNotNull(shortcuts?.toShortcutGroup(this), generalShortcutGroup)
+    }
+
+    /**
+     * Data class representing a keyboard shortcut.
+     *
+     * @param shortcut The string representation of the keyboard shortcut (e.g., "Ctrl+Alt+S").
+     * @param label The string resource for the shortcut label.
+     */
+    data class Shortcut(val shortcut: String, val label: String) {
+
+        /**
+         * Converts the shortcut string into a KeyboardShortcutInfo object.
+         *
+         * @param context The context used to retrieve the string label resource.
+         * @return A KeyboardShortcutInfo object representing the keyboard shortcut.
+         */
+        fun toShortcutInfo(): KeyboardShortcutInfo {
+            val parts = shortcut.split("+")
+            val key = parts.last()
+            val keycode: Int = getKey(key)
+            val modifierFlags: Int = parts.dropLast(1).sumOf { getModifier(it) }
+
+            return KeyboardShortcutInfo(label, keycode, modifierFlags)
+        }
+
+        /**
+         * Maps a modifier string to its corresponding KeyEvent meta flag.
+         *
+         * @param modifier The modifier string (e.g., "Ctrl", "Alt", "Shift").
+         * @return The corresponding KeyEvent meta flag.
+         */
+        private fun getModifier(modifier: String): Int {
+            return when (modifier) {
+                "Ctrl" -> KeyEvent.META_CTRL_ON
+                "Alt" -> KeyEvent.META_ALT_ON
+                "Shift" -> KeyEvent.META_SHIFT_ON
+
+                else -> 0
+            }
+        }
+
+        /**
+         * Maps a key string to its corresponding keycode.
+         *
+         * @param key The key string.
+         * @return The corresponding keycode, or 0 if the key string is invalid or not recognized.
+         */
+        private fun getKey(key: String): Int {
+            return when (key) {
+                "/" -> KeyEvent.KEYCODE_SLASH
+                "Esc" -> KeyEvent.KEYCODE_ESCAPE
+                in "0".."9" -> KeyEvent.KEYCODE_0 + (key.toInt() - 0) // Handle number keys
+                else -> KeyEvent.keyCodeFromString(key)
+            }
+        }
+    }
+
+    data class ShortcutGroup(val shortcuts: List<Shortcut>, @StringRes val id: Int) {
+        fun toShortcutGroup(activity: AnkiActivity): KeyboardShortcutGroup {
+            val shortcuts = shortcuts.map { it.toShortcutInfo() }
+            val groupLabel = activity.getString(id)
+            return KeyboardShortcutGroup(groupLabel, shortcuts)
+        }
+    }
+
+    fun showKeyboardShortcutsDialog() {
+        val shortcutsGroup = getShortcuts()
+        // Don't show keyboard shortcuts dialog if there is no available shortcuts and also
+        // if there's 1 item because shortcutsGroup always includes generalShortcutGroup.
+        if (shortcutsGroup.size <= 1) return
+        Timber.i("displaying keyboard shortcut screen")
+        requestShowKeyboardShortcuts()
+    }
+
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         if (event.isAltPressed && keyCode == KeyEvent.KEYCODE_K) {
-            CompatHelper.compat.showKeyboardShortcutsDialog(this)
+            showKeyboardShortcutsDialog()
             return true
         }
 
@@ -676,7 +761,7 @@ open class AnkiActivity : AppCompatActivity, SimpleMessageDialogListener, Shortc
     }
 
     override val shortcuts
-        get(): CompatV24.ShortcutGroup? = null
+        get(): ShortcutGroup? = null
 
     companion object {
         const val DIALOG_FRAGMENT_TAG = "dialog"
@@ -714,4 +799,23 @@ fun Fragment.requireAnkiActivity(): AnkiActivity {
 
 interface AnkiActivityProvider {
     val ankiActivity: AnkiActivity
+
+    /**
+     * Provides a [AnkiActivity.Shortcut], from the shortcut keys and the resource id of its description.
+     */
+    fun shortcut(shortcut: String, @StringRes labelRes: Int) =
+        Shortcut(shortcut, ankiActivity.getString(labelRes))
+
+    /**
+     * Provides a [AnkiActivity.Shortcut], from the shortcut keys and the function from anki strings.
+     */
+    fun shortcut(shortcut: String, getTranslation: Translations.() -> String) =
+        Shortcut(shortcut, getTranslation(TR))
+}
+
+interface ShortcutGroupProvider {
+    /**
+     * Lists of shortcuts for this fragment, and the IdRes of the name of this shortcut group.
+     */
+    val shortcuts: AnkiActivity.ShortcutGroup?
 }

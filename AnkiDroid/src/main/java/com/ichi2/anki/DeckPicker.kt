@@ -152,11 +152,8 @@ import com.ichi2.anki.worker.SyncWorker
 import com.ichi2.anki.worker.UniqueWorkNames
 import com.ichi2.annotations.NeedsTest
 import com.ichi2.async.deleteMedia
-import com.ichi2.compat.CompatHelper
 import com.ichi2.compat.CompatHelper.Companion.getSerializableCompat
 import com.ichi2.compat.CompatHelper.Companion.sdkVersion
-import com.ichi2.compat.CompatV24
-import com.ichi2.compat.shortcut
 import com.ichi2.libanki.ChangeManager
 import com.ichi2.libanki.Consts
 import com.ichi2.libanki.DeckId
@@ -181,6 +178,7 @@ import com.ichi2.utils.SyncStatus
 import com.ichi2.utils.VersionUtils
 import com.ichi2.utils.cancelable
 import com.ichi2.utils.checkBoxPrompt
+import com.ichi2.utils.configureView
 import com.ichi2.utils.customView
 import com.ichi2.utils.message
 import com.ichi2.utils.negativeButton
@@ -583,9 +581,8 @@ open class DeckPicker :
             }
         }
 
-        CompatHelper.compat.configureView(
+        pullToSyncWrapper.configureView(
             this,
-            pullToSyncWrapper,
             IMPORT_MIME_TYPES,
             DropHelper.Options.Builder()
                 .setHighlightColor(R.color.material_lime_green_A700)
@@ -2423,7 +2420,7 @@ open class DeckPicker :
     }
 
     override val shortcuts
-        get() = CompatV24.ShortcutGroup(
+        get() = ShortcutGroup(
             listOf(
                 shortcut("A", R.string.menu_add_note),
                 shortcut("B", R.string.card_browser_context_menu),

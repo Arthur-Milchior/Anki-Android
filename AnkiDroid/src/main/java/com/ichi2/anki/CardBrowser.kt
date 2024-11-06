@@ -112,9 +112,6 @@ import com.ichi2.anki.utils.roundedTimeSpanUnformatted
 import com.ichi2.anki.widgets.DeckDropDownAdapter.SubtitleListener
 import com.ichi2.annotations.NeedsTest
 import com.ichi2.async.renderBrowserQA
-import com.ichi2.compat.CompatHelper
-import com.ichi2.compat.CompatV24
-import com.ichi2.compat.shortcut
 import com.ichi2.libanki.Card
 import com.ichi2.libanki.CardId
 import com.ichi2.libanki.ChangeManager
@@ -678,7 +675,7 @@ open class CardBrowser :
                     return true
                 } else if (event.isAltPressed) {
                     Timber.i("Alt+K: Show keyboard shortcuts dialog")
-                    CompatHelper.compat.showKeyboardShortcutsDialog(this)
+                    showKeyboardShortcutsDialog()
                     return true
                 }
             }
@@ -2373,7 +2370,7 @@ open class CardBrowser :
     }
 
     override val shortcuts
-        get() = CompatV24.ShortcutGroup(
+        get() = ShortcutGroup(
             listOf(
                 shortcut("Ctrl+Shift+A", R.string.edit_tags_dialog),
                 shortcut("Ctrl+A", R.string.card_browser_select_all),
