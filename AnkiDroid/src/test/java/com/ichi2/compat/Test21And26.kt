@@ -47,7 +47,7 @@ abstract class Test21And26 {
         @JvmStatic // required for Parameters
         @Parameterized.Parameters(name = "{1}")
         fun data(): Iterable<Array<Any>> = sequence {
-            yield(arrayOf(CompatV23(), "CompatV23"))
+            yield(arrayOf(BaseCompat(), "BaseCompat"))
             yield(arrayOf(CompatV26(), "CompatV26"))
         }.asIterable()
 
@@ -76,7 +76,7 @@ abstract class Test21And26 {
     lateinit var unitTestDescription: String
 
     val isV23: Boolean
-        get() = compat is CompatV23
+        get() = compat is BaseCompat
     val isV26: Boolean
         get() = compat is CompatV26
 
