@@ -36,16 +36,13 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.ichi2.anki.TestUtils.activityInstance
 import com.ichi2.anki.TestUtils.clickChildViewWithId
 import com.ichi2.anki.TestUtils.isTablet
-import com.ichi2.anki.TestUtils.wasBuiltOnCI
 import com.ichi2.anki.tests.InstrumentedTest
 import com.ichi2.anki.testutil.GrantStoragePermission.storagePermission
 import com.ichi2.anki.testutil.ThreadUtils.sleep
 import com.ichi2.anki.testutil.grantPermissions
 import com.ichi2.anki.testutil.notificationPermission
 import org.hamcrest.Matchers.instanceOf
-import org.junit.Assume.assumeFalse
 import org.junit.Assume.assumeTrue
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -57,22 +54,21 @@ class DeckPickerTest : InstrumentedTest() {
     @get:Rule
     val runtimePermissionRule = grantPermissions(storagePermission, notificationPermission)
 
-    @Ignore("This test appears to be flaky everywhere")
     @Test
     fun checkIfClickOnCountsLayoutOpensStudyOptionsOnMobile() {
         // Run the test only on emulator.
         assumeTrue(isEmulator())
-        assumeFalse("Test flaky in CI - #9282, skipping", wasBuiltOnCI())
 
         // For mobile. If it is not a mobile, then test will be ignored.
         assumeTrue(!isTablet)
-        val testString = System.currentTimeMillis().toString() + ""
-        createDeckWithCard(testString)
+        closeGetStartedScreenIfExists()
+        closeBackupCollectionDialogIfExists()
+        val deckName = createDeckWithCard()
 
         // Go to RecyclerView item having "Test Deck" and click on the counts layout
         onView(withId(R.id.files)).perform(
             RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
-                hasDescendant(withText("TestDeck$testString")),
+                hasDescendant(withText(deckName)),
                 clickChildViewWithId(R.id.counts_layout)
             )
         )
@@ -92,31 +88,38 @@ class DeckPickerTest : InstrumentedTest() {
     fun checkIfStudyOptionsIsDisplayedOnTablet() {
         // Run the test only on emulator.
         assumeTrue(isEmulator())
-        assumeFalse("Test flaky in CI - #9282, skipping", wasBuiltOnCI())
 
         // For tablet. If it is not a tablet, then test will be ignored.
         assumeTrue(isTablet)
         closeGetStartedScreenIfExists()
         closeBackupCollectionDialogIfExists()
-        val testString = System.currentTimeMillis().toString() + ""
-        createDeckWithCard(testString)
+        createDeckWithCard()
 
         // Check if currently open Fragment is StudyOptionsFragment
         onView(withId(R.id.studyoptions_fragment))
             .check(ViewAssertions.matches(isDisplayed()))
     }
 
-    private fun createDeckWithCard(testString: String) {
+    /**
+     * Create a deck with (realistically) a unique name.  Adds a card in it. Return the name.
+     */
+    private fun createDeck(): String {
+        val testString = System.currentTimeMillis().toString()
+        val deckName = "TestDeck$testString"
         // Create a new deck
         onView(withId(R.id.fab_main)).perform(click())
         onView(withId(R.id.add_deck_action)).perform(click())
-        onView(withId(R.id.dialog_text_input)).perform(typeText("TestDeck$testString"))
+        onView(withId(R.id.dialog_text_input)).perform(typeText(deckName))
         onView(withText(R.string.dialog_ok)).perform(click())
+        return deckName
+    }
 
+    private fun createDeckWithCard(): String {
+        val deckName = createDeck()
         // The deck is currently empty, so if we tap on it, it becomes the selected deck but doesn't enter
         onView(withId(R.id.files)).perform(
             RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
-                hasDescendant(withText("TestDeck$testString")),
+                hasDescendant(withText(deckName)),
                 clickChildViewWithId(R.id.counts_layout)
             )
         )
@@ -131,12 +134,12 @@ class DeckPickerTest : InstrumentedTest() {
         onView(withId(R.id.note_type_spinner)).perform(click())
         onView(withText("Basic")).perform(click())
         onView(withContentDescription("Front"))
-            .perform(typeText("SampleText$testString"))
+            .perform(typeText("SampleText$deckName"))
         onView(withId(R.id.action_save)).perform(click())
         closeSoftKeyboard()
 
         // Go back to Deck Picker
         pressBack()
-        pressBack()
+        return deckName
     }
 }
