@@ -100,6 +100,21 @@ class DeckPickerTest : InstrumentedTest() {
             .check(ViewAssertions.matches(isDisplayed()))
     }
 
+    @Test
+    fun OpenDeckMenu() {
+        closeGetStartedScreenIfExists()
+        closeBackupCollectionDialogIfExists()
+        val deckName = createDeck()
+        // Long press on the deck
+        onView(withId(R.id.files)).perform(
+            RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
+                hasDescendant(withText(deckName)),
+                clickChildViewWithId(R.id.counts_layout, longClick = true)
+            )
+        )
+        onView(withText(R.string.menu__deck_options)).perform(click())
+    }
+
     /**
      * Create a deck with (realistically) a unique name.  Adds a card in it. Return the name.
      */

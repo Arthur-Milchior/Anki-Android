@@ -22,6 +22,7 @@ import android.view.View
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.platform.app.InstrumentationRegistry
+
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import org.hamcrest.Matcher
@@ -61,7 +62,7 @@ object TestUtils {
     /**
      * Click on a view using its ID inside a RecyclerView item
      */
-    fun clickChildViewWithId(id: Int): ViewAction {
+    fun clickChildViewWithId(id: Int, longClick: Boolean = false): ViewAction {
         return object : ViewAction {
             override fun getConstraints(): Matcher<View>? {
                 return null
@@ -73,7 +74,11 @@ object TestUtils {
 
             override fun perform(uiController: UiController, view: View) {
                 val v = view.findViewById<View>(id)
-                v.performClick()
+                if (longClick) {
+                    v.performLongClick()
+                } else {
+                    v.performClick()
+                }
             }
         }
     }
