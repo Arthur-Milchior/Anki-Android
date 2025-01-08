@@ -202,15 +202,15 @@ public class AddContentApi(
 
     /**
      * Find all existing notes in the collection which have mid and a duplicate key
-     * @param mid model id
+     * @param noteTypeId model id
      * @param key the first field of a note
      * @return a list of duplicate notes
      */
     public fun findDuplicateNotes(
-        mid: Long,
+        noteTypeId: Long,
         key: String,
     ): List<NoteInfo?> {
-        val notes = compat.findDuplicateNotes(mid, listOf(key))
+        val notes = compat.findDuplicateNotes(noteTypeId, listOf(key))
         return if (notes!!.size() == 0) {
             emptyList<NoteInfo>()
         } else {
@@ -221,21 +221,21 @@ public class AddContentApi(
     /**
      * Find all notes in the collection which have mid and a first field that matches key
      * Much faster than calling findDuplicateNotes(long, String) when the list of keys is large
-     * @param mid model id
+     * @param noteTypeId model id
      * @param keys list of keys
      * @return a SparseArray with a list of duplicate notes for each key
      */
     public fun findDuplicateNotes(
-        mid: Long,
+        noteTypeId: Long,
         keys: List<String>,
-    ): SparseArray<MutableList<NoteInfo?>>? = compat.findDuplicateNotes(mid, keys)
+    ): SparseArray<MutableList<NoteInfo?>>? = compat.findDuplicateNotes(noteTypeId, keys)
 
     /**
      * Get the number of notes that exist for the specified model ID
-     * @param mid id of the model to be used
+     * @param noteTypeId id of the model to be used
      * @return number of notes that exist with that model ID or -1 if there was a problem
      */
-    public fun getNoteCount(mid: Long): Int = compat.queryNotes(mid)?.use { cursor -> cursor.count } ?: 0
+    public fun getNoteCount(noteTypeId: Long): Int = compat.queryNotes(noteTypeId)?.use { cursor -> cursor.count } ?: 0
 
     /**
      * Set the tags for a given note
@@ -300,20 +300,20 @@ public class AddContentApi(
 
     /**
      * Get the html that would be generated for the specified note type and field list
-     * @param flds array of field values for the note. Length must be the same as num. fields in mid.
-     * @param mid id for the note type to be used
+     * @param flds array of field values for the note. Length must be the same as num. fields in note type.
+     * @param noteTypeId id for the note type to be used
      * @return list of front &amp; back pairs for each card which contain the card HTML, or null if there was a problem
      * @throws SecurityException if READ_WRITE_PERMISSION not granted (e.g. due to install order bug)
      */
     public fun previewNewNote(
-        mid: Long,
+        noteTypeId: Long,
         flds: Array<String>,
     ): Map<String, Map<String, String>>? {
         if (!hasReadWritePermission()) {
             // avoid situation where addNote will pass, but deleteNote will fail
             throw SecurityException("previewNewNote requires full read-write-permission")
         }
-        val newNoteUri = addNoteInternal(mid, DEFAULT_DECK_ID, flds, setOf(TEST_TAG))
+        val newNoteUri = addNoteInternal(noteTypeId, DEFAULT_DECK_ID, flds, setOf(TEST_TAG))
         // Build map of HTML for each generated card
         val cards: MutableMap<String, Map<String, String>> = HashMap()
         val cardsUri = Uri.withAppendedPath(newNoteUri, "cards")
@@ -495,10 +495,10 @@ public class AddContentApi(
 
     /**
      * Get the name of the model which has given ID
-     * @param mid id of model
+     * @param noteTypeId id of model
      * @return the name of the model, or null if no model was found
      */
-    public fun getModelName(mid: Long): String? = modelList!![mid]
+    public fun getModelName(noteTypeId: Long): String? = modelList!![noteTypeId]
 
     /**
      * Create a new deck with specified name and save the reference to SharedPreferences for later

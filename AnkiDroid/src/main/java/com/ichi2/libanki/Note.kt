@@ -40,11 +40,9 @@ class Note : Cloneable {
         private set
     lateinit var notetype: NotetypeJson
 
-    val noteTypeId: NoteTypeId
-        get() = mid
+    var noteTypeId: NoteTypeId = 0L
+        private set
 
-    /** for upstream compatibility, use [noteTypeId] outside libAnki */
-    private var mid: NoteTypeId = 0L
     lateinit var tags: MutableList<String>
     lateinit var fields: MutableList<String>
     private var fMap: Map<String, Pair<Int, Field>>? = null
@@ -84,7 +82,7 @@ class Note : Cloneable {
     ) {
         id = note.id
         guId = note.guid
-        mid = note.notetypeId
+        noteTypeId = note.notetypeId
         notetype = col.notetypes.get(noteTypeId)!! // not in libAnki
         mod = note.mtimeSecs
         usn = note.usn
