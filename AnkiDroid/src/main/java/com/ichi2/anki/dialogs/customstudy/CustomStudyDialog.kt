@@ -64,6 +64,7 @@ import com.ichi2.annotations.NeedsTest
 import com.ichi2.libanki.Consts
 import com.ichi2.libanki.Deck
 import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.FilteredDeck
 import com.ichi2.libanki.undoableOp
 import com.ichi2.utils.BundleUtils.getNullableInt
 import com.ichi2.utils.KotlinCleanup
@@ -430,11 +431,11 @@ class CustomStudyDialog :
      * @param terms search terms
      */
     private suspend fun createTagsCustomStudySession(terms: Array<Any>) {
-        val dyn: Deck
+        val dyn: FilteredDeck
 
         val deckToStudyName = withCol { decks.name(dialogDeckId) }
         val customStudyDeck = resources.getString(R.string.custom_study_deck_name)
-        val cur = withCol { decks.byName(customStudyDeck) }
+        val cur = withCol { decks.byName(customStudyDeck) as? FilteredDeck }
         if (cur != null) {
             Timber.i("Found deck: '%s'", customStudyDeck)
             if (cur.isNormal) {
@@ -453,7 +454,7 @@ class CustomStudyDialog :
             Timber.i("Creating Dynamic Deck '%s' for custom study", customStudyDeck)
             dyn =
                 try {
-                    withCol { decks.get(decks.newFiltered(customStudyDeck))!! }
+                    withCol { decks.get(decks.newFiltered(customStudyDeck))!! as FilteredDeck }
                 } catch (ex: BackendDeckIsFilteredException) {
                     showThemedToast(requireActivity(), ex.localizedMessage ?: ex.message ?: "", true)
                     return
