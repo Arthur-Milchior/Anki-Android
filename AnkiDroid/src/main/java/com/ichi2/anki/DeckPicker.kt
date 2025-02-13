@@ -2379,8 +2379,7 @@ open class DeckPicker :
         // open deck options
         if (getColUnsafe.decks.isFiltered(did)) {
             // open cram options if filtered deck
-            val i = Intent(this@DeckPicker, FilteredDeckOptions::class.java)
-            i.putExtra("did", did)
+            val i = FilteredDeckOptions.createIntent(this, did = did)
             startActivity(i)
         } else {
             // otherwise open regular options
