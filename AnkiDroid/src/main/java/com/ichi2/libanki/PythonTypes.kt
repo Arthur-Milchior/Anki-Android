@@ -20,6 +20,13 @@ import android.os.Bundle
 import android.os.Parcelable
 import anki.backend.GeneratedBackend
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
 /*
  * We can't use private typealiases until
@@ -38,6 +45,7 @@ fun Bundle.getDid() = DeckId(getLong("did"))
 
 @JvmInline
 @Parcelize
+@Serializable(with = DeckIdAsLongSerializer::class)
 value class DeckId(
     val id: Long,
 ) : Parcelable {
@@ -49,6 +57,20 @@ value class DeckId(
     }
 
     fun isZero() = id == 0L
+}
+
+object DeckIdAsLongSerializer : KSerializer<DeckId> {
+    // Serial names of descriptors should be unique, this is why we advise including app package in the name.
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("my.app.DeckId", PrimitiveKind.LONG)
+
+    override fun serialize(
+        encoder: Encoder,
+        value: DeckId,
+    ) {
+        encoder.encodeLong(value.id)
+    }
+
+    override fun deserialize(decoder: Decoder): DeckId = DeckId(decoder.decodeLong())
 }
 
 internal typealias CardId = Long
