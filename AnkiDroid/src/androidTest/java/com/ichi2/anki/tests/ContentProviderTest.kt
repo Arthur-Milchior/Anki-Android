@@ -1432,7 +1432,7 @@ class ContentProviderTest : InstrumentedTest() {
  * Unbury all buried cards in all decks. Only used for tests.
  */
 fun Scheduler.unburyCards() {
-    for (did in col.decks.allNamesAndIds().map { it.id }) {
+    for (did in col.decks.allNamesAndIds().map { it.did }) {
         unburyDeck(did)
     }
 }

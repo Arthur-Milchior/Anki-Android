@@ -121,7 +121,7 @@ class Statistics :
         val selectedPosition = spinner.selectedItemPosition
         if (selectedPosition != INVALID_POSITION) {
             val selectedDeck = spinner.adapter.getItem(selectedPosition) as DeckNameId
-            outState.putLong(KEY_DECK_ID, selectedDeck.id)
+            outState.putLong(KEY_DECK_ID, selectedDeck.did)
             outState.putString(KEY_DECK_NAME, selectedDeck.name)
         }
     }
@@ -138,7 +138,7 @@ class Statistics :
      * Given the [deckId] look in the decks adapter for its position and select it if found.
      */
     private fun select(deckId: DeckId) {
-        val itemToSelect = decksAdapterSequence.withIndex().firstOrNull { it.value.id == deckId } ?: return
+        val itemToSelect = decksAdapterSequence.withIndex().firstOrNull { it.value.did == deckId } ?: return
         spinner.setSelection(itemToSelect.index)
     }
 

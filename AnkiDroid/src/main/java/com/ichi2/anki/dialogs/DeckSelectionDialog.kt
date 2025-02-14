@@ -472,7 +472,7 @@ open class DeckSelectionDialog : AnalyticsDialogFragment() {
             val nameArr = name.split("::")
             nameArr[nameArr.size - 1]
         }
-        constructor(d: DeckNameId) : this(d.id, d.name)
+        constructor(d: DeckNameId) : this(d.did, d.name)
 
         companion object {
             /**

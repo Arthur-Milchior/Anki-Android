@@ -103,7 +103,7 @@ fun PagesTest.getDeckOptions(context: Context): Intent =
         col.decks
             .allNamesAndIds()
             .first()
-            .id,
+            .did,
     )
 
 fun PagesTest.needsPath(

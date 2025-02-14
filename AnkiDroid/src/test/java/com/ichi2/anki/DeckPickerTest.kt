@@ -474,7 +474,7 @@ class DeckPickerTest : RobolectricTest() {
             startActivityNormallyOpenCollectionWithIntent(DeckPicker::class.java, Intent()).run {
                 val didA = addDeck("Deck 1")
                 supportFragmentManager.selectContextMenuOption(DeckPickerContextMenuOption.DELETE_DECK, didA)
-                assertThat(getColUnsafe.decks.allNamesAndIds().map { it.id }, not(containsInAnyOrder(didA)))
+                assertThat(getColUnsafe.decks.allNamesAndIds().map { it.did }, not(containsInAnyOrder(didA)))
             }
         }
 

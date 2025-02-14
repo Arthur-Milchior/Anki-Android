@@ -360,11 +360,11 @@ class CardBrowserTest : RobolectricTest() {
             val deckOneId = addDeck("one")
             val browser = browserWithNoNewCards
             assertEquals(2, browser.validDecksForChangeDeck.size) // 1 added + default deck
-            assertEquals(1, browser.validDecksForChangeDeck.count { it.id == deckOneId })
+            assertEquals(1, browser.validDecksForChangeDeck.count { it.did == deckOneId })
             val deckTwoId = addDeck("two")
             assertEquals(3, browser.validDecksForChangeDeck.size) // 2 added + default deck
-            assertEquals(1, browser.validDecksForChangeDeck.count { it.id == deckOneId })
-            assertEquals(1, browser.validDecksForChangeDeck.count { it.id == deckTwoId })
+            assertEquals(1, browser.validDecksForChangeDeck.count { it.did == deckOneId })
+            assertEquals(1, browser.validDecksForChangeDeck.count { it.did == deckTwoId })
         }
 
     @Test

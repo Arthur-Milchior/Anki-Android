@@ -178,7 +178,7 @@ class DeckSpinnerSelection(
      */
     fun updateDeckPosition(deckId: DeckId) {
         // TODO: This doesn't handle ALL_DECKS
-        val position = dropDownDecks?.map { it.id }?.indexOf(deckId) ?: -1
+        val position = dropDownDecks?.map { it.did }?.indexOf(deckId) ?: -1
         if (position != -1) {
             spinner.setSelection(position)
         } else {
@@ -227,7 +227,7 @@ class DeckSpinnerSelection(
         deckId: DeckId,
         setAsCurrentDeck: Boolean,
     ): Boolean {
-        val deck = this.dropDownDecks?.withIndex()?.firstOrNull { it.value.id == deckId } ?: return false
+        val deck = this.dropDownDecks?.withIndex()?.firstOrNull { it.value.did == deckId } ?: return false
         val position = if (showAllDecks) deck.index + 1 else deck.index
         spinner.setSelection(position)
         if (setAsCurrentDeck) {

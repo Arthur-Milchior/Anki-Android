@@ -131,7 +131,7 @@ class ExportDialogFragment : DialogFragment() {
         var position = 0
         val adapter = deckSelector.adapter as DeckDisplayAdapter
         while (position < adapter.count) {
-            if (adapter.getItem(position).id == did) {
+            if (adapter.getItem(position).did == did) {
                 return position
             }
             position++
@@ -420,10 +420,10 @@ class ExportDialogFragment : DialogFragment() {
                 val deckNameId =
                     (deckSelector.adapter as DeckDisplayAdapter)
                         .getItem(deckSelector.selectedItemPosition)
-                if (deckNameId.id == DeckSpinnerSelection.ALL_DECKS_ID) {
+                if (deckNameId.did == DeckSpinnerSelection.ALL_DECKS_ID) {
                     exportLimit { this.wholeCollection = Empty.getDefaultInstance() }
                 } else {
-                    exportLimit { this.deckId = deckNameId.id }
+                    exportLimit { this.deckId = deckNameId.did }
                 }
             }
         }

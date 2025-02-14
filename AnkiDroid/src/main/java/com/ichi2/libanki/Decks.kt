@@ -53,7 +53,7 @@ typealias UpdateDeckConfigs = UpdateDeckConfigsRequest
 
 data class DeckNameId(
     val name: String,
-    val id: DeckId,
+    val did: DeckId,
 )
 
 const val DEFAULT_DECK_CONF_ID: DeckConfigId = 1L
@@ -505,7 +505,7 @@ class Decks(
         val childrenDids =
             allNamesAndIds(skipEmptyDefault = true, includeFiltered = false)
                 .filter { it.name.startsWith("$selectedDeckName::") }
-                .map { it.id }
+                .map { it.did }
         col.config.set(ACTIVE_DECKS, listOf(did) + childrenDids)
     }
 
