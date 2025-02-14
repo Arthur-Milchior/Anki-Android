@@ -17,6 +17,7 @@ package com.ichi2.libanki
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ichi2.anki.Ease
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
 import com.ichi2.libanki.sched.Counts
 import com.ichi2.testutils.JvmTest
 import com.ichi2.testutils.ext.addNote
@@ -56,7 +57,7 @@ class AbstractSchedTest : JvmTest() {
 
     @Test
     fun undoAndRedo() {
-        val conf = col.decks.configDictForDeckId(1)
+        val conf = col.decks.configDictForDeckId(DEFAULT_DECK_ID)
         conf.new.delays = JSONArray(doubleArrayOf(1.0, 3.0, 5.0, 10.0))
         col.decks.save(conf)
         col.config.set("collapseTime", 20 * 60)

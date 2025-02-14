@@ -104,7 +104,7 @@ class InstantEditorViewModel :
     init {
         viewModelScope.launch {
             // setup the deck Id
-            withCol { config.get<Long?>(Decks.CURRENT_DECK) ?: 1L }.let { did ->
+            withCol { config.get<Long?>(Decks.CURRENT_DECK)?.let { DeckId(it) } ?: DeckId.DEFAULT_DECK_ID }.let { did ->
                 deckId = did
             }
 

@@ -145,7 +145,6 @@ import com.ichi2.imagecropper.ImageCropper.Companion.CROP_IMAGE_RESULT
 import com.ichi2.imagecropper.ImageCropperLauncher
 import com.ichi2.libanki.Card
 import com.ichi2.libanki.Collection
-import com.ichi2.libanki.Consts
 import com.ichi2.libanki.DeckId
 import com.ichi2.libanki.Decks.Companion.CURRENT_DECK
 import com.ichi2.libanki.Field
@@ -260,7 +259,7 @@ class NoteEditor :
     private var selectedTags: MutableList<String>? = null
 
     @get:VisibleForTesting
-    var deckId: DeckId = 0
+    var deckId: DeckId = DeckId.ZERO
         private set
     private var allModelIds: List<Long>? = null
 
@@ -496,7 +495,7 @@ class NoteEditor :
         if (savedInstanceState != null) {
             caller = fromValue(savedInstanceState.getInt(CALLER_KEY))
             addNote = savedInstanceState.getBoolean("addNote")
-            deckId = savedInstanceState.getLong("did")
+            deckId = DeckId(savedInstanceState.getLong("did"))
             selectedTags = savedInstanceState.getStringArrayList("tags")
             reloadRequired = savedInstanceState.getBoolean(RELOAD_REQUIRED_EXTRA_KEY)
             pastedImageCache =
@@ -612,7 +611,7 @@ class NoteEditor :
         Timber.i("Saving instance")
         savedInstanceState.putInt(CALLER_KEY, caller.value)
         savedInstanceState.putBoolean("addNote", addNote)
-        savedInstanceState.putLong("did", deckId)
+        savedInstanceState.putLong("did", deckId.id)
         savedInstanceState.putBoolean(NOTE_CHANGED_EXTRA_KEY, changed)
         savedInstanceState.putBoolean(RELOAD_REQUIRED_EXTRA_KEY, reloadRequired)
         savedInstanceState.putIntegerArrayList("customViewIds", customViewIds)
@@ -768,7 +767,7 @@ class NoteEditor :
                 fragmentManagerSupplier = { childFragmentManager },
             )
         deckSpinnerSelection!!.initializeNoteEditorDeckSpinner(col)
-        deckId = requireArguments().getLong(EXTRA_DID, deckId)
+        deckId = DeckId(requireArguments().getLong(EXTRA_DID, deckId.id))
         val getTextFromSearchView = requireArguments().getString(EXTRA_TEXT_FROM_SEARCH_VIEW)
         setDid(editorNote)
         setNote(editorNote, FieldChangeType.onActivityCreation(shouldReplaceNewlines()))
@@ -2245,7 +2244,7 @@ class NoteEditor :
 
     private fun setDid(note: Note?) {
         fun calculateDeckId(): DeckId {
-            if (deckId != 0L) return deckId
+            if (!deckId.isZero()) return deckId
             if (note != null && !addNote && currentEditedCard != null) {
                 return currentEditedCard!!.currentDeckId()
             }
@@ -2257,14 +2256,15 @@ class NoteEditor :
                 }
             }
 
-            val currentDeckId = getColUnsafe.config.get(CURRENT_DECK) ?: 1L
+            val currentDeckId = getColUnsafe.config.get<Long>(CURRENT_DECK)?.let { DeckId(it) } ?: DeckId.DEFAULT_DECK_ID
+
             return if (getColUnsafe.decks.isFiltered(currentDeckId)) {
                 /*
                  * If the deck in mCurrentDid is a filtered (dynamic) deck, then we can't create cards in it,
                  * and we set mCurrentDid to the Default deck. Otherwise, we keep the number that had been
                  * selected previously in the activity.
                  */
-                1
+                DeckId.DEFAULT_DECK_ID
             } else {
                 currentDeckId
             }
@@ -2658,7 +2658,7 @@ class NoteEditor :
 
         // Update deck
         if (!getColUnsafe.config.getBool(ConfigKey.Bool.ADDING_DEFAULTS_TO_CURRENT_DECK)) {
-            deckId = model.optLong("did", Consts.DEFAULT_DECK_ID)
+            deckId = model.did
         }
 
         refreshNoteData(FieldChangeType.changeFieldCount(shouldReplaceNewlines()))

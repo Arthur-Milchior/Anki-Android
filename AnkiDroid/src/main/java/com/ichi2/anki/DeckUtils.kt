@@ -18,8 +18,8 @@ package com.ichi2.anki
 
 import com.ichi2.anki.CollectionManager.withCol
 import com.ichi2.libanki.Collection
-import com.ichi2.libanki.Consts
 import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
 
 /**
  * Checks if a given deck, including its subdecks if specified, is empty.
@@ -33,7 +33,7 @@ private fun Collection.isDeckEmpty(
     includeSubdecks: Boolean = true,
 ): Boolean {
     val deckIds = decks.deckAndChildIds(deckId)
-    val totalCardCount = decks.cardCount(*deckIds.toLongArray(), includeSubdecks = includeSubdecks)
+    val totalCardCount = decks.cardCount(deckIds, includeSubdecks = includeSubdecks)
     return totalCardCount == 0
 }
 
@@ -44,7 +44,7 @@ private fun Collection.isDeckEmpty(
  *
  * @return `true` if the default deck is empty, otherwise `false`.
  */
-suspend fun isDefaultDeckEmpty(): Boolean = withCol { isDeckEmpty(Consts.DEFAULT_DECK_ID) }
+suspend fun isDefaultDeckEmpty(): Boolean = withCol { isDeckEmpty(DEFAULT_DECK_ID) }
 
 /**
  * Returns whether the deck picker displays any deck.
@@ -58,6 +58,6 @@ suspend fun isDefaultDeckEmpty(): Boolean = withCol { isDeckEmpty(Consts.DEFAULT
  */
 suspend fun isCollectionEmpty(): Boolean {
     val tree = withCol { sched.deckDueTree() }
-    val onlyDefaultDeckAvailable = tree.children.singleOrNull()?.did == Consts.DEFAULT_DECK_ID
+    val onlyDefaultDeckAvailable = tree.children.singleOrNull()?.did == DEFAULT_DECK_ID
     return onlyDefaultDeckAvailable && isDefaultDeckEmpty()
 }

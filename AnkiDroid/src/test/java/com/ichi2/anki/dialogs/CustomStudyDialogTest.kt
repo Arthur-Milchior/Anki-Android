@@ -37,7 +37,7 @@ import com.ichi2.anki.dialogs.customstudy.CustomStudyDialog.CustomStudyDefaults.
 import com.ichi2.anki.dialogs.utils.performPositiveClick
 import com.ichi2.annotations.NeedsTest
 import com.ichi2.libanki.Collection
-import com.ichi2.libanki.Consts
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
 import com.ichi2.libanki.FilteredDeck
 import com.ichi2.libanki.FilteredDeck.Term
 import com.ichi2.libanki.sched.Scheduler
@@ -215,7 +215,7 @@ class CustomStudyDialogTest : RobolectricTest() {
         mockk<Collection>(relaxed = true) {
             every { sched } returns
                 mockk<Scheduler> {
-                    every { customStudyDefaults(Consts.DEFAULT_DECK_ID) } returns response
+                    every { customStudyDefaults(DEFAULT_DECK_ID) } returns response
                 }
         }
 
@@ -223,7 +223,7 @@ class CustomStudyDialogTest : RobolectricTest() {
         requireNotNull(
             CustomStudyDialog
                 .createInstance(
-                    deckId = Consts.DEFAULT_DECK_ID,
+                    deckId = DEFAULT_DECK_ID,
                     contextMenuAttribute = subscreen,
                 ).arguments,
         )
@@ -232,7 +232,7 @@ class CustomStudyDialogTest : RobolectricTest() {
         requireNotNull(
             CustomStudyDialog
                 .createInstance(
-                    deckId = Consts.DEFAULT_DECK_ID,
+                    deckId = DEFAULT_DECK_ID,
                 ).arguments,
         )
 
@@ -249,5 +249,5 @@ class CustomStudyDialogTest : RobolectricTest() {
      * The current backend value of [CustomStudyDialog.CustomStudyDefaults] for the default deck
      * */
     private val defaultsOfDefaultDeck
-        get() = col.sched.customStudyDefaults(Consts.DEFAULT_DECK_ID).toDomainModel()
+        get() = col.sched.customStudyDefaults(DEFAULT_DECK_ID).toDomainModel()
 }

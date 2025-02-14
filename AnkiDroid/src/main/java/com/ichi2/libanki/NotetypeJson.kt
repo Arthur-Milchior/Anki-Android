@@ -67,7 +67,7 @@ class NotetypeJson : JSONObject {
      * @return model did or default deck id (1) if null
      */
     val did: DeckId
-        get() = if (isNull("did")) 1L else getLong("did")
+        get() = if (isNull("did")) DeckId.DEFAULT_DECK_ID else DeckId(getLong("did"))
     val templatesNames: List<String>
         get() = getJSONArray("tmpls").toStringList("name")
     val isStd: Boolean

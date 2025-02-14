@@ -143,9 +143,6 @@ object Consts {
     // Leech actions
     const val LEECH_SUSPEND = 0
 
-    // The labels defined in consts.py are in AnkiDroid's resources files.
-    const val DEFAULT_DECK_ID: DeckId = 1L
-
     val FIELD_SEPARATOR = "${'\u001f'}"
 
     /** Time duration for toast **/

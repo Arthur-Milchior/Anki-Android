@@ -41,7 +41,6 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.ichi2.anki.AnkiActivity
 import com.ichi2.anki.CollectionManager
 import com.ichi2.anki.CollectionManager.withCol
-import com.ichi2.anki.DeckSpinnerSelection
 import com.ichi2.anki.R
 import com.ichi2.anki.exportApkgPackage
 import com.ichi2.anki.exportCollectionPackage
@@ -52,6 +51,7 @@ import com.ichi2.anki.utils.getTimestamp
 import com.ichi2.annotations.NeedsTest
 import com.ichi2.compat.CompatHelper.Companion.getSerializableCompat
 import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.DeckId.Companion.ALL_DECKS_ID
 import com.ichi2.libanki.DeckNameId
 import com.ichi2.libanki.utils.TimeManager
 import com.ichi2.utils.negativeButton
@@ -91,12 +91,12 @@ class ExportDialogFragment : DialogFragment() {
                 initializeNotesExportUi()
                 initializeCardsExportUi()
             }
-        val extraDid = arguments?.getLong(ARG_DECK_ID, -1) // 0 is for "All decks"
+        val extraDid = arguments?.getLong(ARG_DECK_ID, -1)?.let { DeckId(it) } // 0 is for "All decks"
         val extraType: ExportType? = arguments?.getSerializableCompat(ARG_TYPE)
         initializeDecks(extraDid)
         // start with the option for exporting a collection like on desktop unless we received a
         // deck id or a type of selection(plus selected ids), in this case preselect apkg export
-        if ((extraDid != null && extraDid != -1L) || extraType != null) {
+        if ((extraDid != null && extraDid.id != -1L) || extraType != null) {
             exportTypeSelector.setSelection(ExportConfiguration.Apkg.index)
             showExtrasOptionsFor(dialogView, ExportConfiguration.Apkg)
         } else {
@@ -153,7 +153,7 @@ class ExportDialogFragment : DialogFragment() {
                 mutableListOf(
                     DeckNameId(
                         requireActivity().getString(R.string.card_browser_all_decks),
-                        DeckSpinnerSelection.ALL_DECKS_ID,
+                        ALL_DECKS_ID,
                     ),
                 )
             allDecks.addAll(withCol { decks.allNamesAndIds(false) })
@@ -420,10 +420,10 @@ class ExportDialogFragment : DialogFragment() {
                 val deckNameId =
                     (deckSelector.adapter as DeckDisplayAdapter)
                         .getItem(deckSelector.selectedItemPosition)
-                if (deckNameId.did == DeckSpinnerSelection.ALL_DECKS_ID) {
+                if (deckNameId.did == ALL_DECKS_ID) {
                     exportLimit { this.wholeCollection = Empty.getDefaultInstance() }
                 } else {
-                    exportLimit { this.deckId = deckNameId.did }
+                    exportLimit { this.deckId = deckNameId.did.id }
                 }
             }
         }

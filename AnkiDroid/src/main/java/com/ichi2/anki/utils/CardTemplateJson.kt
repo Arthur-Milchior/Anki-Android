@@ -44,7 +44,7 @@ value class CardTemplateJson(
         get() = jsonObject.getString("bafmt")
 
     val did: DeckId?
-        get() = if (jsonObject.isNull("did")) null else jsonObject.getLong("did")
+        get() = if (jsonObject.isNull("did")) null else DeckId(jsonObject.getLong("did"))
 
     val bfont: String
         get() = jsonObject.getString("bfont")

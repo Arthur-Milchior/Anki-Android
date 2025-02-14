@@ -310,7 +310,7 @@ open class Scheduler(
     fun unburyDeck(
         deckId: DeckId,
         mode: UnburyDeckRequest.Mode = UnburyDeckRequest.Mode.ALL,
-    ): OpChanges = col.backend.unburyDeck(deckId, mode)
+    ): OpChanges = col.backend.unburyDeck(deckId.id, mode)
 
     /**
      * @return Whether there are buried card is selected deck
@@ -410,7 +410,7 @@ open class Scheduler(
      * @param did Id of a deck
      */
     open fun randomizeCards(did: DeckId) {
-        col.backend.sortDeck(deckId = did, randomize = true)
+        col.backend.sortDeck(deckId = did.id, randomize = true)
     }
 
     /**
@@ -418,7 +418,7 @@ open class Scheduler(
      * @param did Id of a deck
      */
     open fun orderCards(did: DeckId) {
-        col.backend.sortDeck(deckId = did, randomize = false)
+        col.backend.sortDeck(deckId = did.id, randomize = false)
     }
 
     /**
@@ -430,7 +430,7 @@ open class Scheduler(
         rev: Int,
     ) {
         col.backend.extendLimits(
-            deckId = col.decks.selected(),
+            deckId = col.decks.selected().id,
             newDelta = newc,
             reviewDelta = rev,
         )
@@ -440,7 +440,7 @@ open class Scheduler(
      * @param did The deck to rebuild. 0 means current deck.
      */
     open fun rebuildDyn(did: DeckId) {
-        col.backend.rebuildFilteredDeck(did)
+        col.backend.rebuildFilteredDeck(did.id)
     }
 
     fun rebuildDyn() {
@@ -450,7 +450,7 @@ open class Scheduler(
     /** Remove all cards from a dynamic deck
      * @param did The deck to empty. 0 means current deck.
      */
-    open fun emptyDyn(did: DeckId) = col.backend.emptyFilteredDeck(did)
+    open fun emptyDyn(did: DeckId) = col.backend.emptyFilteredDeck(did.id)
 
     fun deckDueTree(): DeckNode = deckTree(true)
 
@@ -483,7 +483,7 @@ open class Scheduler(
     fun customStudy(request: CustomStudyRequest): OpChanges = col.backend.customStudy(request)
 
     @CheckResult
-    fun customStudyDefaults(deckId: DeckId): CustomStudyDefaultsResponse = col.backend.customStudyDefaults(deckId)
+    fun customStudyDefaults(deckId: DeckId): CustomStudyDefaultsResponse = col.backend.customStudyDefaults(deckId.id)
 
     @CheckResult
     fun repositionDefaults(): RepositionDefaultsResponse = col.backend.repositionDefaults()

@@ -92,7 +92,7 @@ sealed interface NoteEditorLauncher : Destination {
             bundleOf(
                 NoteEditor.EXTRA_CALLER to NoteEditorCaller.DECKPICKER.value,
             ).also { bundle ->
-                deckId?.let { deckId -> bundle.putLong(NoteEditor.EXTRA_DID, deckId) }
+                deckId?.let { deckId -> bundle.putLong(NoteEditor.EXTRA_DID, deckId.id) }
             }
     }
 
@@ -109,8 +109,8 @@ sealed interface NoteEditorLauncher : Destination {
                     NoteEditor.EXTRA_CALLER to NoteEditorCaller.CARDBROWSER_ADD.value,
                     NoteEditor.EXTRA_TEXT_FROM_SEARCH_VIEW to viewModel.searchTerms,
                 )
-            if (viewModel.lastDeckId?.let { id -> id > 0 } == true) {
-                bundle.putLong(NoteEditor.EXTRA_DID, viewModel.lastDeckId!!)
+            if (viewModel.lastDeckId?.let { id -> !id.isZero() } == true) {
+                bundle.putLong(NoteEditor.EXTRA_DID, viewModel.lastDeckId!!.id)
             }
             return bundle
         }

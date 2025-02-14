@@ -23,8 +23,8 @@ import anki.card_rendering.emptyCardsReport
 import app.cash.turbine.test
 import com.ichi2.anki.CollectionManager.withCol
 import com.ichi2.anki.RobolectricTest
-import com.ichi2.libanki.Consts
 import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
 import com.ichi2.libanki.Note
 import com.ichi2.libanki.emptyCids
 import com.ichi2.libanki.undoStatus
@@ -113,7 +113,7 @@ class DeckPickerViewModelTest : RobolectricTest() {
 
             viewModel.emptyFilteredDeck(filteredDeckId).join()
 
-            assertThat("deck was reset", note.firstCard().did, equalTo(Consts.DEFAULT_DECK_ID))
+            assertThat("deck was reset", note.firstCard().did, equalTo(DEFAULT_DECK_ID))
         }
     }
 
@@ -176,7 +176,7 @@ class DeckPickerViewModelTest : RobolectricTest() {
     private fun moveAllCardsToFilteredDeck(assertOn: Note = addBasicNote("To", "Filtered")): DeckId =
         addDynamicDeck("Filtered", "").also { did ->
             assertThat("filter - did", assertOn.firstCard().did, equalTo(did))
-            assertThat("filter - odid", assertOn.firstCard().oDid, equalTo(Consts.DEFAULT_DECK_ID))
+            assertThat("filter - odid", assertOn.firstCard().oDid, equalTo(DEFAULT_DECK_ID))
         }
 
     companion object {

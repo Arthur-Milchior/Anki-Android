@@ -630,7 +630,7 @@ open class DeckPicker :
                     handleContextMenuSelection(
                         arguments.getSerializableCompat<DeckPickerContextMenuOption>(DeckPickerContextMenu.CONTEXT_MENU_DECK_OPTION)
                             ?: error("Unable to retrieve selected context menu option"),
-                        arguments.getLong(DeckPickerContextMenu.CONTEXT_MENU_DECK_ID, -1),
+                        DeckId(arguments.getLong(DeckPickerContextMenu.CONTEXT_MENU_DECK_ID, -1)),
                     )
                 else -> error("Unexpected fragment result key! Did you forget to update DeckPicker?")
             }
@@ -1536,7 +1536,7 @@ open class DeckPicker :
                 withCol {
                     Triple(
                         decks.name(viewModel.focusedDeck),
-                        decks.cardCount(viewModel.focusedDeck, includeSubdecks = true),
+                        decks.cardCount(listOf(viewModel.focusedDeck), includeSubdecks = true),
                         decks.isFiltered(viewModel.focusedDeck),
                     )
                 }
@@ -2291,7 +2291,7 @@ open class DeckPicker :
         }
 
         // Check if default deck is the only available and there are no cards
-        val isEmpty = tree.children.size == 1 && tree.children[0].did == 1L && collectionIsEmpty
+        val isEmpty = tree.children.size == 1 && tree.children[0].did == DeckId.DEFAULT_DECK_ID && collectionIsEmpty
         if (animationDisabled()) {
             deckPickerContent.visibility = if (isEmpty) View.GONE else View.VISIBLE
             noDecksPlaceholder.visibility = if (isEmpty) View.VISIBLE else View.GONE
@@ -2338,7 +2338,7 @@ open class DeckPicker :
                 deckListAdapter.submit(
                     data = emptyList(),
                     hasSubDecks = false,
-                    currentDeckId = -1,
+                    currentDeckId = DeckId(-1),
                 )
             }
             Timber.d("Not rendering deck list as there are no cards")

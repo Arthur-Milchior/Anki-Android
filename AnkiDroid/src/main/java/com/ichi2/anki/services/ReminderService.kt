@@ -118,14 +118,14 @@ class ReminderService : BroadcastReceiver() {
                     .setContentIntent(
                         PendingIntentCompat.getActivity(
                             context,
-                            deckId.toInt(),
+                            deckId.id.toInt(),
                             getReviewDeckIntent(context, deckId),
                             PendingIntent.FLAG_UPDATE_CURRENT,
                             false,
                         ),
                     ).setAutoCancel(true)
                     .build()
-            notificationManager.notify(deckId.toInt(), notification)
+            notificationManager.notify(deckId.id.toInt(), notification)
             Timber.v("onReceive - notification state: %s", notification)
         }
     }

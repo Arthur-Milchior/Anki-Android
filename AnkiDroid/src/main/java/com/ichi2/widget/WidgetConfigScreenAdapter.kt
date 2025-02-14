@@ -45,7 +45,7 @@ class WidgetConfigScreenAdapter(
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     // Property to get the list of deck IDs
-    val deckIds: List<Long> get() = decks.map { it.deckId }
+    val deckIds: List<DeckId> get() = decks.map { it.deckId }
 
     class DeckViewHolder(
         itemView: View,

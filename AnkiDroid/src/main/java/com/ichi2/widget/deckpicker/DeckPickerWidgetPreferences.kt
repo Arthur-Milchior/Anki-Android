@@ -18,6 +18,7 @@ package com.ichi2.widget.deckpicker
 
 import android.content.Context
 import androidx.core.content.edit
+import com.ichi2.libanki.DeckId
 
 class DeckPickerWidgetPreferences(
     context: Context,
@@ -44,12 +45,12 @@ class DeckPickerWidgetPreferences(
      * Retrieves the selected deck IDs from the shared preferences for the given widget ID.
      * Note: There's no guarantee that these IDs still represent decks that exist at the time of execution.
      */
-    fun getSelectedDeckIdsFromPreferences(appWidgetId: Int): LongArray {
+    fun getSelectedDeckIdsFromPreferences(appWidgetId: Int): List<DeckId> {
         val selectedDecksString = deckPickerSharedPreferences.getString(getDeckPickerWidgetKey(appWidgetId), "")
         return if (!selectedDecksString.isNullOrEmpty()) {
-            selectedDecksString.split(",").map { it.toLong() }.toLongArray()
+            selectedDecksString.split(",").map { DeckId(it.toLong()) }
         } else {
-            longArrayOf()
+            listOf()
         }
     }
 

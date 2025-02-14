@@ -38,7 +38,7 @@ import com.ichi2.anki.preferences.sharedPrefs
 import com.ichi2.anki.reviewer.ActionButtonStatus
 import com.ichi2.libanki.Card
 import com.ichi2.libanki.CardType
-import com.ichi2.libanki.Consts
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
 import com.ichi2.libanki.NotetypeJson
 import com.ichi2.libanki.Notetypes
 import com.ichi2.libanki.QueueType
@@ -518,7 +518,7 @@ class ReviewerTest : RobolectricTest() {
     }
 
     private val defaultDeckConfig
-        get() = col.decks.configDictForDeckId(Consts.DEFAULT_DECK_ID)
+        get() = col.decks.configDictForDeckId(DEFAULT_DECK_ID)
 
     private class ReviewerForMenuItems : Reviewer() {
         var menu: Menu? = null

@@ -74,7 +74,7 @@ class DeckAdapter(
     private val startPadding: Int = context.resources.getDimension(R.dimen.deck_picker_left_padding).toInt()
     private val startPaddingSmall: Int = context.resources.getDimension(R.dimen.deck_picker_left_padding_small).toInt()
     private val nestedIndent = context.resources.getDimension(R.dimen.keyline_1).toInt()
-    private var currentDeckId: DeckId = 0
+    private var currentDeckId = DeckId.ZERO
 
     // Flags
     private var hasSubdecks = false

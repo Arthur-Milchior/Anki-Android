@@ -23,9 +23,9 @@ import com.ichi2.anki.isCollectionEmpty
 import com.ichi2.libanki.Card
 import com.ichi2.libanki.CardType
 import com.ichi2.libanki.Collection
-import com.ichi2.libanki.Consts
 import com.ichi2.libanki.DeckConfig
 import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
 import com.ichi2.libanki.FilteredDeck
 import com.ichi2.libanki.Note
 import com.ichi2.libanki.NotetypeJson
@@ -211,7 +211,7 @@ interface TestClass {
     }
 
     fun selectDefaultDeck() {
-        col.decks.select(Consts.DEFAULT_DECK_ID)
+        col.decks.select(DEFAULT_DECK_ID)
     }
 
     /** Adds [count] notes in the same deck with the same front & back */

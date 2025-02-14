@@ -25,8 +25,8 @@ import com.ichi2.anki.CollectionManager.TR
 import com.ichi2.anki.CollectionManager.withCol
 import com.ichi2.anki.DeckPicker
 import com.ichi2.libanki.CardId
-import com.ichi2.libanki.Consts
 import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
 import com.ichi2.libanki.undoableOp
 import com.ichi2.libanki.utils.extend
 import kotlinx.coroutines.Job
@@ -55,7 +55,7 @@ class DeckPickerViewModel : ViewModel() {
      * deck.
      */
     // TODO: This should later be handled as a Flow
-    var focusedDeck: DeckId = 0
+    var focusedDeck = DeckId.ZERO
 
     /**
      * Deletes the provided deck, child decks. and all cards inside.
@@ -71,7 +71,7 @@ class DeckPickerViewModel : ViewModel() {
             val changes = undoableOp { decks.remove(listOf(did)) }
             // After deletion: decks.current() reverts to Default, necessitating `focusedDeck`
             // to match and avoid unnecessary scrolls in `renderPage()`.
-            focusedDeck = Consts.DEFAULT_DECK_ID
+            focusedDeck = DEFAULT_DECK_ID
 
             deckDeletedNotification.emit(
                 DeckDeletionResult(deckName = deckName, cardsDeleted = changes.count),

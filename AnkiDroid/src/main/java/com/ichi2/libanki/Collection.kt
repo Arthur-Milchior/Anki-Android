@@ -552,7 +552,7 @@ class Collection(
         note: Note,
         deckId: DeckId,
     ): OpChanges {
-        val resp = backend.addNote(note.toBackendNote(), deckId)
+        val resp = backend.addNote(note.toBackendNote(), deckId.id)
         note.id = resp.noteId
         return resp.changes
     }
@@ -585,7 +585,7 @@ class Collection(
     fun setDeck(
         cids: Iterable<CardId>,
         did: DeckId,
-    ): OpChangesWithCount = backend.setDeck(cardIds = cids, deckId = did)
+    ): OpChangesWithCount = backend.setDeck(cardIds = cids, deckId = did.id)
 
     /** Save (flush) the note to the DB. Unlike note.flush(), this is undoable. This should
      * not be used for adding new notes. */
@@ -672,8 +672,8 @@ class Collection(
     ): String = backend.extractClozeForTyping(text = text, ordinal = ordinal)
 
     fun defaultsForAdding(currentReviewCard: Card? = null): anki.notes.DeckAndNotetype {
-        val homeDeck = currentReviewCard?.currentDeckId() ?: 0L
-        return backend.defaultsForAdding(homeDeckOfCurrentReviewCard = homeDeck)
+        val homeDeck = currentReviewCard?.currentDeckId() ?: DeckId.ZERO
+        return backend.defaultsForAdding(homeDeckOfCurrentReviewCard = homeDeck.id)
     }
 
     fun getPreferences(): Preferences = backend.getPreferences()

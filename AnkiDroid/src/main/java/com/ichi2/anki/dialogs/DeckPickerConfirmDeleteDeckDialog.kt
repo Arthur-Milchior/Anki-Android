@@ -28,7 +28,7 @@ import com.ichi2.libanki.DeckId
 import com.ichi2.utils.BundleUtils.requireLong
 
 class DeckPickerConfirmDeleteDeckDialog : AnalyticsDialogFragment() {
-    private val deckId get() = requireArguments().requireLong("deckId")
+    private val deckId get() = DeckId(requireArguments().requireLong("deckId"))
     private val deckName get() = requireArguments().getString("deckName")
     private val totalCards get() = requireArguments().getInt("totalCards")
     private val isFilteredDeck get() = requireArguments().getBoolean("isFilteredDeck")
@@ -73,7 +73,7 @@ class DeckPickerConfirmDeleteDeckDialog : AnalyticsDialogFragment() {
             val f = DeckPickerConfirmDeleteDeckDialog()
             val args = Bundle()
             args.putString("deckName", deckName)
-            args.putLong("deckId", deckId)
+            args.putLong("deckId", deckId.id)
             args.putInt("totalCards", totalCards)
             args.putBoolean("isFilteredDeck", isFilteredDeck)
             f.arguments = args

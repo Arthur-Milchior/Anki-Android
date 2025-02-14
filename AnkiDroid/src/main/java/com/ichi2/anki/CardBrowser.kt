@@ -114,6 +114,7 @@ import com.ichi2.libanki.CardId
 import com.ichi2.libanki.ChangeManager
 import com.ichi2.libanki.Collection
 import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.DeckId.Companion.ALL_DECKS_ID
 import com.ichi2.libanki.DeckNameId
 import com.ichi2.libanki.NoteId
 import com.ichi2.libanki.SortOrder
@@ -601,7 +602,7 @@ open class CardBrowser :
             initializeActionBarDeckSpinner(col, supportActionBar!!)
             launchCatchingTask {
                 selectDeckById(
-                    viewModel.deckId ?: DeckSpinnerSelection.ALL_DECKS_ID,
+                    viewModel.deckId ?: ALL_DECKS_ID,
                     false,
                 )
             }
@@ -1757,7 +1758,7 @@ open class CardBrowser :
     fun searchAllDecks() =
         launchCatchingTask {
             // all we need to do is select all decks
-            viewModel.setDeckId(DeckSpinnerSelection.ALL_DECKS_ID)
+            viewModel.setDeckId(ALL_DECKS_ID)
         }
 
     /**
@@ -1770,7 +1771,7 @@ open class CardBrowser :
             try {
                 when (val deckId = viewModel.lastDeckId) {
                     null -> getString(R.string.card_browser_unknown_deck_name)
-                    DeckSpinnerSelection.ALL_DECKS_ID -> getString(R.string.card_browser_all_decks)
+                    ALL_DECKS_ID -> getString(R.string.card_browser_all_decks)
                     else -> getColUnsafe.decks.name(deckId)
                 }
             } catch (e: Exception) {

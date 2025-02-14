@@ -34,6 +34,7 @@ import com.ichi2.anki.testutil.addNote
 import com.ichi2.anki.testutil.grantPermissions
 import com.ichi2.libanki.Card
 import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
 import com.ichi2.libanki.Decks
 import com.ichi2.libanki.Note
 import com.ichi2.libanki.NoteTypeId
@@ -88,7 +89,7 @@ class ContentProviderTest : InstrumentedTest() {
     /* initialCapacity set to expected value when the test is written.
      * Should create no problem if we forget to change it when more tests are added.
      */
-    private val testDeckIds: MutableList<Long> = ArrayList(TEST_DECKS.size + 1)
+    private val testDeckIds: MutableList<DeckId> = ArrayList(TEST_DECKS.size + 1)
     private lateinit var createdNotes: ArrayList<Uri>
     private var noteTypeId: NoteTypeId = 0L
     private var dummyFields = emptyStringArray(1)
@@ -128,7 +129,7 @@ class ContentProviderTest : InstrumentedTest() {
             }
         }
         // Add a note to the default deck as well so that testQueryNextCard() works
-        createdNotes.add(setupNewNote(col, noteTypeId, 1, dummyFields, TEST_TAG))
+        createdNotes.add(setupNewNote(col, noteTypeId, DEFAULT_DECK_ID, dummyFields, TEST_TAG))
     }
 
     private fun createBasicNoteType(name: String = BASIC_NOTE_TYPE_NAME): NotetypeJson {
@@ -752,7 +753,7 @@ class ContentProviderTest : InstrumentedTest() {
                         val targetDid = testDeckIds[0]
                         // Move to test deck (to test NOTES_ID_CARDS_ORD Uri)
                         val values = ContentValues()
-                        values.put(FlashCardsContract.Card.DECK_ID, targetDid)
+                        values.put(FlashCardsContract.Card.DECK_ID, targetDid.id)
                         val cardUri =
                             Uri.withAppendedPath(
                                 cardsUri,
@@ -923,7 +924,7 @@ class ContentProviderTest : InstrumentedTest() {
             )
             while (it.moveToNext()) {
                 val deckID =
-                    it.getLong(it.getColumnIndex(FlashCardsContract.Deck.DECK_ID))
+                    DeckId(it.getLong(it.getColumnIndex(FlashCardsContract.Deck.DECK_ID)))
                 val deckName =
                     it.getString(it.getColumnIndex(FlashCardsContract.Deck.DECK_NAME))
                 val deck = decks.get(deckID)!!
@@ -1021,7 +1022,7 @@ class ContentProviderTest : InstrumentedTest() {
         val deckArguments = arrayOf(deckToTest.toString())
         val sched = col.sched
         val selectedDeckBeforeTest = col.decks.selected()
-        col.decks.select(1) // select Default deck
+        col.decks.select(DEFAULT_DECK_ID) // select Default deck
         val reviewInfoCursor =
             contentResolver.query(
                 FlashCardsContract.ReviewInfo.CONTENT_URI,
@@ -1078,7 +1079,7 @@ class ContentProviderTest : InstrumentedTest() {
         val cr = contentResolver
         val selectDeckUri = FlashCardsContract.Deck.CONTENT_SELECTED_URI
         val values = ContentValues()
-        values.put(FlashCardsContract.Deck.DECK_ID, deckId)
+        values.put(FlashCardsContract.Deck.DECK_ID, deckId.id)
         cr.update(selectDeckUri, values, null, null)
         val col = reopenCol()
         assertEquals(

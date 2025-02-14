@@ -30,7 +30,7 @@ data class DeckNode(
     val revCount = node.reviewCount
     val newCount = node.newCount
     val lrnCount = node.learnCount
-    val did = node.deckId
+    val did = DeckId(node.deckId)
     val filtered = node.filtered
     val children =
         node.childrenList.map {
@@ -71,7 +71,7 @@ data class DeckNode(
     fun hasCardsReadyToStudy(): Boolean = revCount > 0 || newCount > 0 || lrnCount > 0
 
     fun find(deckId: DeckId): DeckNode? {
-        if (node.deckId == deckId) {
+        if (node.deckId == deckId.id) {
             return this
         }
         for (child in children) {

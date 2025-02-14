@@ -40,7 +40,7 @@ import timber.log.Timber
  */
 class EditDeckDescriptionDialog : DialogFragment() {
     private val deckId: DeckId
-        get() = requireArguments().getLong(ARG_DECK_ID)
+        get() = DeckId(requireArguments().getLong(ARG_DECK_ID))
 
     private lateinit var deckDescriptionInput: TextInputEditText
 

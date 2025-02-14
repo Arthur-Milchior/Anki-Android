@@ -46,6 +46,7 @@ import com.ichi2.anki.previewer.CardViewerActivity
 import com.ichi2.anki.services.ReminderService.Companion.getReviewDeckIntent
 import com.ichi2.anki.ui.windows.managespace.ManageSpaceActivity
 import com.ichi2.anki.ui.windows.permissions.PermissionsActivity
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
 import com.ichi2.testutils.ActivityList.ActivityLaunchParam.Companion.get
 import com.ichi2.widget.cardanalysis.CardAnalysisWidgetConfig
 import com.ichi2.widget.deckpicker.DeckPickerWidgetConfig
@@ -64,7 +65,7 @@ object ActivityList {
             get(IntentHandler::class.java) { ctx: Context ->
                 getReviewDeckIntent(
                     ctx,
-                    1L,
+                    DEFAULT_DECK_ID,
                 )
             },
             get(IntentHandler2::class.java),

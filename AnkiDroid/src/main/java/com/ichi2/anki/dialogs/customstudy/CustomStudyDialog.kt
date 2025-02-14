@@ -65,6 +65,7 @@ import com.ichi2.libanki.Consts
 import com.ichi2.libanki.Deck
 import com.ichi2.libanki.DeckId
 import com.ichi2.libanki.FilteredDeck
+import com.ichi2.libanki.getDid
 import com.ichi2.libanki.undoableOp
 import com.ichi2.utils.BundleUtils.getNullableInt
 import com.ichi2.utils.KotlinCleanup
@@ -118,7 +119,7 @@ class CustomStudyDialog :
     TagsDialogListener {
     /** ID of the [Deck] which this dialog was created for */
     private val dialogDeckId: DeckId
-        get() = requireArguments().getLong(ARG_DID)
+        get() = requireArguments().getDid()
 
     /**
      * `null` initially when the main view is shown
@@ -316,7 +317,7 @@ class CustomStudyDialog :
 
         val request =
             customStudyRequest {
-                deckId = dialogDeckId
+                deckId = dialogDeckId.id
                 when (contextMenuOption) {
                     EXTEND_NEW -> newLimitDelta = userEntry
                     EXTEND_REV -> reviewLimitDelta = userEntry
@@ -644,16 +645,10 @@ class CustomStudyDialog :
             CustomStudyDialog().apply {
                 arguments =
                     bundleOfNotNull(
-                        ARG_DID to deckId,
+                        "did" to deckId,
                         contextMenuAttribute?.let { ARG_SUB_DIALOG_ID to it.ordinal },
                     )
             }
-
-        /**
-         * (required) Key for the [DeckId] this dialog deals with.
-         * @see CustomStudyDialog.dialogDeckId
-         */
-        private const val ARG_DID = "did"
 
         /**
          * (optional) Key for the ordinal of the [ContextMenuOption] to display.

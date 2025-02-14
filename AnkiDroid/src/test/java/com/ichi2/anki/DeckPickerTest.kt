@@ -23,6 +23,7 @@ import com.ichi2.anki.preferences.sharedPrefs
 import com.ichi2.anki.utils.ext.dismissAllDialogFragments
 import com.ichi2.annotations.NeedsTest
 import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
 import com.ichi2.libanki.Storage
 import com.ichi2.libanki.utils.TimeManager
 import com.ichi2.testutils.BackendEmulatingOpenConflict
@@ -426,7 +427,7 @@ class DeckPickerTest : RobolectricTest() {
     ) {
         val arguments =
             Bundle().apply {
-                putLong(DeckPickerContextMenu.CONTEXT_MENU_DECK_ID, deckId)
+                putLong(DeckPickerContextMenu.CONTEXT_MENU_DECK_ID, deckId.id)
                 putSerializable(DeckPickerContextMenu.CONTEXT_MENU_DECK_OPTION, option)
             }
         setFragmentResult(DeckPickerContextMenu.REQUEST_KEY_CONTEXT_MENU, arguments)
@@ -519,7 +520,7 @@ class DeckPickerTest : RobolectricTest() {
                 val cardIds =
                     (0..3)
                         .map { addBasicNote("$it", "").firstCard().id }
-                assertTrue(allCardsInSameDeck(cardIds, 1))
+                assertTrue(allCardsInSameDeck(cardIds, DEFAULT_DECK_ID))
                 val deckId = addDynamicDeck("Deck 1")
                 getColUnsafe.sched.rebuildDyn(deckId)
                 assertTrue(allCardsInSameDeck(cardIds, deckId))
@@ -528,7 +529,7 @@ class DeckPickerTest : RobolectricTest() {
 
                 supportFragmentManager.selectContextMenuOption(DeckPickerContextMenuOption.CUSTOM_STUDY_EMPTY, deckId) // Empty
 
-                assertTrue(allCardsInSameDeck(cardIds, 1))
+                assertTrue(allCardsInSameDeck(cardIds, DEFAULT_DECK_ID))
 
                 supportFragmentManager.selectContextMenuOption(DeckPickerContextMenuOption.CUSTOM_STUDY_REBUILD, deckId) // Rebuild
 

@@ -24,6 +24,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ichi2.anki.R
 import com.ichi2.anki.RobolectricTest
 import com.ichi2.anki.dialogs.DeckSelectionDialog
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
 import com.ichi2.widget.cardanalysis.CardAnalysisWidgetConfig
 import com.ichi2.widget.cardanalysis.CardAnalysisWidgetPreferences
 import kotlinx.coroutines.runBlocking
@@ -69,7 +70,7 @@ class CardAnalysisWidgetConfigTest : RobolectricTest() {
     @Test
     fun testSaveSelectedDecksToPreferences() {
         // Add decks to adapter
-        val deck1 = DeckSelectionDialog.SelectableDeck(1, "Deck 1")
+        val deck1 = DeckSelectionDialog.SelectableDeck(DEFAULT_DECK_ID, "Deck 1")
         activity.deckAdapter.addDeck(deck1)
 
         // Save selected decks
@@ -90,7 +91,7 @@ class CardAnalysisWidgetConfigTest : RobolectricTest() {
     fun testLoadSavedPreferences() =
         runTest {
             // Save decks to preferences
-            val deckId = 1L
+            val deckId = DEFAULT_DECK_ID
             widgetPreferences.saveSelectedDeck(1, deckId)
 
             // Load preferences
@@ -121,7 +122,7 @@ class CardAnalysisWidgetConfigTest : RobolectricTest() {
         assertThat(widgetConfigContainer.visibility, equalTo(View.GONE))
 
         // Add a deck and update view visibility
-        val deck = DeckSelectionDialog.SelectableDeck(1, "Deck 1")
+        val deck = DeckSelectionDialog.SelectableDeck(DEFAULT_DECK_ID, "Deck 1")
         activity.deckAdapter.addDeck(deck)
         activity.updateViewVisibility()
 

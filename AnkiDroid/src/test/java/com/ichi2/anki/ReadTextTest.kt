@@ -22,6 +22,8 @@ import com.ichi2.anki.ReadText.initializeTts
 import com.ichi2.anki.ReadText.releaseTts
 import com.ichi2.anki.ReadText.textToSpeech
 import com.ichi2.anki.reviewer.CardSide
+import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.Before
@@ -64,13 +66,13 @@ class ReadTextTest : RobolectricTest() {
 
     @Test
     fun saveValue() {
-        assertThat(MetaDB.getLanguage(targetContext, 1, 1, CardSide.QUESTION), equalTo(""))
-        storeLanguage(1, "French")
-        assertThat(MetaDB.getLanguage(targetContext, 1, 1, CardSide.QUESTION), equalTo("French"))
-        storeLanguage(1, "German")
-        assertThat(MetaDB.getLanguage(targetContext, 1, 1, CardSide.QUESTION), equalTo("German"))
-        storeLanguage(2, "English")
-        assertThat(MetaDB.getLanguage(targetContext, 2, 1, CardSide.QUESTION), equalTo("English"))
+        assertThat(MetaDB.getLanguage(targetContext, DEFAULT_DECK_ID, 1, CardSide.QUESTION), equalTo(""))
+        storeLanguage(DEFAULT_DECK_ID, "French")
+        assertThat(MetaDB.getLanguage(targetContext, DEFAULT_DECK_ID, 1, CardSide.QUESTION), equalTo("French"))
+        storeLanguage(DEFAULT_DECK_ID, "German")
+        assertThat(MetaDB.getLanguage(targetContext, DEFAULT_DECK_ID, 1, CardSide.QUESTION), equalTo("German"))
+        storeLanguage(DeckId(2), "English")
+        assertThat(MetaDB.getLanguage(targetContext, DeckId(2), 1, CardSide.QUESTION), equalTo("English"))
     }
 
     @Test
@@ -96,10 +98,10 @@ class ReadTextTest : RobolectricTest() {
     }
 
     private fun storeLanguage(
-        i: Int,
+        i: DeckId,
         french: String,
     ) {
-        MetaDB.storeLanguage(targetContext, i.toLong(), 1, CardSide.QUESTION, french)
+        MetaDB.storeLanguage(targetContext, i, 1, CardSide.QUESTION, french)
         advanceRobolectricLooperWithSleep()
         advanceRobolectricLooperWithSleep()
     }

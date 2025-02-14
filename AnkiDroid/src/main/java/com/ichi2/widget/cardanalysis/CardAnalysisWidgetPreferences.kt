@@ -19,7 +19,7 @@ package com.ichi2.widget.cardanalysis
 import android.content.Context
 import androidx.core.content.edit
 import com.ichi2.libanki.DeckId
-import com.ichi2.libanki.Decks.Companion.NOT_FOUND_DECK_ID
+import com.ichi2.libanki.DeckId.Companion.NOT_FOUND_DECK_ID
 
 class CardAnalysisWidgetPreferences(
     context: Context,
@@ -46,9 +46,9 @@ class CardAnalysisWidgetPreferences(
         val selectedDeckString =
             cardAnalysisWidgetSharedPreferences.getLong(
                 getCardAnalysisExtraWidgetKey(appWidgetId),
-                NOT_FOUND_DECK_ID,
+                NOT_FOUND_DECK_ID.id,
             )
-        return selectedDeckString.takeIf { it != NOT_FOUND_DECK_ID }
+        return DeckId(selectedDeckString).takeIf { it != NOT_FOUND_DECK_ID }
     }
 
     fun saveSelectedDeck(
@@ -56,7 +56,7 @@ class CardAnalysisWidgetPreferences(
         selectedDeck: DeckId?,
     ) {
         cardAnalysisWidgetSharedPreferences.edit {
-            putLong(getCardAnalysisExtraWidgetKey(appWidgetId), selectedDeck ?: NOT_FOUND_DECK_ID)
+            putLong(getCardAnalysisExtraWidgetKey(appWidgetId), (selectedDeck ?: NOT_FOUND_DECK_ID).id)
         }
     }
 }

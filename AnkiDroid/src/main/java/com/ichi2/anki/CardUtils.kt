@@ -3,6 +3,7 @@ package com.ichi2.anki
 
 import com.ichi2.libanki.Card
 import com.ichi2.libanki.Collection
+import com.ichi2.libanki.DeckId
 import com.ichi2.libanki.Note
 import com.ichi2.utils.HashUtil.hashSetInit
 
@@ -30,9 +31,9 @@ object CardUtils {
      * @param card The [Card] to get the deck ID
      * @return The deck ID of the [Card]
      */
-    fun getDeckIdForCard(card: Card): Long {
+    fun getDeckIdForCard(card: Card): DeckId {
         // Try to get the configuration by the original deck ID (available in case of a cram deck),
         // else use the direct deck ID (in case of a 'normal' deck.
-        return if (card.oDid == 0L) card.did else card.oDid
+        return if (card.oDid.isZero()) card.did else card.oDid
     }
 }

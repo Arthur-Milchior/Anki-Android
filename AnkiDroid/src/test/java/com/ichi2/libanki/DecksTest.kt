@@ -199,11 +199,23 @@ class DecksTest : JvmTest() {
             }
         val filteredDeck = addDynamicDeck("filtered", search = "nid:$noteToMakeDynamic")
 
-        assertThat("all decks", decks.cardCount(parentDid, childDid, deckWithNoChildren, includeSubdecks = false), equalTo(5))
-        assertThat("all decks with subdecks", decks.cardCount(parentDid, childDid, deckWithNoChildren, includeSubdecks = true), equalTo(5))
+        assertThat("all decks", decks.cardCount(listOf(parentDid, childDid, deckWithNoChildren), includeSubdecks = false), equalTo(5))
+        assertThat(
+            "all decks with subdecks",
+            decks.cardCount(listOf(parentDid, childDid, deckWithNoChildren), includeSubdecks = true),
+            equalTo(5),
+        )
 
-        assertThat("top level decks, no children", decks.cardCount(parentDid, deckWithNoChildren, includeSubdecks = false), equalTo(4))
-        assertThat("top level decks, with children", decks.cardCount(parentDid, deckWithNoChildren, includeSubdecks = true), equalTo(5))
+        assertThat(
+            "top level decks, no children",
+            decks.cardCount(listOf(parentDid, deckWithNoChildren), includeSubdecks = false),
+            equalTo(4),
+        )
+        assertThat(
+            "top level decks, with children",
+            decks.cardCount(listOf(parentDid, deckWithNoChildren), includeSubdecks = true),
+            equalTo(5),
+        )
 
         assertThat("parent deck, no children", decks.cardCount(parentDid, includeSubdecks = false), equalTo(1))
         assertThat("parent deck, with children", decks.cardCount(parentDid, includeSubdecks = true), equalTo(2))
@@ -213,6 +225,6 @@ class DecksTest : JvmTest() {
 
         assertThat("filtered deck", decks.cardCount(filteredDeck, includeSubdecks = false), equalTo(1))
 
-        assertThat("filtered and home deck", decks.cardCount(deckWithNoChildren, filteredDeck, includeSubdecks = false), equalTo(3))
+        assertThat("filtered and home deck", decks.cardCount(listOf(deckWithNoChildren, filteredDeck), includeSubdecks = false), equalTo(3))
     }
 }

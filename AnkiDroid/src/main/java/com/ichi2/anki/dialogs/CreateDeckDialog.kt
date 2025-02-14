@@ -76,7 +76,7 @@ class CreateDeckDialog(
         Timber.i("CreateDeckDialog::showFilteredDeckDialog")
         initialDeckName =
             withCol {
-                getOrCreateFilteredDeck(did = 0).name
+                getOrCreateFilteredDeck(did = DeckId.ZERO).name
             }
         showDialog()
     }

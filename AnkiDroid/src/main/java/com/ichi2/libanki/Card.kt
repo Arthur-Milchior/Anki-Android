@@ -20,7 +20,6 @@ package com.ichi2.libanki
 import androidx.annotation.VisibleForTesting
 import anki.cards.FsrsMemoryState
 import com.ichi2.anki.Flag
-import com.ichi2.anki.utils.ext.ifZero
 import com.ichi2.annotations.NeedsTest
 import com.ichi2.libanki.TemplateManager.TemplateRenderContext.TemplateRenderOutput
 import com.ichi2.libanki.utils.LibAnkiAlias
@@ -67,7 +66,7 @@ open class Card : Cloneable {
     @set:VisibleForTesting
     var id: CardId = 0
     var nid: NoteId = 0
-    var did: DeckId = 0
+    var did = DeckId.ZERO
     var ord = 0
     var mod: Long = 0
     private var usn = 0
@@ -84,7 +83,7 @@ open class Card : Cloneable {
     var lapses = 0
     var left = 0
     var oDue: Int = 0
-    var oDid: DeckId = 0
+    var oDid = DeckId.ZERO
     var originalPosition: Int? = null
     private var customData: String = ""
     private var flags = 0
@@ -119,7 +118,7 @@ open class Card : Cloneable {
         note = null
         id = card.id
         nid = card.noteId
-        did = card.deckId
+        did = DeckId(card.deckId)
         ord = card.templateIdx
         mod = card.mtimeSecs
         usn = card.usn
@@ -132,7 +131,7 @@ open class Card : Cloneable {
         lapses = card.lapses
         left = card.remainingSteps
         oDue = card.originalDue
-        oDid = card.originalDeckId
+        oDid = DeckId(card.originalDeckId)
         flags = card.flags
         originalPosition = if (card.hasOriginalPosition()) card.originalPosition else null
         customData = card.customData
@@ -145,7 +144,7 @@ open class Card : Cloneable {
         anki.cards.card {
             id = this@Card.id
             noteId = nid
-            deckId = did
+            deckId = did.id
             templateIdx = ord
             ctype = type.code
             queue = this@Card.queue.code
@@ -156,7 +155,7 @@ open class Card : Cloneable {
             lapses = this@Card.lapses
             remainingSteps = left
             originalDue = oDue
-            originalDeckId = oDid
+            originalDeckId = oDid.id
             flags = this@Card.flags
             customData = this@Card.customData
             this@Card.originalPosition?.let { originalPosition = it }
@@ -226,7 +225,12 @@ open class Card : Cloneable {
 
     @LibAnkiAlias("current_deck_id")
     @NeedsTest("Test functionality which calls this")
-    fun currentDeckId() = oDid.ifZero { did }
+    fun currentDeckId() =
+        if (oDid.id == 0L) {
+            did
+        } else {
+            oDid
+        }
 
     /**
      * Time limit for answering in milliseconds.
@@ -351,7 +355,7 @@ open class Card : Cloneable {
     @NotInLibAnki
     val isInDynamicDeck: Boolean
         get() = // In Anki Desktop, a card with oDue <> 0 && oDid == 0 is not marked as dynamic.
-            oDid != 0L
+            !oDid.isZero()
 
     /** A cache represents an intermediary step between a card id and a card object. Creating a Card has some fixed cost
      * in term of database access. Using an id has an unknown cost: none if the card is never accessed, heavy if the

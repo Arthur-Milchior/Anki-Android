@@ -66,7 +66,7 @@ class DeckTest : JvmTest() {
 
     @Test
     fun testId() {
-        val id = 42L
+        val id = DeckId(42L)
         d.id = id
         assertEquals(id, d.id)
     }

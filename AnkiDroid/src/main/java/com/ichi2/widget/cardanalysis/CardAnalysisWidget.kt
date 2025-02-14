@@ -32,7 +32,7 @@ import com.ichi2.anki.analytics.UsageAnalytics
 import com.ichi2.anki.isCollectionEmpty
 import com.ichi2.anki.pages.DeckOptions
 import com.ichi2.libanki.DeckId
-import com.ichi2.libanki.Decks.Companion.NOT_FOUND_DECK_ID
+import com.ichi2.libanki.DeckId.Companion.NOT_FOUND_DECK_ID
 import com.ichi2.widget.ACTION_UPDATE_WIDGET
 import com.ichi2.widget.AnalyticsWidgetProvider
 import com.ichi2.widget.cancelRecurringAlarm
@@ -194,7 +194,7 @@ class CardAnalysisWidget : AnalyticsWidgetProvider() {
             val pendingIntent =
                 PendingIntent.getActivity(
                     context,
-                    deckData.deckId.toInt(),
+                    deckData.deckId.id.toInt(),
                     intent,
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
                 )

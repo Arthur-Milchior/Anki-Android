@@ -17,6 +17,7 @@
 package com.ichi2.anki.dialogs
 
 import com.ichi2.anki.dialogs.DeckSelectionDialog.SelectableDeck
+import com.ichi2.libanki.DeckId
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import org.hamcrest.MatcherAssert.assertThat
@@ -32,7 +33,7 @@ class DeckSelectionDialogTest {
         val input = "deck::sub-deck::sub-deck2::sub-deck3"
         val expected = "sub-deck3"
 
-        val deck = SelectableDeck(1234, input)
+        val deck = SelectableDeck(DeckId(1234), input)
         val actual: String = deck.displayName
 
         assertThat(actual, Matchers.equalTo(expected))
@@ -40,7 +41,7 @@ class DeckSelectionDialogTest {
 
     @Test
     fun testDialogCreation() {
-        val decks: List<SelectableDeck> = listOf(SelectableDeck(5L, "deck"))
+        val decks: List<SelectableDeck> = listOf(SelectableDeck(DeckId(5L), "deck"))
         val dialogTitle = "Select Deck"
         val summaryMessage = "Choose a deck from the list"
         val keepRestoreDefaultButton = true

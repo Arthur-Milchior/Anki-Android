@@ -49,7 +49,7 @@ object ReadText {
     var textToSpeak: String? = null
         private set
     private lateinit var flashCardViewer: WeakReference<Context>
-    private var mDid: DeckId = 0
+    private var mDid = DeckId.ZERO
     private var mOrd = 0
     var questionAnswer: CardSide? = null
         private set

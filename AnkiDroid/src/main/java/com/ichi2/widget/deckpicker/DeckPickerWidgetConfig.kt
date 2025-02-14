@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2024 Anoop <xenonnn4w@gmail.com>
+ *  Copyright (c) 2024 ffAnoop <xenonnn4w@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify it under
  *  the terms of the GNU General Public License as published by the Free Software
@@ -431,7 +431,7 @@ class DeckPickerWidgetConfig :
                 action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(appWidgetId))
 
-                putExtra("deck_picker_widget_selected_deck_ids", selectedDecks.toList().toLongArray())
+                putExtra("deck_picker_widget_selected_deck_ids", selectedDecks.toList().map { it.id }.toLongArray())
             }
 
         sendBroadcast(updateIntent)

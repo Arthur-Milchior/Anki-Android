@@ -34,8 +34,8 @@ import com.ichi2.anki.reviewer.FullScreenMode.Companion.setPreference
 import com.ichi2.anki.reviewer.MappableBinding
 import com.ichi2.anki.reviewer.MappableBinding.Companion.toPreferenceString
 import com.ichi2.anki.reviewer.ReviewerBinding
-import com.ichi2.libanki.Consts
 import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
 import com.ichi2.testutils.common.Flaky
 import com.ichi2.testutils.common.OS
 import com.ichi2.themes.Theme
@@ -114,7 +114,7 @@ class ReviewerNoParamTest : RobolectricTest() {
 
     @Test
     fun differentDeckPenColorDoesNotAffectCurrentDeck() {
-        val did = 2L
+        val did = DeckId(2L)
         storeLightModeColor(ARBITRARY_PEN_COLOR_VALUE, did)
 
         val whiteboard = startReviewerForWhiteboard()
@@ -328,7 +328,7 @@ class ReviewerNoParamTest : RobolectricTest() {
 
     @Suppress("SameParameterValue")
     private fun storeDarkModeColor(value: Int) {
-        MetaDB.storeWhiteboardPenColor(targetContext, Consts.DEFAULT_DECK_ID, false, value)
+        MetaDB.storeWhiteboardPenColor(targetContext, DEFAULT_DECK_ID, false, value)
     }
 
     @Suppress("SameParameterValue")
@@ -341,11 +341,11 @@ class ReviewerNoParamTest : RobolectricTest() {
 
     @Suppress("SameParameterValue")
     private fun storeLightModeColor(value: Int) {
-        MetaDB.storeWhiteboardPenColor(targetContext, Consts.DEFAULT_DECK_ID, true, value)
+        MetaDB.storeWhiteboardPenColor(targetContext, DEFAULT_DECK_ID, true, value)
     }
 
     private val penColor: WhiteboardPenColor
-        get() = MetaDB.getWhiteboardPenColor(targetContext, Consts.DEFAULT_DECK_ID)
+        get() = MetaDB.getWhiteboardPenColor(targetContext, DEFAULT_DECK_ID)
 
     @CheckResult
     private fun startReviewerForWhiteboard(): Whiteboard {

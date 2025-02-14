@@ -101,6 +101,7 @@ import com.ichi2.annotations.NeedsTest
 import com.ichi2.libanki.Card
 import com.ichi2.libanki.CardId
 import com.ichi2.libanki.Collection
+import com.ichi2.libanki.DeckId
 import com.ichi2.libanki.QueueType
 import com.ichi2.libanki.sched.Counts
 import com.ichi2.libanki.sched.CurrentQueueState
@@ -329,8 +330,8 @@ open class Reviewer :
             // deckId is not set, load default
             return
         }
-        val did = extras.getLong(EXTRA_DECK_ID, Long.MIN_VALUE)
-        Timber.d("selectDeckFromExtra() with deckId = %d", did)
+        val did = DeckId(extras.getLong(EXTRA_DECK_ID, Long.MIN_VALUE))
+        Timber.d("selectDeckFromExtra() with deckId = %d", did.id)
 
         // deckId does not exist, load default
         if (getColUnsafe.decks.get(did) == null) {

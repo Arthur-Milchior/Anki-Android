@@ -34,7 +34,6 @@ import com.ichi2.anki.CollectionManager
 import com.ichi2.anki.CollectionManager.TR
 import com.ichi2.anki.CollectionManager.withCol
 import com.ichi2.anki.CrashReportService
-import com.ichi2.anki.DeckSpinnerSelection.Companion.ALL_DECKS_ID
 import com.ichi2.anki.Flag
 import com.ichi2.anki.PreviewerDestination
 import com.ichi2.anki.browser.RepositionCardsRequest.RepositionData
@@ -54,6 +53,7 @@ import com.ichi2.libanki.CardId
 import com.ichi2.libanki.CardType
 import com.ichi2.libanki.ChangeManager
 import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.DeckId.Companion.ALL_DECKS_ID
 import com.ichi2.libanki.QueueType
 import com.ichi2.libanki.QueueType.ManuallyBuried
 import com.ichi2.libanki.QueueType.SiblingBuried

@@ -35,13 +35,12 @@ import anki.config.ConfigKey
 import com.ichi2.anim.ActivityTransitionAnimation.Direction.DEFAULT
 import com.ichi2.anki.NoteEditorTest.FromScreen.DECK_LIST
 import com.ichi2.anki.NoteEditorTest.FromScreen.REVIEWER
-import com.ichi2.anki.api.AddContentApi.Companion.DEFAULT_DECK_ID
 import com.ichi2.anki.dialogs.DeckSelectionDialog.SelectableDeck
 import com.ichi2.anki.noteeditor.NoteEditorLauncher
 import com.ichi2.anki.utils.ext.isImageOcclusion
 import com.ichi2.annotations.DuplicatedCode
-import com.ichi2.libanki.Consts
 import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
 import com.ichi2.libanki.Decks.Companion.CURRENT_DECK
 import com.ichi2.libanki.Note
 import com.ichi2.libanki.NotetypeJson
@@ -242,7 +241,7 @@ class NoteEditorTest : RobolectricTest() {
         val n = super.addBasicNote("Test", "Note")
         n.notetype.put("did", currentDid)
         val editor = getNoteEditorEditingExistingBasicNote("Test", "Note", DECK_LIST)
-        col.config.set(CURRENT_DECK, Consts.DEFAULT_DECK_ID) // Change DID if going through default path
+        col.config.set(CURRENT_DECK, DEFAULT_DECK_ID) // Change DID if going through default path
         val copyNoteBundle = getCopyNoteIntent(editor)
         val newNoteEditor = openNoteEditorWithArgs(copyNoteBundle)
         assertThat("Selected deck ID should be the current deck id", editor.deckId, equalTo(currentDid))

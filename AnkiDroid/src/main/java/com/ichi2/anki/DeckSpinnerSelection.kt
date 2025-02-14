@@ -34,6 +34,7 @@ import com.ichi2.anki.utils.showDialogFragmentImpl
 import com.ichi2.anki.widgets.DeckDropDownAdapter
 import com.ichi2.libanki.Collection
 import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.DeckId.Companion.ALL_DECKS_ID
 import com.ichi2.libanki.DeckNameId
 import com.ichi2.utils.FragmentManagerSupplier
 import com.ichi2.utils.KotlinCleanup
@@ -270,9 +271,5 @@ class DeckSpinnerSelection(
         Timber.d("added deck %s to spinner", deck)
         deckDropDownAdapter?.addDeck(deck)
         dropDownDecks?.add(deck)
-    }
-
-    companion object {
-        const val ALL_DECKS_ID = 0L
     }
 }

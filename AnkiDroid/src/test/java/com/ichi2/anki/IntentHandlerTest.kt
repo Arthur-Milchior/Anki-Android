@@ -22,6 +22,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ichi2.anki.IntentHandler.Companion.getLaunchType
 import com.ichi2.anki.IntentHandler.LaunchType
 import com.ichi2.anki.services.ReminderService.Companion.getReviewDeckIntent
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.Test
@@ -56,7 +57,7 @@ class IntentHandlerTest {
 
     @Test
     fun reviewIntentReturnsReview() {
-        val intent = getReviewDeckIntent(Mockito.mock(Context::class.java), 1)
+        val intent = getReviewDeckIntent(Mockito.mock(Context::class.java), DEFAULT_DECK_ID)
 
         val expected = getLaunchType(intent)
 

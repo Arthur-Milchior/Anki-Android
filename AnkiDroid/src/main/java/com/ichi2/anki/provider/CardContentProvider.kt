@@ -37,9 +37,10 @@ import com.ichi2.anki.FlashCardsContract
 import com.ichi2.libanki.Card
 import com.ichi2.libanki.CardTemplate
 import com.ichi2.libanki.Collection
-import com.ichi2.libanki.Consts
 import com.ichi2.libanki.Deck
 import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
+import com.ichi2.libanki.DeckId.Companion.NOT_FOUND_DECK_ID
 import com.ichi2.libanki.Decks
 import com.ichi2.libanki.Note
 import com.ichi2.libanki.NoteId
@@ -308,7 +309,7 @@ class CardContentProvider : ContentProvider() {
                 val columns = projection ?: FlashCardsContract.ReviewInfo.DEFAULT_PROJECTION
                 val rv = MatrixCursor(columns, 1)
                 val selectedDeckBeforeQuery = col.decks.selected()
-                var deckIdOfTemporarilySelectedDeck: Long = -1
+                var deckIdOfTemporarilySelectedDeck = DeckId(-1)
                 var limit = 1 // the number of scheduled cards to return
                 var selectionArgIndex = 0
 
@@ -328,7 +329,7 @@ class CardContentProvider : ContentProvider() {
                             if ("limit" == keyAndValue[0].trim { it <= ' ' }) {
                                 limit = value.toInt()
                             } else if ("deckID" == keyAndValue[0].trim { it <= ' ' }) {
-                                deckIdOfTemporarilySelectedDeck = value.toLong()
+                                deckIdOfTemporarilySelectedDeck = DeckId(value.toLong())
                                 if (!selectDeckWithCheck(col, deckIdOfTemporarilySelectedDeck)) {
                                     return rv // if the provided deckID is wrong, return empty cursor.
                                 }
@@ -361,7 +362,7 @@ class CardContentProvider : ContentProvider() {
                     addReviewInfoToCursor(currentCard, buttonTexts, buttonCount, rv, col, columns)
                     k++
                 }
-                if (deckIdOfTemporarilySelectedDeck != -1L) { // if the selected deck was changed
+                if (deckIdOfTemporarilySelectedDeck.id != -1L) { // if the selected deck was changed
                     // change the selected deck back to the one it was before the query
                     col.decks.select(selectedDeckBeforeQuery)
                 }
@@ -388,7 +389,7 @@ class CardContentProvider : ContentProvider() {
                 val columns = projection ?: FlashCardsContract.Deck.DEFAULT_PROJECTION
                 val rv = MatrixCursor(columns, 1)
                 val allDecks = col.sched.deckDueTree()
-                val desiredDeckId = uri.pathSegments[1].toLong()
+                val desiredDeckId = DeckId(uri.pathSegments[1].toLong())
                 allDecks.find(desiredDeckId)?.let {
                     addDeckToCursor(it.did, it.fullDeckName, getDeckCountsFromDueTreeNode(it), rv, col, columns)
                 }
@@ -477,19 +478,19 @@ class CardContentProvider : ContentProvider() {
             NOTES_ID_CARDS_ORD -> {
                 val currentCard = getCardFromUri(uri, col)
                 var isDeckUpdate = false
-                var did = Decks.NOT_FOUND_DECK_ID
+                var did = NOT_FOUND_DECK_ID
                 // the key of the ContentValues contains the column name
                 // the value of the ContentValues contains the row value.
                 val valueSet = values!!.valueSet()
                 for ((key) in valueSet) {
                     // Only updates on deck id is supported
                     isDeckUpdate = key == FlashCardsContract.Card.DECK_ID
-                    did = values.getAsLong(key)
+                    did = DeckId(values.getAsLong(key))
                 }
                 require(!col.decks.isFiltered(did)) { "Cards cannot be moved to a filtered deck" }
                 /* now update the card
                  */
-                if (isDeckUpdate && did >= 0) {
+                if (isDeckUpdate && did.id >= 0) {
                     Timber.d("CardContentProvider: Moving card to other deck...")
                     currentCard.did = did
                     col.updateCard(currentCard)
@@ -528,7 +529,7 @@ class CardContentProvider : ContentProvider() {
                         updated++
                     }
                     if (newDid != null) {
-                        if (col.decks.isFiltered(newDid.toLong())) {
+                        if (col.decks.isFiltered(DeckId(newDid.toLong()))) {
                             throw IllegalArgumentException("Cannot set a filtered deck as default deck for a noteType")
                         }
                         noteType!!.put("did", newDid)
@@ -656,7 +657,7 @@ class CardContentProvider : ContentProvider() {
                 val valueSet = values!!.valueSet()
                 for ((key) in valueSet) {
                     if (key == FlashCardsContract.Deck.DECK_ID) {
-                        val deckId = values.getAsLong(key)
+                        val deckId = DeckId(values.getAsLong(key))
                         if (selectDeckWithCheck(col, deckId)) {
                             updated++
                         }
@@ -717,7 +718,7 @@ class CardContentProvider : ContentProvider() {
             val deckIdStr = uri.getQueryParameter(FlashCardsContract.Note.DECK_ID_QUERY_PARAM)
             if (deckIdStr != null) {
                 try {
-                    val deckId = deckIdStr.toLong()
+                    val deckId = DeckId(deckIdStr.toLong())
                     return bulkInsertNotes(values, deckId)
                 } catch (e: NumberFormatException) {
                     Timber.d(e, "Invalid %s: %s", FlashCardsContract.Note.DECK_ID_QUERY_PARAM, deckIdStr)
@@ -831,7 +832,7 @@ class CardContentProvider : ContentProvider() {
                 // Get input arguments
                 val noteTypeName = values!!.getAsString(FlashCardsContract.Model.NAME)
                 val css = values.getAsString(FlashCardsContract.Model.CSS)
-                val did = values.getAsLong(FlashCardsContract.Model.DECK_ID)
+                val did = values.getAsLong(FlashCardsContract.Model.DECK_ID)?.let { DeckId(it) }
                 val fieldNames = values.getAsString(FlashCardsContract.Model.FIELD_NAMES)
                 val numCards = values.getAsInteger(FlashCardsContract.Model.NUM_CARDS)
                 val sortf = values.getAsInteger(FlashCardsContract.Model.SORT_FIELD_INDEX)
@@ -1076,7 +1077,7 @@ class CardContentProvider : ContentProvider() {
                     FlashCardsContract.Model.NUM_CARDS -> rb.add(jsonObject!!.tmpls.length())
                     FlashCardsContract.Model.CSS -> rb.add(jsonObject!!.getString("css"))
                     FlashCardsContract.Model.DECK_ID -> // #6378 - Anki Desktop changed schema temporarily to allow null
-                        rb.add(jsonObject!!.optLong("did", Consts.DEFAULT_DECK_ID))
+                        rb.add(jsonObject!!.optLong("did", DEFAULT_DECK_ID.id))
                     FlashCardsContract.Model.SORT_FIELD_INDEX -> rb.add(jsonObject!!.getLong("sortf"))
                     FlashCardsContract.Model.TYPE -> rb.add(jsonObject!!.getLong("type"))
                     FlashCardsContract.Model.LATEX_POST -> rb.add(jsonObject!!.getString("latexPost"))

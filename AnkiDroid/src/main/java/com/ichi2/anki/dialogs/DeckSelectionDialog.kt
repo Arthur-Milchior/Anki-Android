@@ -38,7 +38,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import anki.decks.deckTreeNode
 import com.ichi2.anki.CollectionManager.withCol
-import com.ichi2.anki.DeckSpinnerSelection
 import com.ichi2.anki.OnContextAndLongClickListener.Companion.setOnContextAndLongClickListener
 import com.ichi2.anki.R
 import com.ichi2.anki.analytics.AnalyticsDialogFragment
@@ -48,6 +47,7 @@ import com.ichi2.anki.launchCatchingTask
 import com.ichi2.anki.showThemedToast
 import com.ichi2.annotations.NeedsTest
 import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.DeckId.Companion.ALL_DECKS_ID
 import com.ichi2.libanki.DeckNameId
 import com.ichi2.libanki.sched.DeckNode
 import com.ichi2.ui.AccessibleSearchView
@@ -124,7 +124,7 @@ open class DeckSelectionDialog : AnalyticsDialogFragment() {
         adjustToolbar(dialogView, adapter)
         val args = requireArguments()
         if (args.containsKey("currentDeckId")) {
-            val did = args.getLong("currentDeckId")
+            val did = DeckId(args.getLong("currentDeckId"))
             recyclerView.scrollToPosition(getPositionOfDeck(did, adapter.getCurrentlyDisplayedDecks()))
         }
         dialog =
@@ -194,7 +194,7 @@ open class DeckSelectionDialog : AnalyticsDialogFragment() {
     /**
      * Displays a dialog to create a subdeck under the specified parent deck.
      *
-     * If the `deckID` is equal to `DeckSpinnerSelection.ALL_DECKS_ID`, a toast message is shown
+     * If the `deckID` is equal to `ALL_DECKS_ID`, a toast message is shown
      * indicating that a subdeck cannot be created for "All Decks," and the dialog is not displayed.
      *
      * @param parentDeckPath The path of the parent deck under which the subdeck will be created.
@@ -204,7 +204,7 @@ open class DeckSelectionDialog : AnalyticsDialogFragment() {
         parentDeckPath: String,
         deckID: DeckId,
     ) {
-        if (deckID == DeckSpinnerSelection.ALL_DECKS_ID) {
+        if (deckID == ALL_DECKS_ID) {
             context?.let { showThemedToast(it, R.string.cannot_create_subdeck_for_all_decks, true) }
             return
         }
@@ -291,7 +291,7 @@ open class DeckSelectionDialog : AnalyticsDialogFragment() {
             deckHolder: View,
         ) : RecyclerView.ViewHolder(deckHolder) {
             var deckName: String = ""
-            private var deckID: Long = -1L
+            private var deckID = DeckId(-1L)
 
             private val deckTextView: TextView = deckHolder.findViewById(R.id.deckpicker_name)
             val expander: ImageButton = deckHolder.findViewById(R.id.deckpicker_expander)
@@ -436,11 +436,11 @@ open class DeckSelectionDialog : AnalyticsDialogFragment() {
         init {
             launchCatchingTask {
                 decksRoot = withCol { Pair(sched.deckDueTree(), isEmpty) }.first
-                val allDecksSet = deckNames.filter { it.deckId != 0L }.mapNotNull { decksRoot.find(it.deckId) }.toSet()
+                val allDecksSet = deckNames.filter { !it.deckId.isZero() }.mapNotNull { decksRoot.find(it.deckId) }.toSet()
                 if (deckNames.any { it.deckId == ALL_DECKS_ID }) {
                     val newDeckNode =
                         deckTreeNode {
-                            deckId = ALL_DECKS_ID
+                            deckId = ALL_DECKS_ID.id
                             name = "all"
                         }
                     allDecksList.add(DeckNode(newDeckNode, getString(R.string.card_browser_all_decks), null))
@@ -494,7 +494,6 @@ open class DeckSelectionDialog : AnalyticsDialogFragment() {
     }
 
     companion object {
-        const val ALL_DECKS_ID = 0L
         private const val SUMMARY_MESSAGE = "summaryMessage"
         private const val TITLE = "title"
         private const val KEEP_RESTORE_DEFAULT_BUTTON = "keepRestoreDefaultButton"

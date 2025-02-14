@@ -39,6 +39,7 @@ import com.ichi2.libanki.Deck.Companion.RESCHED
 import com.ichi2.libanki.DeckId
 import com.ichi2.libanki.FilteredDeck
 import com.ichi2.libanki.FilteredDeck.Term
+import com.ichi2.libanki.getDid
 import com.ichi2.preferences.StepsPreference.Companion.convertFromJSON
 import com.ichi2.preferences.StepsPreference.Companion.convertToJSON
 import com.ichi2.themes.Themes
@@ -74,7 +75,7 @@ class FilteredDeckOptions :
             did: DeckId,
         ): Intent =
             Intent(context, FilteredDeckOptions::class.java).apply {
-                putExtra("did", did)
+                putExtra("did", did.id)
             }
     }
 
@@ -240,7 +241,7 @@ class FilteredDeckOptions :
         }
         val extras = intent.extras
         deck = if (extras?.containsKey("did") == true) {
-            col.decks.get(extras.getLong("did"))
+            col.decks.get(extras.getDid())
         } else {
             Timber.d("no deckId supplied. Using current deck")
             null

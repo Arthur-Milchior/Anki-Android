@@ -23,7 +23,6 @@ import app.cash.turbine.test
 import com.ichi2.anki.AnkiDroidApp
 import com.ichi2.anki.CardBrowser
 import com.ichi2.anki.CollectionManager
-import com.ichi2.anki.DeckSpinnerSelection
 import com.ichi2.anki.Flag
 import com.ichi2.anki.NoteEditor
 import com.ichi2.anki.SingleFragmentActivity
@@ -61,6 +60,7 @@ import com.ichi2.anki.setFlagFilterSync
 import com.ichi2.anki.utils.ext.ifNotZero
 import com.ichi2.libanki.CardId
 import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.DeckId.Companion.ALL_DECKS_ID
 import com.ichi2.libanki.Note
 import com.ichi2.libanki.QueueType
 import com.ichi2.libanki.QueueType.ManuallyBuried
@@ -154,7 +154,7 @@ class CardBrowserViewModelTest : JvmTest() {
 
             assertThat("All decks should not be selected", !hasSelectedAllDecks())
 
-            setDeckId(DeckSpinnerSelection.ALL_DECKS_ID)
+            setDeckId(ALL_DECKS_ID)
 
             assertThat("All decks should be selected", hasSelectedAllDecks())
 

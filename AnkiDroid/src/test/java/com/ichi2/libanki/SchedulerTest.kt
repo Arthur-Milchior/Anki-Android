@@ -22,6 +22,7 @@ import com.ichi2.anki.utils.SECONDS_PER_DAY
 import com.ichi2.libanki.CardType.Relearning
 import com.ichi2.libanki.Consts.LEECH_SUSPEND
 import com.ichi2.libanki.Consts.STARTING_FACTOR
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
 import com.ichi2.libanki.exception.ConfirmModSchemaException
 import com.ichi2.libanki.sched.Counts
 import com.ichi2.libanki.utils.TimeManager
@@ -137,7 +138,7 @@ open class SchedulerTest : JvmTest() {
         val c = col.sched.card!!
         Assert.assertEquals(1, c.did)
         // limit the parent to 10 cards, meaning we get 10 in total
-        val conf1 = col.decks.configDictForDeckId(1)
+        val conf1 = col.decks.configDictForDeckId(DEFAULT_DECK_ID)
         conf1.new.perDay = 10
         col.decks.save(conf1)
         Assert.assertEquals(10, col.sched.newCount().toLong())
@@ -297,7 +298,7 @@ open class SchedulerTest : JvmTest() {
                 type = CardType.Rev
             }
         col.updateCard(c, skipUndoEntry = true)
-        val conf = col.decks.configDictForDeckId(1)
+        val conf = col.decks.configDictForDeckId(DEFAULT_DECK_ID)
         conf.lapse.delays = JSONArray(doubleArrayOf())
         col.decks.save(conf)
 
@@ -512,7 +513,7 @@ open class SchedulerTest : JvmTest() {
         )
 
         // if hard factor is <= 1, then hard may not increase
-        val conf = col.decks.configDictForDeckId(1)
+        val conf = col.decks.configDictForDeckId(DEFAULT_DECK_ID)
         conf.rev.hardFactor = 1
         col.decks.save(conf)
         Assert.assertEquals(
@@ -567,7 +568,7 @@ open class SchedulerTest : JvmTest() {
         note.setItem("Front", "one")
         note.setItem("Back", "two")
         col.addNote(note)
-        val conf = col.decks.configDictForDeckId(1)
+        val conf = col.decks.configDictForDeckId(DEFAULT_DECK_ID)
         conf.new.delays = JSONArray(doubleArrayOf(0.5, 3.0, 10.0))
         conf.lapse.delays = JSONArray(doubleArrayOf(1.0, 5.0, 9.0))
         col.decks.save(conf)
@@ -1095,7 +1096,7 @@ open class SchedulerTest : JvmTest() {
         Assert.assertEquals(1, value.revCount.toLong())
         Assert.assertEquals(0, value.newCount.toLong())
         // code should not fail if a card has an invalid deck
-        c.update { did = 12345 }
+        c.update { did = DeckId(12345) }
         col.sched.deckDueTree()
     }
 
@@ -1155,14 +1156,14 @@ open class SchedulerTest : JvmTest() {
         var found = false
         // 50/50 chance of being reordered
         for (i in 0..19) {
-            col.sched.randomizeCards(1)
+            col.sched.randomizeCards(DEFAULT_DECK_ID)
             if (note.cards()[0].due.toLong() != note.id) {
                 found = true
                 break
             }
         }
         Assert.assertTrue(found)
-        col.sched.orderCards(1)
+        col.sched.orderCards(DEFAULT_DECK_ID)
         Assert.assertEquals(1, note.cards()[0].due)
         // shifting
         val note3 = col.newNote()

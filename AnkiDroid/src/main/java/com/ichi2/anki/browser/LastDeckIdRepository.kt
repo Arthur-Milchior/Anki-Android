@@ -20,6 +20,7 @@ import android.content.Context
 import androidx.core.content.edit
 import com.ichi2.anki.AnkiDroidApp
 import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
 import com.ichi2.libanki.Decks
 
 interface LastDeckIdRepository {
@@ -39,14 +40,15 @@ class SharedPreferencesLastDeckIdRepository : LastDeckIdRepository {
         get() =
             AnkiDroidApp.instance
                 .getSharedPreferences(PERSISTENT_STATE_FILE, 0)
-                .getLong(LAST_DECK_ID_KEY, Decks.NOT_FOUND_DECK_ID)
-                .takeUnless { it == Decks.NOT_FOUND_DECK_ID }
+                .getLong(LAST_DECK_ID_KEY, DEFAULT_DECK_ID.id)
+                .let { DeckId(it) }
+                .takeUnless { it == DEFAULT_DECK_ID }
         set(value) =
             if (value == null) {
                 clearLastDeckId()
             } else {
                 AnkiDroidApp.instance.getSharedPreferences(PERSISTENT_STATE_FILE, 0).edit {
-                    putLong(LAST_DECK_ID_KEY, value)
+                    putLong(LAST_DECK_ID_KEY, value.id)
                 }
             }
 

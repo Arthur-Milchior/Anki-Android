@@ -92,7 +92,7 @@ class DeckPickerWidget : AnalyticsWidgetProvider() {
             context: Context,
             appWidgetManager: AppWidgetManager,
             appWidgetId: AppWidgetId,
-            deckIds: LongArray?,
+            deckIds: List<DeckId>?,
         ) {
             val remoteViews = RemoteViews(context.packageName, R.layout.widget_deck_picker_large)
             if (deckIds == null || deckIds.isEmpty()) {
@@ -106,7 +106,7 @@ class DeckPickerWidget : AnalyticsWidgetProvider() {
                     return@launch
                 }
 
-                val deckData = getDeckNamesAndStats(deckIds.toList())
+                val deckData = getDeckNamesAndStats(deckIds)
 
                 if (deckData.isEmpty()) {
                     showEmptyWidget(context, appWidgetManager, appWidgetId, remoteViews)
@@ -122,7 +122,7 @@ class DeckPickerWidget : AnalyticsWidgetProvider() {
             appWidgetManager: AppWidgetManager,
             appWidgetId: AppWidgetId,
             remoteViews: RemoteViews,
-            deckIds: LongArray,
+            deckIds: List<DeckId>,
         ) {
             remoteViews.removeAllViews(R.id.deckCollection)
             val deckData = getDeckNamesAndStats(deckIds.toList())
@@ -148,7 +148,7 @@ class DeckPickerWidget : AnalyticsWidgetProvider() {
                 val pendingIntent =
                     PendingIntent.getActivity(
                         context,
-                        deck.deckId.toInt(),
+                        deck.deckId.id.toInt(),
                         intent,
                         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
                     )
@@ -284,7 +284,7 @@ class DeckPickerWidget : AnalyticsWidgetProvider() {
 
                 // Retrieve the widget ID from the intent
                 val appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
-                val selectedDeckIds = intent.getLongArrayExtra(EXTRA_SELECTED_DECK_IDS)
+                val selectedDeckIds = intent.getLongArrayExtra(EXTRA_SELECTED_DECK_IDS)?.map { DeckId(it) }
 
                 Timber.d(
                     "Received ACTION_APPWIDGET_UPDATE with widget ID: $appWidgetId and selectedDeckIds: ${selectedDeckIds?.joinToString(

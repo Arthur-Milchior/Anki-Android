@@ -16,12 +16,41 @@
 
 package com.ichi2.libanki
 
+import android.os.Bundle
+import android.os.Parcelable
+import anki.backend.GeneratedBackend
+import kotlinx.parcelize.Parcelize
+
 /*
  * We can't use private typealiases until
  * https://youtrack.jetbrains.com/issue/KT-24700 is fixed
  */
 
-internal typealias DeckId = Long
+fun GeneratedBackend.getDeckLegacy(did: DeckId) = getDeckLegacy(did.id)
+
+fun GeneratedBackend.getDeckConfigsForUpdate(did: DeckId) = getDeckConfigsForUpdate(did.id)
+
+fun GeneratedBackend.setCurrentDeck(did: DeckId) = setCurrentDeck(did.id)
+
+fun GeneratedBackend.customStudyDefaults(did: DeckId) = customStudyDefaults(did.id)
+
+fun Bundle.getDid() = DeckId(getLong("did"))
+
+@JvmInline
+@Parcelize
+value class DeckId(
+    val id: Long,
+) : Parcelable {
+    companion object {
+        val ZERO = DeckId(0L)
+        val ALL_DECKS_ID = ZERO
+        val DEFAULT_DECK_ID = DeckId(1L)
+        val NOT_FOUND_DECK_ID = DeckId(-1L)
+    }
+
+    fun isZero() = id == 0L
+}
+
 internal typealias CardId = Long
 internal typealias DeckConfigId = Long
 internal typealias NoteId = Long

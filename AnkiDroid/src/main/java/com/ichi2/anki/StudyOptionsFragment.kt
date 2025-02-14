@@ -667,7 +667,7 @@ class StudyOptionsFragment :
             buriedLearning = buriedLearning,
             buriedReview = buriedReview,
             totalNewCards = sched.totalNewForCurrentDeck(),
-            numberOfCardsInDeck = decks.cardCount(deckId, includeSubdecks = true),
+            numberOfCardsInDeck = decks.cardCount(listOf(deckId), includeSubdecks = true),
         )
     }
 

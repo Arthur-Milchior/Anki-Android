@@ -183,7 +183,7 @@ class DeckPickerContextMenuTest {
     }
 
     private fun withArguments(
-        deckId: DeckId = 1000L,
+        deckId: DeckId = DeckId(1000L),
         deckName: String = "Deck 1",
         isDynamic: Boolean = false,
         hasBuriedCards: Boolean = false,

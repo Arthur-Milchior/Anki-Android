@@ -89,7 +89,7 @@ class AnkiDroidJsAPITest : RobolectricTest() {
             // Card Did
             assertThat(
                 getDataFromRequest("cardDid", jsapi),
-                equalTo(formatApiResult(currentCard.did)),
+                equalTo(formatApiResult(currentCard.did.id)),
             )
             // Card Id
             assertThat(
@@ -104,7 +104,7 @@ class AnkiDroidJsAPITest : RobolectricTest() {
             // Card ODid
             assertThat(
                 getDataFromRequest("cardODid", jsapi),
-                equalTo(formatApiResult(currentCard.oDid)),
+                equalTo(formatApiResult(currentCard.oDid.id)),
             )
             // Card Type
             assertThat(

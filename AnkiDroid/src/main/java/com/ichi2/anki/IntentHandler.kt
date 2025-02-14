@@ -148,7 +148,7 @@ class IntentHandler : AbstractIntentHandler() {
         reloadIntent: Intent,
         reviewerIntent: Intent,
     ) {
-        val deckId = intent.getLongExtra(ReminderService.EXTRA_DECK_ID, 0)
+        val deckId = DeckId(intent.getLongExtra(ReminderService.EXTRA_DECK_ID, 0))
         Timber.i("Handling intent to review deck '%d'", deckId)
 
         val reviewIntent =
@@ -458,7 +458,7 @@ class IntentHandler : AbstractIntentHandler() {
             deckId: DeckId,
         ) = Intent(context, IntentHandler::class.java).apply {
             setAction(Intent.ACTION_VIEW)
-            putExtra(ReminderService.EXTRA_DECK_ID, deckId)
+            putExtra(ReminderService.EXTRA_DECK_ID, deckId.id)
         }
     }
 }

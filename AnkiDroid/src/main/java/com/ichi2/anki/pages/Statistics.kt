@@ -86,7 +86,7 @@ class Statistics :
                 changeDeck(selectedDeck.name)
             }
         } else {
-            val savedDeckId = savedInstanceState.getNullableLong(KEY_DECK_ID) ?: return
+            val savedDeckId = savedInstanceState.getNullableLong(KEY_DECK_ID)?.let { DeckId(it) } ?: return
             requireActivity().launchCatchingTask {
                 deckSpinnerSelection.initializeStatsBarDeckSpinner()
                 select(savedDeckId)
@@ -121,7 +121,7 @@ class Statistics :
         val selectedPosition = spinner.selectedItemPosition
         if (selectedPosition != INVALID_POSITION) {
             val selectedDeck = spinner.adapter.getItem(selectedPosition) as DeckNameId
-            outState.putLong(KEY_DECK_ID, selectedDeck.did)
+            outState.putLong(KEY_DECK_ID, selectedDeck.did.id)
             outState.putString(KEY_DECK_NAME, selectedDeck.name)
         }
     }

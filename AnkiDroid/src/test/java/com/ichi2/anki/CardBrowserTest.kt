@@ -56,6 +56,7 @@ import com.ichi2.anki.utils.ext.showDialogFragment
 import com.ichi2.libanki.BrowserConfig
 import com.ichi2.libanki.CardId
 import com.ichi2.libanki.CardType
+import com.ichi2.libanki.DeckId
 import com.ichi2.libanki.Note
 import com.ichi2.libanki.NotetypeJson
 import com.ichi2.libanki.QueueType
@@ -161,7 +162,7 @@ class CardBrowserTest : RobolectricTest() {
     fun testOnDeckSelected() =
         withBrowser(noteCount = 1) {
             // Arrange
-            val deckId = 123L
+            val deckId = DeckId(123L)
             val selectableDeck = DeckSelectionDialog.SelectableDeck(deckId, "Test Deck")
 
             // Act
@@ -526,7 +527,7 @@ class CardBrowserTest : RobolectricTest() {
 
             val addIntent = b.addNoteIntent
             val bundle = addIntent.getBundleExtra(SingleFragmentActivity.FRAGMENT_ARGS_EXTRA)
-            IntentAssert.hasExtra(bundle, NoteEditor.EXTRA_DID, targetDid)
+            IntentAssert.hasExtra(bundle, NoteEditor.EXTRA_DID, targetDid.id)
         }
 
     /** 7420  */
@@ -540,7 +541,7 @@ class CardBrowserTest : RobolectricTest() {
 
         val addIntent = b.addNoteIntent
         val bundle = addIntent.getBundleExtra(SingleFragmentActivity.FRAGMENT_ARGS_EXTRA)
-        IntentAssert.hasExtra(bundle, NoteEditor.EXTRA_DID, initialDid)
+        IntentAssert.hasExtra(bundle, NoteEditor.EXTRA_DID, initialDid.id)
     }
 
     @Test

@@ -28,7 +28,6 @@ import com.ichi2.anki.FilteredDeckOptions.Companion.STEPS
 import com.ichi2.anki.FilteredDeckOptions.Companion.STEPS_ON
 import com.ichi2.anki.FlashCardsContract.Note.MOD
 import com.ichi2.anki.FlashCardsContract.Note.USN
-import com.ichi2.libanki.Consts
 import com.ichi2.libanki.Deck.Companion.BROWSER_COLLAPSED
 import com.ichi2.libanki.Deck.Companion.COLLAPSED
 import com.ichi2.libanki.Deck.Companion.DELAYS
@@ -41,6 +40,7 @@ import com.ichi2.libanki.Deck.Companion.PREVIEW_GOOD_SECS
 import com.ichi2.libanki.Deck.Companion.PREVIEW_HARD_SECS
 import com.ichi2.libanki.Deck.Companion.RESCHED
 import com.ichi2.libanki.DeckId
+import com.ichi2.libanki.DeckId.Companion.DEFAULT_DECK_ID
 import com.ichi2.libanki.FilteredDeck
 import com.ichi2.libanki.FilteredDeck.Companion.TERMS
 import com.ichi2.testutils.isJsonHolderEqual
@@ -92,7 +92,7 @@ class FilteredDeckOptionsTest : RobolectricTest() {
                     "$PREVIEW_GOOD_SECS" : 0
                    }""",
             )
-        assertThat("should not be using default deck", filteredDeckConfig.id, not(equalTo(Consts.DEFAULT_DECK_ID)))
+        assertThat("should not be using default deck", filteredDeckConfig.id, not(equalTo(DEFAULT_DECK_ID)))
         assertThat("before", filteredDeckConfig.removeNonDeterministicValues(), isJsonHolderEqual(expected.removeNonDeterministicValues()))
 
         withFilteredDeckOptions(newFilteredDeckId) {
@@ -173,5 +173,5 @@ class FilteredDeckOptionsTest : RobolectricTest() {
     private val newFilteredDeckId by lazy { col.decks.newFiltered("Filtered") }
 
     private val defaultDeckConfig
-        get() = col.decks.configDictForDeckId(Consts.DEFAULT_DECK_ID)
+        get() = col.decks.configDictForDeckId(DEFAULT_DECK_ID)
 }

@@ -102,9 +102,9 @@ interface Deck : JSONObjectHolder {
      * (created as a timestamp, very small chance of collision between two different decks from different users)
      */
     var id: DeckId
-        get() = jsonObject.getLong("id")
+        get() = DeckId(jsonObject.getLong("id"))
         set(value) {
-            jsonObject.put("id", value)
+            jsonObject.put("id", value.id)
         }
 
     /**
