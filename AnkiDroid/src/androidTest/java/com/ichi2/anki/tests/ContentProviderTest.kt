@@ -46,7 +46,6 @@ import com.ichi2.libanki.backend.BackendUtils
 import com.ichi2.libanki.exception.ConfirmModSchemaException
 import com.ichi2.libanki.getStockNotetype
 import com.ichi2.libanki.sched.Scheduler
-import com.ichi2.libanki.utils.set
 import com.ichi2.testutils.common.assertThrows
 import com.ichi2.utils.KotlinCleanup
 import com.ichi2.utils.emptyStringArray
@@ -1277,7 +1276,10 @@ class ContentProviderTest : InstrumentedTest() {
             "This causes mild data corruption - should not be run on a collection you care about",
             isEmulator(),
         )
-        col.notetypes.all()[0].put("did", NULL)
+        col.notetypes
+            .all()[0]
+            .jsonObject
+            .put("did", NULL)
 
         val cr = contentResolver
         // Query all available note types
