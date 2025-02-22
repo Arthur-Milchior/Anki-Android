@@ -56,7 +56,7 @@ import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.greaterThan
 import org.hamcrest.Matchers.greaterThanOrEqualTo
-import org.json.JSONObject
+import org.json.JSONObject.NULL
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -1277,7 +1277,7 @@ class ContentProviderTest : InstrumentedTest() {
             "This causes mild data corruption - should not be run on a collection you care about",
             isEmulator(),
         )
-        col.notetypes.all()[0].put("did", JSONObject.NULL)
+        col.notetypes.all()[0].put("did", NULL)
 
         val cr = contentResolver
         // Query all available note types

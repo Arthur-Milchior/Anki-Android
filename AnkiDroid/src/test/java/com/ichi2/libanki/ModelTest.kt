@@ -539,7 +539,7 @@ class NotetypeTest : JvmTest() {
     fun getDid_test() {
         val noteTypes = col.notetypes
         val basic = noteTypes.byName("Basic")
-        basic!!.put("did", 999L)
+        basic!!.did = 999L
 
         val expected = 999L
         assertEquals("getDid() should return the model did", expected, basic.did)
