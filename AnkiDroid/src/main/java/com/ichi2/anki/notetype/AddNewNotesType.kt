@@ -57,7 +57,7 @@ class AddNewNotesType(
                         StockNotetype.Kind.entries
                             .filter { it != StockNotetype.Kind.UNRECOGNIZED }
                             .map {
-                                val stockNotetype = BackendUtils.fromJsonBytes(getStockNotetypeLegacy(it))
+                                val stockNotetype = getStockNotetypeLegacy(it)
                                 AddNotetypeUiModel(
                                     id = it.number.toLong(),
                                     name = stockNotetype.get("name") as String,
@@ -155,7 +155,7 @@ class AddNewNotesType(
             activity.runAndRefreshAfter {
                 val kind = StockNotetype.Kind.forNumber(selectedOption.id.toInt())
                 val updatedStandardNotetype =
-                    BackendUtils.fromJsonBytes(getStockNotetypeLegacy(kind)).apply {
+                    getStockNotetypeLegacy(kind).apply {
                         set("name", newName)
                     }
                 addNotetypeLegacy(BackendUtils.toJsonBytes(updatedStandardNotetype))

@@ -756,9 +756,9 @@ fun Collection.getNotetypeNames(): List<NotetypeNameId> = backend.getNotetypeNam
 
 fun Collection.addNotetypeLegacy(json: ByteString): OpChangesWithId = backend.addNotetypeLegacy(json = json)
 
-fun Collection.getStockNotetypeLegacy(kind: StockNotetype.Kind): ByteString = backend.getStockNotetypeLegacy(kind = kind)
+fun Collection.getStockNotetypeLegacy(kind: StockNotetype.Kind) = fromJsonBytes(backend.getStockNotetypeLegacy(kind = kind))
 
-fun Collection.getStockNotetype(kind: StockNotetype.Kind): NotetypeJson = NotetypeJson(fromJsonBytes(getStockNotetypeLegacy(kind)))
+fun Collection.getStockNotetype(kind: StockNotetype.Kind): NotetypeJson = NotetypeJson(getStockNotetypeLegacy(kind))
 
 /**
  * Restores a notetype to its original stock kind.
