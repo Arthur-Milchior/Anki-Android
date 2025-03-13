@@ -44,7 +44,7 @@ import com.ichi2.libanki.Utils
 import com.ichi2.libanki.addNotetypeLegacy
 import com.ichi2.libanki.backend.BackendUtils
 import com.ichi2.libanki.exception.ConfirmModSchemaException
-import com.ichi2.libanki.getStockNotetypeLegacy
+import com.ichi2.libanki.getStockNotetype
 import com.ichi2.libanki.sched.Scheduler
 import com.ichi2.libanki.utils.set
 import com.ichi2.testutils.common.assertThrows
@@ -134,7 +134,7 @@ class ContentProviderTest : InstrumentedTest() {
     private fun createBasicNoteType(name: String = BASIC_NOTE_TYPE_NAME): NotetypeJson {
         val noteType =
             col
-                .getStockNotetypeLegacy(StockNotetype.Kind.KIND_BASIC)
+                .getStockNotetype(StockNotetype.Kind.KIND_BASIC)
                 .apply { set("name", name) }
         col.addNotetypeLegacy(BackendUtils.toJsonBytes(noteType))
         return col.notetypes.byName(name)!!
