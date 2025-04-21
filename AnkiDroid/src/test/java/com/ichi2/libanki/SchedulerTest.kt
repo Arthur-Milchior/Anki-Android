@@ -94,7 +94,7 @@ open class SchedulerTest : JvmTest() {
         // disabled for now, as the learn fudging makes this randomly fail
         // // the default order should ensure siblings are not seen together, and
         // // should show all cards
-        // Model noteType = col.getModels().current(); Models noteTypes = col.getModels()
+        // NoteType noteType = col.getNoteTypes().current(); NoteTypes noteTypes = col.getNoteTypes()
         // JSONObject t = noteTypes.newTemplate("Reverse")
         // t['qfmt'] = "{{Back}}"
         // t['afmt'] = "{{Front}}"

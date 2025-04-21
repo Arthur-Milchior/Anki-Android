@@ -1302,7 +1302,7 @@ class CardContentProvider : ContentProvider() {
         uri: Uri,
         col: Collection,
     ): NoteTypeId =
-        if (uri.pathSegments[1] == FlashCardsContract.Model.CURRENT_MODEL_ID) {
+        if (uri.pathSegments[1] == FlashCardsContract.Model.CURRENT_NOTE_TYPE_ID) {
             col.notetypes.current().optLong("id", -1)
         } else {
             try {

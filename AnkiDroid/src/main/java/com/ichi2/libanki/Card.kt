@@ -33,7 +33,7 @@ import net.ankiweb.rsdroid.RustCleanup
  * currently belongs to), and the retrieval of presentation elements (filled-in templates).
  *
  * Card presentation has two components: the question (front) side and the answer (back) side. The presentation of the
- * card is derived from the template of the card's Card Type. The Card Type is a component of the Note Type (see Models)
+ * card is derived from the template of the card's Card Type. The Card Type is a component of the Note Type (see [anki.notetypes.Notetype])
  * that this card is derived from.
  *
  * This class is responsible for:

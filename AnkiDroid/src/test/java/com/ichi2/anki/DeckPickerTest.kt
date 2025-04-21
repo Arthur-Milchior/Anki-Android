@@ -363,7 +363,7 @@ class DeckPickerTest : RobolectricTest() {
                     Intent(),
                 )
 
-            // Neither collection, not its models will be initialized without storage permission
+            // Neither collection, not its note types will be initialized without storage permission
 
             // assert: Lazy Collection initialization CollectionTask.LoadCollectionComplete fails
             assertFailsWith<Exception> { d.getColUnsafe }
@@ -387,7 +387,7 @@ class DeckPickerTest : RobolectricTest() {
                 notNullValue(),
             )
             assertThat(
-                "Collection Models Loaded",
+                "Collection Note types Loaded",
                 d.getColUnsafe.notetypes,
                 notNullValue(),
             )

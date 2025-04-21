@@ -170,10 +170,10 @@ open class CardTemplateEditor :
         setContentView(R.layout.card_template_editor)
         // Load the args either from the intent or savedInstanceState bundle
         if (savedInstanceState == null) {
-            // get model id
+            // get note type id
             noteTypeId = intent.getLongExtra(EDITOR_NOTE_TYPE_ID, NOT_FOUND_NOTE_TYPE)
             if (noteTypeId == NOT_FOUND_NOTE_TYPE) {
-                Timber.e("CardTemplateEditor :: no model ID was provided")
+                Timber.e("CardTemplateEditor :: no note type ID was provided")
                 finish()
                 return
             }
@@ -275,7 +275,7 @@ open class CardTemplateEditor :
         // take the passed model id load it up for editing
         if (tempNoteType == null) {
             tempNoteType = CardTemplateNotetype(NotetypeJson(col.notetypes.get(noteTypeId).toString()))
-            // Timber.d("onCollectionLoaded() model is %s", mTempModel.getModel().toString(2));
+            // Timber.d("onCollectionLoaded() model is %s", mtempNoteType.getModel().toString(2));
         }
         fieldNames = tempNoteType!!.noteType.fieldsNames
         // Set up the ViewPager with the sections adapter.
@@ -290,7 +290,7 @@ open class CardTemplateEditor :
             it.subtitle = tempNoteType!!.noteType.optString("name")
         }
         // Close collection opening dialog if needed
-        Timber.i("CardTemplateEditor:: Card template editor successfully started for model id %d", noteTypeId)
+        Timber.i("CardTemplateEditor:: Card template editor successfully started for note type id %d", noteTypeId)
 
         // Set the tab to the current template if an ord id was provided
         Timber.d("Setting starting tab to %d", startingOrdId)
@@ -399,7 +399,7 @@ open class CardTemplateEditor :
             }
             KeyEvent.KEYCODE_O -> {
                 Timber.i("Ctrl+O: Display deck override dialog from keypress")
-                currentFragment.displayDeckOverrideDialog(currentFragment.tempModel)
+                currentFragment.displayDeckOverrideDialog(currentFragment.tempNoteType)
             }
             KeyEvent.KEYCODE_M -> {
                 Timber.i("Ctrl+M: Copy markdown from keypress")
@@ -485,7 +485,7 @@ open class CardTemplateEditor :
         private var cursorPosition = 0
 
         private lateinit var templateEditor: CardTemplateEditor
-        lateinit var tempModel: CardTemplateNotetype
+        lateinit var tempNoteType: CardTemplateNotetype
         lateinit var bottomNavigation: BottomNavigationView
 
         override fun onCreateView(
@@ -497,11 +497,11 @@ open class CardTemplateEditor :
             templateEditor = activity as CardTemplateEditor
             val mainView = inflater.inflate(R.layout.card_template_editor_item, container, false)
             val cardIndex = requireArguments().getInt(CARD_INDEX)
-            tempModel = templateEditor.tempNoteType!!
+            tempNoteType = templateEditor.tempNoteType!!
             // Load template
             val template: BackendCardTemplate =
                 try {
-                    tempModel.getTemplate(cardIndex)
+                    tempNoteType.getTemplate(cardIndex)
                 } catch (e: JSONException) {
                     Timber.d(e, "Exception loading template in CardTemplateFragment. Probably stale fragment.")
                     return mainView
@@ -518,7 +518,7 @@ open class CardTemplateEditor :
                 val currentSelectedId = item.itemId
                 templateEditor.tabToViewId[cardIndex] = currentSelectedId
                 when (currentSelectedId) {
-                    R.id.styling_edit -> setCurrentEditorView(currentSelectedId, tempModel.css, R.string.card_template_editor_styling)
+                    R.id.styling_edit -> setCurrentEditorView(currentSelectedId, tempNoteType.css, R.string.card_template_editor_styling)
                     R.id.back_edit ->
                         setCurrentEditorView(
                             currentSelectedId,
@@ -549,8 +549,8 @@ open class CardTemplateEditor :
                         refreshFragmentRunnable?.let { refreshFragmentHandler.removeCallbacks(it) }
                         templateEditor.tabToCursorPosition[cardIndex] = editorEditText.selectionStart
                         when (currentEditorViewId) {
-                            R.id.styling_edit -> tempModel.updateCss(editorEditText.text.toString())
-                            R.id.back_edit -> template.afmt = editorEditText.text.toString()
+                            R.id.styling_edit -> tempNoteType.updateCss(editorEditText.text.toString())
+                            R.id.back_edit -> template.afmt= editorEditText.text.toString()
                             else -> template.qfmt = editorEditText.text.toString()
                         }
                         templateEditor.tempNoteType!!.updateTemplate(cardIndex, template)
@@ -560,7 +560,7 @@ open class CardTemplateEditor :
                             }
                         refreshFragmentRunnable = updateRunnable
                         refreshFragmentHandler.postDelayed(updateRunnable, REFRESH_PREVIEW_DELAY)
-                        templateEditor.displayDiscardChangesCallback.isEnabled = modelHasChanged()
+                        templateEditor.displayDiscardChangesCallback.isEnabled = noteTypeHasChanged()
                     }
 
                     override fun beforeTextChanged(
@@ -769,29 +769,29 @@ open class CardTemplateEditor :
 
         fun deleteCardTemplate() {
             templateEditor.lifecycleScope.launch {
-                val tempModel = templateEditor.tempNoteType
+                val tempNoteType = templateEditor.tempNoteType
                 val ordinal = templateEditor.viewPager.currentItem
-                val template = tempModel!!.getTemplate(ordinal)
+                val template = tempNoteType!!.getTemplate(ordinal)
                 // Don't do anything if only one template
-                if (tempModel.templateCount < 2) {
+                if (tempNoteType.templateCount < 2) {
                     templateEditor.showSimpleMessageDialog(resources.getString(R.string.card_template_editor_cant_delete))
                     return@launch
                 }
 
-                if (deletionWouldOrphanNote(tempModel, ordinal)) {
+                if (deletionWouldOrphanNote(tempNoteType, ordinal)) {
                     showOrphanNoteDialog()
                     return@launch
                 }
 
                 // Show confirmation dialog
                 val numAffectedCards =
-                    if (!CardTemplateNotetype.isOrdinalPendingAdd(tempModel, ordinal)) {
+                    if (!CardTemplateNotetype.isOrdinalPendingAdd(tempNoteType, ordinal)) {
                         Timber.d("Ordinal is not a pending add, so we'll get the current card count for confirmation")
-                        withCol { notetypes.tmplUseCount(tempModel.noteType, ordinal) }
+                        withCol { notetypes.tmplUseCount(tempNoteType.noteType, ordinal) }
                     } else {
                         0
                     }
-                confirmDeleteCards(template, tempModel.noteType, numAffectedCards)
+                confirmDeleteCards(template, tempNoteType.noteType, numAffectedCards)
             }
         }
 
@@ -819,7 +819,7 @@ open class CardTemplateEditor :
             // Show confirmation dialog
             val ordinal = templateEditor.viewPager.currentItem
             // isOrdinalPendingAdd method will check if there are any new card types added or not,
-            // if TempModel has new card type then numAffectedCards will be 0 by default.
+            // if TempNoteType has new card type then numAffectedCards will be 0 by default.
             val numAffectedCards =
                 if (!CardTemplateNotetype.isOrdinalPendingAdd(templateEditor.tempNoteType!!, ordinal)) {
                     templateEditor.getColUnsafe.notetypes.tmplUseCount(templateEditor.tempNoteType!!.noteType, ordinal)
@@ -830,7 +830,7 @@ open class CardTemplateEditor :
         }
 
         fun saveNoteType(): Boolean {
-            if (modelHasChanged()) {
+            if (noteTypeHasChanged()) {
                 val confirmButton = templateEditor.findViewById<View>(R.id.action_confirm)
                 if (confirmButton != null) {
                     if (!confirmButton.isEnabled) {
@@ -843,10 +843,10 @@ open class CardTemplateEditor :
                     requireActivity().withProgress(resources.getString(R.string.saving_model)) {
                         withCol { templateEditor.tempNoteType!!.saveToDatabase(this@withCol) }
                     }
-                    onModelSaved()
+                    onNoteTypeSaved()
                 }
             } else {
-                Timber.d("CardTemplateEditor:: model has not changed, exiting")
+                Timber.d("CardTemplateEditor:: note type has not changed, exiting")
                 templateEditor.finish()
             }
             return true
@@ -858,7 +858,7 @@ open class CardTemplateEditor :
         fun setupCommonMenu(menu: Menu) {
             menu.findItem(R.id.action_restore_to_default).title = CollectionManager.TR.cardTemplatesRestoreToDefault()
             if (noteTypeCreatesDynamicNumberOfNotes()) {
-                Timber.d("Editing cloze/occlusion model, disabling add/delete card template and deck override functionality")
+                Timber.d("Editing cloze/occlusion note type, disabling add/delete card template and deck override functionality")
                 menu.findItem(R.id.action_add).isVisible = false
                 menu.findItem(R.id.action_rename).isVisible = false
                 menu.findItem(R.id.action_add_deck_override).isVisible = false
@@ -891,9 +891,9 @@ open class CardTemplateEditor :
 
         @NeedsTest("Notetype is restored to stock kind")
         private suspend fun restoreNotetypeToStock(kind: StockNotetype.Kind? = null) {
-            val nid = notetypeId { ntid = tempModel.noteTypeId }
+            val nid = notetypeId { ntid = tempNoteType.noteTypeId }
             undoableOp { restoreNotetypeToStock(nid, kind) }
-            onModelSaved()
+            onNoteTypeSaved()
             showThemedToast(
                 requireContext(),
                 TR.cardTemplatesRestoredToDefault(),
@@ -940,7 +940,7 @@ open class CardTemplateEditor :
                 }
                 R.id.action_add_deck_override -> {
                     Timber.i("CardTemplateEditor:: Deck override button pressed")
-                    displayDeckOverrideDialog(tempModel)
+                    displayDeckOverrideDialog(tempNoteType)
                     return true
                 }
                 R.id.action_preview -> {
@@ -949,7 +949,7 @@ open class CardTemplateEditor :
                     return true
                 }
                 R.id.action_confirm -> {
-                    Timber.i("CardTemplateEditor:: Save model button pressed")
+                    Timber.i("CardTemplateEditor:: Save note type button pressed")
                     saveNoteType()
                 }
                 R.id.action_card_browser_appearance -> {
@@ -972,7 +972,7 @@ open class CardTemplateEditor :
                         }
                     }
 
-                    val originalStockKind = tempModel.noteType.optInt("originalStockKind", ORIGINAL_STOCK_KIND_UNKNOWN_VALUE)
+                    val originalStockKind = tempNoteType.noteType.optInt("originalStockKind", ORIGINAL_STOCK_KIND_UNKNOWN_VALUE)
                     if (originalStockKind != ORIGINAL_STOCK_KIND_UNKNOWN_VALUE) {
                         Timber.d("Asking to restore to original stock kind %s", originalStockKind)
                         askUser()
@@ -1006,12 +1006,12 @@ open class CardTemplateEditor :
         private val currentTemplate: CardTemplate?
             get() =
                 try {
-                    val tempModel = templateEditor.tempNoteType
-                    val template: BackendCardTemplate = tempModel!!.getTemplate(templateEditor.viewPager.currentItem)
+                    val tempNoteType = templateEditor.tempNoteType
+                    val template: BackendCardTemplate = tempNoteType!!.getTemplate(templateEditor.viewPager.currentItem)
                     CardTemplate(
                         front = template.qfmt,
                         back = template.afmt,
-                        style = tempModel.css,
+                        style = tempNoteType.css,
                     )
                 } catch (e: Exception) {
                     Timber.w(e, "Exception loading template in CardTemplateFragment. Probably stale fragment.")
@@ -1031,8 +1031,8 @@ open class CardTemplateEditor :
             }
         }
 
-        private fun onModelSaved() {
-            Timber.d("saveModelAndExitHandler::postExecute called")
+        private fun onNoteTypeSaved() {
+            Timber.d("saveNoteTypeAndExitHandler::postExecute called")
             val button = templateEditor.findViewById<View>(R.id.action_confirm)
             if (button != null) {
                 button.isEnabled = true
@@ -1066,14 +1066,14 @@ open class CardTemplateEditor :
             }
         }
 
-        fun displayDeckOverrideDialog(tempModel: CardTemplateNotetype) =
+        fun displayDeckOverrideDialog(tempNoteType: CardTemplateNotetype) =
             launchCatchingTask {
                 val activity = requireActivity() as AnkiActivity
-                if (tempModel.noteType.isCloze) {
+                if (tempNoteType.noteType.isCloze) {
                     showSnackbar(getString(R.string.multimedia_editor_something_wrong), Snackbar.LENGTH_SHORT)
                     return@launchCatchingTask
                 }
-                val name = getCurrentTemplateName(tempModel)
+                val name = getCurrentTemplateName(tempNoteType)
                 val explanation = getString(R.string.deck_override_explanation, name)
                 // Anki Desktop allows Dynamic decks, have reported this as a bug:
                 // https://forums.ankiweb.net/t/minor-bug-deck-override-to-filtered-deck/1493
@@ -1083,10 +1083,10 @@ open class CardTemplateEditor :
                 activity.showDialogFragment(dialog)
             }
 
-        private fun getCurrentTemplateName(tempModel: CardTemplateNotetype): String =
+        private fun getCurrentTemplateName(tempNoteType: CardTemplateNotetype): String =
             try {
                 val ordinal = templateEditor.viewPager.currentItem
-                val template = tempModel.getTemplate(ordinal)
+                val template = tempNoteType.getTemplate(ordinal)
                 template.name
             } catch (e: Exception) {
                 Timber.w(e, "Failed to get name for template")
@@ -1119,7 +1119,7 @@ open class CardTemplateEditor :
         }
 
         private suspend fun deletionWouldOrphanNote(
-            tempModel: CardTemplateNotetype?,
+            tempNoteType: CardTemplateNotetype?,
             position: Int,
         ): Boolean {
             // For existing templates, make sure we won't leave orphaned notes if we delete the template
@@ -1128,9 +1128,9 @@ open class CardTemplateEditor :
             // If we were deleting a template we just added, we don't care. If not, then for every
             // template delete queued up, we check the database to see if this delete in combo with any other
             // pending deletes could orphan cards
-            if (!CardTemplateNotetype.isOrdinalPendingAdd(tempModel!!, position)) {
-                val currentDeletes = tempModel.getDeleteDbOrds(position)
-                val cardIds = withCol { notetypes.getCardIdsForNoteType(tempModel.noteTypeId, currentDeletes) }
+            if (!CardTemplateNotetype.isOrdinalPendingAdd(tempNoteType!!, position)) {
+                val currentDeletes = tempNoteType.getDeleteDbOrds(position)
+                val cardIds = withCol { notetypes.getCardIdsForNoteType(tempNoteType.noteTypeId, currentDeletes) }
                 if (cardIds == null) {
                     // It is possible but unlikely that a user has an in-memory template addition that would
                     // generate cards making the deletion safe, but we don't handle that. All users who do
@@ -1172,13 +1172,13 @@ open class CardTemplateEditor :
             }
         }
 
-        private fun modelHasChanged(): Boolean = templateEditor.noteTypeHasChanged()
+        private fun noteTypeHasChanged(): Boolean = templateEditor.noteTypeHasChanged()
 
         /**
          * Confirm if the user wants to delete all the cards associated with current template
          *
          * @param tmpl template to remove
-         * @param notetype model to remove template from, modified in place by reference
+         * @param notetype note type to remove template from, modified in place by reference
          * @param numAffectedCards number of cards which will be affected
          */
         private fun confirmDeleteCards(
@@ -1291,13 +1291,13 @@ open class CardTemplateEditor :
         }
 
         /**
-         * Add new template to a given model
-         * @param model model to add new template to
+         * Add new template to a given note type
+         * @param noteType note type to add new template to
          */
-        private fun addNewTemplate(model: NotetypeJson) {
+        private fun addNewTemplate(noteType: NotetypeJson) {
             // Build new template
             val oldCardIndex = requireArguments().getInt(CARD_INDEX)
-            val templates = model.tmpls
+            val templates = noteType.tmpls
             val oldTemplate = templates[oldCardIndex]
             val newTemplate = Notetypes.newTemplate(newCardName(templates))
             // Set up question & answer formats

@@ -787,7 +787,7 @@ class ContentProviderTest : InstrumentedTest() {
         val uri =
             Uri.withAppendedPath(
                 FlashCardsContract.Model.CONTENT_URI,
-                FlashCardsContract.Model.CURRENT_MODEL_ID,
+                FlashCardsContract.Model.CURRENT_NOTE_TYPE_ID,
             )
         val noteTypeCursor = cr.query(uri, null, null, null, null)
         assertNotNull(noteTypeCursor)

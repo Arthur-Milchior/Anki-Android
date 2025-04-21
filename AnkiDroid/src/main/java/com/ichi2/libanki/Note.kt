@@ -114,13 +114,13 @@ class Note : Cloneable {
         card.ord = ord
         card.did = deckId
 
-        val model = customNoteType ?: notetype
+        val note_type = customNoteType ?: notetype
         val template =
             if (customTemplate != null) {
                 customTemplate.deepClone()
             } else {
-                val index = if (model.isStd) ord else 0
-                model.tmpls[index]
+                val index = if (note_type.isStd) ord else 0
+                note_type.tmpls[index]
             }
         // may differ in cloze case
         template.setOrd(card.ord)
@@ -130,7 +130,7 @@ class Note : Cloneable {
                 .fromCardLayout(
                     note = this,
                     card = card,
-                    notetype = model,
+                    notetype = note_type,
                     template = template,
                     fillEmpty = fillEmpty,
                 ).render(col)

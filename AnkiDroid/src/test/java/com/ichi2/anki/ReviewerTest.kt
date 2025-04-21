@@ -86,7 +86,7 @@ class ReviewerTest : RobolectricTest() {
 
     @Test
     fun testOnSelectedTags() {
-        // Add a note using basic model
+        // Add a note using basic note type
         addBasicNote()
 
         // Start the Reviewer activity
@@ -276,10 +276,10 @@ class ReviewerTest : RobolectricTest() {
     @Test
     fun jsAnkiGetDeckName() =
         runTest {
-            val models = col.notetypes
+            val noteTypes = col.notetypes
 
             val didAb = addDeck("A::B")
-            val basic = models.byName(BASIC_NOTE_TYPE_NAME)
+            val basic = noteTypes.byName(BASIC_NOTE_TYPE_NAME)
             basic!!.put("did", didAb)
             addBasicNote("foo", "bar")
 
@@ -453,14 +453,14 @@ class ReviewerTest : RobolectricTest() {
     @Throws(ConfirmModSchemaException::class)
     @KotlinCleanup("use a assertNotNull which returns rather than !!")
     private fun addNoteWithThreeCards() {
-        val models = col.notetypes
-        var notetype: NotetypeJson = models.copy(models.current())
+        val noteTypes = col.notetypes
+        var notetype: NotetypeJson = noteTypes.copy(noteTypes.current())
         notetype.put("name", "Three")
-        models.add(notetype)
-        notetype = models.byName("Three")!!
+        noteTypes.add(notetype)
+        notetype = noteTypes.byName("Three")!!
 
-        cloneTemplate(models, notetype, "1")
-        cloneTemplate(models, notetype, "2")
+        cloneTemplate(noteTypes, notetype, "1")
+        cloneTemplate(noteTypes, notetype, "2")
 
         val newNote = col.newNote()
         newNote.setField(0, "Hello")

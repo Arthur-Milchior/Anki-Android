@@ -31,7 +31,7 @@ import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 
 @RunWith(ParameterizedRobolectricTestRunner::class)
-class ModelFieldEditorTest(
+class NoteTypeFieldEditorTest(
     private val forbiddenCharacter: String,
 ) : RobolectricTest() {
     /**
@@ -53,7 +53,7 @@ class ModelFieldEditorTest(
     }
 
     /**
-     * Assert that model's fields doesn't contain the forbidden field name
+     * Assert that note type's fields doesn't contain the forbidden field name
      *
      * @param forbiddenFieldName The forbidden field name to identify
      */
@@ -90,7 +90,7 @@ class ModelFieldEditorTest(
     }
 
     /**
-     * Creates a dialog that adds a field with given field name to "Basic" model when its positive button is clicked
+     * Creates a dialog that adds a field with given field name to "Basic" note type when its positive button is clicked
      *
      * @param fieldNameInput        EditText with field name inside
      * @param fieldOperationType    Field Operation Type to do (ADD_FIELD or EDIT_FIELD)
@@ -110,16 +110,16 @@ class ModelFieldEditorTest(
                     val intent = Intent()
                     intent.putExtra("title", noteTypeName)
                     intent.putExtra("noteTypeID", col.notetypes.idForName(noteTypeName)!!)
-                    val modelFieldEditor =
+                    val noteTypeFieldEditor =
                         startActivityNormallyOpenCollectionWithIntent(
-                            this@ModelFieldEditorTest,
-                            ModelFieldEditor::class.java,
+                            this@NoteTypeFieldEditorTest,
+                            NoteTypeFieldEditor::class.java,
                             intent,
                         )
                     when (fieldOperationType) {
-                        FieldOperationType.ADD_FIELD -> modelFieldEditor.addField(fieldNameInput)
+                        FieldOperationType.ADD_FIELD -> noteTypeFieldEditor.addField(fieldNameInput)
                         FieldOperationType.RENAME_FIELD ->
-                            modelFieldEditor.renameField(
+                            noteTypeFieldEditor.renameField(
                                 fieldNameInput,
                             )
                     }

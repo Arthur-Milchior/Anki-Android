@@ -40,9 +40,9 @@ class CardTemplateNotetypeTest : RobolectricTest() {
 
         // Make sure save / retrieve works
         val tempNoteTypePath = CardTemplateNotetype.saveTempNoteType(targetContext, NotetypeJson("{\"foo\": \"bar\"}"))
-        assertNotNull("Saving temp model unsuccessful", tempNoteTypePath)
+        assertNotNull("Saving temp note type unsuccessful", tempNoteTypePath)
         val tempNoteType = CardTemplateNotetype.getTempNoteType(tempNoteTypePath!!)
-        assertNotNull("Temp model not read successfully", tempNoteType)
+        assertNotNull("Temp note type not read successfully", tempNoteType)
         Assert.assertEquals(JSONObject("{\"foo\": \"bar\"}").toString(), tempNoteType.toString())
 
         // Make sure clearing works
@@ -58,7 +58,7 @@ class CardTemplateNotetypeTest : RobolectricTest() {
 
     @Test
     fun testAddDeleteTracking() {
-        // Assume you start with a 2 template model (like "Basic (and reversed)")
+        // Assume you start with a 2 template note type (like "Basic (and reversed)")
         // Add a 3rd new template, remove the 2nd, remove the 1st, add a new now-2nd, remove 1st again
         // ...and it should reduce to just removing the original 1st/2nd and adding the final as first
         val tempNoteType = CardTemplateNotetype(NotetypeJson("{ \"foo\": \"bar\" }"))

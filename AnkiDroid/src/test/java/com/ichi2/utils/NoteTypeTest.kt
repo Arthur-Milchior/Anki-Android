@@ -94,13 +94,13 @@ class NoteTypeTest {
 const val BASIC_NOTE_TYPE_NAME = "Basic"
 
 /**
- * Creates a basic model.
+ * Creates a basic note type.
  *
- * Note: changes to this model will propagate to [createBasicTypingNoteType] as that model is built on
- * top of the model returned by this function.
+ * Note: changes to this note type will propagate to [createBasicTypingNoteType] as that note type is built on
+ * top of the note type returned by this function.
  *
- * @param name name of the new model
- * @return the new model
+ * @param name name of the new note type
+ * @return the new note type
  */
 fun Collection.createBasicNoteType(name: String = BASIC_NOTE_TYPE_NAME): NotetypeJson {
     val noteType =
@@ -113,7 +113,7 @@ fun Collection.createBasicNoteType(name: String = BASIC_NOTE_TYPE_NAME): Notetyp
 }
 
 /**
- * Creates a basic typing model.
+ * Creates a basic typing note type.
  *
  * @see createBasicNoteType
  */

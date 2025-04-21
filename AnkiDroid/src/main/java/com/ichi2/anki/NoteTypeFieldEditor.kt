@@ -60,7 +60,7 @@ import org.json.JSONException
 import timber.log.Timber
 import java.util.Locale
 
-class ModelFieldEditor : AnkiActivity() {
+class NoteTypeFieldEditor : AnkiActivity() {
     // Position of the current field selected
     private var currentPos = 0
     private lateinit var fieldsListView: ListView
@@ -79,7 +79,7 @@ class ModelFieldEditor : AnkiActivity() {
             return
         }
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.model_field_editor)
+        setContentView(R.layout.note_type_field_editor)
         fieldsListView = findViewById(R.id.note_type_editor_fields)
         enableToolbar().apply {
             setTitle(R.string.model_field_editor_title)
@@ -109,7 +109,7 @@ class ModelFieldEditor : AnkiActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
-        menuInflater.inflate(R.menu.model_editor, menu)
+        menuInflater.inflate(R.menu.note_type_editor, menu)
         return true
     }
 
@@ -126,22 +126,22 @@ class ModelFieldEditor : AnkiActivity() {
     // ----------------------------------------------------------------------------
 
     /**
-     * Initialize the data holding properties and the UI from the model. This method expects that it
+     * Initialize the data holding properties and the UI from the note type. This method expects that it
      * isn't followed by other type of work that access the data properties as it has the capability
      * to finish the activity.
      */
     private fun initialize() {
         val noteTypeID = intent.getLongExtra("noteTypeID", 0)
-        val collectionModel = getColUnsafe.notetypes.get(noteTypeID)
-        if (collectionModel == null) {
+        val collectionNoteType = getColUnsafe.notetypes.get(noteTypeID)
+        if (collectionNoteType == null) {
             showThemedToast(this, R.string.field_editor_model_not_available, true)
             finish()
             return
         }
-        notetype = collectionModel
+        notetype = collectionNoteType
         noteFields = notetype.flds
         fieldsLabels = notetype.fieldsNames
-        fieldsListView.adapter = ArrayAdapter(this, R.layout.model_field_editor_list_item, fieldsLabels)
+        fieldsListView.adapter = ArrayAdapter(this, R.layout.note_type_field_editor_list_item, fieldsLabels)
         fieldsListView.onItemClickListener =
             AdapterView.OnItemClickListener { _, _, position: Int, _ ->
                 showDialogFragment(newInstance(fieldsLabels[position]))
@@ -216,7 +216,7 @@ class ModelFieldEditor : AnkiActivity() {
                                 }
                             }
                         c.setConfirm(confirm)
-                        this@ModelFieldEditor.showDialogFragment(c)
+                        this@NoteTypeFieldEditor.showDialogFragment(c)
                     }
                     getColUnsafe.notetypes.update(notetype)
                     initialize()
@@ -346,7 +346,7 @@ class ModelFieldEditor : AnkiActivity() {
                                 }
                             }
                         c.setConfirm(confirm)
-                        this@ModelFieldEditor.showDialogFragment(c)
+                        this@NoteTypeFieldEditor.showDialogFragment(c)
                     }
                 }
                 negativeButton(R.string.dialog_cancel)
@@ -413,7 +413,7 @@ class ModelFieldEditor : AnkiActivity() {
                         }
                     }
                 c.setConfirm(confirm)
-                this@ModelFieldEditor.showDialogFragment(c)
+                this@NoteTypeFieldEditor.showDialogFragment(c)
             }
         }
     }
@@ -474,7 +474,7 @@ class ModelFieldEditor : AnkiActivity() {
                     launchCatchingTask { changeSortField(notetype, currentPos) }
                 }
             c.setConfirm(confirm)
-            this@ModelFieldEditor.showDialogFragment(c)
+            this@NoteTypeFieldEditor.showDialogFragment(c)
         }
     }
 
@@ -502,7 +502,7 @@ class ModelFieldEditor : AnkiActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean =
         when (item.itemId) {
-            R.id.action_add_new_model -> {
+            R.id.action_add_new_note_type -> {
                 addFieldDialog()
                 true
             }

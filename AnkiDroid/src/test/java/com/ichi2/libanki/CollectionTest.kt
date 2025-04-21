@@ -181,12 +181,12 @@ class CollectionTest : JvmTest() {
         // old code used StdModels.STD_MODELS.size for this variable. There were 6 models:
         // BASIC_MODEL, BASIC_TYPING_MODEL, FORWARD_REVERSE_MODEL, FORWARD_OPTIONAL_REVERSE_MODEL,
         // CLOZE_MODEL, IMAGE_OCCLUSION_MODEL
-        val numberOfStandardModels = StockNotetype.Kind.entries.count { it != StockNotetype.Kind.UNRECOGNIZED }
-        assertEquals(col.notetypes.all().size, numberOfStandardModels)
+        val numberOfStandardNoteTypes = StockNotetype.Kind.entries.count { it != StockNotetype.Kind.UNRECOGNIZED }
+        assertEquals(col.notetypes.all().size, numberOfStandardNoteTypes)
         for (i in 0..99) {
             col.createBasicNoteType()
         }
-        assertEquals(col.notetypes.all().size, (100 + numberOfStandardModels))
+        assertEquals(col.notetypes.all().size, (100 + numberOfStandardNoteTypes))
     }
 
     @Test

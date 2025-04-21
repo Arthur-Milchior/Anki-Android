@@ -364,8 +364,8 @@ open class RobolectricTest :
 
     @Throws(JSONException::class)
     protected fun getCurrentDatabaseNoteTypeCopy(noteTypeName: String): NotetypeJson {
-        val collectionModels = col.notetypes
-        return NotetypeJson(collectionModels.byName(noteTypeName).toString().trim { it <= ' ' })
+        val collectionNoteType = col.notetypes
+        return NotetypeJson(collectionNoteType.byName(noteTypeName).toString().trim { it <= ' ' })
     }
 
     internal fun <T : AnkiActivity?> startActivityNormallyOpenCollectionWithIntent(

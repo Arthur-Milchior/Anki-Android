@@ -53,7 +53,7 @@ class NotetypeTest : InstrumentedTest() {
         noteType.put(testString, buf.toString())
         // Buf should be more than 4MB, so at least two chunks from database.
 
-        // Reload models
+        // Reload noteType
         testCol.load()
         val newNoteType = noteTypes.all()[0]
         assertEquals(newNoteType, noteType)

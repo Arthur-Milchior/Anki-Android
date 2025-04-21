@@ -28,7 +28,7 @@ import org.robolectric.annotation.Config
 class StorageRustTest : JvmTest() {
     @Test
     @Config(qualifiers = "en")
-    fun testModelCount() {
+    fun testNoteTypeCount() {
         val noteTypeNames = col.notetypes.all().map { x -> x.getString("name") }
         MatcherAssert.assertThat(
             noteTypeNames,

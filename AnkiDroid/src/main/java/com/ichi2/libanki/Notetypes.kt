@@ -143,7 +143,7 @@ class Notetypes(
     #############################################################
      */
 
-    /** Get current model.*/
+    /** Get current note type.*/
     @RustCleanup("Should use defaultsForAdding() instead")
     fun current(forDeck: Boolean = true): NotetypeJson {
         var noteType = get(col.decks.current().getLongOrNull("mid"))
@@ -157,11 +157,11 @@ class Notetypes(
     }
 
     fun setCurrent(notetype: NotetypeJson) {
-        col.config.set("curModel", notetype.id)
+        col.config.set(CURRENT_NOTE_TYPE_KEY, notetype.id)
     }
 
     /*
-    # Retrieving and creating models
+    # Retrieving and creating note types
     #############################################################
      */
 
@@ -173,7 +173,7 @@ class Notetypes(
             null
         }
 
-    /** "Get model with ID, or None." */
+    /** "Get note type with ID, or None." */
     fun get(id: int): NotetypeJson? = get(id as int?)
 
     /** Externally, we do not want to pass in a null id */
@@ -198,16 +198,16 @@ class Notetypes(
         return nt
     }
 
-    /** Get all models */
+    /** Get all note types */
     fun all(): List<NotetypeJson> = allNamesAndIds().map { get(it.id)!! }.toMutableList()
 
-    /** Get model with NAME. */
+    /** Get note type with NAME. */
     fun byName(name: String): NotetypeJson? {
         val id = idForName(name)
         return id?.let { get(it) }
     }
 
-    /** Create a new non-cloze model, and return it. */
+    /** Create a new non-cloze note type, and return it. */
     fun new(name: String): NotetypeJson {
         // caller should call save() after modifying
         val nt = newBasicNotetype()
@@ -224,7 +224,7 @@ class Notetypes(
             ),
         )
 
-    /** Delete model, and all its cards/notes. */
+    /** Delete note type, and all its cards/notes. */
     fun rem(notetype: NotetypeJson) {
         remove(notetype.id)
     }
@@ -249,7 +249,7 @@ class Notetypes(
         }
     }
 
-    /** Add or update an existing model. Use .save() instead. */
+    /** Add or update an existing note type. Use .save() instead. */
     fun update(
         notetype: NotetypeJson,
         preserveUsnAndMtime: Boolean = true,
@@ -280,7 +280,7 @@ class Notetypes(
      */
 
     @NotInLibAnki
-    fun nids(model: NotetypeJson): List<int> = nids(model.getLong("id"))
+    fun nids(notetype: NotetypeJson): List<int> = nids(notetype.getLong("id"))
 
     /** Note ids for M. */
     fun nids(ntid: int): List<int> = col.db.queryLongList("select id from notes where mid = ?", ntid)
@@ -429,7 +429,7 @@ class Notetypes(
 
     /**
      * similar to Anki's addField; but thanks to assumption that
-     * model is new, it never has to throw
+     * note type is new, it never has to throw
      * [ConfirmModSchemaException]
      */
     @RustCleanup("Since Kotlin doesn't have throws, this may not be needed")
@@ -437,12 +437,12 @@ class Notetypes(
         notetype: NotetypeJson,
         field: Field,
     ) {
-        check(isModelNew(notetype)) { "Model was assumed to be new, but is not" }
+        check(isNoteTypeNew(notetype)) { "Note type was assumed to be new, but is not" }
         try {
             addFieldLegacy(notetype, field)
         } catch (e: ConfirmModSchemaException) {
             Timber.w(e, "Unexpected mod schema")
-            CrashReportService.sendExceptionReport(e, "addFieldInNewModel: Unexpected mod schema")
+            CrashReportService.sendExceptionReport(e, "addFieldInNewNoteType: Unexpected mod schema")
             throw IllegalStateException("ConfirmModSchemaException should not be thrown", e)
         }
     }
@@ -452,14 +452,14 @@ class Notetypes(
         template: CardTemplate,
     ) {
         // similar to addTemplate, but doesn't throw exception;
-        // asserting the model is new.
-        check(isModelNew(notetype)) { "Model was assumed to be new, but is not" }
+        // asserting the note type is new.
+        check(isNoteTypeNew(notetype)) { "Note type was assumed to be new, but is not" }
 
         try {
             addTemplate(notetype, template)
         } catch (e: ConfirmModSchemaException) {
             Timber.w(e, "Unexpected mod schema")
-            CrashReportService.sendExceptionReport(e, "addTemplateInNewModel: Unexpected mod schema")
+            CrashReportService.sendExceptionReport(e, "addTemplateInNewNoteType: Unexpected mod schema")
             throw IllegalStateException("ConfirmModSchemaException should not be thrown", e)
         }
     }
@@ -480,7 +480,7 @@ class Notetypes(
         template: CardTemplate,
     ) {
         // similar to addTemplate, but doesn't throw exception;
-        // asserting the model is new.
+        // asserting the note type is new.
         check(col.schemaChanged()) { "Mod was assumed to be already changed, but is not" }
         addTemplate(notetype, template)
     }
@@ -567,10 +567,10 @@ class Notetypes(
     }
 
     /*
-    # Model changing
+    # Note type changing
     ##########################################################################
     # - maps are ord->ord, and there should not be duplicate targets
-    # - newModel should be same as m if model is not changing
+    # - newNoteType should be same as m if note type is not changing
      */
 
     /**
@@ -593,24 +593,24 @@ class Notetypes(
     fun change(
         noteType: NotetypeJson,
         nid: NoteId,
-        newModel: NotetypeJson,
+        newNoteType: NotetypeJson,
         fmap: Map<Int, Int?>,
         cmap: Map<Int, Int?>,
     ): OpChanges {
-        val fieldMap = convertLegacyMap(fmap, newModel.fieldsNames.size)
+        val fieldMap = convertLegacyMap(fmap, newNoteType.fieldsNames.size)
         val templateMap =
-            if (cmap.isEmpty() || noteType.isCloze || newModel.isCloze) {
+            if (cmap.isEmpty() || noteType.isCloze || newNoteType.isCloze) {
                 listOf()
             } else {
-                convertLegacyMap(cmap, newModel.templatesNames.size)
+                convertLegacyMap(cmap, newNoteType.templatesNames.size)
             }
-        val isCloze = newModel.isCloze || noteType.isCloze
+        val isCloze = newNoteType.isCloze || noteType.isCloze
         return col.backend.changeNotetype(
             noteIds = listOf(nid),
             newFields = fieldMap,
             newTemplates = templateMap,
             oldNotetypeId = noteType.id,
-            newNotetypeId = newModel.id,
+            newNotetypeId = newNoteType.id,
             currentSchema = col.scm,
             oldNotetypeName = noteType.name,
             isCloze = isCloze,
@@ -635,7 +635,7 @@ class Notetypes(
     ##########################################################################
      */
 
-    /** Return a hash of the schema, to see if models are compatible. */
+    /** Return a hash of the schema, to see if note types are compatible. */
     fun scmhash(notetype: NotetypeJson): String {
         var s = ""
         for (f in notetype.flds) {
@@ -656,11 +656,11 @@ class Notetypes(
 
     /**
      * Extracted from remTemplate so we can test if removing templates is safe without actually removing them
-     * This method will either give you all the card ids for the ordinals sent in related to the model sent in *or*
+     * This method will either give you all the card ids for the ordinals sent in related to the note type sent in *or*
      * it will return null if the result of deleting the ordinals is unsafe because it would leave notes with no cards
      *
-     * @param noteTypeId long id of the JSON model
-     * @param ords array of ints, each one is the ordinal a the card template in the given model
+     * @param noteTypeId long id of the JSON note type
+     * @param ords array of ints, each one is the ordinal a the card template in the given note type
      * @return null if deleting ords would orphan notes, long[] of related card ids to delete if it is safe
      */
     @Suppress("ktlint:standard:max-line-length")
@@ -672,7 +672,7 @@ class Notetypes(
             "select c2.id from cards c2, notes n2 where c2.nid=n2.id and n2.mid = ? and c2.ord  in ${Utils.ids2str(ords)}"
         val cids: List<Long> = col.db.queryLongList(cardIdsToDeleteSql, noteTypeId)
         // Timber.d("cardIdsToDeleteSql was ' %s' and got %s", cardIdsToDeleteSql, Utils.ids2str(cids));
-        Timber.d("getCardIdsForModel found %s cards to delete for model %s and ords %s", cids.size, noteTypeId, Utils.ids2str(ords))
+        Timber.d("getCardIdsForModel found %s cards to delete for note type %s and ords %s", cids.size, noteTypeId, Utils.ids2str(ords))
 
         // all notes with this template must have at least two cards, or we could end up creating orphaned notes
         val noteCountPreDeleteSql = "select count(distinct(nid)) from cards where nid in (select id from notes where mid = ?)"
@@ -694,6 +694,7 @@ class Notetypes(
 
     // These are all legacy and should be removed when possible
     companion object {
+        const val CURRENT_NOTE_TYPE_KEY = "curModel"
         const val NOT_FOUND_NOTE_TYPE = -1L
 
         fun newTemplate(name: String): CardTemplate =
@@ -710,7 +711,7 @@ class Notetypes(
             notetype.flds.associateBy({ f -> f.name }, { f -> Pair(f.ord, f) })
 
         // not in anki
-        fun isModelNew(notetype: NotetypeJson): Boolean = notetype.getLong("id") == 0L
+        fun isNoteTypeNew(notetype: NotetypeJson): Boolean = notetype.getLong("id") == 0L
 
         fun _updateTemplOrds(notetype: NotetypeJson) {
             for ((i, template) in notetype.tmpls.withIndex()) {

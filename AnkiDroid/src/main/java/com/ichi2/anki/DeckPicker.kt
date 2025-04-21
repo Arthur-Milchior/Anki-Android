@@ -1185,8 +1185,8 @@ open class DeckPicker :
                 )
                 return true
             }
-            R.id.action_model_browser_open -> {
-                Timber.i("DeckPicker:: Model browser button pressed")
+            R.id.action_note_type_browser_open -> {
+                Timber.i("DeckPicker:: Note type browser button pressed")
                 openManageNoteTypes()
                 return true
             }

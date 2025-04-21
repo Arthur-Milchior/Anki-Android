@@ -51,7 +51,7 @@ class CardTemplateEditorTest : RobolectricTest() {
     fun testEditTemplateContents() {
         val noteTypeName = "Basic"
 
-        // Start the CardTemplateEditor with a specific model, and make sure the model starts unchanged
+        // Start the CardTemplateEditor with a specific note type, and make sure the note type starts unchanged
         val collectionBasicNoteTypeOriginal = getCurrentDatabaseNoteTypeCopy(noteTypeName)
         val intent = Intent(Intent.ACTION_VIEW)
         intent.putExtra("noteTypeId", collectionBasicNoteTypeOriginal.getLong("id"))
@@ -66,7 +66,7 @@ class CardTemplateEditorTest : RobolectricTest() {
         var testEditor = templateEditorController.get()
         assertFalse("Note type should not have changed yet", testEditor.noteTypeHasChanged())
 
-        // Change the model and make sure it registers as changed, but the database is unchanged
+        // Change the note type and make sure it registers as changed, but the database is unchanged
         var templateFront = testEditor.findViewById<EditText>(R.id.editor_editText)
         val testNoteTypeQfmtEdit = "!@#$%^&*TEST*&^%$#@!"
         templateFront.text.append(testNoteTypeQfmtEdit)
@@ -80,7 +80,7 @@ class CardTemplateEditorTest : RobolectricTest() {
             getCurrentDatabaseNoteTypeCopy(noteTypeName).toString().trim { it <= ' ' },
         )
 
-        // Kill and restart the Activity, make sure model edit is preserved
+        // Kill and restart the Activity, make sure note type edit is preserved
         val outBundle = Bundle()
         templateEditorController.saveInstanceState(outBundle)
         templateEditorController.pause().stop().destroy()
@@ -171,7 +171,7 @@ class CardTemplateEditorTest : RobolectricTest() {
     fun testDeleteTemplate() {
         val noteTypeName = "Basic (and reversed card)"
 
-        // Start the CardTemplateEditor with a specific model, and make sure the model starts unchanged
+        // Start the CardTemplateEditor with a specific note type, and make sure the note type starts unchanged
         val collectionBasicNoteTypeOriginal = getCurrentDatabaseNoteTypeCopy(noteTypeName)
         val intent = Intent(Intent.ACTION_VIEW)
         intent.putExtra("noteTypeId", collectionBasicNoteTypeOriginal.getLong("id"))
@@ -273,14 +273,14 @@ class CardTemplateEditorTest : RobolectricTest() {
         )
 
         // Save the change to the database and make sure there are two templates after
-        val testEditorModelEdited = testEditor.tempNoteType?.noteType
+        val testEditorNoteTypeEdited = testEditor.tempNoteType?.noteType
         assertTrue("Unable to click?", shadowTestEditor.clickMenuItem(R.id.action_confirm))
         advanceRobolectricLooperWithSleep()
         val collectionBasicNoteTypeCopyEdited = getCurrentDatabaseNoteTypeCopy(noteTypeName)
         assertNotEquals("Note type is unchanged?", collectionBasicNoteTypeOriginal, collectionBasicNoteTypeCopyEdited)
         assertEquals(
             "Note type did not save?",
-            testEditorModelEdited.toString().trim {
+            testEditorNoteTypeEdited.toString().trim {
                 it <= ' '
             },
             collectionBasicNoteTypeCopyEdited.toString().trim { it <= ' ' },
@@ -288,15 +288,15 @@ class CardTemplateEditorTest : RobolectricTest() {
     }
 
     /**
-     * In a model with two card templates using different fields, some notes may only use card 1,
+     * In a note type with two card templates using different fields, some notes may only use card 1,
      * and some may only use card 2. If you delete the 2nd template,
      * it will cause the notes that only use card 2 to disappear.
      *
-     * So the unit test would then be to make a model like the "basic (optional reverse card)"
+     * So the unit test would then be to make a note type like the "basic (optional reverse card)"
      * with two fields Enable1 and Enable2, and two templates "card 1" and "card 2".
      * Both cards use selective generation, so they're empty unless the corresponding field is set.
      *
-     * So then in the unit test you make the model, add the two templates, then you add two notes,
+     * So then in the unit test you make the note type, add the two templates, then you add two notes,
      * with Enable1 and Enable2 respectively set to "y".
      * Then you try to delete one of the templates and it should fail
      *
@@ -311,7 +311,7 @@ class CardTemplateEditorTest : RobolectricTest() {
             val noteTypeName = "Basic (optional reversed card)"
             val collectionBasicNoteTypeOriginal = getCurrentDatabaseNoteTypeCopy(noteTypeName)
 
-            // Start the CardTemplateEditor with a specific model, and make sure the model starts unchanged
+            // Start the CardTemplateEditor with a specific note type, and make sure the note type starts unchanged
             val intent = Intent(Intent.ACTION_VIEW)
             intent.putExtra("noteTypeId", collectionBasicNoteTypeOriginal.getLong("id"))
             val templateEditorController =
@@ -411,7 +411,7 @@ class CardTemplateEditorTest : RobolectricTest() {
             val noteTypeName = "Basic (and reversed card)"
             var collectionBasicNoteTypeOriginal = getCurrentDatabaseNoteTypeCopy(noteTypeName)
 
-            // Start the CardTemplateEditor with a specific model, and make sure the model starts unchanged
+            // Start the CardTemplateEditor with a specific note type, and make sure the note type starts unchanged
             var intent = Intent(Intent.ACTION_VIEW)
             intent.putExtra("noteTypeId", collectionBasicNoteTypeOriginal.getLong("id"))
             var templateEditorController =
@@ -475,7 +475,7 @@ class CardTemplateEditorTest : RobolectricTest() {
             advanceRobolectricLooperWithSleep()
             assertFalse("Note type should now be unchanged", testEditor.noteTypeHasChanged())
             assertEquals("card generation should result in three cards", 3, getNoteTypeCardCount(collectionBasicNoteTypeOriginal))
-            // reload the model for future comparison after saving the edit
+            // reload the note type for future comparison after saving the edit
             collectionBasicNoteTypeOriginal = getCurrentDatabaseNoteTypeCopy(noteTypeName)
 
             // Start the CardTemplateEditor back up after saving (which closes the thing...)
@@ -594,7 +594,7 @@ class CardTemplateEditorTest : RobolectricTest() {
             val noteTypeName = "Basic (optional reversed card)"
             val collectionBasicNoteTypeOriginal = getCurrentDatabaseNoteTypeCopy(noteTypeName)
 
-            // Start the CardTemplateEditor with a specific model, and make sure the model starts unchanged
+            // Start the CardTemplateEditor with a specific note type, and make sure the note type starts unchanged
             val intent = Intent(Intent.ACTION_VIEW)
             intent.putExtra("noteTypeId", collectionBasicNoteTypeOriginal.id)
             val templateEditorController =
@@ -710,7 +710,7 @@ class CardTemplateEditorTest : RobolectricTest() {
     fun testContentPreservedAfterChangingEditorView() {
         val noteTypeName = "Basic"
 
-        // Start the CardTemplateEditor with a specific model, and make sure the model starts unchanged
+        // Start the CardTemplateEditor with a specific note type, and make sure the note type starts unchanged
         val collectionBasicNoteTypeOriginal = getCurrentDatabaseNoteTypeCopy(noteTypeName)
         val intent = Intent(Intent.ACTION_VIEW)
         intent.putExtra("noteTypeId", collectionBasicNoteTypeOriginal.getLong("id"))
@@ -724,7 +724,7 @@ class CardTemplateEditorTest : RobolectricTest() {
         saveControllerForCleanup(templateEditorController)
         val testEditor = templateEditorController.get()
 
-        // Change the model and make sure it registers as changed, but the database is unchanged
+        // Change the note type and make sure it registers as changed, but the database is unchanged
         val templateEditText = testEditor.findViewById<EditText>(R.id.editor_editText)
         val testNoteTypeQfmtEdit = "!@#$%^&*TEST*&^%$#@!"
         val updatedFrontContent = templateEditText.text.append(testNoteTypeQfmtEdit).toString()
@@ -763,7 +763,7 @@ class CardTemplateEditorTest : RobolectricTest() {
         saveControllerForCleanup(templateEditorController)
         val testEditor = templateEditorController.get()
 
-        // Change the model and make sure it registers as changed, but the database is unchanged
+        // Change the note type and make sure it registers as changed, but the database is unchanged
         val templateEditText = testEditor.findViewById<EditText>(R.id.editor_editText)
         advanceRobolectricLooperWithSleep()
         val cardTemplateFragment = testEditor.currentFragment
