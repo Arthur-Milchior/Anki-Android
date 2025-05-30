@@ -16,6 +16,7 @@
 package com.ichi2.anki.reviewer
 
 import android.content.SharedPreferences
+import androidx.annotation.VisibleForTesting
 import androidx.core.content.edit
 import timber.log.Timber
 
@@ -38,7 +39,7 @@ enum class FullScreenMode(
     fun isFullScreenReview() = this != BUTTONS_AND_MENU
 
     companion object {
-        const val PREF_KEY = "fullscreenMode"
+        private const val PREF_KEY = "fullscreenMode"
         val DEFAULT = BUTTONS_AND_MENU
 
         fun fromPreference(prefs: SharedPreferences): FullScreenMode {
@@ -62,6 +63,8 @@ enum class FullScreenMode(
             }
         }
 
+        // Not used in AnkiDroid code.
+        @VisibleForTesting
         fun setPreference(
             prefs: SharedPreferences,
             mode: FullScreenMode,

@@ -53,6 +53,7 @@ class ViewerCommandTest {
                 "binding_TOGGLE_FLAG_TURQUOISE",
                 "binding_TOGGLE_FLAG_PURPLE",
                 "binding_UNSET_FLAG",
+                "binding_TOGGLE_FULL_SCREEN",
                 "binding_PAGE_UP",
                 "binding_PAGE_DOWN",
                 "binding_TAG",

@@ -323,6 +323,7 @@ object PreferenceUpgradeService {
                     Pair(41, ViewerCommand.SHOW_HINT),
                     Pair(42, ViewerCommand.SHOW_ALL_HINTS),
                     Pair(43, ViewerCommand.ADD_NOTE),
+                    Pair(44, ViewerCommand.TOGGLE_FULL_SCREEN),
                 )
 
             override fun upgrade(preferences: SharedPreferences) {

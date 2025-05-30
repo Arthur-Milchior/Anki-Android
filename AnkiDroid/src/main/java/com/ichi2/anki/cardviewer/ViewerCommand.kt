@@ -54,6 +54,7 @@ enum class ViewerCommand(
     TOGGLE_FLAG_TURQUOISE,
     TOGGLE_FLAG_PURPLE,
     UNSET_FLAG,
+    TOGGLE_FULL_SCREEN,
     PAGE_UP,
     PAGE_DOWN,
     TAG,
@@ -172,6 +173,7 @@ enum class ViewerCommand(
                 SHOW_HINT -> listOf(keyCode(KeyEvent.KEYCODE_H, CardSide.BOTH))
                 SHOW_ALL_HINTS -> listOf(keyCode(KeyEvent.KEYCODE_G, CardSide.BOTH))
                 ADD_NOTE -> listOf(keyCode(KeyEvent.KEYCODE_A, CardSide.BOTH))
+                TOGGLE_FULL_SCREEN -> listOf(keyCode(KeyEvent.KEYCODE_F11, CardSide.BOTH))
                 SHOW_ANSWER,
                 DELETE,
                 EXIT,

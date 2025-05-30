@@ -114,6 +114,7 @@
     <string name="flag_turquoise_command_key">binding_TOGGLE_FLAG_TURQUOISE</string>
     <string name="flag_purple_command_key">binding_TOGGLE_FLAG_PURPLE</string>
     <string name="remove_flag_command_key">binding_UNSET_FLAG</string>
+    <string name="gesture_toggle_full_screen_command_key">binding_TOGGLE_FULL_SCREEN</string>
     <string name="page_up_command_key">binding_PAGE_UP</string>
     <string name="page_down_command_key">binding_PAGE_DOWN</string>
     <string name="tag_command_key">binding_TAG</string>

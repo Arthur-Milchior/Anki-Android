@@ -193,8 +193,32 @@ abstract class AbstractFlashcardViewer :
      * Variables to hold preferences
      */
     internal var prefShowTopbar = false
-    protected var fullscreenMode = DEFAULT
+
+    /**
+     * Whether the FullScreen toggle action was enabled
+     * */
+    protected var toggledTemporaryScreenMode = false
+
+    /**
+     * The full screen mode in the settings.
+     */
+    protected var fullscreenModeInSettings = DEFAULT
         private set
+
+    /**
+     * Whethe the view should currently be displayed as full screen.
+     */
+    protected val currentFullscreenMode: FullScreenMode
+        get() =
+            if (!toggledTemporaryScreenMode) {
+                fullscreenModeInSettings
+            } else if (fullscreenModeInSettings ==
+                FullScreenMode.BUTTONS_AND_MENU
+            ) {
+                FullScreenMode.FULLSCREEN_ALL_GONE
+            } else {
+                FullScreenMode.BUTTONS_AND_MENU
+            }
     private var relativeButtonSize = 0
     private var minimalClickSpeed = 0
     private var doubleScrolling = false
@@ -554,7 +578,7 @@ abstract class AbstractFlashcardViewer :
         // This theme removes the highlight, but there is likely a better way.
         this.setTheme(R.style.ThemeOverlay_DisableKeyboardHighlight)
 
-        setContentView(getContentViewAttr(fullscreenMode))
+        setContentView(getContentViewAttr(currentFullscreenMode))
 
         // Make ACTION_PROCESS_TEXT for in-app searching possible on > Android 4.0
         delegate.isHandleNativeActionModesEnabled = true
@@ -1067,7 +1091,7 @@ abstract class AbstractFlashcardViewer :
     private fun <T : View?> inflateNewView(
         @IdRes id: Int,
     ): T {
-        val layoutId = getContentViewAttr(fullscreenMode)
+        val layoutId = getContentViewAttr(currentFullscreenMode)
         val content =
             LayoutInflater
                 .from(this@AbstractFlashcardViewer)
@@ -1201,7 +1225,7 @@ abstract class AbstractFlashcardViewer :
         typeAnswer = createInstance(preferences)
         // mDeckFilename = preferences.getString("deckFilename", "");
         minimalClickSpeed = preferences.getInt("showCardAnswerButtonTime", 0)
-        fullscreenMode = fromPreference(preferences)
+        fullscreenModeInSettings = fromPreference(preferences)
         relativeButtonSize = Prefs.answerButtonsSize
         tts.enabled = preferences.getBoolean("tts", false)
         doubleScrolling = preferences.getBoolean("double_scrolling", false)
@@ -1682,6 +1706,11 @@ abstract class AbstractFlashcardViewer :
                 true
             }
 
+            ViewerCommand.TOGGLE_FULL_SCREEN -> {
+                onFullScreen()
+                true
+            }
+
             ViewerCommand.PAGE_UP -> {
                 onPageUp()
                 true
@@ -1801,6 +1830,10 @@ abstract class AbstractFlashcardViewer :
         if (answerButtonsPosition == "bottom") {
             anchorView = findViewById(R.id.answer_options_layout)
         }
+    }
+
+    private fun onFullScreen() {
+        toggledTemporaryScreenMode = !toggledTemporaryScreenMode
     }
 
     private fun onPageUp() {

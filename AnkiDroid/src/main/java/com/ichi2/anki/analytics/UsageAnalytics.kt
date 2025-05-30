@@ -542,6 +542,7 @@ object UsageAnalytics {
             R.string.flag_turquoise_command_key,
             R.string.flag_purple_command_key,
             R.string.remove_flag_command_key,
+            R.string.gesture_toggle_full_screen_command_key,
             R.string.page_up_command_key,
             R.string.page_down_command_key,
             R.string.tag_command_key,

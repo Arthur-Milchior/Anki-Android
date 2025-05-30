@@ -134,6 +134,11 @@
 
     <PreferenceCategory android:title="@string/navigation">
         <com.ichi2.preferences.ReviewerControlPreference
+            android:key="@string/gesture_toggle_full_screen_command_key"
+            android:title="@string/gesture_toggle_full_screen"
+            android:icon="@drawable/fullscreen_portrait"
+            />
+        <com.ichi2.preferences.ReviewerControlPreference
             android:key="@string/page_up_command_key"
             android:title="@string/gesture_page_up"
             android:icon="@drawable/ic_double_arrow_up"

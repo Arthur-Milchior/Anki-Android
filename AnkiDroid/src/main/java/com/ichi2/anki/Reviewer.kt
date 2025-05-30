@@ -357,7 +357,7 @@ open class Reviewer :
             FullScreenMode.BUTTONS_AND_MENU -> R.layout.reviewer
         }
 
-    public override fun fitsSystemWindows(): Boolean = !fullscreenMode.isFullScreenReview()
+    public override fun fitsSystemWindows(): Boolean = !currentFullscreenMode.isFullScreenReview()
 
     override fun onCollectionLoaded(col: Collection) {
         super.onCollectionLoaded(col)
